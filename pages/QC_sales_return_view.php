@@ -18,7 +18,7 @@ $condition="create_date='".date('Y-m-d')."'";
 
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
-        $_POST['checked_by']=$_SESSION[userid];
+        $_POST['checked_by']=@$_SESSION['userid'];
         $_POST['checked_at']=time();
         $_POST['status']="RETURNED";
         $crud->update($unique);
@@ -43,42 +43,35 @@ if(prevent_multi_submit()){
         while($row=mysqli_fetch_array($query)){
             $new_batch = automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
             $_POST['ji_date'] = $ji_date;
-            $_POST['item_id'] = $row[item_id];
-            $_POST['warehouse_id'] = $row[depot_id];
-            $_POST['item_in'] = $row[total_qty];
-            $_POST['item_price'] = $row[cogs_rate];
+            $_POST['item_id'] = $row['item_id'];
+            $_POST['warehouse_id'] = $row['depot_id'];
+            $_POST['item_in'] = $row['total_qty'];
+            $_POST['item_price'] = $row['cogs_rate'];
             $_POST['batch'] = $new_batch;
-            $_POST['lot_number'] = $row[batch];
-            $_POST['expiry_date'] = $row[expiry_date];
-            $_POST['total_amt'] = $row[total_qty]*$row[cogs_rate];
+            $_POST['lot_number'] = $row['batch'];
+            $_POST['expiry_date'] = $row['expiry_date'];
+            $_POST['total_amt'] = $row['total_qty']*$row['cogs_rate'];
             $_POST['tr_from'] = 'SalesReturn';
             $_POST['tr_no'] = $_GET[$unique];
-            $_POST['sr_no'] = $row[id];
-            $_POST[ip]=$ip;
+            $_POST['sr_no'] = $row['id'];
+            $_POST['ip']=$ip;
             $crud      =new crud($journal_item);
             $crud->insert();
-
-
             $_POST['po_no'] = $_GET[$unique];
             $_POST['create_date'] = date('Y-m-d');
             $_POST['lc_id'] = $_GET[$unique];
-            $_POST['warehouse_id'] = $row[depot_id];
-            $_POST['batch_no'] = find_a_field('lc_lc_received_batch_split','batch_no','batch='.$row[batch]);
-            $_POST['item_id'] = $row[item_id];
-            $_POST['qty'] = $row[total_qty];
-            $_POST['rate'] = $row[cogs_rate];
+            $_POST['warehouse_id'] = $row['depot_id'];
+            $_POST['batch_no'] = find_a_field('lc_lc_received_batch_split','batch_no','batch='.$row['batch']);
+            $_POST['item_id'] = $row['item_id'];
+            $_POST['qty'] = $row['total_qty'];
+            $_POST['rate'] = $row['cogs_rate'];
             $_POST['batch'] = $new_batch;
-            $_POST['mfg'] = $row[expiry_date];
+            $_POST['mfg'] = $row['expiry_date'];
             $_POST['status'] = 'PROCESSING';
             $_POST['source'] = 'SR';
-            $_POST['line_id'] = $row[id];
-
+            $_POST['line_id'] = $row['id'];
             $crud      =new crud($lc_lc_received_batch_split);
             $crud->insert();
-            
-
-
-            
         }
         $up_master="UPDATE ".$table." SET status='CHECKED' where ".$unique."=".$$unique."";
         $update_table_master=mysqli_query($conn, $up_master);
@@ -89,8 +82,6 @@ if(prevent_multi_submit()){
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }
-
-
 
 //for Delete..................................
     if(isset($_POST['deleted']))
@@ -117,9 +108,9 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-$cashdiscount=find_a_field('sale_return_master','cashdiscount','do_no='.$_GET[do_no].'');
+$cashdiscount=find_a_field('sale_return_master','cashdiscount','do_no='.$_GET['do_no'].'');
 
-if(isset($_POST[viewreport])){
+if(isset($_POST['viewreport'])){
 $resultss="Select p.do_no,p.sr_no,p.do_date as 'Date',w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as 'Dealer Name',p.remarks,concat(u.fname, '<br> at: ' ,p.entry_at) as entry_by,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as No_of_Items,p.status as status
 from
 ".$table." p,
@@ -130,7 +121,7 @@ where
 p.entry_by=u.user_id and
 w.warehouse_id=p.depot_id and
 d.dealer_code=p.dealer_code and
-p.do_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' order by p.".$unique." DESC ";
+p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by p.".$unique." DESC ";
 } else {
 $resultss="Select p.do_no,p.sr_no,p.do_date as 'Date',w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as 'Dealer Name',p.remarks,concat(u.fname, '<br> at: ' ,p.entry_at) as entry_by,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as No_of_Items,p.status as status
 from
@@ -192,28 +183,28 @@ srd.".$unique."=".$$unique." order by srd.id";
                         <?php
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
-                        $batch_get_data=find_all_field('lc_lc_received_batch_split','','batch='.$row[batch]);
-                            $ids=$row[id];
+                        $batch_get_data=find_all_field('lc_lc_received_batch_split','','batch='.$row['batch']);
+                            $ids=$row['id'];
                             ?>
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?=$i=$i+1?></td>
-                                <td style="vertical-align:middle"><?=$row[finish_goods_code];?></td>
-                                <td style="vertical-align:middle; width: 25%"><?=$row[item_name];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[unit_name];?></td>
-                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row[total_unit];?></td>
-                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row[free_qty];?></td>
-                                <td align="center" style=" text-align:right; vertical-align:middle"><?=$row[discount];?></td>
-                                <td align="center" style=" text-align:right; vertical-align:middle"><?=$row[unit_price]; ?></td>
-                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row[total_qty]; ?></td>
-                                <td align="center" style="text-align:right; vertical-align:middle"><?=number_format($row[total_amt],2);?></td>
-                                <td align="center" style=" text-align:center; vertical-align:middle"><strong>Batch :</strong> <?=$row[batch]; ?>(<?=$batch_get_data->batch_no?>)<br><strong>Batch Status:</strong> <?=$batch_get_data->status?><br><strong>Rate:</strong>  <?=$row[cogs_rate]; ?><br><strong>Exp. Date:</strong>  <?=$row[expiry_date]; ?></td>
+                                <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
+                                <td style="vertical-align:middle; width: 25%"><?=$row['item_name'];?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
+                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row['total_unit'];?></td>
+                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row['free_qty'];?></td>
+                                <td align="center" style=" text-align:right; vertical-align:middle"><?=$row['discount'];?></td>
+                                <td align="center" style=" text-align:right; vertical-align:middle"><?=$row['unit_price']; ?></td>
+                                <td align="center" style=" text-align:center; vertical-align:middle"><?=$row['total_qty']; ?></td>
+                                <td align="center" style="text-align:right; vertical-align:middle"><?=number_format($row['total_amt'],2);?></td>
+                                <td align="center" style=" text-align:center; vertical-align:middle"><strong>Batch :</strong> <?=$row['batch']; ?>(<?=$batch_get_data->batch_no?>)<br><strong>Batch Status:</strong> <?=$batch_get_data->status?><br><strong>Rate:</strong>  <?=$row['cogs_rate']; ?><br><strong>Exp. Date:</strong>  <?=$row[expiry_date]; ?></td>
 
                             </tr>
-                            <?php  $ttotal_unit=$ttotal_unit+$row[total_unit];
-                            $tfree_qty=$tfree_qty+$row[free_qty];
-                            $ttotal_qty=$ttotal_qty+$row[total_qty];
-                            $tdiscount=$tdiscount+$row[discount];
-                            $ttotal_amt=$ttotal_amt+$row[total_amt];  } ?>
+                            <?php  $ttotal_unit=$ttotal_unit+$row['total_unit'];
+                            $tfree_qty=$tfree_qty+$row['free_qty'];
+                            $ttotal_qty=$ttotal_qty+$row['total_qty'];
+                            $tdiscount=$tdiscount+$row['discount'];
+                            $ttotal_amt=$ttotal_amt+$row['total_amt'];  } ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="4" style="font-weight:bold; font-size:11px" align="right">Sales Return</td>
@@ -259,9 +250,9 @@ srd.".$unique."=".$$unique." order by srd.id";
 <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
     <table align="center" style="width: 50%;">
         <tr>
-            <td><input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" /></td>
+            <td><input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" /></td>
             <td style="width:10px; text-align:center"></td>
-            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
             <td style="width:10px; text-align:center"></td>
             <td style="padding:10px"><button type="submit" style="font-size: 12px;" name="viewreport"  class="btn btn-primary">View Report</button></td>
         </tr>
