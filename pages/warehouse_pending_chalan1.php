@@ -149,7 +149,7 @@ item_info i
         unset($_POST);
         unset($_SESSION['wpc_DO']);
         //echo "<script>self.opener.location = '$page'; self.blur(); </script>";
-        //echo "<script>window.close(); </script>";
+        echo "<script>window.close(); </script>";
     }}
 $unique_GET = @$_SESSION['wpc_DO'];
 // data query..................................
@@ -191,14 +191,13 @@ $cd_data_RMND_total_amt = @$cd_data_RMND->total_amt;
 
 $narration=$do_type_get." to ".$dealer_master_dealer_name_e.', Do No # '.$unique_GET.', Challan No # '.$find_chalan_no;
 if (isset($_POST['viewreport'])) {
-    $res = "SELECT  m.do_no,m.do_no,m.do_date,m.do_type,d.dealer_name_e as customer_name,m.remarks,concat(uam.fname,'<br>at: ',m.entry_at) as entry_by,m.sent_to_warehuse_at as sent_at,m.status FROM
+    $res = "SELECT  m.do_no,m.do_no,m.do_date,m.do_type,d.dealer_name_e as customer_name,m.remarks,m.status FROM
 							 sale_do_master m,
 							dealer_info d,
 							users uam
 							 where
 							 m.dealer_code=d.dealer_code and
 							 m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
-							 m.depot_id=".$_POST['depot_id']." and
 							 m.status not in ('MANUAL','PROCESSING','RETURNED') and
 							 m.entry_by=uam.user_id
 							  order by m.do_no"; } else {
@@ -245,7 +244,7 @@ if (isset($_POST['viewreport'])) {
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_content">
-                    <table style="width:100%; font-size: 11px">
+                    <table style="width:100%; font-size: 11px; display: none">
                         <tr>
                             <th style="">DO No</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" name="do_no" readonly value="<?=$_SESSION['wpc_DO'];?>"></td>
                             <th style="width: 15%">DO Date</th><th style="text-align: center; width: 2%">:</th><td><input type="date" style="width: 80%" name="do_date" readonly value="<?=$do_master->do_date;?>"></td>
@@ -259,15 +258,15 @@ if (isset($_POST['viewreport'])) {
                         </tr>
                     </table>
                 </div></div></div>
-        <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
+        <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px; display: none">
             <tr style="background-color: bisque">
-                <th style="vertical-align: middle">Truck No</th><td style="vertical-align: middle"><input type="text" required name="vehicle_no" value="<?=$vehicle_no;?>" style="width:"></td>
-                <th style="vertical-align: middle">Delivery Man</th><td style="vertical-align: middle"><input type="text" required name="delivery_man" value="<?=$delivery_man;?>" style="width:"></td>
-                <th style="vertical-align: middle">Driver Name</th><td style="vertical-align: middle"><input type="text" required name="driver_name_real" value="<?=$driver_name_real;?>" style="width:"></td>
-                <th style="vertical-align: middle">Transporter Name</th><td style="vertical-align: middle"><input type="text" required name="transporter_name" value="<?=$transporter_name;?>" style="width:"></td>
+                <th style="vertical-align: middle">Truck No</th><td style="vertical-align: middle"><input type="text"  name="vehicle_no" value="<?=$vehicle_no;?>" style="width:"></td>
+                <th style="vertical-align: middle">Delivery Man</th><td style="vertical-align: middle"><input type="text"  name="delivery_man" value="<?=$delivery_man;?>" style="width:"></td>
+                <th style="vertical-align: middle">Driver Name</th><td style="vertical-align: middle"><input type="text"  name="driver_name_real" value="<?=$driver_name_real;?>" style="width:"></td>
+                <th style="vertical-align: middle">Transporter Name</th><td style="vertical-align: middle"><input type="text"  name="transporter_name" value="<?=$transporter_name;?>" style="width:"></td>
             </tr>
         </table>
-        <table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
+        <table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px; display: none">
             <thead>
             <tr style="background-color: bisque">
                 <th style="vertical-align: middle">SL</th>

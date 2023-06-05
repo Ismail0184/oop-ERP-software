@@ -27,7 +27,7 @@ class crud{
             $this->fields = array_merge($this->fields,array($name));
             $this->fields_type = array_merge($this->fields_type,array($name=>$type));
         }
-		$this->table_name = @$table_name;
+        $this->table_name = @$table_name;
     }
 
     public function insert($tag='',$id='')
@@ -44,7 +44,7 @@ class crud{
             db_update($this->table_name,$_POST[$tag],$vars,$tag);
         return $id;
     }
-	 public function delete($condition)
+    public function delete($condition)
     {
         global $conn;
         $sql = "delete from $this->table_name where $condition limit 1";
@@ -165,7 +165,7 @@ class crud{
         return $str;
     }
 
-	public function report_general($sql,$link=''){
+    public function report_general($sql,$link=''){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -192,24 +192,24 @@ class crud{
             mysqli_free_result($result);
         }
 
-		$str .='<tr class="footer">';
-		if(isset($sl))$str .='<td>&nbsp;</td>';
-		for($i=0;$i<$cols;$i++)
-			{
+        $str .='<tr class="footer">';
+        if(isset($sl))$str .='<td>&nbsp;</td>';
+        for($i=0;$i<$cols;$i++)
+        {
 
-				if($_POST['report']==3){				if($coloum[$i]=='rcv_amt') $str .='<td>&nbsp;</td>';
-				elseif($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.$sum[$i].'</td>';
-				else $str .='<td>&nbsp;</td>';}
-else{				if($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.number_format($sum[$i],2).'</td>';
-				else $str .='<td>&nbsp;</td>';}
-			}
-		$str .='</tr></tbody>';
+            if($_POST['report']==3){				if($coloum[$i]=='rcv_amt') $str .='<td>&nbsp;</td>';
+            elseif($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.$sum[$i].'</td>';
+            else $str .='<td>&nbsp;</td>';}
+            else{				if($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.number_format($sum[$i],2).'</td>';
+            else $str .='<td>&nbsp;</td>';}
+        }
+        $str .='</tr></tbody>';
         $str .='</table>';
         return $str;
     }
 
 
-	public function report_templates($sql,$link=''){
+    public function report_templates($sql,$link=''){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -247,7 +247,7 @@ else{				if($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.num
     }
 
 
-	public function report_templates_with_data($sql,$title){
+    public function report_templates_with_data($sql,$title){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -281,7 +281,7 @@ else{				if($show[$i]!=1&&$sum[$i]!=0)$str .='<td style="text-align:right">'.num
         }
         $str .='</table></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
     function select_a_report($module_id)
@@ -322,7 +322,7 @@ ORDER BY zm.sl, zs.sl");
         $str .= '</select>';
         return $str;
     }
-	public function report_templates_with_status_periodical($sql,$status){
+    public function report_templates_with_status_periodical($sql,$status){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -349,50 +349,50 @@ ORDER BY zm.sl, zs.sl");
                     $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle">'.($sl=$sl+1).'</td>';
                     for($i=1;$i<$cols;$i++) {
                         $b=$row[$i];
-						if($b=='YES'):
-							$sp='<span class="label label-success" style="font-size:10px">Settled</span>';
-						elseif ($b=='PENDING'):
-							$sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
-						elseif ($b=='PREMATURE'):
-							$sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
-						elseif($b=='PROCESSING'):
-							$sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
-							elseif($b=='ROCOMMENDED'):
-							$sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
-						elseif($b=='COMPLETED' || $b=='VERIFIED'):
-							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
-							elseif($b=='APPROVED'):
-							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        if($b=='YES'):
+                            $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
+                        elseif ($b=='PREMATURE'):
+                            $sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
+                        elseif($b=='PROCESSING'):
+                            $sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
+                        elseif($b=='ROCOMMENDED'):
+                            $sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
+                        elseif($b=='COMPLETED' || $b=='VERIFIED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
                         elseif($b=='SETTLED'):
                             $sp='<span class="label label-success" style="font-size:10px">SETTLED</span>';
-							elseif($b=='RETURNED'):
-							$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
-						elseif($b=='CANCELED'):
-						$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
-						elseif($b=='REJECTED'):
-							$sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                        elseif($b=='RETURNED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='CANCELED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='REJECTED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
                         elseif($b=='BOUNCED'):
                             $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
-						elseif($b=='CHECKED'):
-							$sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
-						elseif($b=='UNCHECKED'):
-							$sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
-							elseif($b=='MANUAL'):
-							$sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
-						elseif($b=='NO'):
-							$sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
-						else :
-                        	$sp=$b;
-						endif;
-						$str .='<td style="vertical-align:middle">'.$sp.'</td>';
-						}
+                        elseif($b=='CHECKED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
+                        elseif($b=='UNCHECKED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
+                        elseif($b=='MANUAL'):
+                            $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                        elseif($b=='NO'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp.'</td>';
+                    }
                     $str .='</tr></thead>';
                 }}
             mysqli_free_result($result);
         }
         $str .='</table></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
     public function report_templates_with_status($sql,$status){
         global $conn;
@@ -448,10 +448,10 @@ ORDER BY zm.sl, zs.sl");
                             $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
                         elseif($b=='CHECKED'):
                             $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
-                            elseif($b=='RECORDED'):
-                                $sp='<span class="label label-primary" style="font-size:10px">RECORDED</span>';
-                            elseif($b=='UNRECORDED'):
-                                $sp='<span class="label label-default" style="font-size:10px">UNRECORDED</span>';
+                        elseif($b=='RECORDED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">RECORDED</span>';
+                        elseif($b=='UNRECORDED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNRECORDED</span>';
                         elseif($b=='UNCHECKED'):
                             $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
                         elseif($b=='MANUAL'):
@@ -558,7 +558,7 @@ ORDER BY zm.sl, zs.sl");
         mysqli_close($conn);
     }
 
-	public function report_templates_with_add_active_inactive($sql,$title,$c_class,$action,$create){
+    public function report_templates_with_add_active_inactive($sql,$title,$c_class,$action,$create){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -567,12 +567,12 @@ ORDER BY zm.sl, zs.sl");
                         <div class="x_panel">
 						<div class="x_title">
                                 <h2>'.$title.'</h2>';
-								if($create>0):
-								$str.='<ul class="nav navbar-right panel_toolbox">
+        if($create>0):
+            $str.='<ul class="nav navbar-right panel_toolbox">
                                         <a class="btn btn-primary btn-block" data-toggle="modal" data-target="#addModal">
                                             <i class="fa fa-plus-circle"></i> <span class="language" style="color:white; font-size:12px">Add New</span>
                                         </a>'; endif;
-                                $str.='</ul>
+        $str.='</ul>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
@@ -585,32 +585,32 @@ ORDER BY zm.sl, zs.sl");
             foreach (array_slice($fieldinfo, 1) as $key=>$val) {
                 $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
             }
-			$str .='</tr></thead>';
+            $str .='</tr></thead>';
             $c=0;
-			$sta='checked';
-			$sta2='';
+            $sta='checked';
+            $sta2='';
             if (mysqli_num_rows($result)>0):
                 while($row = mysqli_fetch_array($result)):
                     $str .='<tr style="cursor:pointer"><td style="vertical-align:middle" onclick="DoNavPOPUP('.$row[0].')">'.($sl=$sl+1).'</td>';
                     for($i=1;$i<$cols;$i++):
                         $b=$row[$i];
-					if($b=='1' || $b=='0'):
-					if($action==1 || $action==2):
-                    $str .='<td style="vertical-align:middle; text-align:left">
+                        if($b=='1' || $b=='0'):
+                            if($action==1 || $action==2):
+                                $str .='<td style="vertical-align:middle; text-align:left">
 					<input type="checkbox" style="margin-top:-2px;" data="'.$row[0].'" class="status_checks btn '.(($row['status'])? ' btn-success': ' btn-danger').'" '.(($row['status'])? 'checked':'').' />'.(($row['status'])? ' Active': ' Deactivate').'</td>';
-					endif; else:
-                    $str .='<td style="vertical-align:middle">'.$b."</td>";
-					endif; endfor;
-					$str .='</tr></thead>';
+                            endif; else:
+                            $str .='<td style="vertical-align:middle">'.$b."</td>";
+                        endif; endfor;
+                    $str .='</tr></thead>';
                 endwhile;endif;
             mysqli_free_result($result);
         }
         $str .='</table></form></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
-	public function report_templates_with_add_new($sql,$title,$c_class,$action,$create,$page){
+    public function report_templates_with_add_new($sql,$title,$c_class,$action,$create,$page){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -619,12 +619,12 @@ ORDER BY zm.sl, zs.sl");
                         <div class="x_panel">
 						<div class="x_title">
                                 <h2>'.$title.'</h2>';
-								if($create>0):
-								$str.='<ul class="nav navbar-right panel_toolbox">
+        if($create>0):
+            $str.='<ul class="nav navbar-right panel_toolbox">
                                         <a class="btn btn-primary btn-block" data-toggle="modal" data-target="#addModal">
                                             <i class="fa fa-plus-circle"></i> <span class="language" style="color:white; font-size:12px">Add New</span>
                                         </a>'; endif;
-                                $str.='</ul>
+        $str.='</ul>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
@@ -637,10 +637,10 @@ ORDER BY zm.sl, zs.sl");
             foreach (array_slice($fieldinfo, 1) as $key=>$val) :
                 $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
             endforeach;
-			if($action==1 || $action==2):
-            $str .='<th style="width:10%;vertical-align:middle; text-align:center">Action</th>';
-			endif;
-			$str .='</tr></thead><tbody>';
+            if($action==1 || $action==2):
+                $str .='<th style="width:10%;vertical-align:middle; text-align:center">Action</th>';
+            endif;
+            $str .='</tr></thead><tbody>';
             $c=0;
             if (mysqli_num_rows($result)>0):
                 $sl = 0;
@@ -648,26 +648,26 @@ ORDER BY zm.sl, zs.sl");
                     $str .='<tr><td style="vertical-align:middle">'.($sl=$sl+1).'</td>';
                     for($i=1;$i<$cols;$i++) :
                         $b=$row[$i];
-						if($b=='YES'):
-							$sp='<span class="label label-success" style="font-size:10px">Settled</span>';
-						elseif ($b=='PENDING'):
-							$sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
-						elseif ($b=='PREMATURE'):
-							$sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
-						elseif($b=='PROCESSING'):
-							$sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
-							elseif($b=='ROCOMMENDED'):
-							$sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
-						elseif($b=='COMPLETED' || $b=='VERIFIED'):
-							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
-							elseif($b=='APPROVED'):
-							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        if($b=='YES'):
+                            $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
+                        elseif ($b=='PREMATURE'):
+                            $sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
+                        elseif($b=='PROCESSING'):
+                            $sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
+                        elseif($b=='ROCOMMENDED'):
+                            $sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
+                        elseif($b=='COMPLETED' || $b=='VERIFIED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
                         elseif($b=='SETTLED' || $b=='Settled'):
                             $sp='<span class="label label-success" style="font-size:10px">SETTLED</span>';
-							elseif($b=='RETURNED'):
-							$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
-						elseif($b=='CANCELED'):
-						$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='RETURNED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='CANCELED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
                         elseif($b=='BOUNCED'):
                         elseif($b=='Inactive' || $b=='INACTIVE' || $b=='Not In Service'):
                             $sp='<span class="label label-danger" style="font-size:10px">Inactive</span>';
@@ -677,41 +677,41 @@ ORDER BY zm.sl, zs.sl");
                             $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
                         elseif($b=='SUSPENDED'):
                             $sp='<span class="label label-danger" style="font-size:10px">SUSPENDED</span>';
-                            elseif($b=='HOLDED'):
-                                $sp='<span class="label label-info" style="font-size:10px">HOLDED</span>';    
-						elseif($b=='Disbursed'):
-							$sp='<span class="label label-primary" style="font-size:10px">Disbursed</span>';
+                        elseif($b=='HOLDED'):
+                            $sp='<span class="label label-info" style="font-size:10px">HOLDED</span>';
+                        elseif($b=='Disbursed'):
+                            $sp='<span class="label label-primary" style="font-size:10px">Disbursed</span>';
                         elseif($b=='CHECKED' || $b=='Disbursed'):
                             $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
-						elseif($b=='UNCHECKED'):
-							$sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
-							elseif($b=='MANUAL'):
-							$sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
-						elseif($b=='NO'):
-							$sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
-						else :
-                        	$sp=$b;
-						endif;    
-                    $str .='<td style="vertical-align:middle">'.$sp."</td>";endfor;
-					if($action==1 || $action==2):
-                    $str .='<td style="vertical-align:middle; text-align:center">
+                        elseif($b=='UNCHECKED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
+                        elseif($b=='MANUAL'):
+                            $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                        elseif($b=='NO'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp."</td>";endfor;
+                    if($action==1 || $action==2):
+                        $str .='<td style="vertical-align:middle; text-align:center">
 					<button type="button" style="background-color:transparent; border:none; margin:0px; font-size:15px; padding:0px"  title="View Details" data-toggle="tooltip" class="viewBtn"><i class="fa fa-eye"></i></button>
 					<button type="button" style="background-color:transparent; border:none; margin:0px; font-size:13px; padding:0px"  title="Update Record" data-toggle="tooltip" class="updateBtn" onclick="DoNavPOPUP('.$row[0].')"> <i class="fa fa-pencil"></i></button>
 					<button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:13px; padding:0px" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete Record" data-toggle="tooltip"><span class="glyphicon glyphicon-trash"></span></button>
 					</td>';
-					endif;
-					$str .='</tr>';
+                    endif;
+                    $str .='</tr>';
                 endwhile;$str .='</tbody>';
-				endif;
+            endif;
             mysqli_free_result($result);
         endif;
         $str .='</table></form></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
 
-	public function report_templates_JSON($sql,$title,$c_class){
+    public function report_templates_JSON($sql,$title,$c_class){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -757,11 +757,11 @@ ORDER BY zm.sl, zs.sl");
         }
         $str .='</table></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
 
-	public function report_templates_with_title_and_class($sql,$title,$c_class){
+    public function report_templates_with_title_and_class($sql,$title,$c_class){
         global $conn;
         $str = '';
         if($sql==NULL) return NULL;
@@ -801,7 +801,7 @@ ORDER BY zm.sl, zs.sl");
         }
         $str .='</table></div></div></div>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
 
@@ -843,7 +843,7 @@ ORDER BY zm.sl, zs.sl");
         }
         $str .='</table>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
     public function module_view($sql,$url,$link){
         global $conn;
@@ -858,7 +858,7 @@ ORDER BY zm.sl, zs.sl");
                 while($row = mysqli_fetch_array($result)):
                     if($row[0]==$_SESSION['module_id']):
                         $background_color='#FFDAB9';
-						else :
+                    else :
                         $background_color='transparent';
                     endif;
                     for($i=5;$i<$cols;$i++):
@@ -866,12 +866,12 @@ ORDER BY zm.sl, zs.sl");
                         $str .='<td align="center" style="width: auto; padding: 2px;background-color:'.$background_color.';vertical-align: middle;  text-align: center; font-weight: bold; border-radius: 5px;">'.
                             "<a href='$url$link$row[0]'>".$b."</a></td>";endfor;
                 endwhile;endif;
-				$str .='</tr>';
+            $str .='</tr>';
             mysqli_free_result($result);
         endif;
         $str .='</table>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
 
@@ -890,7 +890,7 @@ ORDER BY zm.sl, zs.sl");
                 while($row = mysqli_fetch_array($result)):
                     if($row[0]==@$_SESSION['module_id']):
                         $check_or_notification="<i class='fa fa-check'></i>";
-						else :
+                    else :
                         $check_or_notification='';
                     endif;
                     for($i=5;$i<$cols;$i++):
@@ -898,14 +898,14 @@ ORDER BY zm.sl, zs.sl");
                         $c=$row[2];
                         $d=$row[4];
                         $str .="<a class='btn btn-app' href='$url$link$row[0]' style='height:85px; margin-left: 40px;width:115px'><span class='badge bg-red'>".$check_or_notification."</span><i style='color:".$row[3]."' class='".$c."'></i> ".$d."</a>";
-                        endfor;
+                    endfor;
                 endwhile;endif;
-				$str .='</tr>';
+            $str .='</tr>';
             mysqli_free_result($result);
         endif;
         $str .='</table>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
     public function dashboard_quick_access_menu($sql,$url,$link){
@@ -924,14 +924,14 @@ ORDER BY zm.sl, zs.sl");
                         $b=$row[$i];
                         $check_or_notification = '';
                         $str .="<a class='btn btn-app' href='$row[1]' style='height:'><span class='badge bg-red'>".$check_or_notification."</span><i class='".$row[2]."'></i> ".$b."</a>";
-                        endfor;
+                    endfor;
                 endwhile;endif;
-				$str .='</tr>';
+            $str .='</tr>';
             mysqli_free_result($result);
         endif;
         $str .='</table>';
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
     public function get_submenu_under_mainmenu($sql,$url,$link){
@@ -942,7 +942,7 @@ ORDER BY zm.sl, zs.sl");
             $cols = mysqli_num_fields($result);
             if (mysqli_num_rows($result)>0):
                 while($row = mysqli_fetch_array($result)):
-                        $str .='
+                    $str .='
                         <a style="" class="btn btn-sm btn-default"  href="'.$row[3].'">
                         <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">'.$row[2].'</span>
                         </a>';
@@ -950,7 +950,7 @@ ORDER BY zm.sl, zs.sl");
             mysqli_free_result($result);
         endif;
         return $str;
-		mysqli_close($conn);
+        mysqli_close($conn);
     }
 
 
@@ -1008,7 +1008,7 @@ ORDER BY zm.zonecode, zs.sl");
                         $str .='<td align="center" style="width: auto; padding: 5px; vertical-align: middle;  text-align: center; font-weight: bold; border-radius: 5px;">'.
                             "<a href='<?php echo $url.$urls.$data->id; ?>'>"
                             .$b."</a></td>";}
-                    }
+                }
             }$str .='</tr>';
             mysqli_free_result($result);
         }
@@ -1040,16 +1040,16 @@ function paging($per_pg)
 }
 
 class htmldiv extends crud {
-public function body_content(){
-    $str = '';
-	$str.='<!DOCTYPE html>';
-	return false;
-}
+    public function body_content(){
+        $str = '';
+        $str.='<!DOCTYPE html>';
+        return false;
+    }
 
-public function header_content($title){
-    $str = '';
-	 if($title==NULL) return NULL;
-	$str.='<!DOCTYPE html>
+    public function header_content($title){
+        $str = '';
+        if($title==NULL) return NULL;
+        $str.='<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -1078,28 +1078,28 @@ public function header_content($title){
     <!-- jQuery custom content scroller -->
     <link href="../assets/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css" rel="stylesheet"/>
 </head>';
-	return $str;
-}
-public function footer_content(){
-    $str = '';
-	$str.='</div>
+        return $str;
+    }
+    public function footer_content(){
+        $str = '';
+        $str.='</div>
 </div>
 </div>';
 
-if ($_GET) {
-    $str .= '
+        if ($_GET) {
+            $str .= '
     <footer>
         <div class="pull-right"></div>
         <div class="clearfix"></div>
     </footer>';
-} else {
-    $str .= '
+        } else {
+            $str .= '
 <footer>
     <div class="pull-right">Powered By: <strong>Raresoft</strong> </div>
     <div class="clearfix">©' . date('Y') . '<strong> Raresoft</strong> All Rights Reserved</div>
 </footer>';
-}
-$str .= '</div>
+        }
+        $str .= '</div>
 </div>
 <!-- jQuery -->
 <script src="../assets/vendors/jquery/dist/jquery.min.js"></script>
@@ -1225,11 +1225,11 @@ $str .= '</div>
     });
 </script>
 <!-- /Select2 -->';
-if ($_GET) {
+        if ($_GET) {
 
-    $str .= '';
-} else {
-    $str .= '
+            $str .= '';
+        } else {
+            $str .= '
 <script>
     $(function() {
         $(\'body\').removeClass(\'nav-md\').addClass(\'nav-sm\');
@@ -1241,35 +1241,35 @@ if ($_GET) {
             menuToggle();
             });
 </script>';
-}
+        }
 
 
 
-$str.='
+        $str.='
 </body>
 </html>';
-	return $str;
-	mysqli_close($conn);
-	}
+        return $str;
+        mysqli_close($conn);
+    }
 
-public function MIS_add_new_plant_cmu_warehouse($active,$res,$title,$unique,$c_class){
-	global $crud;
-    $str = '';
-    if($active==0) return NULL;
-	if($unique>0){
-		$class_popup='';
-		$data_view='';
-		$class_popup_footer='';
-	} else {
+    public function MIS_add_new_plant_cmu_warehouse($active,$res,$title,$unique,$c_class){
+        global $crud;
+        $str = '';
+        if($active==0) return NULL;
+        if($unique>0){
+            $class_popup='';
+            $data_view='';
+            $class_popup_footer='';
+        } else {
 
-	$class_popup='<div class="modal fade" id="darkModalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            $class_popup='<div class="modal fade" id="darkModalForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog form-dark" role="document">
     <div class="modal-content card card-image">';
-	$class_popupfooter='</div></div></div></div>';
-	$data_view=$crud->report_templates_with_add_new($res,$title,12);
-	}
+            $class_popupfooter='</div></div></div></div>';
+            $data_view=$crud->report_templates_with_add_new($res,$title,12);
+        }
 
-	$str.='
+        $str.='
 	'.$data_view.$class_popup.'
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="x_panel">
@@ -1368,11 +1368,11 @@ public function MIS_add_new_plant_cmu_warehouse($active,$res,$title,$unique,$c_c
 
 
 
- function recentvoucherview($sql,$link,$v_type,$css){
-        global $conn;
-        $str = '';
-        if($sql==NULL) return NULL;
-        $str.='
+function recentvoucherview($sql,$link,$v_type,$css){
+    global $conn;
+    $str = '';
+    if($sql==NULL) return NULL;
+    $str.='
 		<div class="col-md-4 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -1381,43 +1381,43 @@ public function MIS_add_new_plant_cmu_warehouse($active,$res,$title,$unique,$c_c
             </div>
             <div class="x_content" style="overflow:scroll; height:'.$css.';">
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 10px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+    $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
 
-        if ($result = mysqli_query($conn , $sql)) {
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-                $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-            }
-            $str .='</tr></thead><tbody>';
-            $c=0;
-            if (mysqli_num_rows($result)>0){
-                $sl = 0;
-                while($row = mysqli_fetch_array($result)) {
-                    $onclick='OpenPopupCenter("'.$link.'?v_type='.$v_type.'&vdate='.$row[1].'&v_no='.$row[2].'&view=Show&in='.$v_type.'", "TEST!?", 1000, 600)';
-                    $str .="<tr><td style='text-align: left; cursor: pointer' onclick='".$onclick."'>".($sl=$sl+1)."</td>";
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
-                        if(is_numeric($b)){
-                            $align='text-align:right';
-                        } else {$align='text-align:left';}
-                        $str .='<td style="'.$align.'"><a href="voucher_print1.php?v_type='.$v_type.'&vo_no='.$row[2].'"  target="_blank">'.$b."</a></td>";}
-                    $str .='</tr>';
-                }}else {
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+        }
+        $str .='</tr></thead><tbody>';
+        $c=0;
+        if (mysqli_num_rows($result)>0){
+            $sl = 0;
+            while($row = mysqli_fetch_array($result)) {
+                $onclick='OpenPopupCenter("'.$link.'?v_type='.$v_type.'&vdate='.$row[1].'&v_no='.$row[2].'&view=Show&in='.$v_type.'", "TEST!?", 1000, 600)';
+                $str .="<tr><td style='text-align: left; cursor: pointer' onclick='".$onclick."'>".($sl=$sl+1)."</td>";
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    if(is_numeric($b)){
+                        $align='text-align:right';
+                    } else {$align='text-align:left';}
+                    $str .='<td style="'.$align.'"><a href="voucher_print1.php?v_type='.$v_type.'&vo_no='.$row[2].'"  target="_blank">'.$b."</a></td>";}
+                $str .='</tr>';
+            }}else {
             $str .='<tr><td colspan="4" style="text-align: center">No data available in table</td></tr>';
         }
-            mysqli_free_result($result);
-        }
-        $str .='</tbody></table></div></div></div>';
-        return $str;
-		mysqli_close($conn);
+        mysqli_free_result($result);
     }
+    $str .='</tbody></table></div></div></div>';
+    return $str;
+    mysqli_close($conn);
+}
 
 function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
-        global $conn;
+    global $conn;
     $str = '';
-        if($sql==NULL) return NULL;
-        $str.='
+    if($sql==NULL) return NULL;
+    $str.='
 		<div class="col-md-'.$divwidth.' col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -1426,209 +1426,218 @@ function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
             </div>
             <div class="x_content" style="overflow:scroll; height:'.$css.';">
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 10px">';
-        $str .='<thead><tr style="background-color: bisque"><th>#</th>';
+    $str .='<thead><tr style="background-color: bisque"><th>#</th>';
 
-        if ($result = mysqli_query($conn , $sql)) {
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-				$ism=$ism+1;
-                $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-            }
-            $str .='</tr></thead><tbody>';
-            $c=0;
-            if (mysqli_num_rows($result)>0){
-                while($row = mysqli_fetch_array($result)) {
-                    $onclick='';
-                    $str .="<tr onclick='DoNavPOPUP(".$row[0].")' style='cursor: pointer;'><td style='text-align: left; vertical-align:middle'>".($sl=$sl+1)."</td>";
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
-						if($b=='YES'):
-							$sp='<span class="label label-success" style="font-size:10px">Settled</span>';
-						elseif ($b=='PENDING'):
-							$sp='<span class="label label-warning" style="font-size:10px">UNAPPEOVED</span>';
-						elseif($b=='PROCESSING'):
-							$sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
-							elseif($b=='RECOMMENDED'):
-							$sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
-						elseif($b=='COMPLETED' || $b=='VERIFIED'):
-							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
-							elseif($b=='APPROVED'):
-							$sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
-							elseif($b=='RETURNED'):
-							$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
-						elseif($b=='CANCELED'):
-						$sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
-						elseif($b=='REJECTED'):
-							$sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
-						elseif($b=='CHECKED'):
-							$sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
-						elseif($b=='UNCHECKED'):
-							$sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
-							elseif($b=='MANUAL'):
-							$sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
-						elseif($b=='NO'):
-							$sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
-						else :
-                        	$sp=$b;
-						endif;
-						$str .='<td style="vertical-align:middle">'.$sp.'</td>';}
-                    $str .='</tr>';
-                }}else {
-					$add=+1;
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $ism=$ism+1;
+            $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+        }
+        $str .='</tr></thead><tbody>';
+        $c=0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $onclick='';
+                $str .="<tr onclick='DoNavPOPUP(".$row[0].")' style='cursor: pointer;'><td style='text-align: left; vertical-align:middle'>".($sl=$sl+1)."</td>";
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    if($b=='YES'):
+                        $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
+                    elseif ($b=='PENDING'):
+                        $sp='<span class="label label-warning" style="font-size:10px">UNAPPEOVED</span>';
+                    elseif($b=='PROCESSING'):
+                        $sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
+                    elseif($b=='RECOMMENDED'):
+                        $sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
+                    elseif($b=='COMPLETED' || $b=='VERIFIED'):
+                        $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                    elseif($b=='APPROVED'):
+                        $sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
+                    elseif($b=='RETURNED'):
+                        $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                    elseif($b=='CANCELED'):
+                        $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                    elseif($b=='REJECTED'):
+                        $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                    elseif($b=='CHECKED'):
+                        $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
+                    elseif($b=='UNCHECKED'):
+                        $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
+                    elseif($b=='MANUAL'):
+                        $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                    elseif($b=='NO'):
+                        $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
+                    else :
+                        $sp=$b;
+                    endif;
+                    $str .='<td style="vertical-align:middle">'.$sp.'</td>';}
+                $str .='</tr>';
+            }}else {
+            $add=+1;
             $str .='<tr><td colspan="'.$ism.$add.'" style="text-align: center">No data available in table</td></tr>';
         }
-            mysqli_free_result($result);
-        }
-        $str .='</tbody></table>';
-		if($sl>0){
-		$str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';}
-		$str .='</div></div></div>';
-        return $str;
-		mysqli_close($conn);
+        mysqli_free_result($result);
     }
+    $str .='</tbody></table>';
+    if($sl>0){
+        $str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';}
+    $str .='</div></div></div>';
+    return $str;
+    mysqli_close($conn);
+}
 
-    function recentdataview_model($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth,$page){
-        global $conn;
-        $str = '';
-        if($sql==NULL) return NULL;
-        $str.='
+function recentdataview_model($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth,$page){
+    global $conn;
+    $str = '';
+    if($sql==NULL) return NULL;
+    $str.='
 		<table align="center" class="table table-striped table-bordered" style="width:'.$divwidth.'%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+    $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
 
-        if ($result = mysqli_query($conn , $sql)) {
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            $ism = 0;
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-				$ism=$ism+1;
-                $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-            }
-            $str .='<th style="width:8%;vertical-align:middle; text-align:center">Action</th>';
-            $str .='</tr></thead><tbody>';
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        $ism = 0;
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $ism=$ism+1;
+            $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+        }
+        $str .='<th style="width:8%;vertical-align:middle; text-align:center">Action</th>';
+        $str .='</tr></thead><tbody>';
 
-            $c=0;
-            $sl = 0;
-            if (mysqli_num_rows($result)>0){
-                while($row = mysqli_fetch_array($result)) {
-                    $onclick='';
-                    $str .="<tr onclick='DoNavPOPUP(".$row[0].")' style='cursor: pointer;'><td style='text-align: left; vertical-align:middle'>".($sl=$sl+1)."</td>";
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
-						$str .='<td style="vertical-align:middle">'.$b.'</td>';
-                    }
-                    $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+        $c=0;
+        $sl = 0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $onclick='';
+                $str .="<tr onclick='DoNavPOPUP(".$row[0].")' style='cursor: pointer;'><td style='text-align: left; vertical-align:middle'>".($sl=$sl+1)."</td>";
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    $str .='<td style="vertical-align:middle">'.$b.'</td>';
+                }
+                $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     <a href="'.$page.'?id='.$row[0].'" style="margin:0px; font-size:17px;padding:0px; float:right; color:#337ab7" class="fa fa-edit" onclick="return window.confirm(\'Are you sure you want to edit this?\');" title="Edit"></a>'."</td>";
-                    $str .='</tr>';
-                }}else {
-					$add=+1;
+                $str .='</tr>';
+            }}else {
+            $add=+1;
             $str .='<tr><td colspan="'.$ism.$add.'" style="text-align: center">No data available in table</td></tr>';
         }
-            mysqli_free_result($result);
-        }
-        $str .='</tbody></table>';
-        return $str;
-		mysqli_close($conn);
+        mysqli_free_result($result);
     }
-   
+    $str .='</tbody></table>';
+    return $str;
+    mysqli_close($conn);
+}
 
-function reportview($sql,$title,$width,$tfoot,$colspan){
-        global $conn;
-        $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-        $now = $dateTime->format("d/m/Y  h:i:s A");
-        if($sql==NULL) return NULL;
-        if ($result = mysqli_query($conn , $sql)) {
-            $str.='
+
+function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
+    global $conn;
+    $str = '';
+    $fdate = $_POST['f_date'];
+    $tdate = $_POST['t_date'];
+    $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
+    $now = $dateTime->format("d/m/Y  h:i:s A");
+    if($sql==NULL) return NULL;
+    if ($result = mysqli_query($conn , $sql)) {
+        $str.='
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">'.$_SESSION['company_name'].'</p>
         <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">'.$title.'</p> ';
-            if($_POST['f_date']>0){
-                $str.='
-		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$_POST['f_date'].' and '.$_POST['t_date'].' </p>';
-            }
-            $str.='<table align="center" id="customers"  style="width:'.$width.'%; border: solid 1px #999; border-collapse:collapse;font-size:11px">';
-            $str .='<thead><p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
-            $str.='<th>#</th>';
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-                $str .='<th style="border: solid 1px #999; padding:2px;vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-                $ism=$ism+2;
-            }
-            $str .='</tr></thead>';
-            $c=0;
-            if (mysqli_num_rows($result)>0){
-                while($row = mysqli_fetch_array($result)) {
-                    $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
+        if($_POST['f_date']>0){
+            $str.='
+		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
+        }
+        $str.='<table align="center" id="customers"  style="width:'.$width.'%; border: solid 1px #999; border-collapse:collapse;font-size:11px">';
+        $str .='<thead><p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
+        $str.='<th>#</th>';
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        $ism =0;
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $str .='<th style="border: solid 1px #999; padding:2px;vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+            $ism=$ism+2;
+        }
+        $str .='</tr></thead>';
+        $c=0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
 
-						   if($row[$i]=='0'){ $str .='<td style="text-align:center;border: solid 1px #999; padding:2px"></td>';}
-               elseif(is_float($b)) {$str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
+                    if($row[$i]=='0'){ $str .='<td style="text-align:center;border: solid 1px #999; padding:2px"></td>';}
+                    elseif(is_float($b)) {$str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
 
-               else {$str .='<td style="border: solid 1px #999; padding:2px">'.$b."</td>";}}
-                    $str .='</tr></thead>';
-                }} else {            $str .='<tr style="border: solid 1px #999; font-size:11px;"><td colspan="'.$ism.'" style="border: solid 1px #999; padding:2px; text-align: center; font-size: 11px">No data available in table</td></tr>';
-            }
-            mysqli_free_result($result);
-            if($tfoot>0){
-              $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:left; border: solid 1px #999; font-size:11px;">Total</th></tr></tfoot>';
-            }
-            $str .='</table>';
-            $str .='<p style="width:'.$width.'%; text-align:left; margin-left: 15px;font-size:11px; font-weight:normal">Report Generated By: '.$_SESSION[username].', '.$_SESSION[designation].'. </p>';
+                    else {$str .='<td style="border: solid 1px #999; padding:2px">'.$b."</td>";}}
+                $str .='</tr></thead>';
+            }} else {            $str .='<tr style="border: solid 1px #999; font-size:11px;"><td colspan="'.$ism.'" style="border: solid 1px #999; padding:2px; text-align: center; font-size: 11px">No data available in table</td></tr>';
+        }
+        mysqli_free_result($result);
+        if($tfoot>0 && $tfoot2<0){
+            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th></tr></tfoot>';
+        }
 
-        } else { $str .='<h4 style="text-align: center">Oops!! Invalid Query</h4><br>  '.$sql.'</h4>'; }
-        return $str;
-		mysqli_close($conn);
-    }
+        if($tfoot>0 && $tfoot2>0){
+            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot2,2).'</th></tr></tfoot>';
+        }
+
+        $str .='</table>';
+        $str .='<p style="width:'.$width.'%; text-align:left; margin-left: 15px;font-size:11px; font-weight:normal">Report Generated By: '.$_SESSION['username'].', '.$_SESSION['designation'].'. </p>';
+
+    } else { $str .='<h4 style="text-align: center">Oops!! Invalid Query</h4><br>  '.$sql.'</h4>'; }
+    return $str;
+    mysqli_close($conn);
+}
 
 
 function bl_pl_support_data_view($sql,$title,$width){
-        global $conn;
-        if($sql==NULL) return NULL;
-        $str.='
+    global $conn;
+    if($sql==NULL) return NULL;
+    $str.='
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
 		<table align="center" id="customers"  style="width:'.$width.'%; border:solid 1px #999; border-collapse:collapse;font-size:11px">';
-        $str .='<thead><tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: bisque"><th>#</th>';
-        if ($result = mysqli_query($conn , $sql)) {
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-        $str .='<th style="border: solid 1px #999; padding:2px;vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-            }$str .='</tr></thead>';
-            $c=0;
-            if (mysqli_num_rows($result)>0){
-                while($row = mysqli_fetch_array($result)) {
-                    $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
-						if(is_numeric($row[$i])){
-							$str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';
-							} else {
-                            $str .='<td style="border: solid 1px #999; padding:2px;text-align:left">'.$b."</td>";}}
-                    $str .='</tr></thead>';
-					$ta=$ta+$row[2];
-					$tb=$tb+$row[3];
-					$tc=$tc+$row[4];
-                }}
-				 $str .='<tr><th colspan="2" style="border: solid 1px #999; padding:2px; text-align:right">Total</th>
+    $str .='<thead><tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: bisque"><th>#</th>';
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $str .='<th style="border: solid 1px #999; padding:2px;vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+        }$str .='</tr></thead>';
+        $c=0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    if(is_numeric($row[$i])){
+                        $str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';
+                    } else {
+                        $str .='<td style="border: solid 1px #999; padding:2px;text-align:left">'.$b."</td>";}}
+                $str .='</tr></thead>';
+                $ta=$ta+$row[2];
+                $tb=$tb+$row[3];
+                $tc=$tc+$row[4];
+            }}
+        $str .='<tr><th colspan="2" style="border: solid 1px #999; padding:2px; text-align:right">Total</th>
 				 <th style="text-align:right; border: solid 1px #999; padding:2px;">'.number_format($ta,2).'</th><th style="text-align:right; border: solid 1px #999; padding:2px;">'.number_format($tb,2).'</th><th style="text-align:right; border: solid 1px #999; padding:2px;">'.number_format($tc,2).'</th>
 				 <tr>';
-            mysqli_free_result($result);
-        }
-        $str .='</table>';
-        return $str;
-		mysqli_close($conn);
+        mysqli_free_result($result);
     }
+    $str .='</table>';
+    return $str;
+    mysqli_close($conn);
+}
 
 
 function voucher_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$page){
-        global $conn;
-        $str = '';
-        if($sql==NULL) return NULL;
-		$str.='
+    global $conn;
+    $str = '';
+    if($sql==NULL) return NULL;
+    $str.='
 		<form action=""  name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">';
-		if($COUNT_details_data>0):
+    if($COUNT_details_data>0):
         $str.='
 		<input type="hidden" name="'.$unique.'" id="'.$unique.'"  value="'.$unique_GET.'">
 		<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
@@ -1649,33 +1658,33 @@ function voucher_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$page)
                     $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($sl=$sl+1).'</td>';
                     for($i=1;$i<$cols;$i++):
                         $b=$row[$i];
-						if(is_numeric($row[$i])):
-                        $str .='<td style="vertical-align:middle; text-align:right">'.number_format($b,2)."</td>";
-						else :
-						$str .='<td style="vertical-align:middle;">'.$b."</td>";
-						endif;endfor;
-                        $tdramt=$tdramt+$row[4];
-                        $tcramt=$tcramt+$row[5];
-						$str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                        if(is_numeric($row[$i])):
+                            $str .='<td style="vertical-align:middle; text-align:right">'.number_format($b,2)."</td>";
+                        else :
+                            $str .='<td style="vertical-align:middle;">'.$b."</td>";
+                        endif;endfor;
+                    $tdramt=$tdramt+$row[4];
+                    $tcramt=$tcramt+$row[5];
+                    $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                         <a href="'.$page.'?id='.$row[0].'" style="margin:0px; font-size:17px;padding:0px; float:right; color:#337ab7" class="fa fa-edit" onclick="return window.confirm(\'Are you sure you want to edit this?\');" title="Edit"></a>'."</td>";
                     $str .='</tr>';
                 endwhile;endif;
             mysqli_free_result($result);
         endif;
         $str .='</tbody></table>';
-		endif;
+    endif;
 
-		$str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete the Voucher </button>';
-		if($COUNT_details_data>0):
-		if(number_format($tdramt,2) === number_format($tcramt,2)) {
+    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete the Voucher </button>';
+    if($COUNT_details_data>0):
+        if(number_format($tdramt,2) === number_format($tcramt,2)) {
             $str .= '<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirmsave" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish Voucher </button>';
         } else {
             $str .= '<h6  style="color: red; font-weight: bold; float: right; margin-right: 1%">Invalid Voucher. Debit ('.$tdramt.') and Credit ('.$tcramt.') amount are not equal !!</h6>';
             //$str .= '<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirmsave" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish Voucher </button>';
         };endif;$str .='</form>';
-        return $str;
-		mysqli_close($conn);
-    }
+    return $str;
+    mysqli_close($conn);
+}
 
 
 function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$page,$total_amount,$colspan){
@@ -1717,14 +1726,14 @@ function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pa
         $str .='</tbody>';
         if($total_amount>0):
             $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right">Total Amount = </th><th style="text-align:right">'.number_format($total_amount,2).'</th><td></td></tr>';
-            endif;
+        endif;
         $str .='</tfoot></table>';
-		endif;
+    endif;
     $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
 
     if($COUNT_details_data>0):
-            $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
-        endif;$str .='</form>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+    endif;$str .='</form>';
     return $str;
     mysqli_close($conn);
 }
@@ -1761,12 +1770,12 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
                     endfor;
                     $amount=$amount+$row[$row_get];
                     if($row[1]==0):
-                    $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent; border:none; font-size:17px;" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                        $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent; border:none; font-size:17px;" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     '."</td>";
-                else:
-                    $str .='<td style="vertical-align:middle; color: red; font-weight: bold; text-align: center">[Free]</td>';
+                    else:
+                        $str .='<td style="vertical-align:middle; color: red; font-weight: bold; text-align: center">[Free]</td>';
 
-                endif;
+                    endif;
                     $str .='</tr>';
                 endwhile;endif;
             mysqli_free_result($result);
@@ -1776,16 +1785,16 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
         if($commission>0):
             $comissionGET=($amount/100)*$commission;
             $str.='<input type="hidden" name="commission_amount" id="commission_amount"  value="'.$comissionGET.'">';
-        $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Less: Commission = </th><th style="text-align:right">'.number_format($comissionGET,2).'</th><td></td></tr>';
-        $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Total Receivable Value = </th><th style="text-align:right">'.number_format($amount-$comissionGET,2).'</th><td></td></tr></table>';
-    
+            $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Less: Commission = </th><th style="text-align:right">'.number_format($comissionGET,2).'</th><td></td></tr>';
+            $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Total Receivable Value = </th><th style="text-align:right">'.number_format($amount-$comissionGET,2).'</th><td></td></tr></table>';
+
+        endif;
+        $str .='</tfoot></table>';
     endif;
-    $str .='</tfoot></table>';
-		endif;
     $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
     if($COUNT_details_data>0):
-            $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
-        endif;$str .='</form>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+    endif;$str .='</form>';
     return $str;
     mysqli_close($conn);
 }
@@ -1826,12 +1835,12 @@ function added_data_delete_edit__special_invoice($sql,$unique,$unique_GET,$COUNT
                     endfor;
                     $amount=$amount+$row[$row_get];
                     if($row[8]>0):
-                    $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                        $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     <a href="'.$page.'?id='.$row[0].'" style="margin:0px; font-size:17px;padding:0px; float:right" class="fa fa-edit" onclick="return window.confirm(\'Are you sure you want to edit this?\');" title="Edit"></a>'."</td>";
-                else:
-                    $str .='<td style="vertical-align:middle"></td>';
+                    else:
+                        $str .='<td style="vertical-align:middle"></td>';
 
-                endif;
+                    endif;
                     $str .='</tr>';
                 endwhile;endif;
             mysqli_free_result($result);
@@ -1841,18 +1850,18 @@ function added_data_delete_edit__special_invoice($sql,$unique,$unique_GET,$COUNT
         if($commission>0):
             $comissionGET=($amount/100)*$commission;
             $str.='<input type="hidden" name="commission_amount" id="commission_amount"  value="'.$comissionGET.'">';
-        $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Less: Commission = </th><th style="text-align:right">'.number_format($comissionGET,2).'</th><td></td></tr>';
-        $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Total Receivable Value = </th><th style="text-align:right">'.number_format($amount-$comissionGET,2).'</th><td></td></tr></table>';
-    
+            $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Less: Commission = </th><th style="text-align:right">'.number_format($comissionGET,2).'</th><td></td></tr>';
+            $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Total Receivable Value = </th><th style="text-align:right">'.number_format($amount-$comissionGET,2).'</th><td></td></tr></table>';
+
+        endif;
+        $str .='</tfoot></table>';
+
+
     endif;
-    $str .='</tfoot></table>';
-
-
-		endif;
     $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
     if($COUNT_details_data>0):
-            $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
-        endif;$str .='</form>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+    endif;$str .='</form>';
     return $str;
     mysqli_close($conn);
 }
@@ -1894,9 +1903,9 @@ function added_data_delete_edit_purchase_order($sql,$unique,$unique_GET,$COUNT_d
                     endfor;
                     $amount=$amount+$row[$row_get];
 
-                        $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                    $str .='<td style="vertical-align:middle"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px; float:left" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     <a href="'.$page.'?id='.$row[0].'" style="margin:0px; font-size:17px;padding:0px; float:right" class="fa fa-edit" onclick="return window.confirm(\'Are you sure you want to edit this?\');" title="Edit"></a>'."</td>";
-                        
+
                     $str .='</tr>';
                 endwhile;endif;
             mysqli_free_result($result);
@@ -1968,8 +1977,8 @@ function adds_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pag
     $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
 
     if($COUNT_details_data>0) {
-            $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
-        }$str .='</form>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+    }$str .='</form>';
     return $str;
     mysqli_close($conn);
 }
@@ -1978,39 +1987,39 @@ function dataview($sql,$unique,$unique_GET,$COUNT_details_data,$page){
     global $conn;
     if($sql==NULL) return NULL;
     $str.='<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: bisque; "><th style="vertical-align:middle; text-align:center">#</th>';
+    $str .='<thead><tr style="background-color: bisque; "><th style="vertical-align:middle; text-align:center">#</th>';
 
-        if ($result = mysqli_query($conn , $sql)) {
-            $cols = mysqli_num_fields($result);
-            $fieldinfo = mysqli_fetch_fields($result);
-            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
-                $str .='<th style="vertical-align:middle; text-align:center">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
-            }
-            $str .='</tr></thead><tbody>';
-            $c=0;
-            if (mysqli_num_rows($result)>0){
-                while($row = mysqli_fetch_array($result)) {
-                    $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($sl=$sl+1).'</td>';
-                    for($i=1;$i<$cols;$i++) {
-                        $b=$row[$i];
-                        if(is_numeric($row[$i])){
-                            $str .='<td style="vertical-align:middle; text-align:right">'.$b."</td>";
-                        } else {
-                            $str .='<td style="vertical-align:middle;">'.$b."</td>";
-                        }
-                    }
-                    $str .='</tr>';
-                }}
-            mysqli_free_result($result);
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $str .='<th style="vertical-align:middle; text-align:center">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
         }
-        $str .='</tbody></table>';
-		return $str;
+        $str .='</tr></thead><tbody>';
+        $c=0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($sl=$sl+1).'</td>';
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    if(is_numeric($row[$i])){
+                        $str .='<td style="vertical-align:middle; text-align:right">'.$b."</td>";
+                    } else {
+                        $str .='<td style="vertical-align:middle;">'.$b."</td>";
+                    }
+                }
+                $str .='</tr>';
+            }}
+        mysqli_free_result($result);
+    }
+    $str .='</tbody></table>';
+    return $str;
     mysqli_close($conn);
 }
 
 function selectmultipleoptions($values){
-foreach ($values as $a){
-     $str .="'".$a."',";
-}return substr($str,0,-1);}
+    foreach ($values as $a){
+        $str .="'".$a."',";
+    }return substr($str,0,-1);}
 
 ?>
