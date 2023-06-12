@@ -1550,7 +1550,13 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
 		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
         }
         $str.='<table align="center" id="customers"  style="width:'.$width.'%; border: solid 1px #999; border-collapse:collapse;font-size:11px">';
-        $str .='<thead><p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
+        $str .='<thead>
+<div class="col-md-12 head">
+                <div style="float: left; margin-left: 2%">
+                    <a href="export.php?f_date='.$_POST['f_date'].'&t_date='.$_POST['t_date'].'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
+                </div>
+            </div>
+<p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
         $str.='<th>#</th>';
         $cols = mysqli_num_fields($result);
         $fieldinfo = mysqli_fetch_fields($result);

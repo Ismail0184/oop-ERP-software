@@ -691,7 +691,7 @@ where
       d.area_code=t.AREA_CODE and
       d.account_code=j.ledger_id group by d.account_code
       "?>
-    <?=reportview($sql,'Customer Ledger / Balance','99'); ?>
+    <?=reportview($sql,'Customer Outstanding Report','99'); ?>
 
 
 
@@ -720,6 +720,11 @@ where
 <?php if($_POST['warehouse_id']){?>
 <h5 align="center" style="margin-top:-15px">Warehouse : <?=find_a_field('warehouse','warehouse_name','warehouse_id='.$_POST['warehouse_id'].'')?></h5>
 <?php } ?>
+    <div class="col-md-12 head">
+        <div style="float: left; margin-left: 2%">
+            <a href="export.php?f_date='.$_POST['f_date'].'&t_date='.$_POST['t_date'].'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
+        </div>
+    </div>
 <h5 align="center" style="margin-top:-15px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
 <?php
 $datecon=' and m.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
