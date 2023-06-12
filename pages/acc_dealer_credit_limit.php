@@ -11,18 +11,18 @@ $unique_dealer='dealer_code';
 $page="acc_dealer_credit_limit.php";
 $crud      =new crud($table);
 $$unique = $_GET[$unique];
-$dealer_master=find_all_field('dealer_info','','dealer_code='.$_GET[id]);
+$dealer_master=find_all_field('dealer_info','','dealer_code='.$_GET['id']);
 
 if(prevent_multi_submit()) {
 if(isset($_POST['modify']))
-{   $_POST[dealer_code]=$_GET[id];
-    $_POST[permission_by]=$_SESSION[usrid];
+{   $_POST['dealer_code']=$_GET['id'];
+    $_POST['permission_by']=$_SESSION['usrid'];
     $crud->insert();
-    $_POST['credit_limit']=$_POST[credit_limit];
+    $_POST['credit_limit']=$_POST['credit_limit'];
     $crud      =new crud($table_dealer_info);
     $crud->update($unique_dealer);
     $type=1;
-    echo "<script>self.opener.location = '$page'; self.blur(); </script>";
+    //echo "<script>self.opener.location = '$page'; self.blur(); </script>";
     echo "<script>window.close(); </script>";
 }}
 

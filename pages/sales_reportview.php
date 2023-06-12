@@ -2017,12 +2017,13 @@ area a
 
         if($tr_from!=''){
             $emp_id.=" and a.tr_from='".$tr_from."'";}
-            $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.ledger_id like '".$_POST[ledger_id]."' and b.group_for=".$_SESSION['usergroup'].$emp_id;
-            $total=mysqli_fetch_row(mysqli_query($conn, $total_sql));
+            $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.ledger_id like '".$_POST['ledger_id']."'";
+            $total=mysqli_fetch_array(mysqli_query($conn, $total_sql));
+
             $c="select sum(a.dr_amt)-sum(a.cr_amt) from
             journal a,
             accounts_ledger b
-            where a.ledger_id=b.ledger_id and a.jvdate<'".$_POST['f_date']."' and a.ledger_id like '".$_POST['ledger_id']."' and b.group_for=".$_SESSION['usergroup'];
+            where a.ledger_id=b.ledger_id and a.jvdate<'".$_POST['f_date']."' and a.ledger_id like '".$_POST['ledger_id']."'";
             $p="select
 a.jvdate,
 b.ledger_name,
@@ -2063,7 +2064,7 @@ order by a.jvdate,a.id";
         /* ===== Opening Balance =======*/
 
         $psql=mysqli_query($conn, $c);
-        $pl = mysqli_fetch_row($psql);
+        $pl = mysqli_fetch_array($psql);
         $blance=$pl[0];
         ?>
         <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
@@ -2103,13 +2104,13 @@ order by a.jvdate,a.id";
                 elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),2,'.',',');else echo "0.00"; ?></td>
         </tr>
         <?php } ?>
-        <!--tr style="font-size: 11px">
+        <tr style="font-size: 11px">
             <th colspan="6"  style="border: solid 1px #999; padding:2px; text-align: right"><strong>Total : </strong></th>
             <th align="right" style="border: solid 1px #999; padding:2px; text-align: right"><strong><?php echo number_format($total[0],2);?></strong></th>
             <th align="right" style="border: solid 1px #999; padding:2px; text-align: right"><strong><?php echo number_format($total[1],2);?></strong></th>
-            <th align="right" style="border: solid 1px #999; padding:2px; width: 10%; text-align: right"><?php echo number_format($t_total,2)." ".$t_type?></div>
+            <th align="right" style="border: solid 1px #999; padding:2px; width: 10%; text-align: right"><?php echo number_format($blance,2)." ".$t_type?></div>
             </th>
-        </tr-->
+        </tr>
     </tbody>
     </table>
 

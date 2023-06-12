@@ -255,6 +255,194 @@ order by a.jvdate,a.id";
     </div>
     </div>
 
+
+
+<?php elseif ($_POST['report_id']=='1012007'):
+    if($sectionid=='400000'){
+        $sec_com_connection=' and 1';
+    } else {
+        $sec_com_connection=" and a.company_id='".$_SESSION['companyid']."' and a.section_id in ('400000','".$_SESSION['sectionid']."')";
+    }?>
+    <style>
+        #customers {
+            font-family: "Gill Sans", sans-serif;
+        }
+        #customers td {
+        }
+        #customers tr:ntd-child(even)
+        {background-color: #f0f0f0;}
+        #customers tr:hover {background-color: #f5f5f5;}
+    </style>
+    <title><?=($ledger_name!='')? $ledger_name : 'All Transaction' ?> | Transaction Statement</title>
+    <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
+    <p align="center" style="margin-top:-18px; font-size: 15px">Transaction Statement</p>
+    <p align="center" style="margin-top:-10px; font-size: 12px; font-weight: bold"><?=($_REQUEST['ledger_id']>0)? 'Ledger Name: '.$_REQUEST['ledger_id'].' - '.$ledger_name.'' : 'All Transaction' ?></p>
+    <?php if($_POST['cc_code']){ ?>
+    <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Cost Center:</strong> <?=find_a_field('cost_center','center_name','id='.$_REQUEST['cc_code']);?> (<?=$_REQUEST['cc_code'];?>)</p>
+<?php } ?>
+
+    <?php if($_POST['tr_from']){ ?>
+    <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Transaction Type:</strong> <?=$_REQUEST['tr_from'];?></p>
+<?php } ?>
+    <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> to <?=$_POST['t_date']?></p>
+    <table align="center" id="customers"  style="width:95%; border: solid 1px #999; border-collapse:collapse; ">
+        <thead>
+        <p style="width:95%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
+            echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
+        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
+            <th style="border: solid 1px #999; padding:2px">SL</th>
+            <th style="border: solid 1px #999; padding:2px; width:5%">Date</th>
+            <th style="border: solid 1px #999; padding:2px; width:10%">Transaction No</th>
+            <th style="border: solid 1px #999; padding:2px; width: 15%">Ledger Name</th>
+            <th style="border: solid 1px #999; padding:2px">Particulars</th>
+            <th style="border: solid 1px #999; padding:2px">Source</th>
+            <th style="border: solid 1px #999; padding:2px; width: 10%">Approved By</th>
+            <th style="border: solid 1px #999; padding:2px">Dr Amt</th>
+            <th style="border: solid 1px #999; padding:2px">Cr Amt</th>
+            <th style="border: solid 1px #999; padding:2px;">Balance</th>
+        </tr></thead>
+        <tbody>
+        <?php
+        $cc_code =@$_REQUEST['cc_code'];
+        $tr_from = @$_REQUEST['tr_from'];
+        $emp_id = '';
+        if($tr_from!=''){
+            $emp_id.=" and a.tr_from='".$tr_from."'";}
+        if($cc_code > 0)
+        {   $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '$f_date' AND '$t_date' and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code ";
+            $total=mysqli_fetch_row(mysqli_query($conn, $total_sql));
+            $c="select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate<'$f_date' and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code".$emp_id;
+            $p="select
+a.jvdate,
+b.ledger_name,
+a.dr_amt,
+a.cr_amt,
+a.tr_from,
+a.narration,
+a.jv_no,
+a.tr_no,
+a.jv_no,
+a.cheq_no,
+a.cheq_date,
+a.user_id,
+a.PBI_ID,
+a.cc_code,
+a.ledger_id as lid ,
+u.fname as approvedby,
+c.center_name
+from
+journal a,
+accounts_ledger b,
+users u,
+cost_center c
+
+where
+a.cc_code=c.id and
+a.ledger_id=b.ledger_id and
+a.jvdate between '$f_date' AND '$t_date' and
+a.ledger_id like '$ledger_id' and
+a.user_id=u.user_id".$sec_com_connection." and
+a.cc_code=".$cc_code."
+order by a.jvdate,a.id";
+
+        } else  {
+            $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '$f_date' AND '$t_date' and a.ledger_id like '$ledger_id'".$sec_com_connection."".$emp_id;
+            $total=mysqli_fetch_row(mysqli_query($conn, $total_sql));
+            $c="select sum(a.dr_amt)-sum(a.cr_amt) from
+            journal a,
+            accounts_ledger b
+            where a.ledger_id=b.ledger_id and a.jvdate<'$f_date' and a.ledger_id like '$ledger_id'".$sec_com_connection."";
+            $p="select
+a.jvdate,
+b.ledger_name,
+a.dr_amt,
+a.cr_amt,
+a.tr_from,
+a.narration,
+a.jv_no,
+a.tr_no,
+a.jv_no,
+a.cheq_no,
+a.cheq_date,
+a.user_id,
+a.PBI_ID,
+a.cc_code,
+a.ledger_id as lid ,
+u.fname as approvedby,
+c.center_name
+from
+journal a,
+accounts_ledger b,
+users u,
+cost_center c
+where
+a.cc_code=c.id and
+a.ledger_id=b.ledger_id and
+a.jvdate between '$f_date' AND '$t_date' and
+a.ledger_id like '$ledger_id' and
+a.user_id=u.user_id".$sec_com_connection."
+order by a.jvdate,a.id";
+
+        }
+        if($total[0]>$total[1])
+        {
+            $t_type="(Dr)";
+            $t_total=$total[0]-$total[1];
+        }	else	{
+            $t_type="(Cr)";
+            $t_total=$total[1]-$total[0];	}
+        /* ===== Opening Balance =======*/
+
+        $psql=mysqli_query($conn, $c);
+        $pl = mysqli_fetch_row($psql);
+        $blance=$pl[0];
+        ?>
+        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
+            <td align="center" bgcolor="#FFCCFF">#</td>
+            <td colspan="2" align="center" bgcolor="#FFCCFF"><?=$f_date;?></td>
+            <td align="center" bgcolor="#FFCCFF"></td>
+            <td align="left" bgcolor="#FFCCFF">Opening Balance </td>
+            <td align="center" bgcolor="#FFCCFF">&nbsp;</td>
+            <td align="center" bgcolor="#FFCCFF">&nbsp;</td>
+            <td align="right" bgcolor="#FFCCFF">&nbsp;</td>
+            <td align="right" bgcolor="#FFCCFF">&nbsp;</td>
+            <td align="right" bgcolor="#FFCCFF"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),0,'.','');else echo "0.00"; ?></td>
+        </tr>
+        <?php
+        $sql=mysqli_query($conn, $p);
+        $pi = 0;
+        while($data=mysqli_fetch_row($sql))
+        { $pi++; ?>
+            <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
+                <td align="center" style="border: solid 1px #999; padding:2px"><?=$pi;?></td>
+                <td align="center" style="border: solid 1px #999; padding:2px"><?=$data[0];?></td>
+                <td align="center" style="border: solid 1px #999; padding:2px">
+                    <?php
+                    if($data[4]=='Receipt'||$data[4]=='Payment'||$data[4]=='Journal_info'||$data[4]=='Contra')
+                    {
+                        $link="voucher_print1.php?v_type=".$data[4]."&v_date=".$data[0]."&view=1&vo_no=".$data[8];
+                        echo $data[7];
+                    }else {
+                        $link="voucher_print1.php?v_type=".$data[4]."&v_date=".$data[0]."&view=1&vo_no=".$data[8];
+                        echo $data[6];}?>
+                </td>
+                <td style="border: solid 1px #999; padding:2px; text-align: left"><?=$data[1];?></td>
+                <td align="left" style="border: solid 1px #999; padding:2px"><?=$data[5];?><?=(($data[9]!='')?'-Cq#'.$data[9]:'');?><?=(($data[10]>943898400)?'-Cq-Date#'.date('d-m-Y',$data[10]):'');?></td>
+                <td align="center" style="border: solid 1px #999; padding:2px"><?php echo $data[4];?></td>
+                <td align="center" style="border: solid 1px #999; padding:2px"><?=$data[15];?></td>
+                <td align="right" style="border: solid 1px #999; padding:2px"><?php echo number_format($data[2],2,'.',',');?></td>
+                <td align="right" style="border: solid 1px #999; padding:2px"><?php echo number_format($data[3],2,'.',',');?></td>
+                <td align="right" bgcolor="#FFCCFF" style="border: solid 1px #999; padding:2px"><?php $blance = $blance+($data[2]-$data[3]);
+                    if($blance>0) echo '(Dr)'.number_format($blance,2,'.',',');
+                    elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),2,'.',',');else echo "0.00"; ?></td>
+            </tr>
+        <?php } ?>
+        </tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+
 <?php elseif ($_POST['report_id']=='1002008'):?>
     <?php
     if($sectionid=='400000'){
@@ -465,7 +653,8 @@ where sdd.depot_id=w.warehouse_id and
       d.dealer_category='3' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
-      sdd.item_id=i.item_id
+      sdd.item_id=i.item_id and 
+      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
       "?>
     <?=reportview($sql,'Sales Report','99'); ?>
 
@@ -649,9 +838,9 @@ $query = mysqli_query($conn, $sql); ?>
     <?php
     $sql="SELECT d.dealer_code,d.dealer_custom_code as 'DB Code',
 d.dealer_name_e as 'Dealer Name',d.dealer_type,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
-(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment,
-(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."') as collection
-                                               
+(select SUM(cr_amt) from receipt where ledger_id=d.account_code and receiptdate between '".$_POST['f_date']."' and '".$_POST['t_date']."') as collection,
+(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment
+                                            
 from dealer_info d,branch r,area t
 where 
       d.dealer_category='3' and 

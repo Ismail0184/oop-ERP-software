@@ -4,7 +4,7 @@ require_once 'class.numbertoword.php';
 
 
 
-$chalan_no 		= find_a_field('sale_do_chalan','chalan_no','do_no='.$_GET[do_no]);
+$chalan_no 		= find_a_field('sale_do_chalan','chalan_no','do_no='.$_GET['do_no']);
 
 $sql1=mysqli_query($conn, "select d.*,b.*, b.sales_commission, sum(b.total_unit) as total_unit, d.total_unit as ord_unit, sum(b.total_amt) as total_amt, j.item_ex as item_ex, m.depot_id as depot, m.remarks
 from sale_do_chalan b,sale_do_details d, journal_item j, sale_do_master m
@@ -46,13 +46,13 @@ $transporter_name = $info->transporter_name;
 $to_ctn = find_a_field('sale_do_chalan','sum(pkt_unit)','chalan_no='.$chalan_no);
 $to_pcs = find_a_field('sale_do_chalan','sum(dist_unit)','chalan_no='.$chalan_no);
 }
-$entry_sql = 'select u.fname from users u, sale_do_master b where u.user_id=b.entry_by and b.do_no='.$_GET[do_no];
+$entry_sql = 'select u.fname from users u, sale_do_master b where u.user_id=b.entry_by and b.do_no='.$_GET['do_no'];
 $entry_by = find_all_field_sql($entry_sql);
-$ssql = 'select a.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET[do_no];
+$ssql = 'select a.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET['do_no'];
 $dealer = find_all_field_sql($ssql);
-$ssql = 'select b.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET[do_no];
+$ssql = 'select b.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET['do_no'];
 $do = find_all_field_sql($ssql);
-$ssqld = 'select a.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET[do_no];
+$ssqld = 'select a.* from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$_GET['do_no'];
 $dd = find_all_field_sql($ssqld);
 $dept = 'select warehouse_name from warehouse where warehouse_id='.$depot_id;
 $deptt = find_all_field_sql($dept);
@@ -167,36 +167,36 @@ font-size: 14px
 
 
 
-              $go=mysqli_query($conn, "Select do_no from sale_do_chalan where chalan_no='$_GET[do_no]'");
+              $go=mysqli_query($conn, "Select do_no from sale_do_chalan where chalan_no='".$_GET['do_no']."'");
               $donos=mysqli_fetch_array($go);
-              $result=mysqli_query($conn, "Select sdd.*,i.* from sale_do_details sdd, item_info i where sdd.do_no='".$_GET[do_no]."' and sdd.item_id=i.item_id and  sdd.item_id not in ('1096000100010312' ,'1096000100010313') order by sdd.id");
+              $result=mysqli_query($conn, "Select sdd.*,i.* from sale_do_details sdd, item_info i where sdd.do_no='".$_GET['do_no']."' and sdd.item_id=i.item_id order by sdd.id");
               while($row=mysqli_fetch_array($result)){
                   ?>
                   <tr>
                       <td style="width:2%;" align="center" valign="middle"><?=$i=$i+1?></td>
-                      <td style="width:auto" align="left" valign="middle"><? echo $row[item_name]; if($row[unit_price]==0)  echo ' <b>[FREE]</b>'; else '';?></td>
-                      <td width="5%" align="center" valign="middle"><?=$row[unit_name];?></td>
-                      <td width="5%" align="center" valign="middle"><?=($row[t_price]>0)? $row[t_price] : '-';?></td>
-                      <td width="8%" align="center" valign="middle"><?=($row[unit_price]>0)? number_format($row[unit_price],2) : '-';?></td>
-                      <td width="8%" align="center" valign="middle"><?=$row[dist_unit];?></td>
+                      <td style="width:auto" align="left" valign="middle"><?=$row['item_name']; if($row['unit_price']==0)  echo ' <b>[FREE]</b>'; else '';?></td>
+                      <td width="5%" align="center" valign="middle"><?=$row['unit_name'];?></td>
+                      <td width="5%" align="center" valign="middle"><?=($row['t_price']>0)? $row['t_price'] : '-';?></td>
+                      <td width="8%" align="center" valign="middle"><?=($row['unit_price']>0)? number_format($row['unit_price'],2) : '-';?></td>
+                      <td width="8%" align="center" valign="middle"><?=$row['dist_unit'];?></td>
                       <td width="8%" align="right" valign="middle">
-                          <?  if($row[unit_price]>0){ echo $sales_cash_discount = find_a_field('sale_do_details','total_amt*-1','do_no='.$do_no.' and item_id=1096000100010312 and gift_on_item='.$row[item_id]); $tot_sales_cash_discount+=$sales_cash_discount;} ?>
+                          <?  if($row['unit_price']>0){ echo $sales_cash_discount = find_a_field('sale_do_details','total_amt*-1','do_no='.$do_no.' and item_id=1096000100010312 and gift_on_item='.$row[item_id]); $tot_sales_cash_discount+=$sales_cash_discount;} ?>
                       </td>
-                      <td width="8%" align="right" valign="middle"><?=($row[total_amt]>0)? number_format($row[total_amt],2) : '-';?></td>
+                      <td width="8%" align="right" valign="middle"><?=($row['total_amt']>0)? number_format($row['total_amt'],2) : '-';?></td>
 
                   </tr>
                   <?
-                  $tot=$tot+$row[total_amt];
-                  $CMstatus = find_a_field('item_info','commission_status','item_id='.$row[item_id]);
+                  $tot=$tot+$row['total_amt'];
+                  $CMstatus = find_a_field('item_info','commission_status','item_id='.$row['item_id']);
 
                   if($CMstatus=='1'){
                       $dealeromission=$commissionGET;
                   } else {
                       $dealeromission=0;
                   }
-                  $comcal=($row[total_amt]/100)*$dealeromission;
+                  $comcal=($row['total_amt']/100)*$dealeromission;
                   $comissionGETS=$comissionGETS+$comcal;
-									$total_qty=$total_qty+$row[dist_unit];
+									$total_qty=$total_qty+$row['dist_unit'];
               }?>
               <tr style="border-bottom:#FFFFFF">
                   <td colspan="5" align="left" valign="middle"><strong>Total</strong>&nbsp;</td>
