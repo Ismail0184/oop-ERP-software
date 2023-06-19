@@ -31,16 +31,16 @@ if($_GET['report_id']=='1012001') {
     $fields = array('DB Code', 'Dealer Name', 'Dealer Type', 'Territory', 'Region','Balance');
 } elseif ($_GET['report_id']=='1012005'){
     $fileName = "Invoice List.xls";
-    $fields = array('Chalan No', 'Chalan Date', 'Do No', 'Do Date', 'Do Type','Dealer Code','Dealer Name','Territory','Depot','Invoice Amount','Discount','Commission','Receivable Amount');
+    $fields = array('Chalan No', 'Chalan Date', 'Do No', 'Do Date', 'Do Type','Dealer Code','Dealer Name','Territory','Depot','Invoice Amount','Discount','Commission');
 } elseif ($_GET['report_id']=='1012006'){
-    $fileName = "Stock Report.xls";
-    $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
+    $fileName = "Collection and Shipment Report.xls";
+    $fields = array('DB Code', 'Dealer Name', 'Dealer Type', 'Territory', 'Region','Collection','Shipment');
 } elseif ($_GET['report_id']=='1012007'){
     $fileName = "Stock Report.xls";
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
 } elseif ($_GET['report_id']=='1012008'){
-    $fileName = "Stock Report.xls";
-    $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
+    $fileName = "Customer Details.xls";
+    $fields = array('Dealer Code', 'Dealer Custom Code', 'Customer Name', 'Town', 'Territory','Region','Propritor Name','Contact Person','Contact Number','Address','National Id','TIN / BIN');
 }
 
 else {
@@ -96,6 +96,29 @@ where sdd.depot_id=w.warehouse_id and
          $excelData .= 'No records found...' . "\n";
      }
 
+ } elseif ($_GET['report_id']=='1012003') {
+     $query = $db->query("Select i.item_id,i.finish_goods_code as finish_goods_code,i.item_name as item_name,i.unit_name as uom,i.pack_size as pack_size,
+REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
+from
+item_info i,
+journal_item j
+where
+j.item_id=i.item_id and
+j.warehouse_id='".$_GET['warehouse_id']."' and
+j.ji_date <= '".$_GET['t_date']."' and
+i.brand_id in ('10','11','12')
+group by j.item_id");
+     if ($query->num_rows > 0) {
+         // Output each row of the data
+         while ($row = $query->fetch_assoc()) {
+             $lineData = array($row['finish_goods_code'], $row['item_name'], $row['uom'], $row['pack_size'], $row['Available_stock_balance']);
+             array_walk($lineData, 'filterData');
+             $excelData .= implode("\t", array_values($lineData)) . "\n";
+         }
+     }
+     else {
+         $excelData .= 'No records found...' . "\n";
+     }
  } elseif ($_GET['report_id']=='1012004') {
      $query = $db->query("SELECT d.dealer_code,d.dealer_custom_code as DBCode,
 d.dealer_name_e as DealerName,d.dealer_type as type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,                                        
@@ -154,15 +177,55 @@ personnel_basic_info p
 where
 d.dealer_category='3' and 
 a.AREA_CODE=d.area_code
-and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and m.do_section not in ('Rice') and w.warehouse_id=m.depot_id and
-m.do_date between '".$_GET['f_date']."' and '".$_GET['t_date']."' and 
-m.depot_id='".$_POST['warehouse_id']."'
+and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and m.do_section not in ('Rice') and w.warehouse_id=m.depot_id 
+and m.do_date between '".$_GET['f_date']."' and '".$_GET['t_date']."' and 
+m.depot_id='".$_GET['warehouse_id']."' and
 a.PBI_ID=p.PBI_ID group by c.do_no order by c.do_no");
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
              $lineData = array($row['chalan_no'], $row['chalan_date'], $row['do_no'], $row['do_date'], $row['do_type'],
-                 $row['dealer_custom_code'], $row['dealer_name'], $row['territory'], $row['depot'], $row['invoice_amount'], $row['discount']);
+                 $row['dealer_custom_code'], $row['dealer_name'], $row['territory'], $row['depot'], $row['invoice_amount'], $row['discount'],$row['comissionamount']);
+             array_walk($lineData, 'filterData');
+             $excelData .= implode("\t", array_values($lineData)) . "\n";
+         }
+     }
+     else {
+         $excelData .= 'No records found...' . "\n";
+     }
+ }
+
+ elseif ($_GET['report_id']=='1012006') {
+     $query = $db->query("SELECT d.dealer_code,d.dealer_custom_code as DBCode,
+d.dealer_name_e as DealerName,d.dealer_type as type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,
+(select SUM(cr_amt) from receipt where ledger_id=d.account_code and receiptdate between '".$_GET['f_date']."' and '".$_GET['t_date']."') as collection,
+(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and do_date between '".$_GET['f_date']."' and '".$_GET['t_date']."') as shipment                                      
+from dealer_info d,branch r,area t
+where 
+      d.dealer_category='3' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE  group by d.account_code
+      ");
+     if ($query->num_rows > 0) {
+         // Output each row of the data
+         while ($row = $query->fetch_assoc()) {
+             $lineData = array($row['DBCode'], $row['DealerName'], $row['type'], $row['Territory'], $row['region'],
+                 $row['collection'], $row['shipment']);
+             array_walk($lineData, 'filterData');
+             $excelData .= implode("\t", array_values($lineData)) . "\n";
+         }
+     }
+     else {
+         $excelData .= 'No records found...' . "\n";
+     }
+ } elseif ($_GET['report_id']=='1012008') {
+     $query = $db->query("SELECT d.dealer_code,d.dealer_code as dealer_code,d.dealer_custom_code as dealer_custom_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person as contact_person,d.contact_number as contact_number,d.address_e as address,d.national_id as national_id,d.TIN_BIN as TINBIN  from dealer_info d, town t, area a, branch b WHERE
+d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('3')  order by d.dealer_code");
+     if ($query->num_rows > 0) {
+         // Output each row of the data
+         while ($row = $query->fetch_assoc()) {
+             $lineData = array($row['dealer_code'], $row['dealer_custom_code'], $row['customer_name'], $row['town'], $row['territory'],
+                 $row['region'], $row['propritor_name'],$row['contact_person'], $row['contact_number'],$row['address'], $row['national_id'] ,$row['TINBIN']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

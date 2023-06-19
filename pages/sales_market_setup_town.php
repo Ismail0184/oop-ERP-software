@@ -15,7 +15,7 @@ if(prevent_multi_submit()){
     {    $$unique = $_POST[$unique];
         if(isset($_POST['record']))
         {
-            $_POST[status]=1;
+            $_POST['status']=1;
             $crud->insert();
             $type=1;
             $msg='New Entry Successfully Inserted.';
@@ -54,7 +54,7 @@ if(isset($$unique))
 $sql = "SELECT typeshorname, typedetails from distributor_type
 where 1 order by typedetails";
 
-$res="SELECT t.town_code,t.town_name,(select PBI_NAME from personnel_basic_info where PBI_ID=t.incharge_id) as Incharge_person,a.AREA_NAME as Territory,if(t.status>0, 'Active','Inactive') as status from ".$table." t,area a where t.territory_code=a.AREA_CODE";
+$res="SELECT t.town_code,t.town_name,(select PBI_NAME from personnel_basic_info where PBI_ID=t.incharge_id) as Incharge_person,if(t.status>0, 'Active','Inactive') as status from ".$table." t where 1";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
     $id=$data->ZONE_CODE;

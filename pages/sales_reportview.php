@@ -2108,7 +2108,9 @@ order by a.jvdate,a.id";
             <th colspan="6"  style="border: solid 1px #999; padding:2px; text-align: right"><strong>Total : </strong></th>
             <th align="right" style="border: solid 1px #999; padding:2px; text-align: right"><strong><?php echo number_format($total[0],2);?></strong></th>
             <th align="right" style="border: solid 1px #999; padding:2px; text-align: right"><strong><?php echo number_format($total[1],2);?></strong></th>
-            <th align="right" style="border: solid 1px #999; padding:2px; width: 10%; text-align: right"><?php echo number_format($blance,2)." ".$t_type?></div>
+            <th align="right" style="border: solid 1px #999; padding:2px; width: 10%; text-align: right"><?php if($blance>0) echo '(Dr)'.number_format($blance,2,'.',',');
+                elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),2,'.',',');else echo "0.00";
+                ?></div>
             </th>
         </tr>
     </tbody>

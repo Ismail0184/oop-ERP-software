@@ -87,13 +87,13 @@ if(isset($_POST['record'])){
 if(isset($_POST['create_journal'])){
   if($_POST['chalan_no']>0){
   if (($_POST['ledger_1'] > 0) && (($_POST['ledger_2'] && $_POST['dr_amount_1']) > 0) && ($_POST['cr_amount_2'] > 0)) {
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['cr_amount_2'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['cr_amount_2'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
   }
 
   if (($_POST['ledger_3'] > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_3']) > 0) && ($_POST['cr_amount_4'] > 0)) {
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_3'], $_POST['narration_3'], $_POST['dr_amount_3'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_3'], $_POST['narration_3'], $_POST['dr_amount_3'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
   }
   mysqli_query($conn, "Update sale_do_master SET mushak_challan_status='RECORDED' where do_no=".$do_no_GET);
   unset($_POST);

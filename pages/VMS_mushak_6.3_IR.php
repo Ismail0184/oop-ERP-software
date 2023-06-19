@@ -14,18 +14,18 @@ $table_VAT_details='VAT_mushak_6_3_details';
 $mushaks=find_all_field('VAT_mushak_6_3','','source in ("Purchase_Returned") and do_no='.$$unique);
 
 if(prevent_multi_submit()){
-if(isset($_POST[record])){
-  if($_POST[mushak_no]>0 && !empty($_POST[issue_date])){
-  $_POST[do_no]=$$unique;
-  $_POST[mushak_no]=$_POST[mushak_no];
-  $_POST[warehouse_id]=$_POST[warehouse_id];
-  $_POST[dealer_code]=$_POST[dealer_code];
-  $_POST[issue_date]=$_POST[issue_date];
-  $_POST[issue_time]=$_POST[issue_time];
-  $_POST[responsible_person]=$_POST[responsible_person];
-  $_POST[entry_by]=$_SESSION[userid];
-  $_POST[entry_at]=$now;
-  $_POST[year]=$year;
+if(isset($_POST['record'])){
+  if($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
+  $_POST['do_no']=$$unique;
+  $_POST['mushak_no']=$_POST['mushak_no'];
+  $_POST['warehouse_id']=$_POST['warehouse_id'];
+  $_POST['dealer_code']=$_POST['dealer_code'];
+  $_POST['issue_date']=$_POST['issue_date'];
+  $_POST['issue_time']=$_POST['issue_time'];
+  $_POST['responsible_person']=$_POST['responsible_person'];
+  $_POST['entry_by']=$_SESSION['userid'];
+  $_POST['entry_at']=$now;
+  $_POST['year']=$year;
   $crud = new crud($table_VAT_Master);
   $crud->insert();
 
@@ -33,15 +33,15 @@ if(isset($_POST[record])){
   $result=mysqli_query($conn, $query);
   while($data=mysqli_fetch_object($result)):
     $id=$data->item_id;
-    $_POST[item_id]=$id;
-    $_POST[total_unit]=$_POST['total_unit'.$id];
-    $_POST[unit_price]=$_POST['unit_price'.$id];
-    $_POST[total_price]=$_POST['total_price'.$id];
-    $_POST[rate_of_SD]=$_POST['rate_of_SD'.$id];
-    $_POST[amount_of_SD]=$_POST['amount_of_SD'.$id];
-    $_POST[rate_of_VAT]=$_POST['rate_of_VAT'.$id];
-    $_POST[amount_of_VAT]=$_POST['amount_of_VAT'.$id];
-    $_POST[total_including_all]=$_POST['total_including_all'.$id];
+    $_POST['item_id']=$id;
+    $_POST['total_unit']=$_POST['total_unit'.$id];
+    $_POST['unit_price']=$_POST['unit_price'.$id];
+    $_POST['total_price']=$_POST['total_price'.$id];
+    $_POST['rate_of_SD']=$_POST['rate_of_SD'.$id];
+    $_POST['amount_of_SD']=$_POST['amount_of_SD'.$id];
+    $_POST['rate_of_VAT']=$_POST['rate_of_VAT'.$id];
+    $_POST['amount_of_VAT']=$_POST['amount_of_VAT'.$id];
+    $_POST['total_including_all']=$_POST['total_including_all'.$id];
     if($_POST['total_unit'.$id]>0){
     $crud = new crud($table_VAT_details);
     $crud->insert();}
@@ -49,8 +49,14 @@ if(isset($_POST[record])){
   mysqli_query($conn, "Update purchase_return_master SET mushak_challan_status='RECORDED' where id=".$_GET[$unique]);
   unset($_POST);
   //echo "<script>window.close(); </script>";
-
 }}}
+
+if (isset($_POST['skipandforward']))
+{
+    mysqli_query($conn, "Update purchase_return_master SET mushak_challan_status='RECORDED' where id=".$_GET[$unique]);
+    unset($_POST);
+    echo "<script>window.close(); </script>";
+}
 
 $mushak=find_all_field('VAT_mushak_6_3','','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
 $COUNT_mushak=find_a_field('VAT_mushak_6_3','COUNT(mushak_no)','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
@@ -62,7 +68,7 @@ $VAT_master=find_all_field('VAT_mushak_6_3','','source="Purchase_Returned" and d
 $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','year='.$year.' and warehouse_id='.$do_master->warehouse_id);
 
 if($status>0){
-  if($_GET[group_by]=='VAT_item_group'){
+  if($_GET['group_by']=='VAT_item_group'){
 
   $query="SELECT
   mus.*,
@@ -152,10 +158,10 @@ $result=mysqli_query($conn, $query);
     </div>
 <form action="<?=$pate?>" method="get">
 <input type="hidden" name="<?=$unique?>"  value="<?=$$unique?>" />
-<?php if($_GET[group_by]=='item_id'){?>
+<?php if($_GET['group_by']=='item_id'){?>
           <input type="hidden" name="group_by"  value="VAT_item_group" />
                   <p><input type="submit"  value="View by GROUP" /></p>
-<?php } elseif($_GET[group_by]=='VAT_item_group'){?>
+<?php } elseif($_GET['group_by']=='VAT_item_group'){?>
 <input type="hidden" name="group_by"  value="item_id" />
         <p><input type="submit"  value="View by Item" /></p>
       <?php } else { ?>
@@ -174,15 +180,15 @@ $result=mysqli_query($conn, $query);
   <input type="hidden" name="jvdate" value="<?=$mushak->issue_date?>">
   <input type="hidden" name="source" value="Purchase_Returned">
 <table style="width: 100%">
-<td style="width: 30%; text-align: right;"><img src="bd.png" width="50" height="50" style="margin-top: 50px;
+<td style="width: 30%; text-align: right;"><img src="../assets/images/bd.png" width="50" height="50" style="margin-top: 50px;
   padding:0px;"></td>
     <td style="text-align: center">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার জাতীয় রাজস্ব র্বোড</td>
     <td style="width: 30%"><div style="text-align: center;height: 30px; margin-top: 50px; vertical-align:middle; width: 100px; border: 1px solid black; font-size: 13px;"><strong>মূসক-৬.৩</strong></div></td>
 </table>
 <div style="text-align: center"><strong>কর চালানপত্র</strong></div>
 <div style="text-align: center">[বিধি ৪০ এর উপ-বিধি (১) এর দফা (গ) ও দফা (চ) দ্রষ্টব্য]</div>
-<div style="text-align: center">নিবন্ধিত ব্যক্তির নাম: <?=$_SESSION[company_name]?></div>
-<div style="text-align: center">নিবন্ধিত ব্যক্তির বিআইএন: <?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></div>
+<div style="text-align: center">নিবন্ধিত ব্যক্তির নাম: <?=$_SESSION['company_name']?></div>
+<div style="text-align: center">নিবন্ধিত ব্যক্তির বিআইএন: <?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></div>
 <div style="text-align: center">চালানপত্র ইস্যুর ঠিকানা : <?=$_SESSION['company_address'];?></div>
 <br>
 <table style="width: 100%;">
@@ -264,8 +270,6 @@ $result=mysqli_query($conn, $query);
       <td style="border: 1px solid #CCC;text-align: right;"><?=($data->amount_of_VAT>0)? number_format($data->amount_of_VAT,2) : '-' ?></td>
       <td style="border: 1px solid #CCC;text-align: right;"><?=($data->total_including_all>0)? number_format($data->total_including_all,2) : '-' ?></td>
       </tr>
-
-
       <?php
       $total_unit=$total_unit+$data->total_unit;
       $total_total_price=$total_total_price+$data->total_price;
@@ -282,14 +286,6 @@ $result=mysqli_query($conn, $query);
           <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_amount_of_VAT,2)?></th>
           <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_total_including_all,2)?></th>
       </tr>
-
-
-
-
-
-
-
-
     <?php else:
       while($data=mysqli_fetch_object($result)):
         $id=$data->item_id;
@@ -398,9 +394,13 @@ $result=mysqli_query($conn, $query);
 </div>
 
         <?php
-        $GET_status=find_a_field('purchase_return_master','COUNT(id)','d='.$_GET[$unique]);
-            if($status>0){?><h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the releavent warehouse!!</i></h3>
-          <?php } else {?><h1 align="center"><input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan"></h1>
+        $GET_status=find_a_field('purchase_return_master','mushak_challan_status','d='.$_GET[$unique]);
+            if($status>0){?><h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the relevant warehouse!!</i></h3>
+          <?php } else { if ($GET_status=='UNRECORDED'){?><h1 align="center">
+                <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan">
+                <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Skip");' name="skipandforward" value="Skip & Forward">
+                <?php } ?>
+                </h1>
 <?php } ?>
         </form>
 </body>

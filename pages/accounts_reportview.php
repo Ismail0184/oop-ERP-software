@@ -722,7 +722,7 @@ where
 <?php } ?>
     <div class="col-md-12 head">
         <div style="float: left; margin-left: 2%">
-            <a href="export.php?f_date='.$_POST['f_date'].'&t_date='.$_POST['t_date'].'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
+           <?php echo '<a href="export.php?f_date='.$_POST['f_date'].'&t_date='.$_POST['t_date'].'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>';?>
         </div>
     </div>
 <h5 align="center" style="margin-top:-15px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
@@ -858,9 +858,11 @@ where
         $total_collection = $total_collection+$data->collection;
     };
     ?>
-    <?=reportview($sql,'Shipment & Collection Report','99',$total_shipment,'6',$total_collection); ?>
+    <?=reportview($sql,'Shipment & Collection Report','99',$total_collection,'6',$total_shipment); ?>
 
-
+<?php elseif ($_POST['report_id']=='1012008'):
+    $sql="SELECT d.dealer_code,d.dealer_code,d.dealer_custom_code as dealer_custom_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person,d.contact_number,d.address_e as address,d.national_id,d.TIN_BIN as 'TIN / BIN'  from dealer_info d, town t, area a, branch b WHERE
+d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('3')  order by d.dealer_code"; echo reportview($sql,'Customer Report','98'); ?>
 
 
 <?php elseif ($_POST['report_id']=='1002003'): $LC_no=find_a_field('lc_lc_master','lc_no','id='.$_POST['lc_id']);
