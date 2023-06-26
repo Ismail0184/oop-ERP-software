@@ -3,14 +3,14 @@ require "support_file.php";
 if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by i.'.$order_by_GET;}
 if(!empty($_POST['order_by']) && !empty($_POST['sort'])) $order_by_GET=$_POST['order_by'];
-if(isset($order_by_GET))				{$order_by=' order by i.'.$order_by_GET.' '.$_POST[sort].'';}
-$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');
+if(isset($order_by_GET))				{$order_by=' order by i.'.$order_by_GET.' '.$_POST['sort'].'';}
+$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');
 
 
 if(isset($_REQUEST['submit'])&&isset($_REQUEST['report_id'])&&$_REQUEST['report_id']>0)
 {
-$to_date=date('Y-m-d' , strtotime($_POST[t_date]));
-$fr_date=date('Y-m-d' , strtotime($_POST[f_date]));
+$to_date=date('Y-m-d' , strtotime($_POST['t_date']));
+$fr_date=date('Y-m-d' , strtotime($_POST['f_date']));
 $date_con=' and j.ji_date between \''.$fr_date.'\' and \''.$to_date.'\'';
 $do_date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';
 
@@ -1712,13 +1712,11 @@ journal_item j,
 item_sub_group s,
 item_group g,
 lc_lc_received_batch_split bsp
-
 where
-
 j.item_id=i.item_id and
-j.warehouse_id='".$_POST[warehouse_id]."' and
-j.ji_date <= '".$_POST[t_date]."' and
-g.group_id in ('".$_POST[group_id]."') and
+j.warehouse_id='".$_POST['warehouse_id']."' and
+j.ji_date <= '".$_POST['t_date']."' and
+g.group_id in ('".$_POST['group_id']."') and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 i.finish_goods_code not in ('2001') and 

@@ -35,7 +35,7 @@ group by d.id';
 
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
-        $_POST['checked_by_acc']=$_SESSION[userid];
+        $_POST['checked_by_acc']=$_SESSION['userid'];
         $_POST['checked_by_acc_at']=$todaysss;
         $_POST['status']="RETURNED";
         $crud->update($unique);
@@ -49,32 +49,32 @@ if(isset($_POST['checked'])){
                              while($data=mysqli_fetch_object($data2)){
                                 $new_batch = automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
                                 $idget=$data->id;
-                                $_POST[ji_date]=$data->return_date;
-                                $_POST[item_id]=$data->item_id;
-                                $_POST[warehouse_id]=$data->warehouse_id;
-                                $_POST[item_ex]=$data->qc_qty;
-                                $_POST[item_price]=$data->rate;
-                                $_POST[total_amt]=$data->qc_qty*$data->rate;
-                                $_POST[tr_from]='Purchase_Returned';
-                                $_POST[tr_no]=$$unique;
-                                $_POST[sr_no]=$data->id;
-                                $_POST[entry_by]=$_SESSION[userid];
-                                $_POST[entry_at]=date('Y-m-d H:i:s');
-                                $_POST[batch]=$data->batch;
-                                $_POST[expiry_date] = find_a_field('lc_lc_received_batch_split','mfg','item_id='.$data->item_id.' and batch='.$data->batch.' and warehouse_id='.$data->warehouse_id.' and status in ("PROCESSING")');
-                                $_POST[section_id]=$_SESSION[sectionid];
-                                $_POST[company_id]=$_SESSION[companyid];
+                                $_POST['ji_date']=$data->return_date;
+                                $_POST['item_id']=$data->item_id;
+                                $_POST['warehouse_id']=$data->warehouse_id;
+                                $_POST['item_ex']=$data->qc_qty;
+                                $_POST['item_price']=$data->rate;
+                                $_POST['total_amt']=$data->qc_qty*$data->rate;
+                                $_POST['tr_from']='Purchase_Returned';
+                                $_POST['tr_no']=$$unique;
+                                $_POST['sr_no']=$data->id;
+                                $_POST['entry_by']=$_SESSION['userid'];
+                                $_POST['entry_at']=date('Y-m-d H:i:s');
+                                $_POST['batch']=$data->batch;
+                                $_POST['expiry_date'] = find_a_field('lc_lc_received_batch_split','mfg','item_id='.$data->item_id.' and batch='.$data->batch.' and warehouse_id='.$data->warehouse_id.' and status in ("PROCESSING")');
+                                $_POST['section_id']=$_SESSION['sectionid'];
+                                $_POST['company_id']=$_SESSION['companyid'];
                                 $crud      =new crud($journal_item);
                                 $crud->insert();
 
-                                $_POST[batch]=$new_batch;
-                                $_POST[lot_number]=$data->batch;
+                                $_POST['batch']=$new_batch;
+                                $_POST['lot_number']=$data->batch;
                                 $_POST['po_no'] = $_GET[$unique];
                                 $_POST['create_date'] = date('Y-m-d');
                                 $_POST['lc_id'] = $_GET[$unique];
                                 $_POST['batch_no'] = find_a_field('lc_lc_received_batch_split','batch_no','batch='.$data->batch);
-                                $_POST[item_id]=$data->item_id;
-                                $_POST[warehouse_id]=$data->warehouse_id;
+                                $_POST['item_id']=$data->item_id;
+                                $_POST['warehouse_id']=$data->warehouse_id;
                                 $_POST['qty'] = $data->qc_qty;
                                 $_POST['rate'] = $data->cogs_price;
                                 $_POST['batch'] = $new_batch;
@@ -89,19 +89,19 @@ if(isset($_POST['checked'])){
 
 
                               }
-          if (($_POST[dr_amount_1] > 0) && ($_POST[cr_amount_2] > 0)) {
-            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST[ledger_1], $_POST[narration_1], $_POST[dr_amount_1],0, Purchase_Returned, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+          if (($_POST['dr_amount_1'] > 0) && ($_POST['cr_amount_2'] > 0)) {
+            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'],0, 'Purchase_Returned', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
             }
-          if (($_POST[ledger_2] > 0) && ($_POST[cr_amount_2] > 0)) {
-            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST[ledger_2], $_POST[narration_1],0, $_POST[cr_amount_2], Purchase_Returned, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+          if (($_POST['ledger_2'] > 0) && ($_POST['cr_amount_2'] > 0)) {
+            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST['ledger_2'], $_POST['narration_1'],0, $_POST['cr_amount_2'], 'Purchase_Returned', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
             }
-          if (($_POST[ledger_3] > 0) && ($_POST[cr_amount_3] > 0)) {
-            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST[ledger_3], $_POST[narration_1],0, $_POST[cr_amount_3], Purchase_Returned, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+          if (($_POST['ledger_3'] > 0) && ($_POST['cr_amount_3'] > 0)) {
+            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST['ledger_3'], $_POST['narration_1'],0, $_POST['cr_amount_3'], 'Purchase_Returned', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
             }
-          if (($_POST[ledger_4] > 0) && ($_POST[cr_amount_4] > 0)) {
-            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST[ledger_4], $_POST[narration_1],0, $_POST[cr_amount_4], Purchase_Returned, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+          if (($_POST['ledger_4'] > 0) && ($_POST['cr_amount_4'] > 0)) {
+            add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_1'],0, $_POST['cr_amount_4'], 'Purchase_Returned', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
             }
-        $up_master=mysqli_query($conn,"UPDATE ".$table." SET status='COMPLETED',checked_by_acc='".$_SESSION[userid]."',checked_by_acc_at='".$todaysss."' where ".$unique."=".$$unique."");
+        $up_master=mysqli_query($conn,"UPDATE ".$table." SET status='COMPLETED',checked_by_acc='".$_SESSION['userid']."',checked_by_acc_at='".$todaysss."' where ".$unique."=".$$unique."");
         $up_details=mysqli_query($conn,"UPDATE ".$table_details." SET status='COMPLETED' where ".$unique_details."=".$$unique."");
         $type=1;
         unset($_POST);
@@ -111,7 +111,7 @@ if(isset($_POST['checked'])){
 } // prevent_multi_submit
 
 
-if(isset($_POST[viewreport])):
+if(isset($_POST['viewreport'])):
 $sql="Select p.id,p.id,p.ref_no as Referance,p.remarks,p.return_date as date,w.warehouse_name,v.vendor_name,
 concat(u.fname,', At: ',p.entry_at) as prepared_by,
 concat((SELECT fname from users where user_id=p.checked_by_qc),', At: ',checked_by_qc_at) as QC_By,
@@ -126,7 +126,7 @@ vendor v
   p.entry_by=u.user_id and
  w.warehouse_id=p.warehouse_id and
  v.vendor_id=p.vendor_id and
- p.return_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' group by p.id order by p.".$unique." DESC ";
+ p.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' group by p.id order by p.".$unique." DESC ";
 else :
 $sql="Select p.id,p.id,p.ref_no as Referance,p.remarks,p.return_date,w.warehouse_name,v.vendor_name,
 concat(u.fname,', At: ',p.entry_at) as prepared_by,
@@ -187,7 +187,19 @@ vendor v
                               <td style="vertical-align:middle"><input class="form-control col-md-7 col-xs-12" style="width: 80px; font-size: 11px; text-align:right" value="<?=$data->amount;?>" readonly type='text' id='sum<?=$data->did?>' name='sum<?=$data->did?>' class='sum' /></td>
                             </tr><?php $total_amount=$total_amount+$data->amount;
 $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
-                          }?>
+                          }
+                        $VAT=find_a_field('purchase_return_master','VAT','id='.$_GET['id']);
+                        if($VAT>0){
+                            $VAT_amount = ($cogs_amount/100)*$VAT;
+                            $total_amount = $total_amount+$VAT_amount;
+                            $cogs_amount = $cogs_amount;
+                        } else
+                        {
+                            $total_amount = $total_amount;
+                            $cogs_amount = $cogs_amount;
+
+                        }
+                          ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="9" style="font-weight:bold; font-size:11px" align="right">Total Inventory Return in Value = </td>
@@ -238,7 +250,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                             <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_2" readonly value="<?=$cogs_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                         </tr>
 
-                        <?php $total_VAT=find_a_field('VAT_mushak_6_3_details','SUM(amount_of_VAT)','source="Purchase_Returned" and do_no='.$_GET[id]); if($total_VAT>0):?>
+                        <?php if($VAT>0):?>
                         <tr>
                             <td style="text-align: center;vertical-align:middle">3</td>
                             <td style="text-align: center;vertical-align:middle">VAT Account</td>
@@ -248,10 +260,10 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                                 </select>
                             </td>
                             <td style="text-align: right; vertical-align:middle"><input type="text" name="dr_amount_3" readonly value="0.00" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                            <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_3" readonly value="<?=$total_VAT;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                            <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_3" readonly value="<?=$VAT_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                         </tr>
                         <?php endif; $other_income=$total_amount-($cogs_amount+$total_VAT); ?>
-                        <tr>
+                        <!--tr>
                             <td style="text-align: center; vertical-align:middle">4</td>
                             <td style="text-align: center; vertical-align:middle">Income Ledger</td>
                             <td style="vertical-align:middle">
@@ -261,7 +273,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                             </td>
                             <td style="text-align: right;vertical-align:middle"><input type="text" name="dr_amount_4" readonly value="<?php if($other_income<0) echo substr($other_income,1); else echo '0.00';?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                             <td style="text-align: right;vertical-align:middle"><input type="text" name="cr_amount_4" readonly value="<?php if($other_income>0) echo $other_income; else echo '0.00';?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                        </tr><?php  ?>
+                        </tr---><?php  ?>
                         </tbody>
                     </table>
 

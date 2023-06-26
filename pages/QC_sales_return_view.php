@@ -66,7 +66,7 @@ if(prevent_multi_submit()){
             $_POST['batch_no'] = find_a_field('lc_lc_received_batch_split','batch_no','batch='.$row['batch']);
             $_POST['item_id'] = $row['item_id'];
             $_POST['qty'] = $row['total_qty'];
-            $_POST['rate'] = find_a_field('lc_lc_received_batch_split','rate','item_id="'.$row['item_id'].'" and batch='.$row['batch']);
+            $_POST['rate'] = $row['cogs_rate'];
             $_POST['batch'] = $new_batch;
             $_POST['mfg'] = $row['expiry_date'];
             $_POST['status'] = 'PROCESSING';

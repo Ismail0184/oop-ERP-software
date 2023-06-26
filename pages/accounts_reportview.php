@@ -673,7 +673,7 @@ j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$_POST['t_date']."' and
 i.brand_id in ('10','11','12')
-group by j.item_id ".$order_by."";?>
+group by j.item_id";?>
 <?=reportview($sql,'Present Stock',100)?>
 
 

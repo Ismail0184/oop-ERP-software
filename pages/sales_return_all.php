@@ -47,7 +47,7 @@ if(prevent_multi_submit()){
 //for single FG Add...........................
     if(isset($_POST['add']))
     {  if($_POST['total_qty']>0) {
-        $_POST['pkt_size']=getSVALUE("item_info", "pack_size", " where item_id='$_POST[item_id]'");
+        $_POST['pkt_size']=find_a_field("item_info", "pack_size", "item_id='".$_POST['item_id']);
         $_POST['pkt_unit']=$_POST['total_unit'];
         $_POST['status']="UNCHECKED";
         $_POST['entry_by'] = $_SESSION['userid'];

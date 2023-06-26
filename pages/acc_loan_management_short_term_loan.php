@@ -150,6 +150,9 @@ if(prevent_multi_submit()){
             echo "<script>self.opener.location = '$page'; self.blur(); </script>";
             echo "<script>window.close(); </script>";
         }
+
+
+
 //for Delete..................................
         if(isset($_POST['delete']))
         {   $condition=$unique."=".$$unique;
@@ -160,6 +163,14 @@ if(prevent_multi_submit()){
             echo "<script>self.opener.location = '$page'; self.blur(); </script>";
             echo "<script>window.close(); </script>";
         }}}
+
+if(isset($_POST['closeSTL']))
+{
+    mysqli_query($conn, "UPDATE acc_short_term_loan SET status='Settled'  where id=".$_GET['id']);
+    echo "<script>self.opener.location = '$page'; self.blur(); </script>";
+    echo "<script>window.close(); </script>";
+}
+
 if(isset($$unique))
 {   $condition=$unique."=".$$unique;
     $data=db_fetch_object($table,$condition);
@@ -342,6 +353,19 @@ while($data=mysqli_fetch_object($result)){
                                     </div>
                                 <?php endif; ?>
                             </form>
+                            <?php if($_GET[$unique]):  ?>
+                            <form action="" method="post">
+
+                                    <div class="form-group" style="margin-left:40%">
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <?php
+                                            $status =find_a_field('acc_short_term_loan','status','id='.$_GET['id']) ;
+                                            if($status!=='Settled'){?>
+                                            <button type="submit" name="closeSTL" style="font-size:12px" class="btn btn-success">Close STL</button><?php }?>
+                                        </div>
+                                    </div>
+                            </form>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
