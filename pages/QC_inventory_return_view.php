@@ -29,7 +29,7 @@ group by d.id';
 
 if(prevent_multi_submit()){
 if (isset($_POST['returned'])) {
-        $_POST['returned_by']=$_SESSION[userid];
+        $_POST['returned_by']=$_SESSION['userid'];
         $_POST['returned_at']=time();
         $_POST['status']="RETURNED";
         $crud->update($unique);
@@ -42,7 +42,7 @@ $data2=mysqli_query($conn, $res_details);
                          while($data=mysqli_fetch_object($data2)){
                             $idget=$data->id;
 $up=mysqli_query($conn, "UPDATE purchase_return_details SET qc_qty='".$_POST['qty'.$idget]."', status='CHECKED' where m_id='".$_GET[$unique]."' and id='".$idget."'");  }
-$up=mysqli_query($conn, "UPDATE purchase_return_master SET status='CHECKED',checked_by_qc='".$_SESSION[userid]."',checked_by_qc_at='".$todaysss."' where id=".$_GET[$unique]." ");
+$up=mysqli_query($conn, "UPDATE purchase_return_master SET status='CHECKED',checked_by_qc='".$_SESSION['userid']."',checked_by_qc_at='".$todaysss."' where id=".$_GET[$unique]." ");
 unset($_POST);
 echo "<script>self.opener.location = '$page'; self.blur(); </script>";
 echo "<script>window.close(); </script>";
@@ -53,11 +53,11 @@ echo "<script>window.close(); </script>";
 $sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),upp.* FROM
 user_plant_permission upp,
 warehouse w  WHERE  upp.warehouse_id=w.warehouse_id and
-upp.user_id=".$_SESSION[userid]." and upp.status>0
+upp.user_id=".$_SESSION['userid']." and upp.status>0
 order by w.warehouse_id";
 
 
-if (isset($_POST[viewreport])){
+if (isset($_POST['viewreport'])){
     $res='select m.id,m.id,m.ref_no,m.return_date as rdate,m.remarks,m.ref_no,w.warehouse_name,v.vendor_name,u.fname as entry_by,m.entry_at,m.status
     from purchase_return_master m,warehouse w,vendor v,users u where m.warehouse_id=w.warehouse_id and m.vendor_id=v.vendor_id and m.entry_by=u.user_id and m.section_id='.$_SESSION['sectionid'].' and m.company_id='.$_SESSION['companyid'].' and m.warehouse_id='.$_POST[warehouse_id].' and m.return_date between "'.$_POST[f_date].'" and "'.$_POST[t_date].'" group by m.id order by m.id desc';
   } else {
@@ -163,17 +163,17 @@ if (isset($_POST[viewreport])){
          <?php if(!isset($_GET[$unique])): ?>
             <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
                 <table align="center" style="width: 50%;">
-                    <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                         <td style="width:10px; text-align:center"> -</td>
-                        <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                        <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                         <td style="width:10px; text-align:center"> -</td>
                         <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="warehouse_id" id="warehouse_id">
                                 <option selected></option>
-                                <?=advance_foreign_relation($sql_plant,$_POST[warehouse_id]);?>
+                                <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_POST['warehouse_id']);?>
                             </select></td>
                         <td style="padding: 10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Return Challan</button></td>
                     </tr></table>
          </form>
-         <?=$crud->report_templates_with_status($res,$title);?>
-         <?php endif;?>
-         <?=$html->footer_content();mysqli_close($conn);?>
+<?=$crud->report_templates_with_status($res,$title);?>
+<?php endif;?>
+<?=$html->footer_content();mysqli_close($conn);?>

@@ -19,7 +19,7 @@ $remarks=$info->remarks;
 $entry_time=$info->entry_time;
 $chalan_date=$info->chalan_date;
 $do_no=$info->do_no;
-$commissionGET = find_a_field('sale_do_master','commission','do_no='.$_GET[do_no]);
+$commissionGET = find_a_field('sale_do_master','commission','do_no='.$_GET['do_no']);
 $item_ex[]=$info->item_ex;
 $order_no[]=$info->order_no;
 $store_sl=$info->driver_name;
@@ -159,14 +159,7 @@ font-size: 14px
                   <td width="92" align="center" bgcolor="#FFFFFF"><strong>Total Cash Discount</strong> </td>
                   <td width="60" align="center" bgcolor="#FFFFFF"><strong>Invoice Value</strong></td>
               </tr>
-
-
-
-
               <?php
-
-
-
               $go=mysqli_query($conn, "Select do_no from sale_do_chalan where chalan_no='".$_GET['do_no']."'");
               $donos=mysqli_fetch_array($go);
               $result=mysqli_query($conn, "Select sdd.*,i.* from sale_do_details sdd, item_info i where sdd.do_no='".$_GET['do_no']."' and sdd.item_id=i.item_id order by sdd.id");
@@ -180,7 +173,7 @@ font-size: 14px
                       <td width="8%" align="center" valign="middle"><?=($row['unit_price']>0)? number_format($row['unit_price'],2) : '-';?></td>
                       <td width="8%" align="center" valign="middle"><?=$row['dist_unit'];?></td>
                       <td width="8%" align="right" valign="middle">
-                          <?  if($row['unit_price']>0){ echo $sales_cash_discount = find_a_field('sale_do_details','total_amt*-1','do_no='.$do_no.' and item_id=1096000100010312 and gift_on_item='.$row[item_id]); $tot_sales_cash_discount+=$sales_cash_discount;} ?>
+                          <?  if($row['unit_price']>0){ echo $sales_cash_discount = find_a_field('sale_do_details','total_amt*-1','do_no='.$do_no.' and item_id=1096000100010312 and gift_on_item='.$row['item_id']); $tot_sales_cash_discount+=$sales_cash_discount;} ?>
                       </td>
                       <td width="8%" align="right" valign="middle"><?=($row['total_amt']>0)? number_format($row['total_amt'],2) : '-';?></td>
 
@@ -259,8 +252,8 @@ font-size: 14px
             <tr>
                 <td colspan="2" style="font-size:12px"><em>3. Bank Details: <strong>A/C Name-</strong> <?=find_a_field('bank_account_name','account_name','id='.$dealer->bank_account)?></em>
                     <?php
-                    $res=mysql_query("select ba.*,b.* from bank_account ba,bank b where b.BANK_CODE=ba.BANK_CODE and ba.account_code=".$dealer->bank_account." group by ba.id");
-                    while($data=mysql_fetch_object($res)){ ?>
+                    $res=mysqli_query($conn, "select ba.*,b.* from bank_account ba,bank b where b.BANK_CODE=ba.BANK_CODE and ba.account_code=".$dealer->bank_account." group by ba.id");
+                    while($data=mysqli_fetch_object($res)){ ?>
                         <table width="100%" border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <td style="font-size:12px">
@@ -313,7 +306,7 @@ font-size: 14px
 
           <?=$_SESSION['company_address']?>
 
-      <br />
+      <br /><?php $widdd=$_SESSION['warehouse'];  ?>
       Tel: +88029860176 | 9860178, <span class="style3">VAT Reg. No. <?php if($widdd=='5'){ echo '000702484'; }
 	  if($widdd=='12'){ echo '000851876'; }
 	   ?></span><br />
@@ -325,6 +318,5 @@ font-size: 14px
       <div class="footer1"> </div></td>
   </tr>
 </table>
-
 </body>
 </html>
