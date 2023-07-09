@@ -162,7 +162,7 @@ font-size: 14px
               <?php
               $go=mysqli_query($conn, "Select do_no from sale_do_chalan where chalan_no='".$_GET['do_no']."'");
               $donos=mysqli_fetch_array($go);
-              $result=mysqli_query($conn, "Select sdd.*,i.* from sale_do_details sdd, item_info i where sdd.do_no='".$_GET['do_no']."' and sdd.item_id=i.item_id order by sdd.id");
+              $result=mysqli_query($conn, "Select sdd.*,i.* from sale_do_details sdd, item_info i where sdd.do_no='".$_GET['do_no']."' and sdd.item_id=i.item_id and sdd.item_id not in ('1096000100010312') order by sdd.id");
               while($row=mysqli_fetch_array($result)){
                   ?>
                   <tr>
