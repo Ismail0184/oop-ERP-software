@@ -650,7 +650,7 @@ IF(sdd.total_amt>'0', 'sales','') as sales_for
 from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
 where sdd.depot_id=w.warehouse_id and
       sdd.dealer_code=d.dealer_code and
-      d.dealer_category='3' and 
+      d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
       sdd.item_id=i.item_id and 
@@ -686,7 +686,7 @@ d.dealer_name_e as 'Dealer Name',d.dealer_type,t.AREA_NAME as 'Territory',r.BRAN
 IF(SUM(j.dr_amt-j.cr_amt)>'0',CONCAT(' (Dr) ', SUM(j.dr_amt-j.cr_amt)),CONCAT('(Cr) ',SUBSTR(SUM(j.dr_amt-j.cr_amt),2))) as balance                                               
 from dealer_info d,branch r,area t,journal j
 where 
-      d.dealer_category='3' and 
+      d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
       d.account_code=j.ledger_id group by d.account_code
@@ -848,7 +848,7 @@ d.dealer_name_e as 'Dealer Name',d.dealer_type,t.AREA_NAME as 'Territory',r.BRAN
                                             
 from dealer_info d,branch r,area t
 where 
-      d.dealer_category='3' and 
+      d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE  group by d.account_code
       ";
