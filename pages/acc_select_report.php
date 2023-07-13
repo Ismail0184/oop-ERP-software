@@ -824,6 +824,23 @@ function reload1(form)
                         </div>
                     </div>
 
+                <?php elseif ($report_id=='1012008'): ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
+                                <?php if($_SESSION['userid']=='10056'){?>
+                                    <option value="3" selected>Believe Pte Ltd</option>
+                                <?php } elseif($_SESSION['userid']=='10057') { ?>
+                                    <option value="4" selected>BOSCH</option>
+                        <?php } else { ?><?php } ?>
+                                <option></option>
+                                <option value="3">Believe Pte Ltd</option>
+                                <option value="4">BOSCH</option>
+                            </select>
+                        </div>
+                    </div>
+
                 <?php elseif ($report_id=='1005004'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Year <span class="required text-danger">*</span></label>

@@ -9,23 +9,17 @@ $page='acc_mushak_6.3.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
 if (isset($_POST['viewreport'])) {
-    $res = "SELECT  m.do_no,m.do_no as 'DO',vms.mushak_no as 'Mushak',vms.issue_date as 'VAT Date',ft.term_year as fiscal_year,m.do_date,m.do_type,d.dealer_name_e as customer_name,w.warehouse_name as warehouse,uam.fname as prepared_by,m.entry_at as prepared_at,m.challan_date as delivered_time,m.mushak_challan_status as status FROM
+    $res = "SELECT  m.do_no,m.do_no,m.do_date,m.do_type,d.dealer_name_e as customer_name,w.warehouse_name as warehouse,uam.fname as prepared_by,m.entry_at as prepared_at,m.challan_date as delivered_time,m.mushak_challan_status as status FROM
 							 sale_do_master m,
 							dealer_info d,
 							users uam,
-							warehouse w,
-							VAT_mushak_6_3 vms,
-							fiscal_term ft	
+                            warehouse w
 							 where
 							 m.dealer_code=d.dealer_code and
-							 m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
-							 m.status='COMPLETED' and
+							 m.status in ('COMPLETED') and
 							 m.entry_by=uam.user_id and
-                             m.depot_id=w.warehouse_id and
-                             m.depot_id='".$_POST['depot_id']."' and
-                             m.do_no=vms.do_no and 
-                             vms.fiscal_year=ft.fiscal_year and
-                             vms.source in ('Sales')
+               m.depot_id=".$_POST['depot_id']." and
+               m.depot_id=w.warehouse_id
 							  order by m.do_no"; } else {
     $res = "SELECT  m.do_no,m.do_no,m.do_date,m.do_type,d.dealer_name_e as customer_name,w.warehouse_name as warehouse,uam.fname as prepared_by,m.entry_at as prepared_at,m.challan_date as delivered_time FROM
 							 sale_do_master m,
