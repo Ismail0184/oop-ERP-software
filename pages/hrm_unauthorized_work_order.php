@@ -145,9 +145,9 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
  <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >    
      <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Authorized Work Order</button></td>
             </tr></table>
      
@@ -166,7 +166,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                      <th style="width:15%">Entry By</th>
                      <th style="width:15%">Checked By</th>
                      <th style="width:15%">Recommended By</th>
-                     <?php if(isset($_POST[viewreport])){ ?>
+                     <?php if(isset($_POST['viewreport'])){ ?>
                      <th style="width:15%">Authorized By</th>
 					 <?php } ?>                     
                      <th style="width:10%">Current Status</th>
@@ -174,7 +174,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                      </thead>
                       <tbody>
                  <?php
-				 if(isset($_POST[viewreport])){	
+				 if(isset($_POST['viewreport'])){
 				 $res=mysqli_query($conn, 'select v.*,r.'.$unique.',r.'.$unique.',r.'.$unique_field.',r.po_date,r.entry_by,r.status as current_status,r.checkby,r.checkby_date,r.entry_at,r.recommended,r.recommended_date,r.authorise,r.authorized_date,
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM  
 							personnel_basic_info p2,
@@ -190,7 +190,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
 				  vendor v
 				  WHERE r.authorise='.$_SESSION['PBI_ID'].' and 
 				  r.vendor_id=v.vendor_id and 
-				  r.po_date between "'.$_POST[f_date].'" and "'.$_POST[t_date].'"		  
+				  r.po_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"		  
 				   order by r.'.$unique.' DESC');
 				   
 				   } else {
@@ -223,7 +223,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)" style="vertical-align: middle"><?=$req->entry_by;?><br><?=$req->entry_at;?></td>
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)" style="vertical-align: middle"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$req->checkby);?><br><?=$req->checkby_date;?></td>
                                  <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)" style="vertical-align: middle"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$req->recommended);?><br><?=$req->recommended_date;?></td>
-                                <?php if(isset($_POST[viewreport])){ ?>
+                                <?php if(isset($_POST['viewreport'])){ ?>
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)" style="vertical-align: middle"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$req->authorise);?><br><?=$req->authorized_date;?></td>
                                 <?php } ?>                                
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)" style="vertical-align: middle"><?=$req->current_status;?></td>
@@ -281,9 +281,6 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                                   </strong></td>
                           </tr>
                       <? }?>
-
-
-
                           <tr style="font-weight: bold">
 
                               <td colspan="6" align="right">TOTAL:</td>
@@ -291,11 +288,6 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                                       <?  echo number_format(($total),2);?>
                                   </strong></td>
                           </tr>
-
-
-
-
-
                       <? if($tax_ait>0){?>
                           <tr style="font-weight: bold">
                               <td colspan="6" align="right">AIT/Tax (<?=$tax_ait?>%): </td>

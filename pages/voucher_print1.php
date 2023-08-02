@@ -111,7 +111,7 @@ if(isset($_REQUEST['vo_no']))
 
 $data1=mysqli_fetch_row(mysqli_query($conn, $sql1));
 $user_name = getSVALUE('users','fname',"where user_id=".$data1[2]);
-$vo_date=$data1[0];
+$vo_date=find_a_field('journal','jvdate','tr_no='.$vo_no);
 $cccode=$data1[1];}
 $pi=0;
 $cr_amt=0;

@@ -16,9 +16,13 @@ $dealer_master=find_all_field('dealer_info','','dealer_code='.$_GET['id']);
 if(prevent_multi_submit()) {
 if(isset($_POST['modify']))
 {   $_POST['dealer_code']=$_GET['id'];
-    $_POST['permission_by']=$_SESSION['usrid'];
-    $crud->insert();
+    $_POST['entry_by']=$_SESSION['userid'];
+    $_POST['permission_by']=$_SESSION['userid'];
+    $_POST['entry_at']= date('Y-m-d H:i:s');
     $_POST['credit_limit']=$_POST['credit_limit'];
+
+    $crud->insert();
+
     $crud      =new crud($table_dealer_info);
     $crud->update($unique_dealer);
     $type=1;
@@ -82,18 +86,16 @@ if(isset($$unique)>0)
     <div class="modal-body">
 <?php endif; ?>
     <form id="form2" name="form2" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
-        <? require_once 'support_html.php';?>
         <div class="form-group" style="width: 100%">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Dealer Name:</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-                <input type="hidden" id="<?=$unique?>" name="<?=$unique?>" value="<?=$$unique;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size: 12px" >
                 <input type="text" readonly value="<?=$dealer_master->dealer_name_e;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size: 12px" >
             </div></div>
 
         <div class="form-group" style="width: 100%">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 50%">Current Account Balance:</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-                <input type="number" id="credit_limit" readonly name="credit_limit" value="<?=find_a_field_sql('select sum(cr_amt-dr_amt) from journal where ledger_id='.$dealer_master->ledger_id);?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size: 12px" >
+                <input type="number" id="credit_limit" readonly name="credit_limit" value="<?=find_a_field('journal','SUM(cr_amt-dr_amt)','ledger_id='.$dealer_master->account_code);?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size: 12px" >
             </div></div>
 
         <div class="form-group" style="width: 100%">
@@ -107,8 +109,8 @@ if(isset($$unique)>0)
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <select class="select2_single form-control" name="credit_limit_time" id="credit_limit_time" style="width: 100%; font-size: 12px">
                     <option></option>
-                    <option value="Longtime">Unlimited</option>
-                    <option value="For one time DO">Once only</option>
+                    <option value="Longtime" <?php if($credit_limit_time=='Longtime') {?> selected <?php } ?>>Unlimited</option>
+                    <option value="For one time DO" <?php if($credit_limit_time=='For one time DO') {?> selected <?php } ?>>Once only</option>
                 </select></div></div>
         <div class="form-group" style="width: 100%">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 50%">Referance / Remarks:</label>
@@ -126,7 +128,16 @@ if(isset($$unique)>0)
         <?php else : ?>
             <div class="form-group" style="margin-left:40%">
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-primary">Add New</button></div></div> <?php endif; ?></form></div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
+                    <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-primary">Add New</button>
+                </div>
+            </div>
+        <?php endif; ?>
+    </form>
+    </div>
+    </div>
+    </div>
+<?php if(!isset($_GET[$unique])): ?>
+    </div><?php endif; ?>
 
 
 

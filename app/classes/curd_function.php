@@ -1747,6 +1747,7 @@ function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pa
 
 function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_data,$page,$colspan,$row_get,$commission){
     global $conn;
+    $str = '';
     if($sql==NULL) return NULL;
     $str.='
 		<form action="'.$page.'"  name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">';
@@ -1764,6 +1765,7 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
             $str .='<th style="width:5%; text-align:center; vertical-align:middle">Action</th></tr></thead><tbody>';
             $c=0;
             if (mysqli_num_rows($result)>0):
+                $amount = 0;
                 while($row = mysqli_fetch_array($result)):
                     $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($row[0]).'</td>';
                     for($i=1;$i<$cols;$i++):

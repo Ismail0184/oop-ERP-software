@@ -35,9 +35,9 @@ d.".$unique."=".$$unique." order by d.id";
 if(prevent_multi_submit()){
   if(isset($_POST['reprocess'])){
     if($master->do_section=='Special_invoice'){
-    $_SESSION[select_dealer_do_SP]=$master->dealer_code;
+    $_SESSION['select_dealer_do_SP']=$master->dealer_code;
       $_SESSION['unique_master_for_SP']=$$unique;} else {
-        $_SESSION[select_dealer_do_regular]=$master->dealer_code;
+        $_SESSION['select_dealer_do_regular']=$master->dealer_code;
       $_SESSION['unique_master_for_regular']=$$unique;  
       }
       echo "<script>self.opener.location = '$target_page'; self.blur(); </script>";
@@ -68,18 +68,16 @@ if(prevent_multi_submit()){
           
           while ($fifocheckrow=mysqli_fetch_object($fifocheck)){
               if ($_SESSION['bqty_while_do_send']<=$fifocheckrow->qty && $_SESSION['bqty_while_do_send']>0 && $fifocheckrow->qty>0){
-                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','$_SESSION[bqty_while_do_send]','$fifocheckrow->rate','".$_SESSION[bqty_while_do_send]*$fifocheckrow->rate."','Sales','$data->do_no','$_SESSION[userid]','$sent_to_warehouse_at','$ip','$data->tr_no','$_SESSION[sectionid]','$_SESSION[companyid]',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
+                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','".$_SESSION['bqty_while_do_send']."','$fifocheckrow->rate','".$_SESSION['bqty_while_do_send']*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->tr_no','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
                   $_SESSION['bqty_while_do_send']= 0;
               } else if ($_SESSION['bqty_while_do_send']>=$fifocheckrow->qty && $_SESSION['bqty_while_do_send']>0 && $fifocheckrow->qty>0){
-                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','$fifocheckrow->qty','$fifocheckrow->rate','".$fifocheckrow->qty*$fifocheckrow->rate."','Sales','$data->do_no','$_SESSION[userid]','$sent_to_warehouse_at','$ip','$data->tr_no','$_SESSION[sectionid]','$_SESSION[companyid]',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
+                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','$fifocheckrow->qty','$fifocheckrow->rate','".$fifocheckrow->qty*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->tr_no','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
                   $_SESSION['bqty_while_do_send']= intval($_SESSION['bqty_while_do_send'])-$fifocheckrow->qty;
               }}
-
-
-
         }
         $up=mysqli_query($conn, "Update ".$table." set status='CHECKED',checked_by='$_SESSION[userid]',checked_at='$now',sent_to_warehuse_at='".$sent_to_warehouse_at."' where ".$unique."=".$$unique."");
-        $up=mysqli_query($conn, "Update ".$table_details." set status='CHECKED' where ".$unique."=".$$unique."");
+        $up3=mysqli_query($conn, "Update ".$table_details." set status='CHECKED' where ".$unique."=".$$unique."");
+
         $type=1;
         unset($_POST);
         echo "<script>self.opener.location = '$pages'; self.blur(); </script>";
@@ -88,7 +86,7 @@ if(prevent_multi_submit()){
 
 $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
 $accountbalance=find_a_field('journal','SUM(cr_amt-dr_amt)','ledger_id='.$dealer_master->account_code);
-$do_amount=find_a_field_sql('select sum(total_amt) from sale_do_details where do_no='.$_GET[do_no])-find_a_field('sale_do_master','commission_amount','do_no='.$_GET[do_no]);
+$do_amount=find_a_field_sql('select sum(total_amt) from sale_do_details where do_no='.$_GET['do_no'])-find_a_field('sale_do_master','commission_amount','do_no='.$_GET['do_no']);
 $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
 ?>
 
@@ -105,8 +103,6 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
 <?php if(isset($_GET[$unique])){
  require_once 'body_content_without_menu.php'; } else {
  require_once 'body_content.php'; } ?>
-
-
 
 <?php if(isset($_GET[$unique])){ ?>
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -137,16 +133,13 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                         d.item_id not in ('1096000100010312') and
                         d.".$unique."=".$$unique." group by d.item_id order by d.id";$query=mysqli_query($conn, $results);
                         while($data=mysqli_fetch_object($query)){
-
                             $present_stock_sql=mysqli_query($conn, "Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,
     REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
     from
     item_info i,
     journal_item j,
     lc_lc_received_batch_split bsp
-    
     where
-    
     j.item_id=i.item_id and
     j.warehouse_id='".$master->depot_id."' and
     bsp.batch=j.batch and 
@@ -156,8 +149,6 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
     $ps_data=mysqli_fetch_object($present_stock_sql);
                          
                             $available_stock=$ps_data->Available_stock_balance;
-                          
-                          
                           $unrec_qty=$available_stock-$data->total_unit;?>
                             <tr <?php if($unrec_qty<0){$cow++;?> style="background-color:red; color:white" <?php } ?>>
                                 <td style="width:3%; vertical-align:middle"><?=$i=$i+1; ?></td>
@@ -184,7 +175,7 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                             <td align="right" ><?=number_format($ttotalamount+$cash_discount,2);?></td>
                         </tr>
                         <?php
-                        $commission=find_a_field('sale_do_master','commission','do_no='.$_GET[do_no]);
+                        $commission=find_a_field('sale_do_master','commission','do_no='.$_GET['do_no']);
                         if($commission>0) { ?>
                         <tr style="font-weight: bold">
                             <td colspan="7" style="font-weight:bold; font-size:11px" align="right">Less: Commission</td>
@@ -195,8 +186,6 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                             <td style="text-align:right"><?=number_format(($ttotalamount+$cash_discount)-$master->commission_amount,2);?></td>
                         </tr>
                       <?php } ?>
-
-
                     </table>
                     <?php
                     if($cow<1){
