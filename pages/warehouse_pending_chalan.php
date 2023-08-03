@@ -189,6 +189,14 @@ $cash_discount_on_Raymond=mysqli_query($conn, "select SUM(sdd.total_amt) as tota
 $cd_data_RMND=mysqli_fetch_object($cash_discount_on_Raymond);
 $cd_data_RMND_total_amt = @$cd_data_RMND->total_amt;
 
+$cash_discount_on_Believe=mysqli_query($conn, "select SUM(sdd.total_amt) as total_amt from sale_do_details sdd,item_info i where sdd.gift_on_item=i.item_id and i.brand_id in ('10','11','12') and sdd.item_id='1096000100010312' and sdd.do_no='".$unique_GET."' group by sdd.do_no");
+$cd_data_Believe=mysqli_fetch_object($cash_discount_on_Believe);
+$cd_data_Believe_total_amt = @$cd_data_Believe->total_amt;
+
+$cash_discount_on_BOSCH=mysqli_query($conn, "select SUM(sdd.total_amt) as total_amt from sale_do_details sdd,item_info i where sdd.gift_on_item=i.item_id and i.brand_id in ('18') and sdd.item_id='1096000100010312' and sdd.do_no='".$unique_GET."' group by sdd.do_no");
+$cd_data_BOSCH=mysqli_fetch_object($cash_discount_on_BOSCH);
+$cd_data_BOSCH_total_amt = @$cd_data_BOSCH->total_amt;
+
 $narration=$do_type_get." to ".$dealer_master_dealer_name_e.', Do No # '.$unique_GET.', Challan No # '.$find_chalan_no;
 if (isset($_POST['viewreport'])) {
     $res = "SELECT  m.do_no,m.do_no,m.do_date,m.do_type,d.dealer_name_e as customer_name,m.remarks,concat(uam.fname,'<br>at: ',m.entry_at) as entry_by,m.sent_to_warehuse_at as sent_at,m.status FROM

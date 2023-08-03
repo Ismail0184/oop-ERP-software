@@ -1,14 +1,12 @@
 <?php require_once 'support_file.php'; ?>
 <?=(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
 $title='MAN Checked';
-
 $now = time();
 $unique = 'id';
 $unique_field = 'MAN_ID';
 $table = "MAN_master";
 $table_details = "MAN_details";
 $unique_details = "m_id";
-
 $page = 'QC_MAN_checked.php';
 $re_page = 'Incoming_Material_Received.php';
 $ji_date = date('Y-m-d');
@@ -16,8 +14,6 @@ $crud = new crud($table);
 $$unique = $_GET[$unique];
 $targeturl = "<meta http-equiv='refresh' content='0;$page'>";
 $masterDATA = find_all_field('purchase_return_master', '', 'id=' . $_GET[$unique]);
-
-
 if(isset($_POST['returned']))
 {   $up_master="UPDATE ".$table." SET status='RETURNED' where ".$unique."=".$$unique."";
     $update_table_master=mysqli_query($conn, $up_master);
@@ -30,15 +26,11 @@ if(isset($_POST['returned']))
 }
 
 if (prevent_multi_submit()) {
-
-
-
 //for Delete..................................
     if (isset($_POST['Deleted'])) {
         $crud = new crud($table_details);
         $condition = $unique_details . "=" . $$unique;
         $crud->delete_all($condition);
-
         $crud = new crud($table);
         $condition = $unique . "=" . $$unique;
         $crud->delete($condition);
@@ -134,15 +126,14 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
 												 ; ?>
                                                 <tr style="background-color:#FFF">
                                                     <td style="width:2%; text-align:center"><?=$j=$j+1;?></td>
-                                                    <td style=" text-align:center"><?php echo $MANdetrow[item_id]; ?></td>
-                                                    <td style="width:5%; text-align:center"><?=$MANdetrow[finish_goods_code];?></td>
-                                                    <td style="text-align:left"><?=$MANdetrow[item_name];?></td>
-                                                    <td style="width:5%; text-align:center"><?=$MANdetrow[unit_name];?></td>
-                                                    <td style="width:8%; text-align:right"><?php echo $MANdetrow[qty]; ?></td>
-                                                    <td style="width:15%; text-align:right"><?php echo $MANdetrow[mfg]; ?></td>
-                                                    <td style="width:10%; text-align:right"><?php echo $MANdetrow[no_of_pack]; ?></td>                                                    <td style="width:12%; text-align:right"><?=$last_row->man_date; ?></td>
+                                                    <td style=" text-align:center"><?php echo $MANdetrow['item_id']; ?></td>
+                                                    <td style="width:5%; text-align:center"><?=$MANdetrow['finish_goods_code'];?></td>
+                                                    <td style="text-align:left"><?=$MANdetrow['item_name'];?></td>
+                                                    <td style="width:5%; text-align:center"><?=$MANdetrow['unit_name'];?></td>
+                                                    <td style="width:8%; text-align:right"><?php echo $MANdetrow['qty']; ?></td>
+                                                    <td style="width:15%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
+                                                    <td style="width:10%; text-align:right"><?php echo $MANdetrow['no_of_pack']; ?></td>                                                    <td style="width:12%; text-align:right"><?=$last_row->man_date; ?></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->qty; ?></td>
-
                                                     <!--td align="center" style="width:10%">
                                                         <?php $dones = getSVALUE('QC_Inspection_Work_Sheet_master','COUNT(item_id)','where '.$unique.'="'.$_GET[man_id].'" and item_id='.$MANdetrow[item_id]); if($dones>0){ ?>
                                                             <img src="done.png" style="margin-left:10px" height="25" width="25" />
@@ -152,10 +143,9 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
                                                         </a></td-->
                                                 </tr>
                                                 <?php
-                                                $tqty=$tqty+$MANdetrow[qty];
-                                                $tamount=$tqty+$MANdetrow[amount];
+                                                $tqty=$tqty+$MANdetrow['qty'];
+                                                $tamount=$tqty+$MANdetrow['amount'];
                                             } ?>
-
                                             <tr><td colspan="5">Total</td>
                                                 <td style="text-align:right"><?php echo $tqty; ?></td>
                                                 <td style="text-align:right"></td><td style="text-align:right"></td>
@@ -214,9 +204,29 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
                                                 <td style="text-align:left"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[VAT_challan];?></strong></u></a></td>
                                                 <td style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[fname];?></td>
                                             </tr>
-                                        <?php } ?></tbody></table>
-                            </div></div></div>
+                                        <?php } ?>
+                                        </tbody>
+                                    </table>
+            </div>
+        </div>
+    </div>
 <?php } ?>
 
-<?=$html->footer_content();mysqli_close($conn);?>
 
+    <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
+        <table align="center" style="width: 50%;">
+            <tr>
+                <td>
+                    <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
+                </td>
+                <td style="width:10px; text-align:center"></td>
+                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td style="width:10px; text-align:center"></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
+            </tr>
+        </table>
+        <?=$crud->report_templates_with_status($resultss);?>
+    </form>
+
+
+<?=$html->footer_content();mysqli_close($conn);?>

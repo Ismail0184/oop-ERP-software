@@ -1,6 +1,5 @@
-<?php require_once 'support_file.php'; ?>
-<?=(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
-$page = 'sales_regular_invoice.php';
+<?php require_once 'support_file.php';
+$page = 'sales_regular_invoice1.php';
 $table_master='sale_do_master';
 $unique_master='do_no';
 $table_detail='sale_do_details';
@@ -71,19 +70,33 @@ if(prevent_multi_submit()){
                     $_POST['gift_id'] = $gift->id;
                     $gift_item = find_all_field('item_info','','item_id="'.$gift->gift_id.'"');
                     $_POST['item_id'] = $gift->gift_id;
-                    if($gift->gift_id== 1096000100010312){
-                        $_POST['unit_price'] = (-1)*($gift->gift_qty);
-                        $_POST['total_amt']  = (((int)($total_unit/$gift->item_qty))*($_POST['unit_price']));
-                        $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty)));
+
+                    if($gift->gift_id== 1096000100010312 && $gift->item_id!=='200010104' && $gift->item_qty!=='480') {
+                        $_POST['unit_price'] = (-1) * ($gift->gift_qty);
+                        $_POST['total_amt'] = (((int)($total_unit / $gift->item_qty)) * ($_POST['unit_price']));
+                        $_POST['total_unit'] = (((int)($total_unit / $gift->item_qty)));
                         $_POST['dist_unit'] = $_POST['total_unit'];
-                        $_POST['pkt_unit']  = '0.00';
-                        $_POST['d_price']  = '0.00';
-                        $_POST['pkt_size']  = '1.00';
-                        $_POST['t_price']   = '-1.00';
-                        $_POST['gift_type']=$gift->gift_type;
+                        $_POST['pkt_unit'] = '0.00';
+                        $_POST['d_price'] = '0.00';
+                        $_POST['pkt_size'] = '1.00';
+                        $_POST['t_price'] = '-1.00';
+                        $_POST['gift_type'] = $gift->gift_type;
                         $crud->insert();
                         unset($_POST);
-                    }else{
+
+                    } elseif($gift->gift_id== '1096000100010312' && $gift->item_id=='200010104' && $gift->item_qty=='480'){
+                        $_POST['unit_price'] = (-1) * ($gift->gift_qty);
+                        $_POST['total_amt'] = (((int)($total_unit / $gift->item_qty)) * ($_POST['unit_price']));
+                        $_POST['total_unit'] = (((int)($total_unit / $gift->item_qty)));
+                        $_POST['dist_unit'] = $_POST['total_unit'];
+                        $_POST['pkt_unit'] = '0.00';
+                        $_POST['d_price'] = '0.00';
+                        $_POST['pkt_size'] = '1.00';
+                        $_POST['t_price'] = '-1.00';
+                        $_POST['gift_type'] = $gift->gift_type;
+                        $crud->insert();
+                        unset($_POST);
+                    } else {
                         $in_stock_pcs = find_a_field('journal_item','sum(item_in)-sum(item_ex)','item_id="'.$gift_item->item_id.'" and warehouse_id="'.$_POST['depot_id'].'" ');
                         $_POST['pkt_size'] = $gift_item->pack_size;
                         $_POST['unit_price'] = '0.00';
@@ -92,12 +105,12 @@ if(prevent_multi_submit()){
                         $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty))*($gift->gift_qty));
                         if($gift_item->pack_size!=1){
                             $_POST['dist_unit'] = ($_POST['total_unit']%$gift_item->pack_size);
-                        }else{
+                        } else {
                             $_POST['dist_unit'] = $_POST['total_unit'];
                         }
                         if($gift_item->pack_size!=1){
                             $_POST['pkt_unit'] = (int)($_POST['total_unit']/$gift_item->pack_size);
-                        }else{
+                        } else {
                             $_POST['pkt_unit'] = 0;
                         }
                         $_POST['t_price'] = '0.00';
@@ -107,7 +120,7 @@ if(prevent_multi_submit()){
                         $_POST['inStock_Totalpcs']=$in_stock_pcs-$ordered_qty;
                         if($_POST['unit_price']==0&&$_POST['total_unit']==0){
                             echo '';
-                        }else
+                        } else
                             $crud->insert();
                         unset($_POST);
                     } // gift id

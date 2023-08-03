@@ -369,10 +369,10 @@ td{
     <table align="center" style="width: 50%;">
         <tr>
             <td>
-                <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
+                <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
             </td>
             <td style="width:10px; text-align:center"></td>
-            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
             <td style="width:10px; text-align:center"></td>
             <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
         </tr>
@@ -411,8 +411,8 @@ if($srn>0): ?>
                         </thead>
                         <tbody>
                         <?php
-                        $from_date=date('Y-m-d' , strtotime($_POST[f_date]));
-                        $to_date=date('Y-m-d' , strtotime($_POST[t_date]));
+                        $from_date=date('Y-m-d' , strtotime($_POST['f_date']));
+                        $to_date=date('Y-m-d' , strtotime($_POST['t_date']));
 
                             $resultss="Select prm.*,u.fname,v.vendor_name,(select SUM(amount) from grn_service_receive where custom_grn_no=prm.custom_grn_no) as srn_amount
 from 
@@ -430,15 +430,15 @@ vendor v
                             $is=$is+1;
                             ?>
                             <tr style="font-size:11px">
-                                <th style="text-align:center; cursor: pointer" onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)"><?=$is;?></th>
-                                <td onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows[custom_grn_no];?></a></td>
-                                <td onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows[rcv_Date]; ?></td>
-                                <td onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows[vendor_name];?></td>
-                                <td onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)" style="cursor: pointer; text-align:right"><?=number_format($rows[srn_amount],2);?></td>
-                                <td><a href="http://icpbd-erp.com/51816/cmu_mod/page/dc_documents/<?=$rows[man_id];?>_dc.pdf" target="_blank" style="text-decoration: underline; color: blue"><?=$rows[ch_no];?></a></td>
-                                <td><a href="http://icpbd-erp.com/51816/cmu_mod/page/vc_documents/<?=$rows[man_id];?>_vc.pdf" target="_blank" style="text-decoration: underline; color: blue"><?=$rows[VAT_challan];?></a></td>
-                                <td onclick="DoNavPOPUPs('<?=$rows[custom_grn_no];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows[fname];?></td>
-                                <td style="text-align:left;cursor: pointer" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[entry_at];?></td>
+                                <th style="text-align:center; cursor: pointer" onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)"><?=$is;?></th>
+                                <td onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows['custom_grn_no'];?></a></td>
+                                <td onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows['rcv_Date']; ?></td>
+                                <td onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows['vendor_name'];?></td>
+                                <td onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer; text-align:right"><?=number_format($rows['srn_amount'],2);?></td>
+                                <td><a href="http://icpbd-erp.com/51816/cmu_mod/page/dc_documents/<?=$rows['man_id'];?>_dc.pdf" target="_blank" style="text-decoration: underline; color: blue"><?=$rows['ch_no'];?></a></td>
+                                <td><a href="http://icpbd-erp.com/51816/cmu_mod/page/vc_documents/<?=$rows['man_id'];?>_vc.pdf" target="_blank" style="text-decoration: underline; color: blue"><?=$rows['VAT_challan'];?></a></td>
+                                <td onclick="DoNavPOPUPs('<?=$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows['fname'];?></td>
+                                <td style="text-align:left;cursor: pointer" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['entry_at'];?></td>
                             </tr>
                         <?php } ?></tbody></table>
 
@@ -446,7 +446,7 @@ vendor v
 <?php endif; } ?>
 
 
-<?php if(isset($_GET[item_id]) && ($_GET[line_id])){  ?>
+<?php if(isset($_GET['item_id']) && ($_GET['line_id'])){  ?>
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_content">
@@ -466,9 +466,9 @@ vendor v
                         </tr>
                         </thead>
                         <?php
-                        $item_status=find_a_field('purchase_receive','count(id)','item_id='.$_GET[item_id].' and id='.$_GET[line_id].' and batch_split_status in ("CHECKED") and pr_no='.$_GET[pr_no]);
-                        $item_name=find_a_field('item_info','item_name','item_id='.$_GET[item_id]);
-                        $rs="Select * from lc_lc_received_batch_split where ".$unique."=".$_GET[$unique]." and item_id=".$_GET[item_id]." and line_id=".$_GET[line_id]."";
+                        $item_status=find_a_field('purchase_receive','count(id)','item_id='.$_GET['item_id'].' and id='.$_GET['line_id'].' and batch_split_status in ("CHECKED") and pr_no='.$_GET['pr_no']);
+                        $item_name=find_a_field('item_info','item_name','item_id='.$_GET['item_id']);
+                        $rs="Select * from lc_lc_received_batch_split where ".$unique."=".$_GET[$unique]." and item_id=".$_GET['item_id']." and line_id=".$_GET['line_id']."";
                         $pdetails=mysqli_query($conn, $rs);
                         while($data=mysqli_fetch_object($pdetails)){
                             ?>

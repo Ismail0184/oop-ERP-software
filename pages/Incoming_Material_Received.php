@@ -201,7 +201,7 @@ function reload(form)
         float: right;
     }
 </style>
-<?php require_once 'body_content.php'; ?>
+<?php require_once 'body_content_nva_sm.php'; ?>
 <div class="col-md-12 col-sm-12 col-xs-12">
     <div class="x_panel">
         <div class="x_title">
@@ -290,7 +290,7 @@ function reload(form)
                         <td>
                             <select class="select2_single form-control" style="width:80%; font-size: 11px;" tabindex="-1" required="required"  name="vendor_code" id="vendor_code">
                                 <option></option>
-                                <?php foreign_relation('vendor', 'vendor_id', 'CONCAT(vendor_id," : ", vendor_name)', $vendor_code, '1','order by vendor_name'); ?>
+                                <?=foreign_relation('vendor', 'vendor_id', 'CONCAT(vendor_id," : ", vendor_name)', $vendor_code, '1','order by vendor_name'); ?>
                             </select>
                         </td>
                     </tr>
@@ -339,19 +339,19 @@ function reload(form)
             <tbody>
             <tr>
                 <td style="vertical-align:middle" align="center">
-                    <select class="select2_single form-control" style="width: 100%" tabindex="-1" required="required" name="item_id" id="item_id" <?php if(@$_GET['id']>0) : echo ''; else : ?>  onchange="javascript:reload(this.form)" <?php endif; ?> >
+                    <select class="select2_single form-control" style="width: 100%" tabindex="1" required="required" name="item_id" id="item_id" <?php if(@$_GET['id']>0) : echo ''; else : ?>  onchange="javascript:reload(this.form)" <?php endif; ?> >
                         <option></option>
                         <?=advance_foreign_relation($sql_item_id,($Searchitem_id!='')? $Searchitem_id : $edit_value_item_id);?>
                     </select>
                 </td>
                 <td style="vertical-align:middle" align="center">
-                    <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required"  name="po_no" id="po_no">
+                    <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="2"   name="po_no" id="po_no">
                         <option></option>
                         <?php foreign_relation('purchase_invoice', 'distinct po_no', 'po_no', $edit_value_po_no, 'item_id='.$PO_for_item.' and vendor_id='.$vendor_code.'','order by po_no'); ?>
                     </select>
                 </td>
                 <td style="vertical-align:middle; text-align: center">
-                    <input type="number" id="qty" style="width:99%; height:37px; font-weight:bold; text-align:center"  required="required"  name="qty" value="<?=$edit_value_qty?>" class="form-control col-md-7 col-xs-12" autocomplete="off" >
+                    <input type="number" id="qty" style="width:99%; height:37px; font-weight:bold; text-align:center" tabindex="3" required="required"  name="qty" value="<?=$edit_value_qty?>" class="form-control col-md-7 col-xs-12" autocomplete="off" >
                 </td>
                 <td style="vertical-align:middle;text-align: center">
                     <input type="date" id="mfg" style="width:99%; height:37px; font-size:11px; text-align:center"  min="<?=date('Y-m-d');?>"   name="mfg" placeholder="MFG" value="<?=$edit_value_mfg;?>" class="form-control col-md-7 col-xs-12"  >
