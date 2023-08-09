@@ -64,8 +64,20 @@ $query = mysqli_query($conn, $results);
 
 
 
-
-$resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+if(isset($_POST['viewreport'])) {
+    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+from 
+".$table." m,
+warehouse w,
+users u,
+vendor v
+where
+m.entry_by=u.user_id and 
+w.warehouse_id=m.warehouse_id and  
+v.vendor_id=m.vendor_code and 
+m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by m." . $unique . " DESC ";
+} else {
+    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
 from 
 " . $table . " m,
 warehouse w,
@@ -77,21 +89,19 @@ vendor v
  w.warehouse_id=m.warehouse_id and  
  v.vendor_id=m.vendor_code and 
  m.status='UNCHECKED' order by m." . $unique . " DESC ";
-    $pquery = mysqli_query($conn, $resultss);
+}
+$pquery = mysqli_query($conn, $resultss);
 
 $resu=mysqli_query($conn, "Select d.*,i.* from 
-                                             ".$table_details." d,item_info i 
-                                            where 
-                                            d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
-											
-
+".$table_details." d,item_info i where 
+d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
 ?>
 
 
 <?php require_once 'header_content.php'; ?>
 <script type="text/javascript">
     function DoNavPOPUP(lk)
-    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=800,height=500,left = 280,top = -1");}
+    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=900,height=500,left = 250,top = -1");}
 </script>
 <?php require_once 'body_content.php'; ?>
 
@@ -106,39 +116,37 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
                                         <table  class="table table-striped table-bordered" style="width:100%; font-size: 11px">
                                             <tr style="height:30px; background-color: bisque">
                                                 <th style="text-align:center; width:2%; vertical-align: middle">S/N</th>
-                                                <th style="text-align:center; vertical-align: middle; width: 10%">Code</th>
-                                                <th style="text-align:center; vertical-align: middle; width: 10%">Custom Code</th>
                                                 <th style="text-align:center; vertical-align: middle">Material Description</th>
                                                 <th style="text-align:center; vertical-align: middle">Unit</th>
                                                 <th style="text-align:center; vertical-align: middle">Qty</th>
                                                 <th style="text-align:center; vertical-align: middle">MFG</th>
-                                                <th style="text-align:center; vertical-align: middle">No of Pack	</th>
-                                                
-                                                <th style="text-align:center; vertical-align: middlel; background-color:#F90">Last MAN 
-                                                <br>Date	</th>
+                                                <th style="text-align:center; vertical-align: middle">No of Pack</th>
+                                                <th style="text-align:center; vertical-align: middle">PO</th>
+                                                <th style="text-align:center; vertical-align: middle; background-color:#F90">Last MAN
+                                                <br>Date</th>
                                                 <th style="text-align:center; vertical-align: middle; background-color:#F90">Qty	</th>
                                                 <!--th style="text-align:center; vertical-align: middle">Inspection<br />Add</th-->
                                             </tr>
                                             <?php while($MANdetrow=mysqli_fetch_array($resu)){
 											
-												$query_for_last_MAN=mysqli_query($conn, "Select * from MAN_details where item_id=".$MANdetrow[item_id]." order by item_id desc limit 1");
+												$query_for_last_MAN=mysqli_query($conn, "Select * from MAN_details where item_id=".$MANdetrow['item_id']." order by item_id desc limit 1");
 												$last_row=mysqli_fetch_object($query_for_last_MAN);
 												 ; ?>
                                                 <tr style="background-color:#FFF">
                                                     <td style="width:2%; text-align:center"><?=$j=$j+1;?></td>
-                                                    <td style=" text-align:center"><?php echo $MANdetrow['item_id']; ?></td>
-                                                    <td style="width:5%; text-align:center"><?=$MANdetrow['finish_goods_code'];?></td>
-                                                    <td style="text-align:left"><?=$MANdetrow['item_name'];?></td>
+                                                    <td style="text-align:left"><?=$MANdetrow['item_id']?> : <?=$MANdetrow['finish_goods_code'];?> : <?=$MANdetrow['item_name'];?></td>
                                                     <td style="width:5%; text-align:center"><?=$MANdetrow['unit_name'];?></td>
                                                     <td style="width:8%; text-align:right"><?php echo $MANdetrow['qty']; ?></td>
-                                                    <td style="width:15%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
-                                                    <td style="width:10%; text-align:right"><?php echo $MANdetrow['no_of_pack']; ?></td>                                                    <td style="width:12%; text-align:right"><?=$last_row->man_date; ?></td>
+                                                    <td style="width:10%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
+                                                    <td style="width:10%; text-align:right"><?=$MANdetrow['no_of_pack']?></td>
+                                                    <td style="width:10%; text-align:right"><input type="text" name="po<?=$MANdetrow['id']?>" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
+                                                    <td style="width:10%; text-align:right"><?=$last_row->man_date; ?></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->qty; ?></td>
                                                     <!--td align="center" style="width:10%">
-                                                        <?php $dones = getSVALUE('QC_Inspection_Work_Sheet_master','COUNT(item_id)','where '.$unique.'="'.$_GET[man_id].'" and item_id='.$MANdetrow[item_id]); if($dones>0){ ?>
+                                                        <?php $dones = getSVALUE('QC_Inspection_Work_Sheet_master','COUNT(item_id)','where '.$unique.'="'.$_GET['man_id'].'" and item_id='.$MANdetrow['item_id']); if($dones>0){ ?>
                                                             <img src="done.png" style="margin-left:10px" height="25" width="25" />
                                                         <?php } else { ?>
-                                                            <a href="Inspection_Work_Sheet.php?manid=<?php echo $MANdetrow[MAN_ID]; ?>&item_id=<?php echo $MANdetrow[item_id]; ?>&t_id=<?php echo $MANdetrow[id]; ?>" style="text-decoration:none"><img src="add.png" style="margin-left:10px" height="25" width="25" /></a>
+                                                            <a href="Inspection_Work_Sheet.php?manid=<?php echo $MANdetrow['MAN_ID']; ?>&item_id=<?php echo $MANdetrow['item_id']; ?>&t_id=<?php echo $MANdetrow['id']; ?>" style="text-decoration:none"><img src="add.png" style="margin-left:10px" height="25" width="25" /></a>
                                                         <?php }?>
                                                         </a></td-->
                                                 </tr>
@@ -146,7 +154,7 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
                                                 $tqty=$tqty+$MANdetrow['qty'];
                                                 $tamount=$tqty+$MANdetrow['amount'];
                                             } ?>
-                                            <tr><td colspan="5">Total</td>
+                                            <tr><td colspan="3">Total</td>
                                                 <td style="text-align:right"><?php echo $tqty; ?></td>
                                                 <td style="text-align:right"></td><td style="text-align:right"></td>
                                                 <td></td><td></td>
@@ -167,10 +175,29 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
 
 
                                 <?php } else { ?>
+
+
+
+
+
+    <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
+        <table align="center" style="width: 50%;">
+            <tr>
+                <td>
+                    <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
+                </td>
+                <td style="width:10px; text-align:center"></td>
+                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td style="width:10px; text-align:center"></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
+            </tr>
+        </table>
+    </form>
+
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2><?php echo $title; ?></h2>
+                <h2><?=$title?></h2>
                 <div class="clearfix"></div>
             </div>
 
@@ -211,22 +238,4 @@ $resu=mysqli_query($conn, "Select d.*,i.* from
         </div>
     </div>
 <?php } ?>
-
-
-    <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
-        <table align="center" style="width: 50%;">
-            <tr>
-                <td>
-                    <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
-                </td>
-                <td style="width:10px; text-align:center"></td>
-                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
-                <td style="width:10px; text-align:center"></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
-            </tr>
-        </table>
-        <?=$crud->report_templates_with_status($resultss);?>
-    </form>
-
-
 <?=$html->footer_content();mysqli_close($conn);?>

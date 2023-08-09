@@ -636,7 +636,7 @@ from purchase_invoice p,purchase_master m,vendor v,item_info i
 where 
 p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
 i.item_id=p.item_id and 
-v.vendor_id='13' and 
+v.vendor_id='".$_POST['pc_code']."' and 
 m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
 order by m.po_no,v.vendor_id"?>
     <?=reportview($sql,'Purchase Report','99'); ?>

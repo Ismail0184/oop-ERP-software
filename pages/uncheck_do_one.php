@@ -46,7 +46,7 @@ if(prevent_multi_submit()){
 
 
  if(isset($_POST['checked'])){
-   $sent_to_warehouse_at=date('Y-m-d H:s:i');
+   $sent_to_warehouse_at=date('Y-m-d H:i:s');
    $results="Select d.*,i.*
    from
    ".$table_details." d,
@@ -77,7 +77,10 @@ if(prevent_multi_submit()){
         }
         $up=mysqli_query($conn, "Update ".$table." set status='CHECKED',checked_by='$_SESSION[userid]',checked_at='$now',sent_to_warehuse_at='".$sent_to_warehouse_at."' where ".$unique."=".$$unique."");
         $up3=mysqli_query($conn, "Update ".$table_details." set status='CHECKED' where ".$unique."=".$$unique."");
-
+        if($dealer_master->credit_limit_time=='For one time DO')
+        {
+            $up=mysqli_query($conn, "Update dealer_info set credit_limit_time='',credit_limit='' where dealer_code=".$master->dealer_code);
+        }
         $type=1;
         unset($_POST);
         echo "<script>self.opener.location = '$pages'; self.blur(); </script>";
