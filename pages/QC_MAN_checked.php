@@ -49,7 +49,7 @@ if (prevent_multi_submit()) {
 if(isset($_POST['checked']))
 {   $up_master="UPDATE ".$table." SET status='CHECKED',check_by='".$_SESSION['userid']."'  where ".$unique."=".$$unique."";
     $update_table_master=mysqli_query($conn, $up_master);
-    $up_details="UPDATE ".$table_details." SET status='CHECKED' where ".$unique_details."=".$$unique."";
+    $up_details="UPDATE ".$table_details." SET status='CHECKED',po_no='".$_POST['po_no']."' where ".$unique_details."=".$$unique."";
     $update_table_details=mysqli_query($conn, $up_details);
     unset($_POST);
     unset($$unique);
@@ -119,7 +119,7 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                                                 <th style="text-align:center; vertical-align: middle">Material Description</th>
                                                 <th style="text-align:center; vertical-align: middle">Unit</th>
                                                 <th style="text-align:center; vertical-align: middle">Qty</th>
-                                                <th style="text-align:center; vertical-align: middle">MFG</th>
+                                                <th style="text-align:center; vertical-align: middle">Exp. Date</th>
                                                 <th style="text-align:center; vertical-align: middle">No of Pack</th>
                                                 <th style="text-align:center; vertical-align: middle">PO</th>
                                                 <th style="text-align:center; vertical-align: middle; background-color:#F90">Last MAN
@@ -139,7 +139,7 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                                                     <td style="width:8%; text-align:right"><?php echo $MANdetrow['qty']; ?></td>
                                                     <td style="width:10%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
                                                     <td style="width:10%; text-align:right"><?=$MANdetrow['no_of_pack']?></td>
-                                                    <td style="width:10%; text-align:right"><input type="text" name="po<?=$MANdetrow['id']?>" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
+                                                    <td style="width:10%; text-align:right"><input type="text" name="po_no" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->man_date; ?></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->qty; ?></td>
                                                     <!--td align="center" style="width:10%">

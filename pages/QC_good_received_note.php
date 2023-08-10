@@ -470,6 +470,8 @@ vendor v
                         $item_name=find_a_field('item_info','item_name','item_id='.$_GET['item_id']);
                         $rs="Select * from lc_lc_received_batch_split where ".$unique."=".$_GET[$unique]." and item_id=".$_GET['item_id']." and line_id=".$_GET['line_id']."";
                         $pdetails=mysqli_query($conn, $rs);
+                        $getPO=find_a_field('purchase_receive','po_no','pr_no="'.$_GET[$unique].'"');
+                        $item_details = find_all_field('MAN_details','','po_no="'.$getPO.'" and item_id="'.$_GET['item_id'].'"');
                         while($data=mysqli_fetch_object($pdetails)){
                             ?>
                             <tr>
@@ -484,10 +486,10 @@ vendor v
                             <tr>
                                 <td style="vertical-align: middle">1</td>
                                 <td rowspan="5" style="text-align:left; vertical-align: middle"><?=$item_name?></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="qty_1" id="qty_1"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="rate_1" id="rate_1"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="text" name="batch_1" id="batch_1"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="date" name="exp_date_1" id="exp_date_1"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="qty_1" value="<?=$item_details->qty?>" id="qty_1"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="rate_1" value="<?=$item_details->rate?>" id="rate_1"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="text" name="batch_1" id="batch_1" value="<?=$item_details->batch?>"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="date" name="exp_date_1" id="exp_date_1" value="<?=$item_details->mfg?>"></td>
                             </tr>
                             <tr>
                                 <td style="vertical-align: middle">2</td>
