@@ -242,13 +242,13 @@ td{
                                 <td style="width:3%; vertical-align:middle"><?=$i;?></td>
                                 <td style="vertical-align:middle"><?=$row[service_details];?></td>
                                 <td style="vertical-align:middle; text-align:center"><?=$row[monthfullName];?></td>
-                                <td align="center" style=" text-align:center"><?=number_format($row[qty]); ?></td>
-                                <td align="center" style=" text-align:center"><?=$row[rate]; ?></td>
-                                <td align="center" style="text-align:right"><?=number_format($row[amount],2);?></td>
+                                <td align="center" style=" text-align:center"><?=number_format($row['qty']); ?></td>
+                                <td align="center" style=" text-align:center"><?=$row['rate']; ?></td>
+                                <td align="center" style="text-align:right"><?=number_format($row['amount'],2);?></td>
 
                             </tr>
                             <?php 
-                            $ttotal_amt=$ttotal_amt+$row[amount];  } ?>
+                            $ttotal_amt=$ttotal_amt+$row['amount'];  } ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="5" style="font-weight:bold; font-size:11px" align="right">Total Amount = </td>
@@ -288,7 +288,7 @@ td{
 
 <?php } ?>
 
-<?php if(isset($_GET[$unique]) && !isset($_GET[item_id])){ ?>
+<?php if(isset($_GET[$unique]) && !isset($_GET['item_id'])){ ?>
     <!-- input section-->
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
@@ -320,26 +320,26 @@ td{
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row[id];
+                            $ids=$row['id'];
                             ?>
                             <tr style="cursor:pointer" >
                                 <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
-                                <td style="vertical-align:middle"><?=$row[finish_goods_code];?></td>
+                                <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
                                 <td style="vertical-align:middle;" onclick='OpenPopupCenter("<?=$page?>?<?=$unique?>=<?=$_GET[$unique]?>&item_id=<?=$row['item_id']?>&line_id=<?=$row['id']?>", "TEST!?", 850, 600)'><?=$row[item_name];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[unit_name];?></td>
-                                <td style=" text-align:right;vertical-align:middle;"><?=$row[qty]; ?></td>
-                                <td style=" text-align:center;vertical-align:middle;"><?=$row[rate]; ?></td>
-                                <td style="text-align:right;vertical-align:middle;"><?=number_format($row[amount],2);?></td>
-                                <td style="text-align:center;vertical-align:middle;"><?=($row[batch_split_status]=='CHECKED')? '<span class="label label-success" style="font-size:10px">CHECKED</span>' : '<span class="label label-default" style="font-size:10px">UNCHECKED</span>'?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
+                                <td style=" text-align:right;vertical-align:middle;"><?=$row['qty']; ?></td>
+                                <td style=" text-align:center;vertical-align:middle;"><?=$row['rate']; ?></td>
+                                <td style="text-align:right;vertical-align:middle;"><?=number_format($row['amount'],2);?></td>
+                                <td style="text-align:center;vertical-align:middle;"><?=($row['batch_split_status']=='CHECKED')? '<span class="label label-success" style="font-size:10px">CHECKED</span>' : '<span class="label label-default" style="font-size:10px">UNCHECKED</span>'?></td>
                                 <td style="text-align:center;vertical-align:middle;" onclick='OpenPopupCenter("<?=$page_worksheet?>?item_id=<?=$row['item_id']?>&pr_no=<?=$row['pr_no']?>&id=<?=$row['id']?>", "TEST!?", 850, 600)'><img src="../assets/images/icon/worksheet.png" height="25" width="25"></td>
                                 <td style="text-align:center;vertical-align:middle;" onclick='OpenPopupCenter("<?=$page_inspection_sheet?>?item_id=<?=$row['item_id']?>&pr_no=<?=$row['pr_no']?>&id=<?=$row['id']?>", "TEST!?", 850, 600)'><img src="../assets/images/icon/inspection.png" height="25" width="25"></td>
 
                             </tr>
-                            <?php  $ttotal_unit=$ttotal_unit+$row[total_unit];
-                            $tfree_qty=$tfree_qty+$row[free_qty];
-                            $ttotal_qty=$ttotal_qty+$row[total_qty];
-                            $tdiscount=$tdiscount+$row[discount];
-                            $ttotal_amt=$ttotal_amt+$row[amount];  } ?>
+                            <?php  $ttotal_unit=$ttotal_unit+$row['total_unit'];
+                            $tfree_qty=$tfree_qty+$row['free_qty'];
+                            $ttotal_qty=$ttotal_qty+$row['total_qty'];
+                            $tdiscount=$tdiscount+$row['discount'];
+                            $ttotal_amt=$ttotal_amt+$row['amount'];  } ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="6" style="font-weight:bold; font-size:11px" align="right">Total Good Received in Value = </td>
@@ -472,6 +472,7 @@ vendor v
                         $pdetails=mysqli_query($conn, $rs);
                         $getPO=find_a_field('purchase_receive','po_no','pr_no="'.$_GET[$unique].'"');
                         $item_details = find_all_field('MAN_details','','po_no="'.$getPO.'" and item_id="'.$_GET['item_id'].'"');
+                        $GRN_info = find_all_field('purchase_receive','','po_no="'.$getPO.'" and pr_no="'.$_GET[$unique].'" and item_id="'.$_GET['item_id'].'"');
                         while($data=mysqli_fetch_object($pdetails)){
                             ?>
                             <tr>
@@ -486,8 +487,8 @@ vendor v
                             <tr>
                                 <td style="vertical-align: middle">1</td>
                                 <td rowspan="5" style="text-align:left; vertical-align: middle"><?=$item_name?></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="qty_1" value="<?=$item_details->qty?>" id="qty_1"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="rate_1" value="<?=$item_details->rate?>" id="rate_1"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="qty_1" value="<?=$GRN_info->qty?>" id="qty_1"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="rate_1" value="<?=$GRN_info->rate?>" id="rate_1"></td>
                                 <td style="text-align:center; width: 15%; vertical-align: middle"><input type="text" name="batch_1" id="batch_1" value="<?=$item_details->batch?>"></td>
                                 <td style="text-align:center; width: 15%; vertical-align: middle"><input type="date" name="exp_date_1" id="exp_date_1" value="<?=$item_details->mfg?>"></td>
                             </tr>
