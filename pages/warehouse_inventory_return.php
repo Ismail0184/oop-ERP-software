@@ -24,11 +24,11 @@ if(isset($_POST[$unique_field]))
 //for insert..................................
 {    $$unique = $_POST[$unique];
     if(isset($_POST['record']))
-    {   $d =$_POST[return_date];
-        $_POST[return_date]=date('Y-m-d' , strtotime($d));
-        $_POST[status]='MANUAL';
-        $_POST[vendor_ledger]=find_a_field('vendor','ledger_id','vendor_id="'.$_POST[vendor_id].'"');
-        $_POST[warehouse_ledger]=find_a_field('warehouse','ledger_id_RM','warehouse_id="'.$_POST[warehouse_id].'"');
+    {   $d =$_POST['return_date'];
+        $_POST['return_date']=date('Y-m-d' , strtotime($d));
+        $_POST['status']='MANUAL';
+        $_POST['vendor_ledger']=find_a_field('vendor','ledger_id','vendor_id="'.$_POST['vendor_id'].'"');
+        $_POST['warehouse_ledger']=find_a_field('warehouse','ledger_id_RM','warehouse_id="'.$_POST['warehouse_id'].'"');
         $crud->insert();
         $_SESSION['wir_unique']=$_POST[$unique];
         $type=1;
@@ -42,13 +42,13 @@ if(isset($_POST[$unique_field]))
 //for modify..................................
 if(isset($_POST['modify']))
 {
-    $d =$_POST[return_date];
-    $_POST[return_date]=date('Y-m-d' , strtotime($d));
+    $d =$_POST['return_date'];
+    $_POST['return_date']=date('Y-m-d' , strtotime($d));
     $_POST['edit_at']=time();
     $_POST['edit_by']=$_SESSION['userid'];
-    $_SESSION['pono']=$_POST[po_no];
-    $_POST[vendor_ledger]=find_a_field('vendor','ledger_id','vendor_id="'.$_POST[vendor_id].'"');
-    $_POST[warehouse_ledger]=find_a_field('warehouse','ledger_id_RM','warehouse_id="'.$_POST[warehouse_id].'"');
+    $_SESSION['pono']=$_POST['po_no'];
+    $_POST['vendor_ledger']=find_a_field('vendor','ledger_id','vendor_id="'.$_POST['vendor_id'].'"');
+    $_POST['warehouse_ledger']=find_a_field('warehouse','ledger_id_RM','warehouse_id="'.$_POST['warehouse_id'].'"');
     $crud->update($unique);
     $type=1;
 }}
@@ -59,11 +59,11 @@ if(isset($_POST['add']))
         $_POST['entry_by']=$_SESSION['userid'];
         $_POST['entry_at']=date('Y-m-d h:s:i');
         $_POST['m_id']=$_SESSION['wir_unique'];
-        $_POST['cogs_price']=$_POST[batch_rate];
+        $_POST['cogs_price']=$_POST['batch_rate'];
 
         $_POST['status']='MANUAL';
-        $_POST[section_id]=$_SESSION[sectionid];
-        $_POST[company_id]=$_SESSION[companyid];
+        $_POST['section_id']=$_SESSION['sectionid'];
+        $_POST['company_id']=$_SESSION['companyid'];
         $crud->insert();
     }
 
@@ -84,7 +84,7 @@ if(isset($_POST['cancel']))
 
 
 //for single FG Delete..................................
-$res='select a.id, concat(b.item_id," # ", b.item_name) as item_description,a.batch,b.unit_name as unit ,a.qty ,a.rate as unit_price,a.amount from purchase_return_details a,item_info b where b.item_id=a.item_id and a.m_id='.$_SESSION[wir_unique];
+$res='select a.id, concat(b.item_id," # ", b.item_name) as item_description,a.batch,b.unit_name as unit ,a.qty ,a.rate as unit_price,a.amount from purchase_return_details a,item_info b where b.item_id=a.item_id and a.m_id='.$_SESSION['wir_unique'];
 $results=mysqli_query($conn,$res);
 while($data=mysqli_fetch_object($results)){
     $id=$data->id;
@@ -93,7 +93,7 @@ while($data=mysqli_fetch_object($results)){
         $del_item=mysqli_query($conn, $del);
         unset($_POST);}
 	 if(isset($_POST['editdata'.$id]))
-    { mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST[item_id]."',batch='".$_POST[batch]."',qty='".$_POST[qty]."',rate='".$_POST[rate]."',amount='".$_POST[amount]."' WHERE id=".$id));
+    { mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST['item_id']."',batch='".$_POST['batch']."',qty='".$_POST['qty']."',rate='".$_POST['rate']."',amount='".$_POST['amount']."' WHERE id=".$id));
       unset($_POST);
     }}
 
@@ -120,11 +120,11 @@ if(isset($_SESSION['wir_unique']))
     { $$key=$value;}}
 
 
-if (isset($_GET[id])) {
-$edit_value=find_all_field(''.$table_details.'','','id='.$_GET[id].'');}
-$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique_details.'='.$_SESSION[wir_unique].'');
-$batch_stock_get=find_a_field('journal_item','SUM(item_in-item_ex)','item_id='.$_GET[item_id].' and batch='.$_GET[batch].' and warehouse_id='.$warehouse_id.'');
-$batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSING" and item_id='.$_GET[item_id].' and batch='.$_GET[batch].' and warehouse_id='.$warehouse_id.'');
+if (isset($_GET['id'])) {
+$edit_value=find_all_field(''.$table_details.'','','id='.$_GET['id'].'');}
+$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique_details.'='.$_SESSION['wir_unique'].'');
+$batch_stock_get=find_a_field('journal_item','SUM(item_in-item_ex)','item_id='.$_GET['item_id'].' and batch='.$_GET['batch'].' and warehouse_id='.$warehouse_id.'');
+$batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSING" and item_id='.$_GET['item_id'].' and batch='.$_GET['batch'].' and warehouse_id='.$warehouse_id.'');
 ?>
 
 
@@ -136,7 +136,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
 
  function reload2(form)
  {var val=form.batch.options[form.batch.options.selectedIndex].value;
- self.location='<?=$page?>?item_id=<?=$_GET[item_id]?>&batch=' + val ;}
+ self.location='<?=$page?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
  </script>
  <script src="js/vendor/modernizr-2.8.3.min.js"></script>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js "></script>
@@ -155,28 +155,36 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                                     <? require_once 'support_html.php';?>
                                     <table style="width: 100%; font-size:11px">
                                       <tr>
-                                          <th style="width:15%;">ID<span class="required">*</span></th><th style="width: 2%;">:</th>
-                                          <td style="width:28%"><input type="text" id="<?=$unique?>" style="width:90%;font-size:11px"  required   name="<?=$unique?>" value="<? if($$unique>0) echo $$unique; else echo (find_a_field($table,'max('.$unique.')','1')+1);?>" readonly class="form-control col-md-7 col-xs-12" ></td>
-                                          <th style="width:15%;">Ref. No<span class="required">*</span></th><th style="width: 2%">:</th>
+                                          <th style="width:15%;">ID & Date<span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
+                                          <td style="width:28%"><input type="text" id="<?=$unique?>" style="width:40%;font-size:11px"  required   name="<?=$unique?>" value="<? if($$unique>0) echo $$unique; else echo (find_a_field($table,'max('.$unique.')','1')+1);?>" readonly class="form-control col-md-7 col-xs-12" >
+                                                            <input type="date" name="return_date" id="return_date"  value="<?=($return_date!='')? $return_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12" required style="width: 49%; margin-left: 1%;font-size:11px">
+                                          </td>
+                                          <th style="width:15%;">Ref. No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
                                           <td style="width:28%"><input type="text" id="<?=$unique_field?>" style="width:90%;font-size:11px"  required   name="<?=$unique_field?>" value="<?=$$unique_field?>"  class="form-control col-md-7 col-xs-12" ></td>
                                           </tr>
                                           <tr>
-                                            <th>Date<span class="required">*</span></th><th>:</th>
-                                            <td><input type="date" name="return_date" id="return_date"  value="<?=($return_date!='')? $return_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12" required style="width: 90%; margin-top: 5px;font-size:11px"></td>
-                                            <th>Remrks</th><th>:</th>
+                                            <th>Type of Return <span class="required text-danger">*</span></th><th>:</th>
+                                            <td>
+                                                <select style="width: 90%;font-size:11px; margin-top: 5px" class="form-control"  required name="type">
+                                                    <option></option>
+                                                    <option value="shortage" <?php if($type=='shortage'){ ?> selected <?php }?> >Shortage</option>
+                                                    <option value="damage"   <?php if($type=='damage'){ ?> selected <?php }?>>Damage</option>
+                                                </select>
+                                            </td>
+                                            <th>Remarks</th><th>:</th>
                                             <td><input type="text" name="remarks" id="remarks"  value="<?=$remarks?>" class="form-control col-md-7 col-xs-12" style="width: 90%; margin-top: 5px;font-size:11px"></td>
                                         </tr>
                                         <tr><td style="height:5px"></td></tr>
                                          <tr>
-                                          <th>Vendor<span class="required">*</span></th><th style="width: 2%;">:</th>
+                                          <th>Vendor <span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
                                           <td><select style="width: 90%;font-size:11px" class="select2_single form-control"  required name="vendor_id" id="vendor_id">
                                               <option></option>
                                               <?=foreign_relation('vendor','vendor_id','concat(vendor_id," : ",vendor_name)',$vendor_id);?>
                                           </select></td>
-                                          <th>Warehouse<span class="required">*</span></th><th style="width: 2%">:</th>
+                                          <th>Warehouse <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
                                           <td><select style="width: 90%;font-size:11px" class="select2_single form-control"  required name="warehouse_id" id="warehouse_id">
                                               <option></option>
-                                              <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$warehouse_id);?>
+                                              <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                                               </select></td>
                                         </tr>
                                     </table>
@@ -200,7 +208,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
 
 
 
-<?php if($_SESSION[wir_unique]>0):?>
+<?php if($_SESSION['wir_unique']>0):?>
              <form action="<?=$page;?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
              <?php require_once 'support_html.php';?>
              <input type="hidden" name="<?=$unique_field?>" id="<?=$unique_field?>" value="<?=$$unique_field?>">
@@ -223,21 +231,21 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
              </thead>
                    <tbody>
                    <tr>
-                     <td style="vertical-align:middle"><input  name="<?=$unique?>" type="hidden" id="<?=$unique?>" value="<?=$_SESSION[initiate_po_no];?>"/>
-                     <input  name="po_id" type="hidden" id="po_id" value="<?=$_SESSION[initiate_po_id];?>"/>
+                     <td style="vertical-align:middle"><input  name="<?=$unique?>" type="hidden" id="<?=$unique?>" value="<?=$_SESSION['initiate_po_no'];?>"/>
+                     <input  name="po_id" type="hidden" id="po_id" value="<?=$_SESSION['initiate_po_id'];?>"/>
                        <input  name="warehouse_id" type="hidden" id="warehouse_id" value="<?=$warehouse_id?>"/>
                        <input  name="po_date" type="hidden" id="po_date" value="<?=$po_date?>"/>
                        <input  name="vendor_id" type="hidden" id="vendor_id" value="<?=$vendor_id?>"/>
-                         <input  name="pono" type="hidden" id="pono" value="<?=$_SESSION[initiate_pono];?>"/>
+                         <input  name="pono" type="hidden" id="pono" value="<?=$_SESSION['initiate_pono'];?>"/>
                          <select class="select2_single form-control" style="width: 100%" tabindex="-1" onchange="javascript:reload(this.form)" required="required" name="item_id" id="item_id">
                              <option></option>
-                             <?=advance_foreign_relation($sql_item_id, ($_GET[item_id]>0)? $_GET[item_id] : $edit_value->item_id)?>
+                             <?=advance_foreign_relation($sql_item_id, ($_GET['item_id']>0)? $_GET['item_id'] : $edit_value->item_id)?>
                          </select>
                          </td>
                          <td style="vertical-align:middle;width: 10%">
                            <select class="select2_single form-control" style="width: 100%" tabindex="-1" onchange="javascript:reload2(this.form)" required="required" name="batch" id="batch">
                                <option></option>
-                               <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GET[batch], 'warehouse_id='.$warehouse_id.' and item_id='.$_GET[item_id]); ?>
+                               <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GET['batch'], 'warehouse_id='.$warehouse_id.' and item_id='.$_GET['item_id']); ?>
                            </select>
                          </td>
                        <td style="vertical-align:middle;width: 10%">
@@ -265,9 +273,9 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                                  <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?></td>
                    </tr>
                  </table></form>
-             <?=added_data_delete_edit($res,$unique,$unique_GET,$COUNT_details_data,$page);?>
-             <?php endif;?>
-             <?=$html->footer_content();mysqli_close($conn);?>
+<?=added_data_delete_edit($res,$unique,$unique_GET,$COUNT_details_data,$page);?>
+<?php endif;?>
+<?=$html->footer_content();mysqli_close($conn);?>
              <script>
                  $(function(){
                      $('#rate,#qty').keyup(function(){
