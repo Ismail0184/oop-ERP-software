@@ -345,7 +345,7 @@ if (isset($_POST['viewreport'])) {
             $cash_discounts=substr($cash_discount,1);
             ?>
             </tbody></table>
-        <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px; display:none">
+        <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px; display:">
             <thead>
             <tr style="background-color: bisque">
                 <th>#</th>
@@ -403,8 +403,8 @@ if (isset($_POST['viewreport'])) {
             <?php if($do_master->commission>0):?>
                 <tr>
                     <th rowspan="2" style="text-align: center; vertical-align: middle">3</th>
-                    <th rowspan="2" style="text-align: center; vertical-align: middle">SO Comission</th>
-                    <th style="text-align: center; vertical-align: middle">Comission Ledger</th>
+                    <th rowspan="2" style="text-align: center; vertical-align: middle">SO Commission</th>
+                    <th style="text-align: center; vertical-align: middle">Commission Ledger</th>
                     <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_5" id="ledger_5">
                             <option  value="4002000500000000">4002000500000000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4002000500000000"'); ?></option>
                         </select></td>
@@ -468,9 +468,9 @@ if (isset($_POST['viewreport'])) {
             <?php endif; ?>
 
             <tr>
-                <th rowspan="3" style="text-align: center; vertical-align: middle">5</th>
-                <th rowspan="3" style="text-align: center; vertical-align: middle">Cash Discount</th>
-                <th rowspan="2" style="text-align: center; vertical-align: middle">Discount Ledger</th>
+                <th rowspan="5" style="text-align: center; vertical-align: middle">5</th>
+                <th rowspan="5" style="text-align: center; vertical-align: middle">Cash Discount</th>
+                <th rowspan="4" style="text-align: center; vertical-align: middle">Discount Ledger</th>
                 <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_11" id="ledger_11">
                         <option  value="4013000500010000">4013000500010000: <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500010000"'); ?></option>
                     </select></td>
@@ -488,7 +488,7 @@ if (isset($_POST['viewreport'])) {
             </tr>
             <tr>
                 <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_16">
-                        <option  value="4013000500020000">4013000500040000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500020000"'); ?></option>
+                        <option  value="4013000500040000">4013000500040000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500040000"'); ?></option>
                     </select></td>
                 <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_16"  value="<?='Cash discount offer on Believe products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
                 <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_16" readonly value="<?=substr($cd_data_Believe_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
@@ -496,7 +496,7 @@ if (isset($_POST['viewreport'])) {
             </tr>
             <tr>
                 <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_17">
-                        <option  value="4013000500020000">4013000500050000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500020000"'); ?></option>
+                        <option  value="4013000500050000">4013000500050000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500050000"'); ?></option>
                     </select></td>
                 <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_17"  value="<?='Cash discount offer on BOSCH products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
                 <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_17" readonly value="<?=substr($cd_data_BOSCH_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>

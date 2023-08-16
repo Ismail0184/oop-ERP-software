@@ -4,10 +4,10 @@ $title='Inventory Return List';
 $unique='id';
 $table="purchase_return_master";
 $table_details="purchase_return_details";
-$page='VMS_mushak_6.3_IR.php';
+$page='VMS_mushak_6.8_IR.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-if (isset($_POST['viewreport'])) {
+if (isset($_POST[viewreport])) {
     $res = "SELECT  m.id,m.id,m.return_date,v.vendor_name,
     w.warehouse_name as warehouse,uam.fname as prepared_by,m.entry_at as prepared_at,m.mushak_challan_status as status FROM
 							".$table." m,
@@ -16,9 +16,9 @@ if (isset($_POST['viewreport'])) {
                             warehouse w
 							 where
 							 m.vendor_id=v.vendor_id and
+							 m.type = 'damage' and 
 							 m.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
 							 m.entry_by=uam.user_id and
-							 m.type = 'shortage' and
                m.warehouse_id=w.warehouse_id and
                m.warehouse_id=".$_POST['depot_id']."
 							  order by m.id"; } else {
@@ -30,7 +30,7 @@ if (isset($_POST['viewreport'])) {
                             warehouse w
 							 where
 							 m.vendor_id=v.vendor_id and
-							 m.type = 'shortage' and
+							 m.type = 'damage' and 
                m.status in ('PROCESSING') and
                m.mushak_challan_status='UNRECORDED' AND
 							 m.entry_by=uam.user_id and
@@ -49,13 +49,13 @@ if (isset($_POST['viewreport'])) {
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="depot_id" id="depot_id">
                         <option selected></option>
-                        <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_POST[depot_id]);?>
+                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_POST['depot_id']);?>
                     </select></td>
                 <td style="padding: 10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Delivered Challan</button></td>
             </tr></table>
