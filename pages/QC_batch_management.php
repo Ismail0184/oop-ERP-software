@@ -13,8 +13,6 @@ $main_page = "QC_batch_management.php";
 $crud      =new crud($table);
 $$unique = $_GET[$unique];
 
-
-
 if(isset($_POST['cancelwarehouse'])){       
     unset($_SESSION['batch_warehouse_id']); 
     unset($_POST);
@@ -35,19 +33,19 @@ if(prevent_multi_submit()) {
 
 
         $_POST['ji_date'] = date('Y-m-d');
-        $_POST['item_id'] = $_POST[item_id];
-        $_POST['warehouse_id'] = $_POST[warehouse_id];
-        $_POST['item_in'] = $_POST[qty];
-        $_POST['item_price'] = $_POST[rate];
+        $_POST['item_id'] = $_POST['item_id'];
+        $_POST['warehouse_id'] = $_POST['warehouse_id'];
+        $_POST['item_in'] = $_POST['qty'];
+        $_POST['item_price'] = $_POST['rate'];
         $_POST['total_amt'] = $_POST['qty']*$_POST['rate'];
-        $_POST['batch'] = $_POST[batch];
-        $_POST[expiry_date] = $_POST['mfg'];
+        $_POST['batch'] = $_POST['batch'];
+        $_POST['expiry_date'] = $_POST['mfg'];
         $_POST['tr_from'] = 'MC';
-        $_POST[entry_by]= $_SESSION[userid];
-        $_POST[entry_at]= date('Y-m-d H:s:i');
-        $_POST[ip]=$ip;
-        $crud      =new crud($journal_item);
-        $crud->insert();
+        $_POST['entry_by']= $_SESSION['userid'];
+        $_POST['entry_at']= date('Y-m-d H:s:i');
+        $_POST['ip']=$ip;
+        //$crud      =new crud($journal_item);
+        //$crud->insert();
 
         unset($_POST);
         unset($$unique);}
@@ -59,18 +57,18 @@ if(prevent_multi_submit()) {
     {       
             $data=find_all_field('lc_lc_received_batch_split','','id="'.$_POST[$unique].'"');
             if($data->id>0){
-            $_POST[m_rate] = $_POST[rate];
-            $_POST[m_expiry_date] = $_POST[expiry_date];
-            $_POST[m_status] = $_POST[status];
-            $_POST[batch] = $data->batch;
-            $_POST[rate] = $data->rate;
-            $_POST[expiry_date] = $data->mfg;
-            $_POST[status] = $data->status;
+            $_POST['m_rate'] = $_POST['rate'];
+            $_POST['m_expiry_date'] = $_POST['expiry_date'];
+            $_POST['m_status'] = $_POST['status'];
+            $_POST['batch'] = $data->batch;
+            $_POST['rate'] = $data->rate;
+            $_POST['expiry_date'] = $data->mfg;
+            $_POST['status'] = $data->status;
             $_POST['entry_by']=$_SESSION['userid'];
             $crud      =new crud($table_logs);
             $crud->insert();
         }
-        $_POST[mfg] = $_POST[expiry_date];
+        $_POST['mfg'] = $_POST['expiry_date'];
         $crud      =new crud($table);
         $crud->update($unique);
         $type = 1;
@@ -112,8 +110,8 @@ while($data=mysqli_fetch_object($result))
     }
 }
 
-if (isset($_POST[viewreport])) {
-unset($_SESSION[batch_warehouse_id]);$_SESSION[batch_warehouse_id] = $_POST['warehouse_id'];
+if (isset($_POST['viewreport'])) {
+unset($_SESSION['batch_warehouse_id']);$_SESSION['batch_warehouse_id'] = $_POST['warehouse_id'];
 }
 $res='select b.id,b.batch,b.batch_no,i.item_id,i.item_name,i.unit_name,b.rate,DATE_FORMAT(b.mfg,"%M %d %Y") as expiry_date,w.warehouse_name,b.source,
 (SELECT SUM(item_in-item_ex) from journal_item where item_id=i.item_id and warehouse_id=w.warehouse_id and batch=b.batch) as present_stock,b.completed_at,b.status
@@ -259,11 +257,11 @@ $condition="create_date='".date('Y-m-d')."'";
             <tr>
                 <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="warehouse_id">
                         <option selected></option>
-                        <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_SESSION['batch_warehouse_id']);?>
+                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_SESSION['batch_warehouse_id']);?>
                     </select></td>
                 <td style="padding: 10px; width:50%">
                 <button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">Select and Proceed to Next</button>
-                <?php if($_SESSION[batch_warehouse_id]>0){?>
+                <?php if($_SESSION['batch_warehouse_id']>0){?>
                 <button type="submit" style="font-size: 11px; height: 30px" name="cancelwarehouse"  class="btn btn-danger">Cancel</button>
                 <?php }?>
                 </td>

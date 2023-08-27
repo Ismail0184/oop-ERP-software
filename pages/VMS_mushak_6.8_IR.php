@@ -34,14 +34,16 @@ if(isset($_POST['record'])){
   while($data=mysqli_fetch_object($result)):
     $id=$data->item_id;
     $_POST['item_id']=$id;
-    $_POST['total_unit']=$_POST['total_unit'.$id];
-    $_POST['unit_price']=$_POST['unit_price'.$id];
-    $_POST['total_price']=$_POST['total_price'.$id];
-    $_POST['rate_of_SD']=$_POST['rate_of_SD'.$id];
-    $_POST['amount_of_SD']=$_POST['amount_of_SD'.$id];
-    $_POST['rate_of_VAT']=$_POST['rate_of_VAT'.$id];
-    $_POST['amount_of_VAT']=$_POST['amount_of_VAT'.$id];
-    $_POST['total_including_all']=$_POST['total_including_all'.$id];
+    $_POST['challen_no_and_date']=$_POST['challen_no_and_date'.$id];
+    $_POST['remarks_of_debit_note']=$_POST['remarks_of_debit_note'.$id];
+    $_POST['price4']=$_POST['price4'.$id];
+    $_POST['qty5']=$_POST['qty5'.$id];
+    $_POST['qty6']=$_POST['qty6'.$id];
+    $_POST['qty7']=$_POST['qty7'.$id];
+    $_POST['price8']=$_POST['price8'.$id];
+    $_POST['qty9']=$_POST['qty9'.$id];
+    $_POST['qty10']=$_POST['qty10'.$id];
+    $_POST['qty11']=$_POST['qty11'.$id];
     if($_POST['total_unit'.$id]>0){
     $crud = new crud($table_VAT_details);
     $crud->insert();}
@@ -309,82 +311,26 @@ $result=mysqli_query($conn, $query);
         $cd=$data->total_unit*$data->VAT*$ab;?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
-      <td style="border: 1px solid #CCC;text-align: left; margin: 10px"><?=$data->item_name?></td>
-      <td style="border: 1px solid #CCC;text-align: center"><?=$data->unit_name?></td>
-      <td style="border: 1px solid #CCC;text-align: center">
-        <input type="hidden" value="<?=$data->total_unit?>" style="font-size:11px; text-align:center;" name="do_qty<?=$id?>" id="do_qty<?=$id?>">
-        <SCRIPT language=JavaScript>
-            function doAlert<?=$id?>(form)
-            {   var val=form.total_unit<?=$id?>.value;
-                var val2=form.do_qty<?=$id?>.value;
-                if (Number(val)>Number(val2)){
-                    alert('oops!! exceed stock limit!! Thanks');
-                    form.total_unit<?=$id?>.value='';}
-                form.total_unit<?=$id?>.focus();
-            }</script>
-      <input type="number" value="<?=$data->total_unit?>" onkeyup="doAlert<?=$id?>(this.form);" style="font-size:11px; text-align:center;" name="total_unit<?=$id?>" id="total_unit<?=$id?>" class="total_unit<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-        <input type="number" tabindex="-1" readonly value="<?=$data->VAT?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="unit_price<?=$id?>" id="unit_price<?=$id?>" class="unit_price<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=$total_unit_amount=$data->total_unit*$data->VAT?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="total_price<?=$id?>" id="total_price<?=$id?>" class="total_price<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=($data->SD_percentage>0)? $data->SD_percentage : '0';?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="rate_of_SD<?=$id?>" id="rate_of_SD<?=$id?>" class="rate_of_SD<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=$amount_of_SD=(($total_unit_amount*$data->SD_percentage)/100)?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="amount_of_SD<?=$id?>" id="amount_of_SD<?=$id?>" class="amount_of_SD<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=$data->VAT_percentage?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="rate_of_VAT<?=$id?>" id="rate_of_VAT<?=$id?>" class="rate_of_VAT<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=$total_VAT=((($total_unit_amount+$amount_of_SD)*$data->VAT_percentage)/100);?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="amount_of_VAT<?=$id?>" id="amount_of_VAT<?=$id?>" class="amount_of_VAT<?=$id?>"></td>
-
-      <td style="border: 1px solid #CCC;text-align: right;">
-                <input type="number" tabindex="-1" readonly value="<?=$actual_VAT=$total_unit_amount+$amount_of_SD+$total_VAT;?>" style="font-size:11px; text-align:right;border: 1px solid #999999;background-color: #F0F0F0;color: #666666;" name="total_including_all<?=$id?>" id="total_including_all<?=$id?>" class="total_including_all<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: left; margin: 10px"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:left;border: 1px solid #999999;width: 97%" name="challen_no_and_date<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: center"><input type="text" tabindex="-1"  value="<?=$do_master->remarks?>"style="font-size:11px; text-align:left;border: 1px solid #999999;width: 97%"  name="remarks_of_debit_note<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: center"><input type="text"                value=""  style="font-size:11px; text-align:center;" name="price4<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty5<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty6<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty7<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=$data->amount?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="price8<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=$data->qty?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty9<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=($data->amount/100)*15?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty10<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="total_including_all<?=$id?>" id="qty11<?=$id?>"></td>
       </tr>
 
-      <script>
-          $(function(){
-              $('#total_unit<?=$id;?>').keyup(function(){
-                  var total_unit<?=$id;?> = parseFloat($('#total_unit<?=$id;?>').val()) || 0;
-                  var unit_price<?=$id;?> = parseFloat($('#unit_price<?=$id;?>').val()) || 0;
-                  $('#total_price<?=$id;?>').val((total_unit<?=$id;?> * unit_price<?=$id;?>));
-              });
-          });
-          $(function(){
-              $('#total_unit<?=$id;?>').keyup(function(){
-                  var total_price<?=$id;?> = parseFloat($('#total_price<?=$id;?>').val()) || 0;
-                  var rate_of_SD<?=$id;?> = parseFloat($('#rate_of_SD<?=$id;?>').val()) || 0;
-                  $('#amount_of_SD<?=$id;?>').val(((total_price<?=$id;?> * rate_of_SD<?=$id;?>)/100));
-              });
-          });
-          $(function(){
-              $('#total_unit<?=$id;?>').keyup(function(){
-                  var total_price<?=$id;?> = parseFloat($('#total_price<?=$id;?>').val()) || 0;
-                  var amount_of_SD<?=$id;?> = parseFloat($('#amount_of_SD<?=$id;?>').val()) || 0;
-                  var rate_of_VAT<?=$id;?> = parseFloat($('#rate_of_VAT<?=$id;?>').val()) || 0;
-                  $('#amount_of_VAT<?=$id;?>').val(((total_price<?=$id;?> + amount_of_SD<?=$id;?>)*rate_of_VAT<?=$id;?>)/100);
-              });
-          });
-          $(function(){
-              $('#total_unit<?=$id;?>').keyup(function(){
-                  var total_price<?=$id;?> = parseFloat($('#total_price<?=$id;?>').val()) || 0;
-                  var amount_of_SD<?=$id;?> = parseFloat($('#amount_of_SD<?=$id;?>').val()) || 0;
-                  var amount_of_VAT<?=$id;?> = parseFloat($('#amount_of_VAT<?=$id;?>').val()) || 0;
-                  $('#total_including_all<?=$id;?>').val(total_price<?=$id;?> + amount_of_SD<?=$id;?> + amount_of_VAT<?=$id;?>);
-              });
-          });
-      </script>
       <?php
       $total_unit=$total_unit+$data->total_unit;
       $total_unit_amounts=$total_unit_amounts+$total_unit_amount;
       $total_VATs=$total_VATs+$total_VAT;
           $actual_VATs=$actual_VATs+$actual_VAT;
           $total_SD_amount=$total_SD_amount+$data->amount_of_SD;
-      endwhile; ?>
+      endwhile;
+          if($status>0): ?>
       <tr><th>Total</th><td></td><td></td><th style="border: 1px solid #CCC;text-align: center;"><?=$total_unit?></th>
       <td></td>
           <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_unit_amounts,2)?></th>
@@ -394,6 +340,7 @@ $result=mysqli_query($conn, $query);
           <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_VATs,2)?></th>
           <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($actual_VATs,2)?></th>
       </tr>
+          <?php endif; ?>
     <?php endif; ?>
     </tbody>
 </table>

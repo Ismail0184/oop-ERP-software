@@ -665,14 +665,16 @@ REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
 
 from
 item_info i,
-journal_item j
+journal_item j,
+item_brand b
 
 where
 
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$_POST['t_date']."' and
-i.brand_id in ('10','11','12')
+i.brand_id=b.brand_id and
+b.vendor_id='".$_POST['pc_code']."'
 group by j.item_id";?>
 <?=reportview($sql,'Present Stock',100)?>
 

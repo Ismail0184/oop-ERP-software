@@ -18,22 +18,22 @@ $create_date=date('Y-m-d');
 if(prevent_multi_submit()){
     if(isset($_POST['initiate']))
     {
-        if ($_POST[warehouse_from] == $_POST[warehouse_to]) {
+        if ($_POST['warehouse_from'] == $_POST['warehouse_to']) {
             echo "<script>alert('Transfer from & Transfer to are the same. Please select a different.!!'); window.location.href='".$page."';</script>";
 
         } else {
         $_POST['section_id'] = $_SESSION['sectionid'];
         $_POST['company_id'] = $_SESSION['companyid'];
-        $_POST[ISSUE_TYPE]='STO';
-        $d =$_POST[pi_date];
-        $_POST[pi_date]=date('Y-m-d' , strtotime($d));
+        $_POST['ISSUE_TYPE']='STO';
+        $d =$_POST['pi_date'];
+        $_POST['pi_date']=date('Y-m-d' , strtotime($d));
         $_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
-        $_SESSION[initiate_production_transfer]=$_POST[custom_pi_no];
+        $_SESSION['initiate_production_transfer']=$_POST['custom_pi_no'];
         $_SESSION['pi_tr'] =$_POST[$unique];
-        $_SESSION['production_warehouse'] =$_POST[warehouse_to];
-        $_POST[create_date]=$create_date;
-        $_POST[ip]=$ip;
+        $_SESSION['production_warehouse'] =$_POST['warehouse_to'];
+        $_POST['create_date']=$create_date;
+        $_POST['ip']=$ip;
         $crud->insert();
         $type=1;
         unset($_POST);
@@ -42,8 +42,8 @@ if(prevent_multi_submit()){
 
 //for modify PS information ...........................
     if(isset($_POST['modify']))
-    {   $d =$_POST[pi_date];
-        $_POST[pi_date]=date('Y-m-d' , strtotime($d));
+    {   $d =$_POST['pi_date'];
+        $_POST['pi_date']=date('Y-m-d' , strtotime($d));
         $_POST['edit_at']=time();
         $_POST['edit_by']=$_SESSION['userid'];
         $crud->update($unique);
@@ -55,11 +55,11 @@ if(prevent_multi_submit()){
 //for single FG Add...........................
     if(isset($_POST['add']))
     {  if($_POST['total_unit']>0) {
-        $_POST[status]="MANUAL";
-        $_POST[ISSUE_TYPE]="STO";
-        $_POST[ip]=$ip;
-        $_POST[total_unit]=$_POST[total_unit];
-        $_POST[conversion_cost]=find_a_field('item_info','conversion_cost','item_id='.$_POST[item_id].'');
+        $_POST['status']="MANUAL";
+        $_POST['ISSUE_TYPE']="STO";
+        $_POST['ip']=$ip;
+        $_POST['total_unit']=$_POST['total_unit'];
+        $_POST['conversion_cost']=find_a_field('item_info','conversion_cost','item_id='.$_POST['item_id'].'');
         $_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
         $crud = new crud($table_details);
@@ -71,9 +71,9 @@ if(prevent_multi_submit()){
 } /// prevent multi submit
 
 if(isset($_POST['confirm']))
-{   $up="UPDATE ".$table." SET verifi_status='UNCHECKED' where ".$unique."='$_SESSION[pi_tr]'";
+{   $up="UPDATE ".$table." SET verifi_status='UNCHECKED' where ".$unique."='".$_SESSION['pi_tr']."'";
     $update_table_master=mysqli_query($conn, $up);
-    $up2="UPDATE ".$table_details." SET verifi_status='UNCHECKED',status='UNCHECKED' where ".$unique."='$_SESSION[pi_tr]'";
+    $up2="UPDATE ".$table_details." SET verifi_status='UNCHECKED',status='UNCHECKED' where ".$unique."='".$_SESSION['pi_tr']."'";
     $update_production_floor_issue_master=mysqli_query($conn, $up2);
     unset($_SESSION['pi_tr']);
     unset($_SESSION['initiate_production_transfer']);
@@ -82,13 +82,13 @@ if(isset($_POST['confirm']))
 
 
 //for single FG Delete..................................
-$query="Select * from ".$table_details." where ".$unique."='$_SESSION[pi_tr]'";
+$query="Select * from ".$table_details." where ".$unique."='".$_SESSION['pi_tr']."'";
 $res=mysqli_query($conn, $query);
 while($row=mysqli_fetch_array($res)){
     $ids=$row[id];
     if(isset($_POST['deletedata'.$ids]))
     {
-        $del="DELETE FROM ".$table_details." WHERE id='$ids' and ".$unique."='$_SESSION[pi_tr]'";
+        $del="DELETE FROM ".$table_details." WHERE id='$ids' and ".$unique."='".$_SESSION['pi_tr']."'";
         $del_item=mysqli_query($conn, $del);
         unset($_POST);
     }}
@@ -106,7 +106,7 @@ if(isset($_POST['cancel']))
     unset($_POST);
 }
 
-if (isset($_GET[id])) {$edit_value=find_all_field(''.$table_details.'','','id='.$_GET[id].'');}
+if (isset($_GET['id'])) {$edit_value=find_all_field(''.$table_details.'','','id='.$_GET['id'].'');}
 $COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique.'='.$_SESSION['pi_tr'].'');
 
 if(isset($_SESSION['pi_tr']))
@@ -119,7 +119,7 @@ $res="Select t.id,concat(i.item_id,' : ', i.finish_goods_code, ' : ', i.item_nam
 from 
 ".$table_details." t,item_info i 
 where   
-t.".$unique."=".$_SESSION[pi_tr]." and t.item_id=i.item_id";
+t.".$unique."=".$_SESSION['pi_tr']." and t.item_id=i.item_id";
 $query=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($query)){
   if(isset($_POST['deletedata'.$data->id]))
@@ -127,14 +127,14 @@ while($data=mysqli_fetch_object($query)){
      mysqli_query($conn, ("DELETE FROM ".$table_details." WHERE gift_on_order=".$data->id));
       unset($_POST);}
   if(isset($_POST['editdata'.$data->id]))
-  {   mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST[item_id]."', total_unit='".$_POST[total_unit]."' WHERE id=".$data->id));
+  {   mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST['item_id']."', total_unit='".$_POST['total_unit']."' WHERE id=".$data->id));
       unset($_POST);
     }}
 
-if (isset($_GET[id])) {
+if (isset($_GET['id'])) {
 $$item_id=$edit_value->item_id;
 } else {
-    $$item_id=$_GET[item_id];  
+    $$item_id=$_GET['item_id'];
 }
 
 
@@ -246,7 +246,7 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                                         <?php if(isset($_SESSION['initiate_production_transfer'])>0): ?>
                                         <option value="<?=$warehouse_from?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$warehouse_from)?></option>
                                         <?php else: ?>
-                                        <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$warehouse_from);?>
+                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_from);?>
                                         <?php endif; ?></select>
                                 </div></div>
                             </td>
@@ -260,7 +260,7 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                                             <?php if(isset($_SESSION['initiate_production_transfer'])>0): ?>
                                         <option value="<?=$warehouse_to?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$warehouse_to)?></option>
                                         <?php else: ?>
-                                        <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$warehouse_to);?>
+                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_to);?>
                                         <?php endif; ?></select>
                                         </div></div>
                             </td>
@@ -306,7 +306,7 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                         <td colspan="3">
                             <div class="form-group" style="margin-left:40%">
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <?php if($_SESSION[initiate_production_transfer]){  ?>
+                                    <?php if($_SESSION['initiate_production_transfer']){  ?>
                                         <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm?");' style="font-size: 12px">Update Information</button>
                                     <?php   } else {?>
                                         <button type="submit" name="initiate" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary" style="font-size: 12px">Initiate Entry</button>
@@ -319,15 +319,15 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
 
 
 
-<?php if($_SESSION[initiate_production_transfer]):?>
+<?php if($_SESSION['initiate_production_transfer']):?>
             <form action="<?=$page;?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
-                <input type="hidden" name="<?=$unique;?>" id="<?=$unique;?>" value="<?=$_SESSION[pi_tr];?>" >
+                <input type="hidden" name="<?=$unique;?>" id="<?=$unique;?>" value="<?=$_SESSION['pi_tr'];?>" >
                 <input type="hidden" name="custom_pi_no" id="custom_pi_no" value="<?=$custom_pi_no;?>" >
                 <input type="hidden" name="pi_date" id="pi_date" value="<?=$pi_date;?>">
                 <input type="hidden" name="warehouse_from" id="warehouse_from" value="<?=$warehouse_from;?>">
                 <input type="hidden" name="warehouse_to" id="warehouse_to" value="<?=$warehouse_to;?>">
-                <input type="hidden" name="section_id" id="section_id" value="<?=$_SESSION[sectionid];?>">
-                <input type="hidden" name="company_id" id="company_id" value="<?=$_SESSION[companyid];?>">
+                <input type="hidden" name="section_id" id="section_id" value="<?=$_SESSION['sectionid'];?>">
+                <input type="hidden" name="company_id" id="company_id" value="<?=$_SESSION['companyid'];?>">
                 <table align="center" style="width:98%; font-size: 11px" class="table table-striped table-bordered">
                     <thead>
                     <tr style="background-color: bisque">
@@ -344,7 +344,7 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                     <td style="vertical-align: middle">
                             <select class="select2_single form-control" style="width: 100%" tabindex="-1" required="required" name="item_id" id="item_id" onchange="javascript:reloaditem(this.form)">
                                 <option></option>
-                                <? advance_foreign_relation(find_all_item($product_nature="'Salable','Both'"),($_GET[item_id]>0)? $_GET[item_id] : $edit_value->item_id);?>
+                                <? advance_foreign_relation(find_all_item($product_nature="'Salable','Both'"),($_GET['item_id']>0)? $_GET['item_id'] : $edit_value->item_id);?>
                             </select>
                         </td>
                         <td style="vertical-align: middle;width:10%; text-align:center">
@@ -362,16 +362,12 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                             <input type="text" id="total_unit" onkeyup="doAlert(this.form);" name="total_unit" value="<?=$edit_value->total_unit?>" style="width:100%; height:37px;text-align:center"  required="required"  class="form-control col-md-7 col-xs-12" autocomplete="off" ></td>
                         
                         <td style="vertical-align: middle;width:5%; text-align:center">
-                        <?php if (isset($_GET[id])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET[id];?>" id="editdata<?=$_GET[id];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
+                        <?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
                        <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?></td>
                         </tr>
                     </tbody>
                 </table>
             </form>
-
-
-
-   
 <?=added_data_delete_edit($res,$unique,$unique_GET,$COUNT_details_data);
 endif;?>
 <?=$html->footer_content();mysqli_close($conn);?>

@@ -1727,7 +1727,7 @@ group by j.item_id ".$order_by."";?>
 
 
 <?php } elseif ($_POST['report_id']=='7003003'){ $query="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
-SUM(j.item_in-j.item_ex) as Available_stock_balance,bsp.batch_no,j.batch,bsp.status as batch_status,bsp.mfg
+SUM(j.item_in-j.item_ex) as Available_stock_balance,bsp.batch_no,j.batch,bsp.status as batch_status,bsp.mfg,bsp.create_date
 from
 item_info i,
 journal_item j,
@@ -1738,9 +1738,9 @@ where
 j.item_id=bsp.item_id and
 j.batch=bsp.batch and
 j.item_id=i.item_id and
-j.warehouse_id='".$_POST[warehouse_id]."' and
-j.ji_date <= '".$_POST[t_date]."' and
-g.group_id in ('".$_POST[group_id]."') and
+j.warehouse_id='".$_POST['warehouse_id']."' and
+j.ji_date <= '".$_POST['t_date']."' and
+g.group_id in ('".$_POST['group_id']."') and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 i.finish_goods_code not in ('2001') and bsp.status in ('PROCESSING')
@@ -1749,15 +1749,16 @@ $sql=mysqli_query($conn, $query);
 ?>
   <h2 align="center"><?=$_SESSION['company_name'];?></h2>
   <h5 align="center" style="margin-top:-15px">Present Stock (Batch-Wise)</h5>
-  <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> </h6>
-  <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
-  <table align="center" id="customers" style="width:80%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
+  <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> </h6>
+  <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
+  <table align="center" id="customers" style="width:95%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
       <thead>
       <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
           echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
       <tr style="border: solid 1px #999;font-weight:bold; font-size:12px">
           <th style="border: solid 1px #999; padding:2px">S/L</th>
           <th style="border: solid 1px #999; padding:2px">Code</th>
+          <th style="border: solid 1px #999; padding:2px">Custom Code</th>
           <th style="border: solid 1px #999; padding:2px">FG Description</th>
           <th style="border: solid 1px #999; padding:2px">FG Sub Group</th>
           <th style="border: solid 1px #999; padding:2px">FG Group</div></th>
@@ -1765,6 +1766,7 @@ $sql=mysqli_query($conn, $query);
           <th style="border: solid 1px #999; padding:2px">Pk. Size</th>
           <th style="border: solid 1px #999; padding:2px">Batch No</th>
           <th style="border: solid 1px #999; padding:2px">Batch</th>
+          <th style="border: solid 1px #999; padding:2px">Batch Date</th>
           <th style="border: solid 1px #999; padding:2px">Status</th>
 		  <th style="border: solid 1px #999; padding:2px">Expiry Date</th>
           <th style="border: solid 1px #999; padding:2px">Present Stock</th>
@@ -1774,6 +1776,7 @@ $sql=mysqli_query($conn, $query);
         <?php while($data=mysqli_fetch_object($sql)){ ?>
       <tr><td style="border: solid 1px #999; text-align:center"><?=$ismail=$ismail+1;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->item_id;?></td>
+      <td style="border: solid 1px #999; text-align:center"><?=$data->finish_goods_code;?></td>
       <td style="border: solid 1px #999; text-align:left"><?=$data->item_name;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->sub_group_name;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->group_name;?></td>
@@ -1781,6 +1784,7 @@ $sql=mysqli_query($conn, $query);
       <td style="border: solid 1px #999; text-align:center"><?=$data->pack_size;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->batch_no;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->batch;?></td>
+      <td style="border: solid 1px #999; text-align:center"><?=$data->create_date;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->batch_status;?></td>
 	  <td style="border: solid 1px #999; text-align:center"><?=$data->mfg;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=number_format($pstock=$data->Available_stock_balance,2);?></td></tr>

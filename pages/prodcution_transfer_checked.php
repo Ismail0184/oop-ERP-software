@@ -62,8 +62,8 @@ item_info i
             $_SESSION['bqty_STO']=$row['total_unit'];
             $create_date=date('Y-m-d');
             
-            $fifocheck=mysqli_query($conn, "select distinct qb.batch, SUM(j.item_in-j.item_ex) as qty, j.item_price as rate,qb.mfg,qb.batch_no  from journal_item j, lc_lc_received_batch_split qb
-            where qb.batch=j.batch and qb.status='PROCESSING' and j.item_id=qb.item_id  and j.item_id='".$item_id."' and j.warehouse_id='".$row[warehouse_from]."'
+            $fifocheck=mysqli_query($conn, "select distinct qb.batch, SUM(j.item_in-j.item_ex) as qty, j.item_price as rate,qb.rate as batch_rate,qb.mfg,qb.batch_no  from journal_item j, lc_lc_received_batch_split qb
+            where qb.batch=j.batch and qb.status='PROCESSING' and j.item_id=qb.item_id  and j.item_id='".$item_id."' and j.warehouse_id='".$row['warehouse_from']."'
             group by qb.batch order by qb.mfg asc,qb.batch asc");
             while ($fifocheckrow=mysqli_fetch_array($fifocheck)){
                 if ( $_SESSION['bqty_STO']<=$fifocheckrow['qty'] && $_SESSION['bqty_STO']>0 && $fifocheckrow['qty']>0){
@@ -72,7 +72,7 @@ item_info i
                     ('" .$_POST['ji_date']. "','".$_POST['item_id']."','".$_POST['warehouse_id']."','".$_POST['relevant_warehouse']."','".$_SESSION['bqty_STO']."','".$fifocheckrow['rate']."','".$_SESSION['bqty_STO']*$fifocheckrow['rate']."','".$_POST['tr_from']."','".$$unique."','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','".$row['id']."','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$fifocheckrow['batch']."','".$fifocheckrow['mfg']."','$item_status','$new_batch')");
                     
                     mysqli_query($conn, "INSERT INTO lc_lc_received_batch_split (po_no,create_date,lc_id,warehouse_id,batch_no,item_id,qty,rate,batch,mfg,entry_by,entry_at,status,source,section_id,company_id,line_id) VALUES
-                    ('".$$unique."','$create_date','".$$unique."','".$row['warehouse_to']."','".$fifocheckrow['batch_no']."','".$_POST['item_id']."','".$_SESSION['bqty_STO']."','".$fifocheckrow['rate']."','$new_batch','".$fifocheckrow['mfg']."','".$_SESSION['userid']."','$sent_to_warehouse_at','PROCESSING','STO','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$row['id']."')");
+                    ('".$$unique."','$create_date','".$$unique."','".$row['warehouse_to']."','".$fifocheckrow['batch_no']."','".$_POST['item_id']."','".$_SESSION['bqty_STO']."','".$fifocheckrow['batch_rate']."','$new_batch','".$fifocheckrow['mfg']."','".$_SESSION['userid']."','$sent_to_warehouse_at','PROCESSING','STO','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$row['id']."')");
                     $_SESSION['bqty_STO']= 0;
                 } else if ($_SESSION['bqty_STO']>=$fifocheckrow['qty'] && $_SESSION['bqty_STO']>0 && $fifocheckrow['qty']>0){
                     $new_batch = automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');

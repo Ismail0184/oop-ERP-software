@@ -1960,7 +1960,7 @@ area a
             							item_sub_group sg,
             							item_group g WHERE  i.sub_group_id=sg.sub_group_id and sg.group_id=g.group_id and
             							 g.group_id	in ('500000000') and i.status in ('Active') and i.item_id not in ('1096000100010312','1096000100010313','700020001')
-            							  order by i.".$_POST[order_by].""; echo reportview($query,'Shipment Helper','99');?>
+            							  order by i.".$_POST['order_by'].""; echo reportview($query,'Shipment Helper','99');?>
 
 
 <?php elseif ($report_id=='9002010'):?>
@@ -1982,7 +1982,7 @@ area a
             c.item_id=i.item_id and
             i.brand_id=b.brand_id and  
             m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and c.total_amt>0 ".$warehouse_id_CON."".$brand_id_con."
-             order by d.dealer_code,m.do_no,c.item_id"; echo reportview($query,'Invoice wise sales summery','99');?>
+             order by m.do_date,m.do_no,d.dealer_code,c.item_id"; echo reportview($query,'Invoice wise sales summery','99');?>
 
 
     <?php elseif ($report_id=='9006001'):?>

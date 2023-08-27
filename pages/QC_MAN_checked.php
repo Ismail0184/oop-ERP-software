@@ -116,6 +116,7 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                                         <table  class="table table-striped table-bordered" style="width:100%; font-size: 11px">
                                             <tr style="height:30px; background-color: bisque">
                                                 <th style="text-align:center; width:2%; vertical-align: middle">S/N</th>
+                                                <th style="text-align:center; vertical-align: middle; width: 10%">Code</th>
                                                 <th style="text-align:center; vertical-align: middle">Material Description</th>
                                                 <th style="text-align:center; vertical-align: middle">Unit</th>
                                                 <th style="text-align:center; vertical-align: middle">Qty</th>
@@ -134,7 +135,8 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
 												 ; ?>
                                                 <tr style="background-color:#FFF">
                                                     <td style="width:2%; text-align:center"><?=$j=$j+1;?></td>
-                                                    <td style="text-align:left"><?=$MANdetrow['item_id']?> : <?=$MANdetrow['finish_goods_code'];?> : <?=$MANdetrow['item_name'];?></td>
+                                                    <td style="text-align:left"><?=$MANdetrow['item_id']?></td>
+                                                    <td style="text-align:left"><?=$MANdetrow['finish_goods_code'];?> : <?=$MANdetrow['item_name'];?></td>
                                                     <td style="width:5%; text-align:center"><?=$MANdetrow['unit_name'];?></td>
                                                     <td style="width:8%; text-align:right"><?php echo $MANdetrow['qty']; ?></td>
                                                     <td style="width:10%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
