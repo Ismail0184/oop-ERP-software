@@ -19,7 +19,7 @@ function filterData(&$str){
 
 if($_GET['report_id']=='1012001') {
     $fileName = "Purchase Data.xls";
-    $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty');
+    $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty','Rate','Amount');
 } elseif ($_GET['report_id']=='1012002'){
     $fileName = "Sales Data.xls";
     $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date', 'Do Type','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount','Sales For');
@@ -52,7 +52,7 @@ else {
 $excelData = implode("\t", array_values($fields)) . "\n";
 
  if($_GET['report_id']=='1012001') {
-     $query = $db->query("SELECT p.po_no as po_no,m.po_no,m.po_date as po_date,v.vendor_name as vendor,i.item_id as item_id,i.finish_goods_code as finish_goods_code,i.item_name as item_name,i.unit_name as unit_name,p.qty as qty  
+     $query = $db->query("SELECT p.po_no as po_no,m.po_no,m.po_date as po_date,v.vendor_name as vendor,i.item_id as item_id,i.finish_goods_code as finish_goods_code,i.item_name as item_name,i.unit_name as unit_name,p.qty as qty,p.rate as rate,p.amount as amount 
 from purchase_invoice p,purchase_master m,vendor v,item_info i 
 where 
 p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
@@ -63,7 +63,7 @@ order by m.po_no,v.vendor_id");
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
-             $lineData = array($row['po_no'], $row['po_date'], $row['vendor'], $row['item_id'], $row['finish_goods_code'], $row['item_name'], $row['unit_name'], $row['qty']);
+             $lineData = array($row['po_no'], $row['po_date'], $row['vendor'], $row['item_id'], $row['finish_goods_code'], $row['item_name'], $row['unit_name'], $row['qty'],$row['rate'],$row['amount']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

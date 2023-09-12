@@ -1585,7 +1585,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
             $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th></tr></tfoot>';
         }
 
-        if($tfoot>0 && $tfoot2>0){
+        if($tfoot>0 || $tfoot2>0){
             $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot2,2).'</th></tr></tfoot>';
         }
 

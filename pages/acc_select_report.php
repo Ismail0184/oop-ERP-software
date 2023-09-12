@@ -772,7 +772,7 @@ function reload1(form)
                         </div>
                     </div>
 
-                <?php elseif ($report_id=='1012003'): ?>
+                <?php elseif ($report_id=='1012003' || $report_id=='1012009'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -833,6 +833,24 @@ function reload1(form)
                     </div>
 
                 <?php elseif ($report_id=='1012005'): ?>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
+                                <?php if($_SESSION['userid']=='10056'){?>
+                                    <option value="3" selected>Believe Pte Ltd</option>
+                                <?php } elseif($_SESSION['userid']=='10057') { ?>
+                                    <option value="4" selected>BOSCH</option>
+                                <?php } else { ?>
+                                    <option></option>
+                                    <option value="3">Believe Pte Ltd</option>
+                                    <option value="4">BOSCH</option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Warehouse <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -851,6 +869,18 @@ function reload1(form)
                             </select>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Status <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1"  name="status" required >
+                                <option></option>
+                                <option value="1">Undelivered</option>
+                                <option value="2">Delivered</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
