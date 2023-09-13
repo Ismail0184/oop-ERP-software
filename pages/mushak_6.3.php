@@ -16,8 +16,8 @@ $warehouse_master=find_all_field('warehouse','','warehouse_id='.$do_master->depo
 $dealer_master=find_all_field('dealer_info','','dealer_code='.$do_master->dealer_code);
 $query="SELECT mus.*,SUM(mus.total_unit) as total_unit,i.item_name,i.unit_name,i.VAT from item_info i,VAT_mushak_6_3_details mus where mus.item_id=i.item_id and i.item_id not in ('1096000100010312') and mus.".$unique."=".$$unique." group by mus.item_id order by i.finish_goods_code";
 $result=mysqli_query($conn, $query);
-$status=find_a_field('VAT_mushak_6_3','COUNT(id)','do_no='.$_GET[do_no]);
-$VAT_master=find_all_field('VAT_mushak_6_3','','do_no='.$_GET[do_no]);
+$status=find_a_field('VAT_mushak_6_3','COUNT(id)','do_no='.$_GET['do_no']);
+$VAT_master=find_all_field('VAT_mushak_6_3','','do_no='.$_GET['do_no']);
 $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','year='.$year.' and warehouse_id='.$do_master->depot_id);
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -59,7 +59,7 @@ $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','year='.$year.' and wa
   <input type="hidden" name="dealer_code" value="<?=$do_master->dealer_code?>">
   <input type="hidden" name="responsible_person" value="<?=$warehouse_master->VAT_responsible_person?>">
 <table style="width: 100%">
-<td style="width: 30%; text-align: right;"><img src="bd.png" width="50" height="50" style="margin-top: 50px;
+<td style="width: 30%; text-align: right;"><img src="../assets/images/bd.png" width="50" height="50" style="margin-top: 50px;
   padding:0px;"></td>
     <td style="text-align: center">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার জাতীয় রাজস্ব র্বোড</td>
     <td style="width: 30%"><div style="text-align: center;height: 30px; margin-top: 50px; vertical-align:middle; width: 100px; border: 1px solid black; font-size: 13px;"><strong>মূসক-৬.৩</strong></div></td>
@@ -68,9 +68,9 @@ $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','year='.$year.' and wa
 
 <div style="text-align: center"><strong>কর চালানপত্র</strong></div>
 <div style="text-align: center">[বিধি ৪০ এর উপ-বিধি (১) এর দফা (গ) ও দফা (চ) দ্রষ্টব্য]</div>
-<div style="text-align: center">নিবন্ধিত ব্যক্তির নাম: <?=$_SESSION[company_name]?></div>
-<div style="text-align: center">নিবন্ধিত ব্যক্তির বিআইএন: <?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></div>
-<div style="text-align: center">চালানপত্র ইস্যুর ঠিকানা : <?=find_a_field('warehouse','VMS_address','warehouse_id='.$do_master->depot_id.' and company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></div>
+<div style="text-align: center">নিবন্ধিত ব্যক্তির নাম: <?=$_SESSION['company_name']?></div>
+<div style="text-align: center">নিবন্ধিত ব্যক্তির বিআইএন: <?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></div>
+<div style="text-align: center">চালানপত্র ইস্যুর ঠিকানা : <?=find_a_field('warehouse','VMS_address','warehouse_id='.$do_master->depot_id.' and company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></div>
 
 <br>
 <table style="width: 100%;">

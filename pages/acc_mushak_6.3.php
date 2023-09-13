@@ -495,7 +495,7 @@ $result=mysqli_query($conn, $query);
         <?php endif; ?>
         <?php
             if($status>0 && $COUNT_journal>0){?>
-            <h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the releavent warehouse!!</i></h3>
+            <h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the relevant warehouse!!</i></h3>
 
             <h3 style="text-align: center;color: red;  font-weight: bold">  
             <button type="submit" name="delete" class="btn btn-primary" style="font-size: 11px" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to delete?");'>Delete the Mushak - <?=$VAT_master->mushak_no?></button>

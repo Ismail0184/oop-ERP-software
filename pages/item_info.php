@@ -368,6 +368,16 @@ $sql_brand_category="Select category_name,category_name from brand_category";
                                         </div>
                                     </div>
 
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Show in Invoice:<span class="required text-danger">*</span></label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
+                                            <select style="width: 100%" class="select2_single form-control" name="showInInvoice">
+                                                <option value="yes" <?php if($showInInvoice=='yes') echo 'selected' ?>>Yes</option>
+                                                <option value="no" <?php if($showInInvoice=='no') echo 'selected' ?>>No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                     <!--div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Comission Status:<span class="required text-danger">*</span></label>
                                         <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">

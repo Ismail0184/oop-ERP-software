@@ -658,7 +658,7 @@ order by i.".$_POST['order_by'].""?>
 
 <?php elseif ($_POST['report_id']=='1012001'):?>
     <?php
-    $sql="SELECT p.po_no,m.po_no,m.po_date,v.vendor_name,i.item_id,i.finish_goods_code as 'FG Code (Custom Code)',item_name as 'Mat. Description',i.unit_name as 'UoM',p.qty,p.rate,p.amount  
+    $sql="SELECT p.po_no,m.po_no,m.po_date,v.vendor_name,i.item_id,i.finish_goods_code as 'FG Code (Custom Code)',item_name as 'Mat. Description',i.unit_name as 'UoM',p.qty,FORMAT(p.rate,2) as rate,FORMAT(p.amount,2) as amount 
 from purchase_invoice p,purchase_master m,vendor v,item_info i 
 where 
 p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
