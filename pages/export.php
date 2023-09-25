@@ -28,7 +28,7 @@ if($_GET['report_id']=='1012001') {
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
 } elseif ($_GET['report_id']=='1012004'){
     $fileName = "Customer Outstanding Report.xls";
-    $fields = array('DB Code', 'Dealer Name', 'Dealer Type', 'Territory', 'Region','Balance');
+    $fields = array('DB Code','Ledger Id','Dealer Name', 'Dealer Type', 'Territory', 'Region','Balance');
 } elseif ($_GET['report_id']=='1012005'){
     $fileName = "Invoice List.xls";
     $fields = array('Chalan No', 'Chalan Date', 'Do No', 'Do Date', 'Do Type','Dealer Code','Dealer Name','Territory','Depot','Invoice Amount','Discount','Commission');
@@ -57,7 +57,7 @@ from purchase_invoice p,purchase_master m,vendor v,item_info i
 where 
 p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
 i.item_id=p.item_id and 
-v.vendor_id='13' and 
+v.vendor_id='".$_GET['pc_code']."' and 
 m.po_date between '" . $_GET['f_date'] . "' and '" . $_GET['t_date'] . "'
 order by m.po_no,v.vendor_id");
      if ($query->num_rows > 0) {
@@ -78,7 +78,7 @@ IF(sdd.total_amt>'0', 'sales','free') as sales_for
 from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
 where sdd.depot_id=w.warehouse_id and
       sdd.dealer_code=d.dealer_code and
-      d.dealer_category='3' and 
+      d.dealer_category='".$_GET['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
       sdd.item_id=i.item_id and 
@@ -101,12 +101,16 @@ where sdd.depot_id=w.warehouse_id and
 REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
 from
 item_info i,
-journal_item j
+journal_item j,
+item_brand b
+
 where
+    
 j.item_id=i.item_id and
 j.warehouse_id='".$_GET['warehouse_id']."' and
 j.ji_date <= '".$_GET['t_date']."' and
-i.brand_id in ('10','11','12')
+i.brand_id=b.brand_id and
+b.vendor_id='".$_GET['pc_code']."'
 group by j.item_id");
      if ($query->num_rows > 0) {
          // Output each row of the data
@@ -120,19 +124,20 @@ group by j.item_id");
          $excelData .= 'No records found...' . "\n";
      }
  } elseif ($_GET['report_id']=='1012004') {
-     $query = $db->query("SELECT d.dealer_code,d.dealer_custom_code as DBCode,
+     $query = $db->query("SELECT d.dealer_code,d.dealer_custom_code as DBCode,d.account_code,
 d.dealer_name_e as DealerName,d.dealer_type as type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,                                        
 IF(SUM(j.dr_amt-j.cr_amt)>'0',CONCAT(' (Dr) ', SUM(j.dr_amt-j.cr_amt)),CONCAT('(Cr) ',SUBSTR(SUM(j.dr_amt-j.cr_amt),2))) as balance                                               
 from dealer_info d,branch r,area t,journal j
 where 
-      d.dealer_category='3' and 
+      d.dealer_category='".$_GET['pc_code']."' and
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
+      j.jvdate<='".$_GET['t_date']."' and 
       d.account_code=j.ledger_id group by d.account_code");
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
-             $lineData = array($row['DBCode'], $row['DealerName'], $row['type'], $row['Territory'], $row['region'],$row['balance']);
+             $lineData = array($row['DBCode'], $row['account_code'],$row['DealerName'], $row['type'], $row['Territory'], $row['region'],$row['balance']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

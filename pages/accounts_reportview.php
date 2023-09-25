@@ -709,8 +709,8 @@ group by j.item_id";?>
 
 <?php elseif ($_POST['report_id']=='1012004'):?>
     <?php
-    $sql="SELECT d.dealer_code,d.dealer_custom_code as 'DB Code',
-d.dealer_name_e as 'Dealer Name',d.dealer_type,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
+    $sql="SELECT d.dealer_code,d.dealer_custom_code as 'DB Code',d.account_code as ledger_id,
+d.dealer_name_e as 'Dealer Name',t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
                                                
 IF(SUM(j.dr_amt-j.cr_amt)>'0',CONCAT(' (Dr) ', SUM(j.dr_amt-j.cr_amt)),CONCAT('(Cr) ',SUBSTR(SUM(j.dr_amt-j.cr_amt),2))) as balance                                               
 from dealer_info d,branch r,area t,journal j
@@ -718,7 +718,7 @@ where
       d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
-      j.jvdate < '".$_POST['t_date']."' and 
+      j.jvdate<='".$_POST['t_date']."' and 
       d.account_code=j.ledger_id group by d.account_code
       "?>
     <?=reportview($sql,'Customer Outstanding Report','99'); ?>
@@ -1006,10 +1006,11 @@ $query = mysqli_query($conn, $sql); ?>
 <?php elseif ($_POST['report_id']=='1012006'):?>
     <?php
     $sql="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
-d.dealer_name_e as dealer_name,d.dealer_type,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
+d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
 
 (select sum(cr_amt)-sum(dr_amt) from journal  where ledger_id=d.account_code and jvdate<'$f_date') as opening,
 (select SUM(cr_amt) from receipt where ledger_id=d.account_code and receiptdate between '".$_POST['f_date']."' and '".$_POST['t_date']."') as collection,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info') as OtherReceived,
 (select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment
                                             
 from dealer_info d,branch r,area t
@@ -1033,11 +1034,12 @@ where
         <tr style="border: solid 1px #999;font-weight:bold; background-color:#f5f5f5; font-size:11px">
             <th style="border: solid 1px #999; padding:2px">#</th>
             <th style="border: solid 1px #999; padding:2px">DB Code</th>
+            <th style="border: solid 1px #999; padding:2px">Ledger Id</th>
             <th style="border: solid 1px #999; padding:2px">Dealer Name</th>
-            <th style="border: solid 1px #999; padding:2px">Dealer Type</th>
             <th style="border: solid 1px #999; padding:2px">Territory</th>
             <th style="border: solid 1px #999; padding:2px">Region</th>
             <th style="border: solid 1px #999; padding:2px">Opening</th>
+            <th style="border: solid 1px #999; padding:2px">Other Received</th>
             <th style="border: solid 1px #999; padding:2px">Collection</th>
             <th style="border: solid 1px #999; padding:2px">Shipment</th>
             <th style="border: solid 1px #999; padding:2px">Closing</th>
@@ -1052,25 +1054,28 @@ where
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                 <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
                 <td style="border: solid 1px #999; text-align:;left"><?=$data->dealer_custom_code;?></td>
+                <td style="border: solid 1px #999; text-align:center"><?=$data->account_code;?></td>
                 <td style="border: solid 1px #999;"><?=$data->dealer_name;?></td>
-                <td style="border: solid 1px #999; text-align:center"><?=$data->dealer_type;?></td>
                 <td style="border: solid 1px #999; text-align:left"><?=$data->Territory;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->region;?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->opening==0)? '-' : number_format($data->opening,2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=($data->collection==0)? '-' : number_format($data->OtherReceived,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->collection==0)? '-' : number_format($data->collection,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->shipment==0)? '-' : number_format($data->shipment,2);?></td>
-                <td style="border: solid 1px #999; text-align:right"><?=((($data->opening+$data->collection)-$data->shipment)==0)? '-' : number_format((($data->opening+$data->collection)-$data->shipment),2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=((($data->opening+$data->collection+$data->OtherReceived)-$data->shipment)==0)? '-' : number_format((($data->opening+$data->collection+$data->OtherReceived)-$data->shipment),2);?></td>
                 </tr>
 
             <?php
             $total_opening = $total_opening+$data->opening;
             $total_collection = $total_collection+$data->collection;
+            $totalOtherReceived = $totalOtherReceived+$data->OtherReceived;
             $total_shipment = $total_shipment+$data->shipment;
 
         } ?>
         <tr style="font-size:11px; font-weight:bold">
             <td colspan="6" style="border: solid 1px #999; text-align:right;  padding:2px">Total</td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_opening,2);?></td>
+            <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($totalOtherReceived,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_collection,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_shipment,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format((($total_opening+$total_collection)-$total_shipment),2);?></td>
