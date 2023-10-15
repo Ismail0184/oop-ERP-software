@@ -1009,16 +1009,18 @@ $query = mysqli_query($conn, $sql); ?>
 d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
 
 (select sum(cr_amt)-sum(dr_amt) from journal  where ledger_id=d.account_code and jvdate<'$f_date') as opening,
-(select SUM(cr_amt) from receipt where ledger_id=d.account_code and receiptdate between '".$_POST['f_date']."' and '".$_POST['t_date']."') as collection,
-(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info') as OtherReceived,
-(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='receipt') as collection,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn')) as salesReturn,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info','Sales')) as OtherReceived,
+(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment,
+(select SUM(dr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info') as OtherIssue
+
                                             
 from dealer_info d,branch r,area t
 where 
       d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
-      d.area_code=t.AREA_CODE and 
-      d.canceled='Yes'  
+      d.area_code=t.AREA_CODE  
         group by d.account_code order by d.dealer_code
       ";
     $result = mysqli_query($conn, $sql);
@@ -1039,17 +1041,21 @@ where
             <th style="border: solid 1px #999; padding:2px">Territory</th>
             <th style="border: solid 1px #999; padding:2px">Region</th>
             <th style="border: solid 1px #999; padding:2px">Opening</th>
+            <th style="border: solid 1px #999; padding:2px">Sales Return</th>
             <th style="border: solid 1px #999; padding:2px">Other Received</th>
             <th style="border: solid 1px #999; padding:2px">Collection</th>
             <th style="border: solid 1px #999; padding:2px">Shipment</th>
+            <th style="border: solid 1px #999; padding:2px">Other Issue</th>
             <th style="border: solid 1px #999; padding:2px">Closing</th>
         </tr>
         </thead>
         <tbody>
         <?php $s=0;
         $total_opening = 0;
+        $total_SalesReturn = 0;
         $total_collection = 0;
         $total_shipment = 0;
+        $totalOtherIssue = 0;
         while($data=mysqli_fetch_object($result)){$s++; ?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                 <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
@@ -1059,25 +1065,31 @@ where
                 <td style="border: solid 1px #999; text-align:left"><?=$data->Territory;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->region;?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->opening==0)? '-' : number_format($data->opening,2);?></td>
-                <td style="border: solid 1px #999; text-align:right"><?=($data->collection==0)? '-' : number_format($data->OtherReceived,2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=($data->salesReturn==0)? '-' : number_format($data->salesReturn,2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=($data->OtherReceived==0)? '-' : number_format($data->OtherReceived,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->collection==0)? '-' : number_format($data->collection,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=($data->shipment==0)? '-' : number_format($data->shipment,2);?></td>
-                <td style="border: solid 1px #999; text-align:right"><?=((($data->opening+$data->collection+$data->OtherReceived)-$data->shipment)==0)? '-' : number_format((($data->opening+$data->collection+$data->OtherReceived)-$data->shipment),2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=($data->OtherIssue==0)? '-' : number_format($data->OtherIssue,2);?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=((($data->opening+$data->collection+$data->OtherReceived+$data->salesReturn)-($data->shipment+$data->OtherIssue))==0)? '-' : number_format((($data->opening+$data->collection+$data->OtherReceived+$data->salesReturn)-($data->shipment+$data->OtherIssue)),2);?></td>
                 </tr>
 
             <?php
             $total_opening = $total_opening+$data->opening;
+            $total_SalesReturn = $total_SalesReturn+$data->salesReturn;
             $total_collection = $total_collection+$data->collection;
             $totalOtherReceived = $totalOtherReceived+$data->OtherReceived;
             $total_shipment = $total_shipment+$data->shipment;
+            $totalOtherIssue = $totalOtherIssue+$data->OtherIssue;
 
         } ?>
         <tr style="font-size:11px; font-weight:bold">
             <td colspan="6" style="border: solid 1px #999; text-align:right;  padding:2px">Total</td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_opening,2);?></td>
+            <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_SalesReturn,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($totalOtherReceived,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_collection,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_shipment,2);?></td>
+            <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($totalOtherIssue,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format((($total_opening+$total_collection)-$total_shipment),2);?></td>
         </tr></tbody>
     </table>

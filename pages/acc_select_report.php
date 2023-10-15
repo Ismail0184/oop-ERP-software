@@ -865,7 +865,7 @@ function reload1(form)
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1"  name="dealer_code" >
                                 <option></option>
-                                <?=foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)',0, 'dealer_category=3'); ?>
+                                <?=foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)',0, 'dealer_category in ("3","4")'); ?>
                             </select>
                         </div>
                     </div>
@@ -921,7 +921,7 @@ function reload1(form)
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="ledger_id" >
                                 <option></option>
-                                <?php foreign_relation("dealer_info", "account_code", "CONCAT(account_code,' : ', dealer_name_e)",1, "dealer_category='3' and canceled='Yes'","order by dealer_code"); ?>
+                                <?php foreign_relation("dealer_info", "account_code", "CONCAT(account_code,' : ', dealer_name_e)",1, "dealer_category in ('3','4') and canceled='Yes'","order by dealer_code"); ?>
                             </select>
                         </div>
                     </div>
