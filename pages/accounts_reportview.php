@@ -670,10 +670,11 @@ order by m.po_no,v.vendor_id"?>
 
 <?php elseif ($_POST['report_id']=='1012002'):?>
     <?php
+//IF(sdd.total_amt>'0', 'sales','') as sales_for
     $sql="SELECT sdd.id,sdd.id as 'T.ID',w.warehouse_name as Depot,d.dealer_custom_code as 'DB Code',
 d.dealer_name_e as 'Dealer Name',d.dealer_type,sdd.do_no,sdd.do_date,sdd.do_type,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
 i.finish_goods_code as 'FG Code',i.item_name as 'FG Description',i.unit_name as UoM,i.pack_size,sdd.unit_price,sdd.total_unit as qty,sdd.total_amt as amount,
-IF(sdd.total_amt>'0', 'sales','') as sales_for
+sdd.do_type as 'for'
 from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
 where sdd.depot_id=w.warehouse_id and
       sdd.dealer_code=d.dealer_code and
@@ -1843,15 +1844,18 @@ order by c.do_no";
                 <th style="border: solid 1px #999; padding:2px; ">DO</th>
                 <th style="border: solid 1px #999; padding:2px;">DO Date</th>
                 <th style="border: solid 1px #999; padding:2px">DO.Type</th>
-                <th style="border: solid 1px #999; padding:2px">Territory</th>
+                <!--th style="border: solid 1px #999; padding:2px">Territory</th-->
                 <th style="border: solid 1px #999; padding:2px">FG Code</th>
                 <th style="border: solid 1px #999; padding:2px">FG Description</th>
                 <th style="border: solid 1px #999; padding:2px">UOM</th>
                 <th style="border: solid 1px #999; padding:2px">Pack Size</th>
+                <th style="border: solid 1px #999; padding:2px">Brand</th>
                 <th style="border: solid 1px #999; padding:2px">Batch</th>
                 <th style="border: solid 1px #999; padding:2px">COGS Price</th>
                 <th style="border: solid 1px #999; padding:2px">Qty</th>
-                <th style="border: solid 1px #999; padding:2px">Amount</th>
+                <th style="border: solid 1px #999; padding:2px">COGS Amount</th>
+                <th style="border: solid 1px #999; padding:2px">Discount Amount</th>
+                <th style="border: solid 1px #999; padding:2px">Invoice Amount</th>
             </tr></thead>
             <tbody>
             <?php
@@ -1862,6 +1866,7 @@ order by c.do_no";
             $datecon=' and sd.do_date between  "'.$f_date.'" and "'.$t_date.'"';
             $result=mysqli_query($conn, 'Select
 				sd.*,
+				sd.total_amt as invoice_amount,
 				d.dealer_custom_code,
 				d.dealer_name_e,
 				d.dealer_type,
@@ -1872,17 +1877,21 @@ order by c.do_no";
 				i.item_name as FGdescription,
 				i.pack_unit as UOM,
 				i.pack_size as psize,
-                ji.*
+                ji.*,
+                ib.brand_name,
+                (select SUM(total_amt) from sale_do_details where do_no=sd.do_no and item_id="1096000100010312" and gift_on_item=sd.item_id) as cash_discount
 
 				from
 				sale_do_chalan sd,
 				dealer_info d,
 				branch b,
+				item_brand ib,
 				warehouse w,
 				item_info i,
                 journal_item ji
 
 				where
+				    ib.brand_id=i.brand_id and 
                 sd.do_no=ji.do_no and
                 sd.item_id=ji.item_id and
 				i.item_id not in ("1096000100010312") and
@@ -1902,16 +1911,19 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_no; ?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_date; ?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->challan_type; ?></td>
-                    <td style="border: solid 1px #999; padding:5px"><?=$data->AREA_NAME;?></td>
+                    <!--td style="border: solid 1px #999; padding:5px"><?=$data->AREA_NAME;?></td-->
                     <!--td style="border: solid 1px #999; text-align:left; padding:2px"><?=$data->BRANCH_NAME;?></td-->
                     <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->FGCODE;?></td>
                     <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->FGdescription;?></td>
                     <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->UOM;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->psize;?></td>
+                    <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->brand_name;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->batch;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->item_price,2);?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->total_unit;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($amount=$data->total_unit*$data->item_price,2);?></td>
+                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->cash_discount,2);?></td>
+                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->invoice_amount+$data->cash_discount,2);?></td>
                 </tr>
                 <?php
                 $total_amount=$total_amount+$amount;

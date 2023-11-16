@@ -169,6 +169,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                                                     <option></option>
                                                     <option value="shortage" <?php if($type=='shortage'){ ?> selected <?php }?> >Shortage</option>
                                                     <option value="damage"   <?php if($type=='damage'){ ?> selected <?php }?>>Damage</option>
+                                                    <option value="other"   <?php if($type=='other'){ ?> selected <?php }?>>Other</option>
                                                 </select>
                                             </td>
                                             <th>Remarks</th><th>:</th>

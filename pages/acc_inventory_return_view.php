@@ -84,10 +84,6 @@ if(isset($_POST['checked'])){
                                 $_POST['line_id'] = $data->id;
                                 $crud      =new crud($lc_lc_received_batch_split);
                                 $crud->insert();
-
-
-
-
                               }
           if (($_POST['dr_amount_1'] > 0) && ($_POST['cr_amount_2'] > 0)) {
             add_to_journal_new($masterDATA->return_date, $proj_id, $jv, $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'],0, 'Purchase_Returned', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
@@ -166,7 +162,7 @@ vendor v
                           <th style="vertical-align:middle">Unit Name</th>
                           <th style="vertical-align:middle">Batch</th>
                           <th style="vertical-align:middle">Batch Rate</th>
-                          <th style="vertical-align:middle; text-align:center">Inputed Qty</th>
+                          <th style="vertical-align:middle; text-align:center">Inputted Qty</th>
                           <th style="vertical-align:middle; text-align:center">Apprv. Qty <br>(QC)</th>
                           <th style="vertical-align:middle; text-align:center">Rate</th>
                           <th style="vertical-align:middle; text-align:center">Amount</th>
@@ -207,8 +203,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                         </tr>
                     </table>
 
-
-
+                    <?php if($masterDATA->type=='shortage'){ ?>
                     <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px">
                         <thead>
                         <tr style="background-color: bisque">
@@ -232,7 +227,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                                     <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $vendor_ledger, 'ledger_id='.$vendor_ledger.''); ?>
                                 </select>
                             </td>
-                            <td rowspan="4" style="text-align: center; vertical-align:middle"><textarea name="narration_1" id="narration_1"  class="form-control col-md-7 col-xs-12" style="width:100%; height:205px; font-size: 11px; text-align:center">Inventory Return to <?=find_a_field('vendor','vendor_name','vendor_id='.$masterDATA->vendor_id)?>,IR No # <?=$$unique?>, Ref.No # <?=$masterDATA->ref_no;?>,<?=$masterDATA->remarks;?></textarea></td>
+                            <td rowspan="4" style="text-align: center; vertical-align:middle"><textarea name="narration_1" id="narration_1"  class="form-control col-md-7 col-xs-12" style="width:100%; height:205px; font-size: 11px; text-align:center">Inventory Return to <?=find_a_field('vendor','vendor_name','vendor_id='.$masterDATA->vendor_id)?>,IR No # <?=$$unique?>, Ref.No # <?=$masterDATA->ref_no;?>,<?=$masterDATA->remarks;?>, Type = <?=$masterDATA->type?></textarea></td>
                             <td align="center" style="vertical-align:middle"><input type="text" name="dr_amount_1" readonly value="<?=$total_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                             <td align="center" style="vertical-align:middle"><!--input type="text" name="cr_amount_1" readonly value="0.00" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" --></td>
                         </tr>
@@ -276,6 +271,78 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                         </tr---><?php  ?>
                         </tbody>
                     </table>
+                    <?php } else if($masterDATA->type=='damage'){
+                        $VAT=find_a_field('VAT_mushak_6_8','Count(do_no) as do_no','do_no='.$_GET['id']);
+                        $VAT_amount = find_a_field('VAT_mushak_6_8_details','sum(qty10)','do_no='.$_GET['id']);
+                        ?>
+                    <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px">
+                        <thead>
+                        <tr style="background-color: bisque">
+                            <th style="vertical-align: middle">#</th>
+                            <th style="width: 12%; vertical-align: middle; text-align: center">For</th>
+                            <th>Accounts Description</th>
+                            <th style="text-align:center; width: 25%">Narration</th>
+                            <th style="text-align:center; width: 12%">Debit</th>
+                            <th style="text-align:center; width: 12%">Credit</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style="text-align: center; vertical-align:middle">1</td>
+                            <td style="text-align: center; vertical-align:middle">Vendor Ledger</td>
+                            <td style="vertical-align:middle"><?
+                                $vendor_ledger=find_a_field('vendor','ledger_id','vendor_id='.$masterDATA->vendor_id.'');
+                                $warehouse_ledger=find_a_field('warehouse','ledger_id_FG','warehouse_id='.$masterDATA->warehouse_id.'');?>
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_1">
+                                    <option></option>
+                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $vendor_ledger, 'ledger_id='.$vendor_ledger.''); ?>
+                                </select>
+                            </td>
+                            <td rowspan="4" style="text-align: center; vertical-align:middle"><textarea name="narration_1" id="narration_1"  class="form-control col-md-7 col-xs-12" style="width:100%; height:205px; font-size: 11px; text-align:center">Inventory Return to <?=find_a_field('vendor','vendor_name','vendor_id='.$masterDATA->vendor_id)?>,IR No # <?=$$unique?>, Ref.No # <?=$masterDATA->ref_no;?>,<?=$masterDATA->remarks;?>, type = <?=$masterDATA->type?></textarea></td>
+                            <td align="center" style="vertical-align:middle"><input type="text" name="dr_amount_1" readonly value="<?=$total_amount+$VAT_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                            <td align="center" style="vertical-align:middle"><!--input type="text" name="cr_amount_1" readonly value="0.00" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" --></td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: center; vertical-align:middle">2</td>
+                            <td style="text-align: center;vertical-align:middle">Inventory Ledger</td>
+                            <td style="vertical-align:middle">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_2">
+                                    <option></option>
+                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $warehouse_ledger, 'ledger_group_id in ("1007")'); ?>
+                                </select>
+                            </td>
+                            <td style="text-align: right; vertical-align:middle"><!--input type="text" name="dr_amount_2" readonly value="0.00" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" --></td>
+                            <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_2" readonly value="<?=$cogs_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                        </tr>
+
+                        <?php if($VAT>0):?>
+                        <tr>
+                            <td style="text-align: center;vertical-align:middle">3</td>
+                            <td style="text-align: center;vertical-align:middle">VAT Account</td>
+                            <td style="vertical-align:middle">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_3">
+                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $ledger_3, 'ledger_id in ("1005000400000000")'); ?>
+                                </select>
+                            </td>
+                            <td style="text-align: right; vertical-align:middle"></td>
+                            <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_3" readonly value="<?=$VAT_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                        </tr>
+                        <?php endif; $other_income=$total_amount-($cogs_amount+$total_VAT); ?>
+                        <!--tr>
+                            <td style="text-align: center; vertical-align:middle">4</td>
+                            <td style="text-align: center; vertical-align:middle">Income Ledger</td>
+                            <td style="vertical-align:middle">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_4">
+                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $ledger_4, 'ledger_id in ("3001000600000000")'); ?>
+                                </select>
+                            </td>
+                            <td style="text-align: right;vertical-align:middle"><input type="text" name="dr_amount_4" readonly value="<?php if($other_income<0) echo substr($other_income,1); else echo '0.00';?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                            <td style="text-align: right;vertical-align:middle"><input type="text" name="cr_amount_4" readonly value="<?php if($other_income>0) echo $other_income; else echo '0.00';?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                        </tr---><?php  ?>
+                        </tbody>
+                    </table>
+                    <?php } ?>
 
 
 

@@ -1,7 +1,7 @@
 <?php
 require_once 'support_file.php';
 $title='Mushak 6.8';
-$page="acc_mushak_6.3.php";
+$page="VMS_mushak_6.8_IR.php";
 $table='purchase_return_details';
 $unique='id';
 $$unique=$_GET[$unique];
@@ -9,14 +9,24 @@ $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $timess = $dateTime->format("h:i A");
 $year=date('Y');
 $now=date('Y-m-d h:s:i');
-$table_VAT_Master='VAT_mushak_6_6';
+$table_VAT_Master='VAT_mushak_6_8';
 $table_VAT_details='VAT_mushak_6_8_details';
-$mushaks=find_all_field('VAT_mushak_6_6','','source in ("Purchase_Returned") and do_no='.$$unique);
+$mushaks=find_all_field('VAT_mushak_6_8','','source in ("Purchase_Returned") and do_no='.$$unique);
+
+$fiscal_year=find_a_field('fiscal_term','fiscal_year','status="1"');
+
 
 if(prevent_multi_submit()){
 if(isset($_POST['record'])){
-  if($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
+    $mushak_no_validation_check=find_a_field('VAT_mushak_6_8','mushak_no','mushak_no='.$_POST['mushak_no'].' and fiscal_year="'.$fiscal_year.'" and warehouse_id='.$_POST['warehouse_id'].'');
+    if($mushak_no_validation_check == $_POST['mushak_no']) {
+        $message='This Mushak No has already been input!!';
+        echo "<script>alert('$message');</script>";
+
+    }
+    elseif($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
   $_POST['do_no']=$$unique;
+  $_POST['fiscal_year']=$fiscal_year;
   $_POST['mushak_no']=$_POST['mushak_no'];
   $_POST['warehouse_id']=$_POST['warehouse_id'];
   $_POST['dealer_code']=$_POST['dealer_code'];
@@ -29,7 +39,7 @@ if(isset($_POST['record'])){
   $crud = new crud($table_VAT_Master);
   $crud->insert();
 
-  $query="SELECT sdc.*,SUM(sdc.amount) as total_unit,i.item_name,i.unit_name,i.VAT from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.".$unique."=".$$unique." group by i.item_id order by i.finish_goods_code";
+  $query="SELECT sdc.*,i.* from ".$table." sdc, item_info i where sdc.item_id=i.item_id  and sdc.m_id='".$_GET[$unique]."' group by i.item_id order by i.item_id";
   $result=mysqli_query($conn, $query);
   while($data=mysqli_fetch_object($result)):
     $id=$data->item_id;
@@ -44,9 +54,8 @@ if(isset($_POST['record'])){
     $_POST['qty9']=$_POST['qty9'.$id];
     $_POST['qty10']=$_POST['qty10'.$id];
     $_POST['qty11']=$_POST['qty11'.$id];
-    if($_POST['total_unit'.$id]>0){
     $crud = new crud($table_VAT_details);
-    $crud->insert();}
+    $crud->insert();
   endwhile;
   mysqli_query($conn, "Update purchase_return_master SET mushak_challan_status='RECORDED' where id=".$_GET[$unique]);
   unset($_POST);
@@ -60,67 +69,27 @@ if (isset($_POST['skipandforward']))
     echo "<script>window.close(); </script>";
 }
 
-$mushak=find_all_field('VAT_mushak_6_6','','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
-$COUNT_mushak=find_a_field('VAT_mushak_6_6','COUNT(mushak_no)','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
-$status=find_a_field('VAT_mushak_6_6','COUNT(id)','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
+$mushak=find_all_field('VAT_mushak_6_8','','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
+$COUNT_mushak=find_a_field('VAT_mushak_6_8','COUNT(mushak_no)','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
+$status=find_a_field('VAT_mushak_6_8','COUNT(id)','source in ("Purchase_Returned") and do_no='.$_GET[$unique]);
 $do_master=find_all_field('purchase_return_master','','id='.$_GET[$unique]);
 $warehouse_master=find_all_field('warehouse','','warehouse_id='.$do_master->warehouse_id);
 $dealer_master=find_all_field('vendor','','vendor_id='.$do_master->vendor_id);
-$VAT_master=find_all_field('VAT_mushak_6_6','','source="Purchase_Returned" and do_no='.$_GET[$unique]);
-$latest_id=find_a_field('VAT_mushak_6_6','MAX(mushak_no)','year='.$year.' and warehouse_id='.$do_master->warehouse_id);
+$VAT_master=find_all_field('VAT_mushak_6_8','','source="Purchase_Returned" and do_no='.$_GET[$unique]);
+$latest_id=find_a_field('VAT_mushak_6_8','MAX(mushak_no)','year='.$year.' and warehouse_id='.$do_master->warehouse_id);
 
 if($status>0){
-  if($_GET['group_by']=='VAT_item_group'){
-
   $query="SELECT
   mus.*,
-  SUM(mus.total_unit) as total_unit,
-  mus.total_price,
-  vtg.group_name as item_name,
-  mus.rate_of_SD,
-  mus.amount_of_SD,
-  mus.rate_of_VAT,
-  mus.amount_of_VAT,
-  mus.total_including_all,
-  i.unit_name,
-  i.SD AS VAT,
-  mus.source
-  from
-  item_info i,
-  VAT_mushak_6_8_details mus,
-  VAT_item_group vtg
-  where
-  i.VAT_item_group=vtg.group_id and
-  mus.source in ('Purchase_Returned') and
-  mus.item_id=i.item_id and
-  i.item_id not in ('1096000100010312') and
-  mus.do_no=".$_GET[$unique]."
-  group by i.VAT_item_group order by i.finish_goods_code";
-} else {
-  $query="SELECT
-  mus.*,
-  SUM(mus.total_unit) as total_unit,
-  mus.total_price,
-  i.item_name,
-  mus.rate_of_SD,
-  mus.amount_of_SD,
-  mus.rate_of_VAT,
-  mus.amount_of_VAT,
-  mus.total_including_all,
-  i.unit_name,
-  i.SD AS VAT,
-  mus.source
+  i.*
   from
   item_info i,
   VAT_mushak_6_8_details mus
   where
   mus.source in ('Purchase_Returned') and
   mus.item_id=i.item_id and
-  i.item_id not in ('1096000100010312') and
   mus.do_no=".$_GET[$unique]."
   group by mus.item_id order by i.finish_goods_code";
-}
-
 
 } else {
 $query="SELECT sdc.*,SUM(sdc.qc_qty) as total_unit,i.item_name,i.unit_name,i.SD AS VAT,i.VAT_percentage,i.SD_percentage from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.m_id=".$_GET[$unique]." group by i.item_id order by i.finish_goods_code";
@@ -160,16 +129,6 @@ $result=mysqli_query($conn, $query);
     </div>
 <form action="<?=$pate?>" method="get">
 <input type="hidden" name="<?=$unique?>"  value="<?=$$unique?>" />
-<?php if($_GET['group_by']=='item_id'){?>
-          <input type="hidden" name="group_by"  value="VAT_item_group" />
-                  <p><input type="submit"  value="View by GROUP" /></p>
-<?php } elseif($_GET['group_by']=='VAT_item_group'){?>
-<input type="hidden" name="group_by"  value="item_id" />
-        <p><input type="submit"  value="View by Item" /></p>
-      <?php } else { ?>
-        <input type="hidden" name="group_by"  value="VAT_item_group" />
-                <p><input type="submit"  value="View by GROUP" /></p>
-      <?php } ?>
     </form>
 </div>
 <?php } ?>
@@ -277,32 +236,36 @@ $result=mysqli_query($conn, $query);
         $cd=$data->total_unit*$data->VAT*$ab;?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
-      <td style="border: 1px solid #CCC;text-align: left; margin: 10px"><?=$data->item_name?></td>
-      <td style="border: 1px solid #CCC;text-align: center"><?=$data->unit_name?></td>
-      <td style="border: 1px solid #CCC;text-align: center"><?=$data->total_unit?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=number_format($data->unit_price,2)?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=number_format($data->total_price,2)?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=($data->rate_of_SD>0)? $data->rate_of_SD : '0' ?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=($data->amount_of_SD>0)? number_format($data->amount_of_SD,2) : '-' ?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=($data->rate_of_VAT>0)? number_format($data->rate_of_VAT) : '0' ?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=($data->amount_of_VAT>0)? number_format($data->amount_of_VAT,2) : '-' ?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=($data->total_including_all>0)? number_format($data->total_including_all,2) : '-' ?></td>
+      <td style="border: 1px solid #CCC;text-align: left; margin: 10px"><?=$data->challen_no_and_date?></td>
+      <td style="border: 1px solid #CCC;text-align: center"><?=$data->remarks_of_debit_note?></td>
+      <td style="border: 1px solid #CCC;text-align: center"><?=$data->price4?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty5?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty6?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty7?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->price8?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty9?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty10?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->qty11?></td>
       </tr>
       <?php
-      $total_unit=$total_unit+$data->total_unit;
-      $total_total_price=$total_total_price+$data->total_price;
-      $total_amount_of_SD=$total_amount_of_SD+$data->amount_of_SD;
-          $total_amount_of_VAT=$total_amount_of_VAT+$data->amount_of_VAT;
-          $total_total_including_all=$total_total_including_all+$data->total_including_all;
+      $total_price4=$total_price4+$data->price4;
+      $total_qty5=$total_qty5+$data->qty5;
+      $total_qty6=$total_qty6+$data->qty6;
+      $total_qty7=$total_qty7+$data->qty7;
+      $total_price8=$total_price8+$data->price8;
+      $total_qty9=$total_qty9+$data->qty9;
+      $total_qty10=$total_qty10+$data->qty10;
+      $total_qty11=$total_qty11+$data->qty11;
       endwhile; ?>
-      <tr><th>Total</th><td></td><td></td><th style="border: 1px solid #CCC;text-align: center;"><?=$total_unit?></th>
-      <td></td>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_total_price,2)?></th>
-          <th style="border: 1px solid #CCC;text-align: right;"></th>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_amount_of_SD,2)?></th>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=$c?></th>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_amount_of_VAT,2)?></th>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($total_total_including_all,2)?></th>
+      <tr><th>Total</th><td></td><td></td>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_price4?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty5?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty6?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty7?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_price8?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty9?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty10?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"><?=$total_qty11?></th>
       </tr>
     <?php else:
       while($data=mysqli_fetch_object($result)):
@@ -357,7 +320,7 @@ $result=mysqli_query($conn, $query);
 </div>
 
         <?php
-        $GET_status=find_a_field('purchase_return_master','mushak_challan_status','d='.$_GET[$unique]);
+        $GET_status=find_a_field('purchase_return_master','mushak_challan_status','id='.$_GET[$unique]);
             if($status>0){?><h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the relevant warehouse!!</i></h3>
           <?php } else { if ($GET_status=='UNRECORDED'){?><h1 align="center">
                 <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan">

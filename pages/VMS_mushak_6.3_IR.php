@@ -13,10 +13,19 @@ $table_VAT_Master='VAT_mushak_6_3';
 $table_VAT_details='VAT_mushak_6_3_details';
 $mushaks=find_all_field('VAT_mushak_6_3','','source in ("Purchase_Returned") and do_no='.$$unique);
 
+$fiscal_year=find_a_field('fiscal_term','fiscal_year','status="1"');
+
+
 if(prevent_multi_submit()){
 if(isset($_POST['record'])){
-  if($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
+    $mushak_no_validation_check=find_a_field('VAT_mushak_6_8','mushak_no','mushak_no='.$_POST['mushak_no'].' and fiscal_year="'.$fiscal_year.'" and warehouse_id='.$_POST['warehouse_id'].'');
+    if($mushak_no_validation_check == $_POST['mushak_no']) {
+        $message='This Mushak No has already been input!!';
+        echo "<script>alert('$message');</script>";
+
+    } elseif ($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
   $_POST['do_no']=$$unique;
+  $_POST['fiscal_year']=$fiscal_year;
   $_POST['mushak_no']=$_POST['mushak_no'];
   $_POST['warehouse_id']=$_POST['warehouse_id'];
   $_POST['dealer_code']=$_POST['dealer_code'];
@@ -29,7 +38,10 @@ if(isset($_POST['record'])){
   $crud = new crud($table_VAT_Master);
   $crud->insert();
 
-  $query="SELECT sdc.*,SUM(sdc.amount) as total_unit,i.item_name,i.unit_name,i.VAT from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.".$unique."=".$$unique." group by i.item_id order by i.finish_goods_code";
+  $query="SELECT sdc.*,SUM(sdc.amount) as total_unit,i.item_name,i.unit_name,i.VAT from 
+  ".$table." sdc, 
+  item_info i 
+  where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.m_id=".$_GET[$unique]." group by i.item_id order by i.finish_goods_code";
   $result=mysqli_query($conn, $query);
   while($data=mysqli_fetch_object($result)):
     $id=$data->item_id;
@@ -394,7 +406,7 @@ $result=mysqli_query($conn, $query);
 </div>
 
         <?php
-        $GET_status=find_a_field('purchase_return_master','mushak_challan_status','d='.$_GET[$unique]);
+        $GET_status=find_a_field('purchase_return_master','mushak_challan_status','id='.$_GET[$unique]);
             if($status>0){?><h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the relevant warehouse!!</i></h3>
           <?php } else { if ($GET_status=='UNRECORDED'){?><h1 align="center">
                 <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan">
