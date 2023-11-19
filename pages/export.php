@@ -22,7 +22,7 @@ if($_GET['report_id']=='1012001') {
     $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty','Rate','Amount');
 } elseif ($_GET['report_id']=='1012002'){
     $fileName = "Sales Data.xls";
-    $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date', 'Do Type','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount','Sales For');
+    $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date', 'Do Type','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount','Cash Discount','Sales For');
 } elseif ($_GET['report_id']=='1012003'){
     $fileName = "Stock Report.xls";
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
@@ -74,6 +74,7 @@ order by m.po_no,v.vendor_id");
      $query = $db->query("SELECT sdd.id,sdd.id as TID,w.warehouse_name as Depot,d.dealer_custom_code as DBCode,
 d.dealer_name_e as DealerName,d.dealer_type as dealer_type,sdd.do_no as do_no,sdd.do_date as do_date,sdd.do_type as do_type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,
 i.finish_goods_code as FGCode,i.item_name as FGDescription,i.unit_name as UoM,i.pack_size as pack_size,sdd.unit_price as unit_price,sdd.total_unit as qty,sdd.total_amt as amount,
+(select SUM(total_amt) from sale_do_details where do_no=sdd.do_no and item_id='1096000100010312' and gift_on_item=sdd.item_id) as cash_discount,
 IF(sdd.total_amt>'0', 'sales','free') as sales_for
 from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
 where sdd.depot_id=w.warehouse_id and
@@ -82,12 +83,13 @@ where sdd.depot_id=w.warehouse_id and
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
       sdd.item_id=i.item_id and 
+      sdd.item_id not in ('1096000100010312') and
       sdd.do_date between '".$_GET['f_date']."' and '".$_GET['t_date']."'");
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
              $lineData = array($row['TID'], $row['Depot'], $row['DBCode'], $row['DealerName'], $row['dealer_type'], $row['do_no'],$row['do_date'],$row['do_type'],$row['Territory'],$row['region'],
-                 $row['FGCode'],$row['FGDescription'],$row['UoM'],$row['pack_size'],$row['unit_price'],$row['qty'],$row['amount'],$row['sales_for']);
+                 $row['FGCode'],$row['FGDescription'],$row['UoM'],$row['pack_size'],$row['unit_price'],$row['qty'],$row['amount'],$row['cash_discount'],$row['sales_for']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

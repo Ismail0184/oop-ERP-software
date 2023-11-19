@@ -53,7 +53,7 @@ if(isset($_POST['checked'])){
                                 $_POST['item_id']=$data->item_id;
                                 $_POST['warehouse_id']=$data->warehouse_id;
                                 $_POST['item_ex']=$data->qc_qty;
-                                $_POST['item_price']=$data->rate;
+                                $_POST['item_price']=$data->batch_rate_get;
                                 $_POST['total_amt']=$data->qc_qty*$data->rate;
                                 $_POST['tr_from']='Purchase_Returned';
                                 $_POST['tr_no']=$$unique;
@@ -76,9 +76,9 @@ if(isset($_POST['checked'])){
                                 $_POST['item_id']=$data->item_id;
                                 $_POST['warehouse_id']=$data->warehouse_id;
                                 $_POST['qty'] = $data->qc_qty;
-                                $_POST['rate'] = $data->cogs_price;
+                                $_POST['rate'] = $data->batch_rate_get;
                                 $_POST['batch'] = $new_batch;
-                                $_POST['mfg'] = $data->mfg;
+                                $_POST['mfg'] = find_a_field('lc_lc_received_batch_split','mfg','batch='.$data->batch);
                                 $_POST['status'] = 'PROCESSING';
                                 $_POST['source'] = 'IR';
                                 $_POST['line_id'] = $data->id;
@@ -185,8 +185,9 @@ vendor v
 $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                           }
                         $VAT=find_a_field('purchase_return_master','VAT','id='.$_GET['id']);
-                        if($VAT>0){
-                            $VAT_amount = ($cogs_amount/100)*$VAT;
+                        $VAT_amount = find_a_field('VAT_mushak_6_3_details','sum(amount_of_VAT)','source="Purchase_Returned" and do_no='.$_GET['id']);
+                        if($VAT_amount>0){
+                            $VAT_amount = $VAT_amount;
                             $total_amount = $total_amount+$VAT_amount;
                             $cogs_amount = $cogs_amount;
                         } else
@@ -245,7 +246,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                             <td style="text-align: right; vertical-align:middle"><input type="text" name="cr_amount_2" readonly value="<?=$cogs_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                         </tr>
 
-                        <?php if($VAT>0):?>
+                        <?php if($VAT_amount>0):?>
                         <tr>
                             <td style="text-align: center;vertical-align:middle">3</td>
                             <td style="text-align: center;vertical-align:middle">VAT Account</td>
@@ -366,9 +367,9 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Inventory Return</button></td>
             </tr></table>
 </form>

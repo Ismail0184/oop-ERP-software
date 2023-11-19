@@ -933,6 +933,25 @@ function reload1(form)
                             <input type="date" style="font-size: 11px; width: 49%; margin-left:2%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"  required name="t_date">
                         </div>
                     </div>
+                <?php elseif ($report_id=='1012010'): ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Customer Name <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="hidden" name="ledger_id" value="4002000500000000">
+                            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" name="dealer_code" >
+                                <option></option>
+                                <?php foreign_relation("dealer_info", "account_code", "CONCAT(account_code,' : ', dealer_name_e)",1, "dealer_category in ('3','4') and canceled='Yes'","order by dealer_code"); ?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="date" style="font-size: 11px; width: 49%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-01');?>" class="form-control col-md-7 col-xs-12" required name="f_date">
+                            <input type="date" style="font-size: 11px; width: 49%; margin-left:2%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"  required name="t_date">
+                        </div>
+                    </div>
 
                 <?php elseif ($report_id=='1012008'): ?>
                     <div class="form-group">
