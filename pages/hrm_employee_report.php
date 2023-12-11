@@ -139,9 +139,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                           <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Personal</a></li>
                           <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Contact</a></li>
                           <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Job Info</a></li>
-                          
-                          <?php if($_SESSION['entry_PBI_ID']>0):?>
-                          <li role="presentation" class=""><a href="#tab_content4" id="tab" role="profile-tab4" data-toggle="tab" aria-expanded="false">Family</a></li>
+                                                    <li role="presentation" class=""><a href="#tab_content4" id="tab" role="profile-tab4" data-toggle="tab" aria-expanded="false">Family</a></li>
                           <li role="presentation" class=""><a href="#tab_content5" role="tab" id="profile-tab5" data-toggle="tab" aria-expanded="false">Education</a></li>
                           <li role="presentation" class=""><a href="#tab_content6" role="tab" id="profile-tab6" data-toggle="tab" aria-expanded="false">Employment</a></li>
                           <li role="presentation" class=""><a href="#tab_content7" role="tab" id="profile-tab7" data-toggle="tab" aria-expanded="false">Supervisor</a></li>
@@ -151,7 +149,6 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                           <li role="presentation" class=""><a href="#tab_content11" role="tab" id="profile-tab11" data-toggle="tab" aria-expanded="false">Talent</a></li>
                           <li role="presentation" class=""><a href="#tab_content12" role="tab" id="profile-tab12" data-toggle="tab" aria-expanded="false">Bank A/c</a></li>
                           <li role="presentation" class=""><a href="#social_media" role="tab" id="profile-tab12" data-toggle="tab" aria-expanded="false">Social Media</a></li>
-                          <?php endif; ?>
 
                         
                         </ul>

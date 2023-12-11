@@ -272,7 +272,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                         </tr---><?php  ?>
                         </tbody>
                     </table>
-                    <?php } else if($masterDATA->type=='damage'){
+                    <?php } else if($masterDATA->type=='damage' || $masterDATA->type=='other'){
                         $VAT=find_a_field('VAT_mushak_6_8','Count(do_no) as do_no','do_no='.$_GET['id']);
                         $VAT_amount = find_a_field('VAT_mushak_6_8_details','sum(qty10)','do_no='.$_GET['id']);
                         ?>

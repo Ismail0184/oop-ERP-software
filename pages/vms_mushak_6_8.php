@@ -16,7 +16,7 @@ if (isset($_POST[viewreport])) {
                             warehouse w
 							 where
 							 m.vendor_id=v.vendor_id and
-							 m.type = 'damage' and 
+							 m.type in ('damage','other') and 
 							 m.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
 							 m.entry_by=uam.user_id and
                m.warehouse_id=w.warehouse_id and
@@ -30,7 +30,7 @@ if (isset($_POST[viewreport])) {
                             warehouse w
 							 where
 							 m.vendor_id=v.vendor_id and
-							 m.type = 'damage' and 
+							 m.type in ('damage','other') and 
                m.status in ('PROCESSING') and
                m.mushak_challan_status='UNRECORDED' AND
 							 m.entry_by=uam.user_id and

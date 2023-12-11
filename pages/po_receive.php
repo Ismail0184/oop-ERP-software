@@ -77,7 +77,7 @@ if(prevent_multi_submit()){
 ///////////// accounts journal start from here			
 			
         $jv=next_journal_sec_voucher_id(); 
-        $get_tax_ait=$_POST[tax_ait];
+        $get_tax_ait=$_POST['tax_ait'];
         $pr_amt  = $total_amount;
 
 //// service charge calculation
@@ -430,7 +430,7 @@ td {
 
 
           <? while($row=mysqli_fetch_object($res)){
-			 $MAN_details = find_all_field('MAN_details','','status="VERIFIED" and po_no="'.$_GET[po_no].'" and m_id="'.$_GET[m_id].'" and item_id="'.$row->item_id.'"');
+			 $MAN_details = find_all_field('MAN_details','','status="VERIFIED" and po_no="'.$_GET['po_no'].'" and m_id="'.$_GET['m_id'].'" and item_id="'.$row->item_id.'"');
 			  $bg++?>
           <tr>
             <td><?=++$ss;?></td>

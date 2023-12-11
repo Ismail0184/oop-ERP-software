@@ -218,21 +218,13 @@ function reload1(form)
            </div>
        </div>
 
-       <?php elseif ($report_id=='1006001'): ?>
-       <div class="form-group">
-           <label class="control-label col-md-3 col-sm-3 col-xs-12">Vendor</label>
-           <div class="col-md-6 col-sm-6 col-xs-12">
-               <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" name="ledger_id" >
-                   <option></option>
-                       <?=foreign_relation("accounts_ledger", "ledger_id", "CONCAT(ledger_id,' : ', ledger_name)",1,"ledger_group_id=2002".$sec_com_connection_wa."");?>
-               </select>
-           </div>
-       </div>
+       <?php elseif ($report_id=='1006001' || $report_id=='1002002'): ?>
+
        <div class="form-group">
            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">As on <span class="required text-danger">*</span>
            </label>
            <div class="col-md-6 col-sm-6 col-xs-12">
-               <input type="date" style="font-size: 11px;100%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>"  required="required" name="t_date" ></td>
+               <input type="date" style="font-size: 11px; width: 49%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-01');?>" class="form-control col-md-7 col-xs-12" required name="f_date">
            </div>
        </div>
 

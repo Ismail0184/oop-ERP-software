@@ -2,7 +2,7 @@
 require_once ('support_file.php');
 $mushak_challan= find_a_field('sale_do_master','count(do_no)','mushak_challan_status="UNRECORDED" and depot_id='.$_SESSION['warehouse'].' and status="COMPLETED"');
 $mushak_challan_IR= find_a_field('purchase_return_master','count(id)','mushak_challan_status="UNRECORDED" and type="shortage" and warehouse_id='.$_SESSION['warehouse'].' and status="PROCESSING"');
-$mushak_challan_6_8= find_a_field('purchase_return_master','count(id)','mushak_challan_status="UNRECORDED" and type="damage" and warehouse_id='.$_SESSION['warehouse'].' and status="PROCESSING"');
+$mushak_challan_6_8= find_a_field('purchase_return_master','count(id)','mushak_challan_status="UNRECORDED" and type in ("damage","other") and warehouse_id='.$_SESSION['warehouse'].' and status="PROCESSING"');
 $SD_VAT_TAX=$mushak_challan+$mushak_challan_IR;
 ?>
 
@@ -97,7 +97,7 @@ $SD_VAT_TAX=$mushak_challan+$mushak_challan_IR;
                                 <li><a href="<?=$subnrow->sub_url;?>"><?=$subnrow->sub_menu_name;?>
                                   <?php if($subnrow->sub_menu_id=="20183") if($mushak_challan>0) : ?><?='[<span style="color:red;font-weight:bold;"> '.$mushak_challan.' </span>]'?><?php else : echo'';endif; ?>
                                   <?php if($subnrow->sub_menu_id=="20184") if($mushak_challan_IR>0) : ?><?='[<span style="color:red;font-weight:bold;"> '.$mushak_challan_IR.' </span>]'?><?php else : echo'';endif; ?>
-                                  <?php if($subnrow->sub_menu_id=="20250") if($mushak_challan_6_8>0) : ?><?='[<span style="color:red;font-weight:bold;"> '.$mushak_challan_IR.' </span>]'?><?php else : echo'';endif; ?>
+                                  <?php if($subnrow->sub_menu_id=="20250") if($mushak_challan_6_8>0) : ?><?='[<span style="color:red;font-weight:bold;"> '.$mushak_challan_6_8.' </span>]'?><?php else : echo'';endif; ?>
 </a>
                                  </li>
                                  <?php endwhile; ?></ul></li>

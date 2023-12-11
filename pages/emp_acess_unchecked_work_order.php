@@ -17,7 +17,6 @@ $required_status="UNCHECKED";
 $page="emp_acess_unchecked_work_order.php";
 $crud      =new crud($table);
 $$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 if(prevent_multi_submit()){
   
@@ -102,9 +101,9 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
      
      <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Checked Work Order</button></td>
             </tr></table>
      <div class="col-md-12 col-sm-12 col-xs-12">
@@ -127,7 +126,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                      </tr>
                      </thead>
                       <tbody>
-                 <?php  if(isset($_POST[viewreport])){	
+                 <?php  if(isset($_POST['viewreport'])){
 				 $res=mysqli_query($conn, 'select v.*,r.'.$unique.',r.'.$unique.',r.'.$unique_field.',po_date,r.status as current_status,r.checkby,r.checkby_date,
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM 
 							 
