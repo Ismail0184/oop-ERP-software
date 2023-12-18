@@ -251,6 +251,9 @@ journal_info j,
         <div class="x_panel">
             <div class="x_title">
                 <h2><?php echo $title; ?> <small class="text-danger">field marked with * are mandatory</small></h2>
+                <a style="float: right" class="btn btn-sm btn-default"  href="acc_intercompany_journal_voucher.php">
+                    <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Intercompany Entry</span>
+                </a>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">

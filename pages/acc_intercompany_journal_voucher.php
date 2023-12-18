@@ -29,11 +29,11 @@ if(prevent_multi_submit()) {
             $_POST['section_id'] = $_SESSION['sectionid'];
             $_POST['company_id'] = $_SESSION['companyid'];
             $_POST['ip'] = $ip;
-            $d = $_POST[voucher_date];
-            $_POST[voucher_date] = date('Y-m-d', strtotime($d));
-            if($_POST[Cheque_Date]>0){
-                $ckd = $_POST[Cheque_Date];
-                $_POST[Cheque_Date] = date('Y-m-d', strtotime($ckd));
+            $d = $_POST['voucher_date'];
+            $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
+            if($_POST['Cheque_Date']>0){
+                $ckd = $_POST['Cheque_Date'];
+                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
             } else {
                 $_POST[Cheque_Date]='';
             }

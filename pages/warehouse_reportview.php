@@ -103,7 +103,7 @@ where w.warehouse_id=j.warehouse_id and j.warehouse_id='".$_SESSION['warehouse']
     case 10:
 $report="Delivery Challan Report";
         $s=1;
-        if(isset($_POST[t_date])) {$to_date=date('Y-m-d' , strtotime($_POST[t_date]));; $fr_date=date('Y-m-d' , strtotime($_POST[f_date]));; $date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';}
+        if(isset($_POST['t_date'])) {$to_date=date('Y-m-d' , strtotime($_POST['t_date']));; $fr_date=date('Y-m-d' , strtotime($_POST['f_date']));; $date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';}
 
         if($_POST['depot_id']>0) 			 $depot_id=$_POST['depot_id'];
         if(isset($depot_id))				{$depot_con=' and m.depot_id='.$depot_id;}
@@ -150,7 +150,7 @@ a.PBI_ID=p.PBI_ID".$depot_con.$date_con.$pg_con.$dealer_con.$dtype_con.$product_
         case 11:
         $report="Undelivered DO Report";
         $s=1;
-        if(isset($_POST[t_date])) {$to_date=date('Y-m-d' , strtotime($_POST[t_date]));; $fr_date=date('Y-m-d' , strtotime($_POST[f_date]));; $date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';}
+        if(isset($_POST['t_date'])) {$to_date=date('Y-m-d' , strtotime($_POST['t_date']));; $fr_date=date('Y-m-d' , strtotime($_POST['f_date']));; $date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';}
         if($_POST['depot_id']>0) 			 $depot_id=$_POST['depot_id'];
         if(isset($depot_id))				{$depot_con=' and m.depot_id='.$depot_id;}
             $sql=mysqli_query($conn, "select
@@ -189,8 +189,6 @@ where w.warehouse_id=j.warehouse_id and j.warehouse_id='".$_SESSION['warehouse']
 ?>
 
 
-
-
 <?
 $str 	.= '<div class="header">';
 if(isset($_SESSION['company_name']))
@@ -199,8 +197,8 @@ if(isset($report))
 $str 	.= '<h2>'.$report.'</h2>';
 if(($item_id>0))
 $str 	.= '<h2>Item Name: '.find_a_field('item_info','item_name','item_id='.$item_id).'</h2>';
-if(($_POST[user_id]>0))
-$str 	.= '<h2>Entry By: '.find_a_field('users','fname','user_id='.$_POST[user_id]).'</h2>';
+if(($_POST['user_id']>0))
+$str 	.= '<h2>Entry By: '.find_a_field('users','fname','user_id='.$_POST['user_id']).'</h2>';
 if(isset($to_date))
 list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $fr_date);
 list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $to_date);
@@ -952,14 +950,14 @@ elseif($_REQUEST['report']==4) {
     <h2 align="center" style="margin-top: -5px"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-15px">Sales Invoice List</h4>
     <?php if($_POST['dealer_code']){?>
-        <h5 align="center" style="margin-top:-15px">Dealer : <?=find_a_field('dealer_info','dealer_name_e','dealer_code='.$_POST[dealer_code].'')?></h5>
+        <h5 align="center" style="margin-top:-15px">Dealer : <?=find_a_field('dealer_info','dealer_name_e','dealer_code='.$_POST['dealer_code'].'')?></h5>
     <?php } ?>
     <?php if($_POST['warehouse_id']){?>
-        <h5 align="center" style="margin-top:-15px">Warehouse : <?=find_a_field('warehouse','warehouse_name','warehouse_id='.$_POST[warehouse_id].'')?></h5>
+        <h5 align="center" style="margin-top:-15px">Warehouse : <?=find_a_field('warehouse','warehouse_name','warehouse_id='.$_POST['warehouse_id'].'')?></h5>
     <?php } ?>
-    <h5 align="center" style="margin-top:-15px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
+    <h5 align="center" style="margin-top:-15px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
 <?php
-$datecon=' and m.do_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+$datecon=' and m.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id))				{$warehouse_id_CON=' and m.depot_id='.$warehouse_id;}
 		if($_POST['dealer_code']>0) 			 $dealer_code=$_POST['dealer_code'];
@@ -1030,7 +1028,7 @@ $query = mysqli_query($conn, $sql); ?>
 </tr>
 </thead>
 <tbody>
-<?php  while($data=mysqli_fetch_object($query)){$s++;
+<?php  $discounttotal = 0;$total_invoice_amount=0;$s=0;$totalcomissionamount = 0; while($data=mysqli_fetch_object($query)){$s++;
 list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $data->do_date); ?>
 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
 <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
@@ -1046,7 +1044,7 @@ list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $data->do_date); ?>
 <td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount,2);?></td>
 <td style="border: solid 1px #999; text-align:right"><? if(substr($data->discount,1)>0) echo  number_format(substr($data->discount,1),2); else echo'-';?></td>
 <td style="border: solid 1px #999; text-align:right"><? if($data->comissionamount>0) echo  number_format($data->comissionamount,2); else echo'-';?></td>
-<td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount-(substr($data->discount)+$data->comissionamount),2)?></td>
+<td style="border: solid 1px #999; text-align:right"><?=number_format(($data->invoice_amount-(substr($data->discount,1)+$data->comissionamount)),2)?></td>
 </tr>
 
 <?php
@@ -1054,9 +1052,6 @@ $discounts=substr($data->discount,1);
 $discounttotal=$discounttotal+$discounts;
 $total_invoice_amount=$total_invoice_amount+$data->invoice_amount;
 $totalsaleafterdiscount=($total_invoice_amount-($discounttotal+$data->comissionamount));
-$actualsalestotalamts=$actualsalestotalamts+$totalamts;
-
-$totalsaleafterdiscounts=$totalsaleafterdiscounts+$totalsaleafterdiscount;
 $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
 
 } ?>
@@ -1143,8 +1138,8 @@ echo '<table width="100%" cellspacing="0" cellpadding="2" border="0">
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
 
     <h5 align="center" style="margin-top:-15px">Present Stock (Material)</h5>
-    <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> </h6>
-    <h6 align="center" style="margin-top:-15px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> </h6>
+    <h6 align="center" style="margin-top:-15px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center"  style="width:80%; border: solid 1px #999; border-collapse:collapse; ">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1172,13 +1167,14 @@ item_sub_group s,
 item_group g
 where
 j.item_id=i.item_id and
-j.warehouse_id='".$_POST[warehouse_id]."' and
+j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$to_date."' and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 g.group_id not in ('500000000')
 group by j.item_id order by g.group_id DESC,i.serial";
         $persentrow = mysqli_query($conn, $fgresult);
+$ismail = 0;
         while($data=mysqli_fetch_object($persentrow)){ ?>
             <tr style="border: solid 1px #999; font-size:11px; font-weight:normal">
                 <td style="border: solid 1px #999; text-align:center"><?=$ismail=$ismail+1;?></td>
@@ -1198,9 +1194,9 @@ group by j.item_id order by g.group_id DESC,i.serial";
         </tbody>
     </table>
 <?php } elseif ($_POST['report_id']=='7004001'){?>
-   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> : Transaction Statement</title>
+   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
-        $datecon=' and sdd.do_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+        $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.depot_id='.$warehouse_id;}
         if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1236,9 +1232,9 @@ group by j.item_id order by g.group_id DESC,i.serial";
 
 
 <?php } elseif ($_POST['report_id']=='7004002'){?>
-   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> : Transaction Statement</title>
+   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
-        $datecon=' and sdd.do_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+        $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.depot_id='.$warehouse_id;}
         if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1271,9 +1267,9 @@ group by j.item_id order by g.group_id DESC,i.serial";
            <?=reportview($sql,'Order vs Stock',100)?>
 
 <?php } elseif ($_POST['report_id']=='7004003'){?>
-   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> : Transaction Statement</title>
+   <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
-        $datecon=' and sdd.do_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+        $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.depot_id='.$warehouse_id;}
         if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1310,7 +1306,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
          <?php } elseif ($_POST['report_id']=='7004004'){?>
             <title>STO vs Stock Exit</title>
                  <?php
-                 $datecon=' and sdd.pi_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+                 $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
                  if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
                  if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.warehouse_from='.$warehouse_id;}
                  if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1340,10 +1336,10 @@ group by j.item_id order by g.group_id DESC,i.serial";
          				sdd.item_id=i.item_id '.$datecon.$warehouse_con.$item_con.' group by sdd.pi_no,sdd.item_id order by sdd.pi_no,sdd.item_id asc';
                 $result=mysqli_query($conn, $sql);
                  ?>
-                 <h3 align="center" style="margin-top: -12px"><?=$_SESSION[company_name]?></h3>
+                 <h3 align="center" style="margin-top: -12px"><?=$_SESSION['company_name']?></h3>
                  <h5 align="center" style="margin-top:-12px">STO vs Stock Exit</h5>
                  <h6 align="center" style="margin-top:-12px">Warehouse / CMU / Factory: <?=$warehouse_name;?></h6>
-                 <h6 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+                 <h6 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
                  <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
                      <thead>
                      <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1394,7 +1390,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
                <?php } elseif ($_POST['report_id']=='7004005'){?>
                   <title>STO vs Stock Received</title>
                        <?php
-                       $datecon=' and sdd.pi_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+                       $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
                        if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
                        if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.warehouse_from='.$warehouse_id;}
                        if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1427,7 +1423,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
                        <h3 align="center" style="margin-top: -12px"><?=$_SESSION[company_name]?></h3>
                        <h5 align="center" style="margin-top:-12px">STO vs Stock Exit</h5>
                        <h6 align="center" style="margin-top:-12px">Warehouse / CMU / Factory: <?=$warehouse_name;?></h6>
-                       <h6 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+                       <h6 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
                        <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
                            <thead>
                            <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1478,7 +1474,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
                      <?php } elseif ($_POST['report_id']=='7004006'){?>
                         <title>STO vs Stock Exit vs Stock Received</title>
                              <?php
-                             $datecon=' and sdd.pi_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+                             $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
                              if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
                              if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.warehouse_from='.$warehouse_id;}
                              if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1511,10 +1507,10 @@ group by j.item_id order by g.group_id DESC,i.serial";
                             sdd.item_id=i.item_id '.$datecon.$warehouse_con.$item_con.' group by sdd.pi_no,sdd.item_id order by sdd.pi_no,sdd.item_id asc';
                             $result=mysqli_query($conn, $sql);
                              ?>
-                             <h3 align="center" style="margin-top: -12px"><?=$_SESSION[company_name]?></h3>
+                             <h3 align="center" style="margin-top: -12px"><?=$_SESSION['company_name']?></h3>
                              <h5 align="center" style="margin-top:-12px">STO vs Stock Exit</h5>
                              <h6 align="center" style="margin-top:-12px">Warehouse / CMU / Factory: <?=$warehouse_name;?></h6>
-                             <h6 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+                             <h6 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
                              <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
                                  <thead>
                                  <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1574,9 +1570,9 @@ group by j.item_id order by g.group_id DESC,i.serial";
 
 
 <?php } elseif ($_POST['report_id']=='7003001'){?>
-<title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> : Inventory Register BOok</title>
+<title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Inventory Register BOok</title>
 
-    <h3 align="center" style="margin-top: -12px"><?=$_SESSION[company_name]?></h3>
+    <h3 align="center" style="margin-top: -12px"><?=$_SESSION['company_name']?></h3>
     <h5 align="center" style="margin-top:-12px">Transaction Statement</h5>
     <h6 align="center" style="margin-top:-12px">Warehouse / CMU / Factory: <?=$warehouse_name;?></h6>
     <?php if($_POST['status']=='Received'){?>
@@ -1584,7 +1580,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
 <?php } elseif ($_POST['status']=='Issue'){?>
     <h4 align="center" style="margin-top:-10px">Status : Issue</h4>
 <?php } ?>
-    <h6 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <h6 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
         <thead>
         <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1616,7 +1612,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
 
         <tbody>
         <?php
-        $datecon=' and a.ji_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+        $datecon=' and a.ji_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id)) 				{$warehouse_con=' and a.warehouse_id='.$warehouse_id;}
         if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
@@ -1773,7 +1769,7 @@ $sql=mysqli_query($conn, $query);
       </tr>
       </thead>
       <tbody>
-        <?php while($data=mysqli_fetch_object($sql)){ ?>
+        <?php $ismail =0; while($data=mysqli_fetch_object($sql)){ ?>
       <tr><td style="border: solid 1px #999; text-align:center"><?=$ismail=$ismail+1;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->item_id;?></td>
       <td style="border: solid 1px #999; text-align:center"><?=$data->finish_goods_code;?></td>
@@ -1801,9 +1797,9 @@ item_sub_group s,
 item_group g
 where
 j.item_id=i.item_id and
-j.warehouse_id='".$_POST[warehouse_id]."' and
-j.ji_date <= '".$_POST[t_date]."' and
-g.group_id in ('".$_POST[group_id]."') and
+j.warehouse_id='".$_POST['warehouse_id']."' and
+j.ji_date <= '".$_POST['t_date']."' and
+g.group_id in ('".$_POST['group_id']."') and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 i.finish_goods_code not in ('2001')
@@ -1811,8 +1807,8 @@ group by j.batch,j.item_id ".$order_by."";
 $sql=mysqli_query($conn, $query);?>
   <h2 align="center"><?=$_SESSION['company_name'];?></h2>
   <h5 align="center" style="margin-top:-15px">Stock Expiry Date Report</h5>
-  <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> </h6>
-  <h6 align="center" style="margin-top:-15px">Products will expire in <?=$_POST[no_of_days]?> days</h6>
+  <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> </h6>
+  <h6 align="center" style="margin-top:-15px">Products will expire in <?=$_POST['no_of_days']?> days</h6>
   <table align="center" id="customers" style="width:80%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
       <thead>
       <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1839,7 +1835,7 @@ $sql=mysqli_query($conn, $query);?>
                             $your_date = strtotime("$expiry_date");
                             $days_betweens = $your_date - $now;
                             $days_between = floor($days_betweens / (60 * 60 * 24));
-							if($days_between<$_POST[no_of_days]){
+							if($days_between<$_POST['no_of_days']){
 								$one_year=365;
 								$nine_months='270';
 								$six_months='180';
@@ -1868,8 +1864,8 @@ $sql=mysqli_query($conn, $query);?>
 <?php } elseif ($_POST['report']=='60012'){?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h5 align="center" style="margin-top:-15px">Present Stock (Asset)</h5>
-    <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST[warehouse_id].'"');?> </h6>
-    <h6 align="center" style="margin-top:-15px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <h6 align="center" style="margin-top:-15px">Warehouse Name: <?= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> </h6>
+    <h6 align="center" style="margin-top:-15px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center"  style="width:80%; border: solid 1px #999; border-collapse:collapse; ">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -1897,11 +1893,11 @@ item_sub_group s,
 item_group g
 where
 j.item_id=i.item_id and
-j.warehouse_id='".$_POST[warehouse_id]."' and
+j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$to_date."' and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
-g.group_id in ('".$_POST[group_id]."')
+g.group_id in ('".$_POST['group_id']."')
 group by j.item_id order by g.group_id DESC,i.serial";
         $persentrow = mysqli_query($conn, $fgresult);
         while($data=mysqli_fetch_object($persentrow)){ ?>
