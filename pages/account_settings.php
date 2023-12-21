@@ -3,22 +3,18 @@
  require_once 'support_file.php';
  $title='Change Password';
  $table='users';
-
-
-
+ $page = 'account_settings.php';
  $enat=date('Y-m-d h:s:i');
- if(isset($_POST[changePASS])){
+ if(isset($_POST['changePASS'])){
   $valid = true;
- 	if ($_SESSION["PASSCODE"]!==$_POST[old_password])
+ 	if ($_SESSION["PASSCODE"]!==$_POST['old_password'])
   {echo "<script> alert('Invalid Old Password!!') </script>";
          $valid = false;}
 
-
-
 if ($valid){
  unset($_SESSION["PASSCODE"]);
- $insert=mysqli_query($conn, "UPDATE  users SET password='$_POST[new_password]' where user_id='".$_SESSION["userid"]."' ");
-  $_SESSION["PASSCODE"]	=$_POST[new_password];
+ $insert=mysqli_query($conn, "UPDATE  users SET password='".$_POST['new_password']."' where user_id='".$_SESSION["userid"]."' ");
+  $_SESSION["PASSCODE"]	=$_POST['new_password'];
 }}?>
 
 

@@ -6,7 +6,8 @@ $unique_field='offer_name';
 $table="sale_gift_offer";
 $page="sales_gift_offer.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
+$GetUnique = @$_GET[$unique];
 $title='Trade Scheme';
 
 if(prevent_multi_submit()){
@@ -60,6 +61,23 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
+$offer_name = @$offer_name;
+$dealer_type = @$dealer_type;
+$start_date = @$start_date;
+$end_date = @$end_date;
+$item_qty = @$item_qty;
+$gift_id = @$gift_id;
+$gift_qty = @$gift_qty;
+$gift_type = @$gift_type;
+$calculation = @$calculation;
+$item_id = @$item_id;
+
+$PostOfferName = @$_POST['offer_name'];
+$PostDealerType = @$_POST['dealer_type'];
+$PostStartDate = @$_POST['start_date'];
+$PostEndDate = @$_POST['end_date'];
+$PostGiftType = @$_POST['gift_type'];
+
 $sql = "SELECT typeshorname, typedetails from distributor_type
                         where 1 order by typedetails";
 $sql_item = "SELECT item_id, concat(item_id,' : ',finish_goods_code,' : ', item_name) from item_info
@@ -105,7 +123,7 @@ $res="SELECT ts.id,ts.offer_name,ts.start_date,ts.end_date,concat(i.item_id,' : 
         <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Trade Scheme Name<span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                <input type="text" id="offer_name" style="width:100%; font-size: 12px"  required   name="offer_name" value="<?=($_GET[$unique]>0)? $offer_name : $_POST[offer_name]; ?>" class="form-control col-md-7 col-xs-12" >
+                <input type="text" id="offer_name" style="width:100%; font-size: 12px"  required   name="offer_name" value="<?=($GetUnique>0)? $offer_name : $PostOfferName; ?>" class="form-control col-md-7 col-xs-12" >
             </div>
         </div>
         <div class="form-group">
@@ -113,20 +131,20 @@ $res="SELECT ts.id,ts.offer_name,ts.start_date,ts.end_date,concat(i.item_id,' : 
             <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
                 <select class="select2_single form-control" style="width: 100%;" tabindex="-1" required="required" name="dealer_type" id="dealer_type">
                     <option></option>
-                    <?=advance_foreign_relation($sql,($_GET[$unique]>0)? $dealer_type : $_POST['dealer_type']);?>
+                    <?=advance_foreign_relation($sql,($GetUnique>0)? $dealer_type : $PostDealerType);?>
                 </select>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Start Date<span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                <input type="date" id="start_date" style="width:100%; font-size: 11px"  required   name="start_date" value="<?=($_GET[$unique]>0)? $start_date : $_POST['start_date']; ?>" class="form-control col-md-7 col-xs-12" >
+                <input type="date" id="start_date" style="width:100%; font-size: 11px"  required   name="start_date" value="<?=($GetUnique>0)? $start_date : $PostStartDate; ?>" class="form-control col-md-7 col-xs-12" >
             </div>
         </div>
         <div class="form-group">
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">End Date<span class="required">*</span></label>
             <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                <input type="date" id="end_date" style="width:100%; font-size: 11px"  required   name="end_date" value="<?=($_GET[$unique]>0)? $end_date : $_POST['end_date']; ?>" class="form-control col-md-7 col-xs-12" >
+                <input type="date" id="end_date" style="width:100%; font-size: 11px"  required   name="end_date" value="<?=($GetUnique>0)? $end_date : $PostEndDate; ?>" class="form-control col-md-7 col-xs-12" >
             </div>
         </div>
         <div class="form-group">
@@ -168,7 +186,7 @@ $res="SELECT ts.id,ts.offer_name,ts.start_date,ts.end_date,concat(i.item_id,' : 
                 <select style="width: 100%" class="select2_single form-control" name="gift_type" id="gift_type">
                     <option></option>
                     <?=$sql11="select type,type from sales_TS_type where status>0"?>
-                    <?=advance_foreign_relation($sql11,($_GET[$unique]>0)? $gift_type : $_POST['gift_type']);?>
+                    <?=advance_foreign_relation($sql11,($GetUnique>0)? $gift_type : $PostGiftType);?>
                 </select>
             </div>
         </div>
@@ -183,7 +201,7 @@ $res="SELECT ts.id,ts.offer_name,ts.start_date,ts.end_date,concat(i.item_id,' : 
                 </select></div>
         </div>
 
-        <?php if($_GET[$unique]):  ?>
+        <?php if($GetUnique):  ?>
             <div class="form-group" style="margin-left:40%">
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-primary">Modify the TS</button>
@@ -193,9 +211,9 @@ $res="SELECT ts.id,ts.offer_name,ts.start_date,ts.end_date,concat(i.item_id,' : 
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-primary">Add New TS</button></div></div> <?php endif; ?>
     </form>
-    </div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
-<?php if(!isset($_GET[$unique])):?>
-<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+    </div></div></div><?php if(!isset($GetUnique)): ?></div><?php endif; ?>
+<?php if(!isset($GetUnique)):?>
+<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
 <?php endif; ?>
-<?=$html->footer_content();mysqli_close($conn);?>
-<?php ob_end_flush();ob_flush(); ?>
+<?=$html->footer_content();
+mysqli_close($conn);?>

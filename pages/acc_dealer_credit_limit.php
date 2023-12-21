@@ -52,6 +52,10 @@ if(isset($$unique)>0)
 {   $condition=$unique_dealer."=".$$unique;
     $data=db_fetch_object($table_dealer_info,$condition);
     while (list($key, $value)=each($data)){ $$key=$value;}}
+
+$credit_limit  = @$credit_limit;
+$credit_limit_time  = @$credit_limit_time;
+$remarks  = @$remarks;
 ?>
 
 <?php require_once 'header_content.php'; ?>
@@ -113,7 +117,7 @@ if(isset($$unique)>0)
                     <option value="For one time DO" <?php if($credit_limit_time=='For one time DO') {?> selected <?php } ?>>Once only</option>
                 </select></div></div>
         <div class="form-group" style="width: 100%">
-            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 50%">Referance / Remarks:</label>
+            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 50%">Reference / Remarks:</label>
             <div class="col-md-6 col-sm-6 col-xs-12">
                 <input type="text"  name="remarks" value="<?=$remarks?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size: 12px" >
             </div></div>

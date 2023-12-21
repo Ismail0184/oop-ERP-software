@@ -96,14 +96,14 @@ $budget_enable = @$budget_enable;
 $status = @$status;
 $unique_GET = @$_GET[$unique];
 $post_ledger_group_id = @$_POST['ledger_group_id'];
-$res='select al.'.$unique.',al.'.$unique.' as Code,al.'.$unique_field.',lg.group_name,(select COUNT(ledger_id) from journal where ledger_id=al.ledger_id) as has_transaction,
+$res='select al.'.$unique.',al.'.$unique.' as Code,al.'.$unique_field.',lg.group_name,
 IF(al.status=1, "Active",IF(al.status="SUSPENDED", "SUSPENDED","Inactive")) as status from '.$table.' al,ledger_group lg where 
 al.ledger_group_id=lg.group_id order by al.ledger_group_id,al.'.$unique;
 $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
 if(isset($_POST['deletedata'.$row->$unique]))
     { if($row->has_transaction == 0){
-        mysqli_query($conn, ("DELETE FROM ".$table." WHERE ".$unique."=".$row->$unique.""));
+        //mysqli_query($conn, ("DELETE FROM ".$table." WHERE ".$unique."=".$row->$unique.""));
     } else { echo "It has transactions (".$row->has_transaction."). Hence you cannot delete the Ledger ID (".$row->ledger_id.")";}
        unset($_POST);
     }} // end of deletedata

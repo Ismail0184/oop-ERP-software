@@ -77,15 +77,17 @@ $select_dealer_do_regular = @$select_dealer_do_regular;
 $region = @$region;
 $customer_type = @$customer_type;
 $tsm = @$tsm;
+$dealer_category = @$dealer_category;
+$GetDealerCode = @$_GET['dealer_code'];
 ?>
 <?php if(isset($_POST['update']))
 {
-    mysqli_query($conn, "Update sale_do_master set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']."'");
-    mysqli_query($conn, "Update sale_do_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']."'");
-    mysqli_query($conn, "Update sale_do_chalan set region='".$_POST['region']."',territory='".$_POST['territory']."',aria='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']);
-    mysqli_query($conn, "Update ims_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_id='".$_POST['area_code']."',town_code='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']);
-    mysqli_query($conn, "Update sale_return_master set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']);
-    mysqli_query($conn, "Update sale_return_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$_GET['dealer_code']);
+    mysqli_query($conn, "Update sale_do_master set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
+    mysqli_query($conn, "Update sale_do_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
+    mysqli_query($conn, "Update sale_do_chalan set region='".$_POST['region']."',territory='".$_POST['territory']."',aria='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
+    mysqli_query($conn, "Update ims_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_id='".$_POST['area_code']."',town_code='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
+    mysqli_query($conn, "Update sale_return_master set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
+    mysqli_query($conn, "Update sale_return_details set region='".$_POST['region']."',territory='".$_POST['territory']."',area_code='".$_POST['area_code']."',town='".$_POST['town_code']."',dealer_type='".$_POST['customer_type']."' where dealer_code='".$GetDealerCode."'");
 }
 
 $sql_area = 'select a.AREA_CODE,concat(AREA_CODE," : ",a.AREA_NAME) from area a  where 1 order by a.AREA_NAME';

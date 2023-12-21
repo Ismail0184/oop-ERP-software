@@ -103,8 +103,9 @@ $revenue_persentage = @$revenue_persentage;
 $VAT_item_group = @$VAT_item_group;
 $H_S_code = @$H_S_code;
 $serial = @$serial;
+$showInInvoice = @$showInInvoice;
 
-$res="select i.".$unique.",i.".$unique." as code,i.finish_goods_code as FG_Code,i.".$unique_field.",sg.sub_group_name,g.group_name,i.unit_name,ib.brand_name,(select Count(item_id) from journal_item where item_id=i.item_id) as has_entry,
+$res="select i.".$unique.",i.".$unique." as code,i.finish_goods_code as FG_Code,i.".$unique_field.",sg.sub_group_name,g.group_name,i.unit_name,ib.brand_name,
 s.section_name as branch,
 i.status from ".$table." i,
 item_sub_group sg,
@@ -123,7 +124,7 @@ $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
     if(isset($_POST['deletedata'.$row->$unique]))
     { if($row->has_entry == 0){
-        mysqli_query($conn, ("DELETE FROM ".$table." WHERE ".$unique."=".$row->$unique.""));
+        //mysqli_query($conn, ("DELETE FROM ".$table." WHERE ".$unique."=".$row->$unique.""));
     } else { echo "It has entry (".$row->has_transaction."). Hence you cannot delete the Item Id (".$row->item_id.")";}
         unset($_POST);
     }}

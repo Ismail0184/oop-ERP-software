@@ -121,10 +121,10 @@ $sql2="SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, journa
 b.jv_no='".$_GET['vo_no']."' and tr_from='".$_GET['v_type']."' and a.ledger_id=b.ledger_id order by b.id";
 else
 if ($vtype=='payment_bank') {
-    $sql2 = "SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, secondary_payment b where b.payment_no='$_GET[vo_no]' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
+    $sql2 = "SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, secondary_payment b where b.payment_no='".$_GET['vo_no']."' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
 }
 else {
-    $sql2 = "SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, journal b where b.jv_no='$_GET[vo_no]' and tr_from='$_GET[v_type]' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
+    $sql2 = "SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, journal b where b.jv_no='".$_GET['vo_no']."' and tr_from='".$_GET['v_type']."' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
 }
 ?>
 
@@ -151,7 +151,7 @@ function hide()
 	    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td width="1%">
-			<? $path='../logo/'.$_SESSION['proj_id'].'.jpg';
+			<? $path=1;
 			if(is_file($path)) echo '<img src="'.$path.'" height="80" />';?>			</td>
             <td width="83%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr>
@@ -238,7 +238,8 @@ $data2=mysqli_query($conn, $sql2);
 			  while($info=mysqli_fetch_object($data2)){ $pi++;
 			  $cr_amt=$cr_amt+$info->cr_amt;
 			  $dr_amt=$dr_amt+$info->dr_amt;
-			  if($info->bank==''&&$info->cheq_no!='')
+              $bankGET = @$info->bank;
+			  if($bankGET==''&&$info->cheq_no!='')
 			  $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; dt= '.date("d.m.Y",$info->cheq_date);
 			  elseif($info->cheq_no=='')
 			  $narration=$info->narration;

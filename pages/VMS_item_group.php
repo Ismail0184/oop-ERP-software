@@ -9,7 +9,7 @@ $unique_field='group_name';
 $table='VAT_item_group';
 $page="VMS_item_group.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 
 
 if(isset($_POST[$unique_field]))
@@ -52,9 +52,10 @@ if(isset($_POST['delete']))
 if(isset($$unique))
 {   $condition=$unique."=".$$unique;
     $data=db_fetch_object($table,$condition);
-    while (list($key, $value)=each($data)){ $$key=$value;}}
-
-
+    while (list($key, $value)=each($data))
+    { $$key=$value;}
+}
+$group_name = @$group_name;
 
 $res='Select group_id, group_id, group_name,IF(status>0, "Active", "Inactive") as status from VAT_item_group order by group_id';
 
@@ -75,7 +76,7 @@ $sql_brand_category="Select category_name,category_name from brand_category"
         font-size: 11px;
     }
 </style>
-<?php if(isset($_GET[$unique])):
+<?php if(isset($$unique)):
  require_once 'body_content_without_menu.php'; else :
  require_once 'body_content.php'; endif;  ?>
 
@@ -86,61 +87,61 @@ $sql_brand_category="Select category_name,category_name from brand_category"
 
 
 
-<?php if(isset($_GET[$unique])): ?>
+<?php if(isset($$unique)): ?>
 <div class="col-md-5 col-sm-12 col-xs-12">
-                        <div class="x_panel">
-                            <div class="x_title">
-                                <h2><?=$title;?></h2>
-                                <ul class="nav navbar-right panel_toolbox">
-                                    <div class="input-group pull-right"></div>
-                                </ul>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="x_content">
-                            <?php else: ?>
-
-<div class="modal fade" id="addModal">
-    <div class="modal-dialog modal-md">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title">Add New Record
-          <button class="close" data-dismiss="modal">
-            <span>&times;</span>
-          </button>
-          </h5>
+    <div class="x_panel">
+        <div class="x_title">
+            <h2><?=$title;?></h2>
+            <ul class="nav navbar-right panel_toolbox">
+                <div class="input-group pull-right"></div>
+            </ul>
+            <div class="clearfix"></div>
         </div>
-        <div class="modal-body">
-        <?php endif; ?>
-                                <form  name="addem" id="addem" class="form-horizontal form-label-left" style="font-size: 11px" method="post">
-                                            <input type="hidden" name="<?=$unique?>" />
-
-
+        <div class="x_content">
+            <?php else: ?>
+            <div class="modal fade" id="addModal">
+                <div class="modal-dialog modal-md">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Add New Record
+                                <button class="close" data-dismiss="modal"><span>&times;</span></button>
+                            </h5>
+                        </div>
+                        <div class="modal-body">
+                            <?php endif; ?>
+                            <form  name="addem" id="addem" class="form-horizontal form-label-left" style="font-size: 11px" method="post">
+                                <input type="hidden" name="<?=$unique?>">
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Group Name<span class="required">*</span></label>
                                         <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                                            <input type="text" id="<?=$unique_field;?>" style="width:100%; font-size: 12px"  required   name="<?=$unique_field;?>" value="<?=$$unique_field;?>" class="form-control col-md-7 col-xs-12" >
+                                            <input type="text" id="<?=$unique_field;?>" style="width:100%; font-size: 12px"  required   name="<?=$unique_field;?>" value="<?=$group_name;?>" class="form-control col-md-7 col-xs-12" >
                                         </div>
                                     </div>
 
-                                   
-<hr/>
+                                    <hr/>
 
-
-<?php if($_GET[$unique]):  ?>
+                                    <?php if($$unique):  ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <button type="submit" name="modify" id="modify" class="btn btn-success">Modify Item</button>
-                                        </div></div>
+                                            <button type="submit" name="modify" id="modify" class="btn btn-success">Modify Item</button>
+                                        </div>
+                                    </div>
                                     <?php else : ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
-                                            <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-success">Add New Group</button></div></div> <?php endif; ?>
-
-
-                        </form>
-                    </div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
-<?php if(!isset($_GET[$unique])):?>
-<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+                                            <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-success">Add New Group</button>
+                                        </div>
+                                    </div>
+                                    <?php endif; ?>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <?php if(!isset($$unique)): ?>
+            </div>
+        <?php endif;?>
+<?php if(!isset($$unique)):?>
+<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
 <?php endif; ?>
 <?=$html->footer_content();mysqli_close($conn);?>
 <?php ob_end_flush();

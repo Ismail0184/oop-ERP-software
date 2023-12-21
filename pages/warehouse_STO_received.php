@@ -9,9 +9,14 @@ $table_details="production_issue_detail";
 $journal_item="journal_item";
 $page='warehouse_STO_received.php';
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
+
 $pi_master=find_all_field(''.$table.'','',''.$unique.'='.$$unique.'');
+$pi_master_warehouse_to = @$pi_master->warehouse_to;
+$pi_master_warehouse_from = @$pi_master->warehouse_from;
+$pi_master_remarks = @$pi_master->remarks;
+
 $config_group_class=find_all_field("config_group_class","","1");
 $lc_lc_received_batch_split="lc_lc_received_batch_split";
 $condition="create_date='".date('Y-m-d')."'";
@@ -29,7 +34,7 @@ from
         $pdetails=mysqli_query($conn, $rs);
         while($uncheckrow=mysqli_fetch_array($pdetails)) {
             $id = $uncheckrow[id];
-            $deleted = mysqli_query($conn, "DELETE from ".$journal_item." where  item_id=".$uncheckrow[item_id]." and tr_no=".$$unique." and sr_no=".$uncheckrow[id]." and tr_from='ProductionTransfer'");
+            $deleted = mysqli_query($conn, "DELETE from ".$journal_item." where  item_id=".$uncheckrow['item_id']." and tr_no=".$$unique." and sr_no=".$uncheckrow['id']." and tr_from='ProductionTransfer'");
             }
 
         $_POST['checked_by']=$_SESSION[userid];
@@ -111,7 +116,7 @@ item_info i
     }}
 
 // data query..................................
-if(isset($_POST[viewreport])){
+if(isset($_POST['viewreport'])){
     $res="Select m.pi_no as STO_ID,concat(m.pi_no,' - ',m.custom_pi_no) as STO_NO,pi_date as STO_date,w.warehouse_name as 'Warehouse / CMU From',w2.warehouse_name as Warehouse_to,m.remarks,u.fname as entry_by,m.entry_at,m.verifi_status as status
 from 
 ".$table." m,
@@ -123,10 +128,10 @@ warehouse w2
  w.warehouse_id=m.warehouse_from and  
  w2.warehouse_id=m.warehouse_to and 
  m.verifi_status in ('CHECKED','COMPLETED') and 
-  m.pi_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' and 
- m.warehouse_to=".$_POST[warehouse_id]."  
+  m.pi_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+ m.warehouse_to=".$_POST['warehouse_id']."  
 order by m.".$unique." DESC ";
-    $warehouse_id_GET=$_POST[warehouse_id];
+    $warehouse_id_GET=$_POST['warehouse_id'];
 } else {
     $res="Select m.pi_no as STO_ID,concat(m.pi_no,' - ',m.custom_pi_no) as STO_NO,pi_date as STO_date,w.warehouse_name as 'Warehouse / CMU From',w2.warehouse_name as Warehouse_to,m.remarks,u.fname as entry_by,m.entry_at,m.verifi_status as status
 from 
@@ -139,12 +144,12 @@ warehouse w2
  w.warehouse_id=m.warehouse_from and  
  w2.warehouse_id=m.warehouse_to and 
  m.verifi_status='CHECKED' and 
- m.warehouse_to=".$_SESSION[warehouse]."  
+ m.warehouse_to=".$_SESSION['warehouse']."  
 order by m.".$unique." DESC ";
-    $warehouse_id_GET=$_SESSION[warehouse];
+    $warehouse_id_GET=$_SESSION['warehouse'];
 }
-$received_from_warehouse=find_a_field('warehouse','warehouse_name','warehouse_id='.$pi_master->warehouse_from);
-$narration='FG Received from '.$received_from_warehouse.', STONO#'.$$unique.', Remarks # '.$pi_master->remarks;
+$received_from_warehouse=find_a_field('warehouse','warehouse_name','warehouse_id='.$pi_master_warehouse_from);
+$narration='FG Received from '.$received_from_warehouse.', STONO#'.$$unique.', Remarks # '.$pi_master_remarks;
 
 ?>
 
@@ -172,7 +177,7 @@ $narration='FG Received from '.$received_from_warehouse.', STONO#'.$$unique.', R
         <div class="x_panel">
             <div class="x_content">
                 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
-                    <?php $warehouse_ledger=find_a_field('warehouse','ledger_id_FG','warehouse_id='.$pi_master->warehouse_to.''); ?>
+                    <?php $warehouse_ledger=find_a_field('warehouse','ledger_id_FG','warehouse_id='.$pi_master_warehouse_to.''); ?>
                     <?require_once 'support_html.php';?>
                     <table id="customers" class="table table-striped table-bordered" style="width:100%; font-size: 11px">
                         <thead>
@@ -302,17 +307,17 @@ item_info i
 <?php } ?>
 
 
-<?php if(!isset($_GET[$unique])): ?>
+<?php if(!isset($_GET[$unique])): $PostFDate = @$_POST['f_date']; $PostTDate = @$_POST['t_date']; ?>
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($PostFDate!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($PostTDate!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="warehouse_id" id="warehouse_id">
                         <option selected></option>
-                        <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_POST[warehouse_id]);?>
+                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_POST['warehouse_id']);?>
                     </select></td>
                 <td style="padding: 10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Received STO</button></td>
             </tr></table>

@@ -87,13 +87,13 @@ if(isset($_POST['record'])){
 if(isset($_POST['create_journal'])){
   if($_POST['chalan_no']>0){
   if (($_POST['ledger_1'] > 0) && (($_POST['ledger_2'] && $_POST['dr_amount_1']) > 0) && ($_POST['cr_amount_2'] > 0)) {
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['cr_amount_2'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], 0, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], 0, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['cr_amount_2'], 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
   }
 
   if (($_POST['ledger_3'] > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_3']) > 0) && ($_POST['cr_amount_4'] > 0)) {
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_3'], $_POST['narration_3'], $_POST['dr_amount_3'], 0, Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
-      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'], Sales, $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_3'], $_POST['narration_3'], $_POST['dr_amount_3'], 0, 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
+      add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'], 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
   }
   mysqli_query($conn, "Update sale_do_master SET mushak_challan_status='RECORDED' where do_no=".$do_no_GET);
   unset($_POST);
@@ -115,6 +115,8 @@ $dealer_master=find_all_field('dealer_info','','dealer_code='.$do_master->dealer
 
 $status=find_a_field('VAT_mushak_6_3','COUNT(id)','do_no='.$do_no_GET);
 $VAT_master=find_all_field('VAT_mushak_6_3','','do_no='.$do_no_GET);
+$VAT_master_mushak_no = @$VAT_master->mushak_no;
+$VAT_master_issue_date = @$VAT_master->issue_date;
 $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','fiscal_year='.$fiscal_year.' and warehouse_id='.$do_master->depot_id);
 
 if($status>0){
@@ -202,9 +204,9 @@ $result=mysqli_query($conn, $query);
         <th style="width: 10%; text-align: right">চালানপত্র নম্বর</th><th style="width: 1%">:</th><td style="width: 29%">
 <?php if($status>0){
         if($do_master->depot_id==5){
-            echo $fs_year->term_year.'-CW-'.$VAT_master->mushak_no;
+            echo $fs_year->term_year.'-CW-'.$VAT_master_mushak_no;
         } else {
-            echo $fs_year->term_year.'-DK-'.$VAT_master->mushak_no;
+            echo $fs_year->term_year.'-DK-'.$VAT_master_mushak_no;
         }
 
      } else { ?>
@@ -215,13 +217,13 @@ $result=mysqli_query($conn, $query);
     </tr>
     <tr>
         <th style="width: 10%; text-align: left">ক্রেতার বিআইএন</th><th style="width: 1%">:</th><td style="width: 50%"><?=$dealer_master->TIN_BIN?></td>
-        <th style="width: 10%; text-align: right">ইস্যুর তারিখ</th><th style="width: 1%">:</th><td style="width: 29%"><?php if($status>0){ echo $VAT_master->issue_date; } else { ?>
+        <th style="width: 10%; text-align: right">ইস্যুর তারিখ</th><th style="width: 1%">:</th><td style="width: 29%"><?php if($status>0){ echo $VAT_master_issue_date; } else { ?>
                   <input type="date" value="<?=date('Y-m-d')?>" style="font-size:11px;" name="issue_date">
         <?php } ?></td>
     </tr>
     <tr>
         <th style="width: 10%; text-align: left">সরবরাহের গন্তব্যস্থল</th><th style="width: 1%">:</th><td style="width: 50%"><?=$dealer_master->address_e?></td>
-        <th style="width: 10%; text-align: right">ইস্যুর সময়</th><th style="width: 1%">:</th><td style="width: 29%"><?php if($status>0){ echo $VAT_master->issue_time; } else { ?>
+        <th style="width: 10%; text-align: right">ইস্যুর সময়</th><th style="width: 1%">:</th><td style="width: 29%"><?php if($status>0){ echo $VAT_master_issue_time; } else { ?>
                   <input type="text" value="<?=$timess;?>" style="font-size:11px;" name="issue_time"><?php } ?></td>
     </tr>
 </table>
@@ -266,6 +268,8 @@ $result=mysqli_query($conn, $query);
 
     <?php
     if($status>0):
+        $i = 0;
+        $c = 0;
         $total_total_price = 0;
         $total_unit = 0;
         $total_amount_of_SD = 0;
@@ -273,9 +277,9 @@ $result=mysqli_query($conn, $query);
         $total_total_including_all = 0;
     while($data=mysqli_fetch_object($result)):
       $id=$data->item_id;
-      $ab=$data->SD_percentage;
-      $ef=$data->VAT_percentage;
-      $cd=$data->total_unit*$data->VAT*$ab;?>
+
+
+      ?>
     <tr>
     <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
     <td style="border: 1px solid #CCC;text-align: left; margin: 10px"><?=$data->item_name?></td>
@@ -489,8 +493,8 @@ $result=mysqli_query($conn, $query);
           </table>
           <h1 align="center">
           <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="create_journal" value="Journal Create"></p>
-          <input type="hidden" name="delete_mushak_no" value="<?=$VAT_master->mushak_no?>">
-          <button type="submit" name="delete" class="btn btn-primary" style="font-size: 11px" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to delete?");'>Delete the Mushak - <?=$VAT_master->mushak_no?></button>
+          <input type="hidden" name="delete_mushak_no" value="<?=$VAT_master_mushak_no?>">
+          <button type="submit" name="delete" class="btn btn-primary" style="font-size: 11px" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to delete?");'>Delete the Mushak - <?=$VAT_master_mushak_no?></button>
         </h1>
         <?php endif; ?>
         <?php
@@ -498,7 +502,7 @@ $result=mysqli_query($conn, $query);
             <h3 style="text-align: center;color: red;  font-weight: bold"><i>Mushak challan has been recorded & forwarded to the relevant warehouse!!</i></h3>
 
             <h3 style="text-align: center;color: red;  font-weight: bold">  
-            <button type="submit" name="delete" class="btn btn-primary" style="font-size: 11px" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to delete?");'>Delete the Mushak - <?=$VAT_master->mushak_no?></button>
+            <button type="submit" name="delete" class="btn btn-primary" style="font-size: 11px" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to delete?");'>Delete the Mushak - <?=$VAT_master_mushak_no?></button>
 </h3>
              <?php } else { ?><?php } ?></form>
 </body>

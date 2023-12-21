@@ -201,7 +201,8 @@ $COUNT_details_data=find_a_field("".$table_receipt."","Count(id)","".$recpt_uniq
 // data query..................................
 $condition=$unique."=".$initiate_credit_note;
     $data=db_fetch_object($table_journal_master,$condition);
-    while (list($key, $value)=each($data))
+    $array = (array)$data;
+    foreach ($array as $key => $value)
     { $$key=$value;}
 	$inputted_amount=find_a_field("receipt","SUM(dr_amt)","receipt_no='".$initiate_credit_note."'".$sec_com_connection_wa."");
 	}
@@ -255,8 +256,8 @@ cost_center c
                 <a style="float: right" class="btn btn-sm btn-default"  href="acc_receipt_voucher_multiple.php">
                     <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Multiple Entry</span>
                 </a>
-                <a style="float: right" class="btn btn-sm btn-default"  href="acc_intercompany_journal_voucher.php">
-                    <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Intercompany Entry</span>
+                <a style="float: right" class="btn btn-sm btn-default"  href="acc_intercompany_receipt_voucher.php">
+                    <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Inter-Company Entry</span>
                 </a>
                 <div class="clearfix"></div>
             </div>

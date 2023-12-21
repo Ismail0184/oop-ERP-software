@@ -1535,8 +1535,9 @@ function recentdataview_model($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwi
 function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
     global $conn;
     $str = '';
-    $fdate = $_POST['f_date'];
-    $tdate = $_POST['t_date'];
+    $fdate = @$_POST['f_date'];
+    $tdate = @$_POST['t_date'];
+    $pc_code = @$_POST['pc_code'];
     $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
     $now = $dateTime->format("d/m/Y  h:i:s A");
     if($sql==NULL) return NULL;
@@ -1546,7 +1547,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">'.$_SESSION['company_name'].'</p>
         <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">'.$title.'</p>';
         $str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$_POST['t_date'].'</p> ';
-        if($_POST['f_date']>0){
+        if($fdate>0){
             $str.='
 		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
         }
@@ -1554,7 +1555,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
         $str .='<thead>
 <div class="col-md-12 head">
                 <div style="float: left; margin-left: 2%">
-                    <a href="export.php?f_date='.$_POST['f_date'].'&t_date='.$_POST['t_date'].'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'&pc_code='.$_POST['pc_code'].''.'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
+                    <a href="export.php?f_date='.$fdate.'&t_date='.$tdate.'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'&pc_code='.$pc_code.''.'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
                 </div>
             </div>
 <p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
@@ -1567,7 +1568,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
             $ism=$ism+2;
         }
         $str .='</tr></thead>';
-        $c=0;
+        $sl=0;
         if (mysqli_num_rows($result)>0){
             while($row = mysqli_fetch_array($result)) {
                 $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';
@@ -1713,7 +1714,7 @@ function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pa
                 $str .='<th style="vertical-align:middle; text-align:center">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
             endforeach;
             $str .='<th style="width:5%; text-align:center; vertical-align:middle">Action</th></tr></thead><tbody>';
-            $c=0;
+            $sl=0;
             if (mysqli_num_rows($result)>0):
                 while($row = mysqli_fetch_array($result)):
                     $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($sl=$sl+1).'</td>';
@@ -1779,7 +1780,7 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
                     endfor;
                     $amount=$amount+$row[$row_get];
                     if($row[1]==0):
-                        $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent; border:none; font-size:17px;" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                        $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent; border:none; font-size:17px;" class="fa fa-trash text-danger" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     '."</td>";
                     else:
                         $str .='<td style="vertical-align:middle; color: red; font-weight: bold; text-align: center">[Free]</td>';

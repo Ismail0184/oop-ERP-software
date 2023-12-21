@@ -1768,7 +1768,7 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
                     endfor;
                     $amount=$amount+$row[$row_get];
                     if($row[1]==0):
-                    $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px;" class="fa fa-trash" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
+                    $str .='<td style="vertical-align:middle; text-align: center"><button type="submit" name="deletedata'.$row[0].'" style="background-color:transparent;color:red; border:none; margin:0px; font-size:17px; padding:0px;" class="fa fa-trash text-danger" onclick="return window.confirm(\'Are you sure you want to delete this?\');" title="Delete"></button> 
                     '."</td>";
                 else:
                     $str .='<td style="vertical-align:middle; color: red; font-weight: bold; text-align: center">[Free]</td>';

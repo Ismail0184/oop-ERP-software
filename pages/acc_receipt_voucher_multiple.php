@@ -258,8 +258,8 @@ $credit_note_last_narration = @$_SESSION['credit_note_last_narration'];
             <h2><?=$title;?> <small>Multiple Entry</small> <small class="text-danger">field marked with * are mandatory</small></h2>
             <a  style="float: right" class="btn btn-sm btn-default"  href="acc_receipt_voucher.php">
                 <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Single Entry</span></a>
-            <a style="float: right" class="btn btn-sm btn-default"  href="acc_intercompany_journal_voucher.php">
-                <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Intercompany Entry</span>
+            <a style="float: right" class="btn btn-sm btn-default"  href="acc_intercompany_receipt_voucher.php">
+                <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Inter-Company Entry</span>
             </a>
             <div class="clearfix"></div>
         </div>

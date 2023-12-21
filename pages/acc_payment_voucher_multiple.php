@@ -202,8 +202,10 @@ where
 // data query..................................
     $condition=$unique."=".$initiate_debit_note;
     $data=db_fetch_object($table_journal_master,$condition);
-    while (list($key, $value)=each($data))
-    { $$key=$value;}}
+    $array = (array)$data;
+    foreach ($array as $key => $value)
+    { $$key=$value;}
+}
 
 $voucher_date = @$voucher_date;
 $date = date('Y-m-d');

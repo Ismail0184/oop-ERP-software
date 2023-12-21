@@ -6,7 +6,7 @@ $f_date = @$_POST['f_date'];
 $t_date = @$_POST['t_date'];
 //$f_date=date('Y-m-d' , strtotime($_POST['f_date']));
 //$t_date=date('Y-m-d' , strtotime($_POST['t_date']));
-
+$from_date = @$_POST['f_date'];
 $pfrom_date = @$_POST['pf_date'];
 $pto_date = @$_POST['pt_date'];
 
@@ -277,10 +277,10 @@ order by a.jvdate,a.id";
     <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
     <p align="center" style="margin-top:-18px; font-size: 15px">Transaction Statement</p>
     <p align="center" style="margin-top:-10px; font-size: 12px; font-weight: bold"><?=($_REQUEST['ledger_id']>0)? 'Customer: '.$_REQUEST['ledger_id'].' - '.$ledger_name.'' : '' ?></p>
-    <?php if($_POST['cc_code']){ ?>
+    <?php $PostCcCode = @$_POST['cc_code']; if($PostCcCode){ ?>
     <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Cost Center:</strong> <?=find_a_field('cost_center','center_name','id='.$_REQUEST['cc_code']);?> (<?=$_REQUEST['cc_code'];?>)</p>
 <?php } ?>
-    <?php if($_POST['tr_from']){ ?>
+    <?php $PostTrFrom = @$_POST['tr_from']; if($PostTrFrom){ ?>
     <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Transaction Type:</strong> <?=$_REQUEST['tr_from'];?></p>
 <?php } ?>
     <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> to <?=$_POST['t_date']?></p>
@@ -301,7 +301,7 @@ order by a.jvdate,a.id";
         <tbody>
         <?php
 
-        if($tr_from!=''){
+        if($PostTrFrom!=''){
             $emp_id.=" and a.tr_from='".$tr_from."'";}
         $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.ledger_id like '".$_POST['ledger_id']."'";
         $total=mysqli_fetch_array(mysqli_query($conn, $total_sql));
@@ -365,6 +365,7 @@ order by a.jvdate,a.id";
 
         <?php
         $sql=mysqli_query($conn, $p);
+        $i= 0;
         while($data=mysqli_fetch_row($sql)){?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
                 <td align="center" style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>
@@ -744,7 +745,7 @@ i.status in ('".$_POST['status']."') and
 ".$sec_com_connection."
 
 order by i.".$_POST['order_by'].""?>
-    <?=reportview($sql,'Item Info Master','99'); ?>
+    <?=reportview($sql,'Item Info Master','99','','',''); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012001'):?>
@@ -757,7 +758,7 @@ i.item_id=p.item_id and
 v.vendor_id='".$_POST['pc_code']."' and 
 m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
 order by m.po_no,v.vendor_id"?>
-    <?=reportview($sql,'Purchase Report','99'); ?>
+    <?=reportview($sql,'Purchase Report','99','','',''); ?>
 
 <?php elseif ($_POST['report_id']=='1012002'):?>
     <?php
@@ -779,7 +780,7 @@ where sdd.depot_id=w.warehouse_id and
       sdd.item_id not in ('1096000100010312') and
       sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
       "?>
-    <?=reportview($sql,'Sales Report','99'); ?>
+    <?=reportview($sql,'Sales Report','99','','',''); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012003'):
@@ -799,7 +800,7 @@ j.ji_date <= '".$_POST['t_date']."' and
 i.brand_id=b.brand_id and
 b.vendor_id='".$_POST['pc_code']."'
 group by j.item_id";?>
-<?=reportview($sql,'Present Stock',100)?>
+<?=reportview($sql,'Present Stock',100,'','','')?>
 
 
 
@@ -817,7 +818,7 @@ where
       j.jvdate<='".$_POST['t_date']."' and 
       d.account_code=j.ledger_id group by d.account_code
       "?>
-    <?=reportview($sql,'Customer Outstanding Report','99'); ?>
+    <?=reportview($sql,'Customer Outstanding Report','99','','',''); ?>
 
 
 
@@ -1193,7 +1194,7 @@ where
 
 <?php elseif ($_POST['report_id']=='1012008'):
     $sql="SELECT d.dealer_code,d.dealer_code,d.dealer_custom_code as dealer_custom_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person,d.contact_number,d.address_e as address,d.national_id,d.TIN_BIN as 'TIN / BIN'  from dealer_info d, town t, area a, branch b WHERE
-d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('".$_POST['pc_code']."')  order by d.dealer_code"; echo reportview($sql,'Customer Report','98'); ?>
+d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('".$_POST['pc_code']."')  order by d.dealer_code"; echo reportview($sql,'Customer Report','98','','',''); ?>
 
 
 <?php elseif ($_POST['report_id']=='1002003'): $LC_no=find_a_field('lc_lc_master','lc_no','id='.$_POST['lc_id']);
@@ -4350,14 +4351,14 @@ group by j.item_id order by g.group_id DESC,i.serial";
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportview($sql,'Accounts Payable Status','98'); ?>
+v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportview($sql,'Accounts Payable Status','98','','',''); ?>
 
     <?php elseif ($_POST['report_id']=='1006001'):
         $sql="Select v.ledger_id,v.vendor_id,v.ledger_id,v.vendor_name,FORMAT(SUM(j.dr_amt),2) as Dr_amt,FORMAT(SUM(j.cr_amt),2) as Cr_amt,FORMAT(SUM(j.dr_amt-j.cr_amt),2) as Closing_Balance  from
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98'); ?>
+v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98','','',''); ?>
 
 
     <?php elseif ($_POST['report_id']=='1011001'):
@@ -4372,7 +4373,7 @@ i.item_id=lc.item_id and
 lc.status='Active' and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
-s.group_id in (".selectmultipleoptions($_POST['group_id']).")"; echo reportview($sql,'Material Costing','80'); ?>
+s.group_id in (".selectmultipleoptions($_POST['group_id']).")"; echo reportview($sql,'Material Costing','80','','',''); ?>
 
     <?php endif; ?>
     </body>

@@ -13,7 +13,7 @@ $unique_GET=@$_GET['sub_ledger_id'];
 
 if(isset($_REQUEST['name'])||isset($_REQUEST['id']))
 
-{   $id=$_REQUEST['id'];
+{   $id=@$_REQUEST['id'];
     $name		= @mysqli_real_escape_string($conn, $_REQUEST['name']);
     $name		= str_replace("'","",$name);
     $name		= str_replace("&","",$name);
@@ -50,7 +50,7 @@ if(isset($_REQUEST['name'])||isset($_REQUEST['id']))
                     $sub_ledger_id=number_format(next_sub_ledger_id($under), 0, '.', '');
                     sub_ledger_generate($sub_ledger_id,$name, $under, $balance, $now, $proj_id);
                     $ledger_type='sub-ledger';
-                    ledger_generate($sub_ledger_id,$name,$ledger_data[0],'',$ledger_data[1],'','', time(),$proj_id,$ledger_data[2],$ledger_type);
+                    ledger_generate($sub_ledger_id,$name,$ledger_data[0],'',$ledger_data[1],'','', time(),$proj_id,$ledger_data[2],$ledger_type,'');
                     $type=1;
                     $msg='New Entry Successfully Inserted.';
                     unset($_POST);
@@ -78,6 +78,7 @@ if(isset($unique_GET))
 $sub_ledger = @$sub_ledger;
 $ledger_id = @$ledger_id;
 $POST_under = @$_POST['under'];
+$POST_status = @$_POST['status'];
 $res='select a.sub_ledger_id,a.sub_ledger_id,a.sub_ledger, (select ledger_name from accounts_ledger where ledger_id=a.ledger_id) as ledger_name, c.group_name,(select COUNT(ledger_id) from journal where ledger_id=a.sub_ledger_id) as has_transactions,
 IF(a.status=1, "Active",IF(a.status="SUSPENDED", "SUSPENDED","Inactive")) as status
 FROM sub_ledger a,accounts_ledger b,ledger_group c where
@@ -145,9 +146,9 @@ while($row=mysqli_fetch_object($query)){
                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Status</label>
                 <div class="col-md-6 col-sm-6 col-xs-12">
                     <select class="select2_single form-control" style="width:100%; font-size:11px" name="status" id="status">
-                        <option value="1"<?=($status=='1')? ' Selected' : '' ?>>Active</option>
-                        <option value="0"<?=($status=='0')? ' Selected' : '' ?>>Inactive</option>
-                        <option value="SUSPENDED"<?=($status=='SUSPENDED')? ' Selected' : '' ?>>SUSPENDED</option>
+                        <option value="1"<?=($POST_status=='1')? ' Selected' : '' ?>>Active</option>
+                        <option value="0"<?=($POST_status=='0')? ' Selected' : '' ?>>Inactive</option>
+                        <option value="SUSPENDED"<?=($POST_status=='SUSPENDED')? ' Selected' : '' ?>>SUSPENDED</option>
                     </select>
                 </div>
             </div>

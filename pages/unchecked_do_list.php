@@ -7,24 +7,13 @@ $title="Primary DO List";
  $unique_detail='id';
  $table_chalan='sale_do_chalan';
  $unique_chalan='id';
- $$unique_master=$_POST[$unique_master];
+ $$unique_master=@$_POST[$unique_master];
  $table='sale_do_master';
  $show='dealer_code';
  $id='do_no';
  $text_field_id='old_do_no';
  $target_url = 'uncheck_do_one.php';
- if(isset($_POST[viewreport])){
-    if ($_POST['status'] != '' && $_POST['status'] != 'All') {
-        $status_conn=" and m.status='" . $_POST['status'] . "'";
-    } else {
-        $status_conn=" and 1";
-    }
-	if ($_POST['f_date'] != '' && $_POST['t_date']!= '') {
-        $date_conn=" and m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'";
-    } else {
-        $date_conn=" and 1";
-    }} else {
-        $status_conn = " and m.status in ('MANUAL','RETURNED','PROCESSING')";}
+ $page = 'unchecked_do_list.php';
  ?>
 
  <?php require_once 'header_content.php'; ?>
@@ -38,16 +27,16 @@ $title="Primary DO List";
  <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
  <table align="center" style="width: 50%;">
      <tr><td>
-             <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date"  >
+             <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date"  >
          <td style="width:10px; text-align:center"> -</td>
-         <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date" ></td>
+         <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date" ></td>
          <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View Order</button></td>
      </tr></table>
  </form>
 
 
 <?php
-if(isset($_POST[viewreport])){
+if(isset($_POST['viewreport'])){
 $res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
 concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
 SUM(dt.total_amt)	 as Order_Amount,m.remarks,m.sent_to_warehuse_at as sent_warehouse,m.status
@@ -61,7 +50,8 @@ where
 m.dealer_code=d.dealer_code and
 m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
-m.entry_by=u.user_id ".$date_conn.$status_conn."
+m.entry_by=u.user_id and
+m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' 
 group by m.do_no order by m.do_no desc"; } else {
 $res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
 concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
@@ -78,7 +68,8 @@ where
 m.dealer_code=d.dealer_code and
 m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
-m.entry_by=u.user_id ".$date_conn.$status_conn."
+m.entry_by=u.user_id and
+m.status='PROCESSING'    
 group by m.do_no order by m.do_no desc";
 }
     ?>

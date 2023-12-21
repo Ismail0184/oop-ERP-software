@@ -47,7 +47,7 @@ if(prevent_multi_submit()){
 
  if(isset($_POST['checked'])){
    $sent_to_warehouse_at=date('Y-m-d H:i:s');
-   $results="Select d.*,i.*
+   $results="Select d.id as ids,d.*,i.*
    from
    ".$table_details." d,
    item_info i
@@ -68,10 +68,10 @@ if(prevent_multi_submit()){
           
           while ($fifocheckrow=mysqli_fetch_object($fifocheck)){
               if ($_SESSION['bqty_while_do_send']<=$fifocheckrow->qty && $_SESSION['bqty_while_do_send']>0 && $fifocheckrow->qty>0){
-                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','".$_SESSION['bqty_while_do_send']."','$fifocheckrow->rate','".$_SESSION['bqty_while_do_send']*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->tr_no','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
+                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','".$_SESSION['bqty_while_do_send']."','$fifocheckrow->rate','".$_SESSION['bqty_while_do_send']*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->ids','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
                   $_SESSION['bqty_while_do_send']= 0;
               } else if ($_SESSION['bqty_while_do_send']>=$fifocheckrow->qty && $_SESSION['bqty_while_do_send']>0 && $fifocheckrow->qty>0){
-                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','$fifocheckrow->qty','$fifocheckrow->rate','".$fifocheckrow->qty*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->tr_no','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
+                  mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,dealer_id,item_ex,item_price,total_amt,tr_from,do_no,entry_by,entry_at,ip,tr_no,section_id,company_id,batch,expiry_date,Remarks,gift_type) VALUES ('" . $data->do_date . "','$data->item_id','$data->depot_id','$data->dealer_code','$fifocheckrow->qty','$fifocheckrow->rate','".$fifocheckrow->qty*$fifocheckrow->rate."','Sales','$data->do_no','".$_SESSION['userid']."','$sent_to_warehouse_at','$ip','$data->ids','".$_SESSION['sectionid']."','".$_SESSION['companyid']."',$fifocheckrow->batch,'$fifocheckrow->mfg','$item_status','$data->gift_type')");
                   $_SESSION['bqty_while_do_send']= intval($_SESSION['bqty_while_do_send'])-$fifocheckrow->qty;
               }}
         }
@@ -134,7 +134,11 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                         where
                         d.item_id=i.item_id and
                         d.item_id not in ('1096000100010312') and
-                        d.".$unique."=".$$unique." group by d.item_id order by d.id";$query=mysqli_query($conn, $results);
+                        d.".$unique."=".$$unique." group by d.item_id order by d.id";
+                        $query=mysqli_query($conn, $results);
+                        $i=0;
+                        $ttotalamount = 0;
+                        $cow = 0;
                         while($data=mysqli_fetch_object($query)){
                             $present_stock_sql=mysqli_query($conn, "Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,
     REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
@@ -163,8 +167,9 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                                 <td align="center" style=" text-align:right;vertical-align: middle"><?=($data->unit_price==0)? '-' : $data->unit_price?></td>
                                 <td align="center" style=" text-align:right;vertical-align: middle"><?=($data->total_amt==0)? '-' : $data->total_amt?></td>
                             </tr>
-                        <?php $ttotalamount=$ttotalamount+$data->total_amt;}
-                              $cash_discount=find_a_field(''.$table_details.'','SUM(total_amt)','item_id="1096000100010312" and do_no="'.$_GET[do_no].'"');
+                        <?php $ttotalamount=$ttotalamount+$data->total_amt;
+                        }
+                              $cash_discount=find_a_field(''.$table_details.'','SUM(total_amt)','item_id="1096000100010312" and do_no="'.$_GET['do_no'].'"');
                               $cash_discounts=substr($cash_discount,1)
                          ?>
                         </tbody>
@@ -193,7 +198,7 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                     <?php
                     if($cow<1){
                     if($GET_status=='PROCESSING' || $GET_status=='MANUAL' || $GET_status=='RETURNED'){
-						        if($accountbalance_final>=$do_amount){ if($GET_status=='RETURNED'){?><p style="text-align: center; font-size: 12px; color:red;font-weight:bold;"><i>Returned Remarks: <?=find_a_field(''.$table.'','returned_remarks','do_no='.$_GET[do_no]);?></i></p><?php } ?>
+						        if($accountbalance_final>=$do_amount){ if($GET_status=='RETURNED'){?><p style="text-align: center; font-size: 12px; color:red;font-weight:bold;"><i>Returned Remarks: <?=find_a_field(''.$table.'','returned_remarks','do_no='.$_GET['do_no']);?></i></p><?php } ?>
                         <p>
                             <button style="float: left; margin-left: 1%; font-size: 12px" type="submit" name="reprocess" id="reprocess" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Deleted?");'>Re-Processing</button>
                           <?php if ($GET_status!=='RETURNED' || $GET_status=='MANUAL') { ?>
