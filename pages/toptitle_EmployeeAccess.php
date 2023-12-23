@@ -78,15 +78,15 @@ $dto=date('Y-m-d');
  }
 
 
-
-if($_POST['mon']!=''){
-    $mon=$_POST['mon'];}
+$PostMonth = @$_POST['mon'];
+if($PostMonth!=''){
+    $mon=$PostMonth;}
 else{
     $mon=date('m');
 }
-
-if($_POST['year']!=''){
-    $year=$_POST['year'];}
+$PostYear = @$_POST['year'];
+if($PostYear!=''){
+    $year=$PostYear;}
 else{
     $year=date('Y');
 }
@@ -99,7 +99,7 @@ $startday = date('Y-m-d',$startTime);
 $endday = date('Y-m-d',$endTime);
 $start_date = $year.'-'.($mon-1).'-26';
 $end_date = $year.'-'.$mon.'-25';
-$days_mon=ceil(($endTime - $startTime)/(3600*24))+1;
+$days_mon=ceil(($endTime - $startTime)/(3600*24))+1; $i = 0; $day='';
 for ($i = $startTime1; $i <= $endTime1; $i = $i + 86400) {
     $day   = date('l',$i);
     ${'day'.date('N',$i)}++;
@@ -134,7 +134,7 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
         <tr>
             <td>Company Leave Policy</td>
             <?php $res=mysqli_query($conn, "select * from hrm_leave_type");
-            while($leave_row=mysqli_fetch_object($res)){ ?>
+            while($leave_row=mysqli_fetch_object($res)){ $totalpolicy=0; ?>
                 <td style="text-align: center"><?=$leave_row->yearly_leave_days;?>, Days</td>
                 <?php
                 $totalpolicy=$totalpolicy+$leave_row->yearly_leave_days;
@@ -148,7 +148,7 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
         <tr>
             <td><a href="hrm_requisition_leave_report.php" target="new">Leave Already Taken</a></td>
             <?php $res=mysqli_query($conn, "select * from hrm_leave_type");
-            while($leave_row=mysqli_fetch_object($res)){ ?>
+            while($leave_row=mysqli_fetch_object($res)){ $total_taken = 0; ?>
                 <td style="text-align: center"><?php $leave_taken=find_a_field("hrm_leave_info","SUM(total_days)","type='".$leave_row->id."' and s_date between '$dfrom' and '$dto' and PBI_ID='".$_SESSION['PBI_ID']."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
                 <?php
                 $total_taken=$total_taken+$leave_taken;
@@ -195,14 +195,14 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
         <tbody>
         <tr>
             <td style="text-align: center"><?=$days_in_month;?></td>
-            <td style="text-align: center"><?=($att->od>0)?$att->od:$r_count;?></td>
-            <td style="text-align: center"><?=$holy_day;?></td>
-            <td style="text-align: center"><?=$days_in_month-$r_count-$holy_day;?></td>
-            <td style="text-align: center"><?=$late_attendance;?></td>
-            <td style="text-align: center"><?=number_format($current_month_leave);?></td>
-            <td style="text-align: center"><?=number_format($current_month_early_leave);?></td>
+            <td style="text-align: center"></td>
+            <td style="text-align: center"></td>
+            <td style="text-align: center"><?=$days_in_month-$r_count;?></td>
+            <td style="text-align: center"></td>
+            <td style="text-align: center"></td>
+            <td style="text-align: center"></td>
             <td></td>
-            <td style="text-align: center"><?=$current_month_od_attendance;?></td>
+            <td style="text-align: center"></td>
             <td style="text-align: center"></td>
         </tr>
         </tbody></table>
@@ -254,7 +254,7 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
                         ?>
                         <li style="vertical-align: middle; cursor: pointer" onclick="DoNavPOPUP('<?=$action->ADMIN_ACTION_DID;?>', 'TEST!?', 600, 700)">
                             <p style="vertical-align: middle">
-                                <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><?=$action->ADMIN_ACTION_SUBJECT;?><br><font style="font-size: 10px;"><?=$row->ADMIN_ANN_SUBJECT;?></font></span>
+                                <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><br><font style="font-size: 10px;"><?=$row->ADMIN_ANN_SUBJECT;?></font></span>
                             </p>
                         </li>
                     <?php } ?></ul>
@@ -270,22 +270,6 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
             </div>
             <div class="x_content" style="overflow: auto;height: 320px">
                 <ul class="legend list-unstyled">
-                    <?php
-    $cday=date('d');
-$sdate='$year-$mon-$cday';
-$todate=$dyear-$dmon-$dday;
-list( $years, $months, $days) = split('[/.-]', $sdate);
-list( $yeare, $monthe, $daye) = split('[/.-]', $todate);
-
-$sdatess="$year2-$months-$days";
-$edatess="$year2-$monthe-$daye";
-
-
-
-						?>
-
-
-
                     <?php $res=mysqli_query($conn, 'select p2.*,d.*,de.* FROM 
 							personnel_basic_info p2,
 							department d,
@@ -296,8 +280,13 @@ $edatess="$year2-$monthe-$daye";
 							 p2.PBI_DEPARTMENT=d.DEPT_ID order by p2.PBI_DOB asc ');
 				   while($birthday=mysqli_fetch_object($res)){
                        $bday=$birthday->PBI_DOB;
-                       list( $year2, $month2, $day2) = split('[/.-]', $bday);
-                       if($month2==$mon){
+                       $dateArray = explode("-", $bday);
+                       if (count($dateArray) === 3) {
+                           list($year, $month, $day) = $dateArray;
+                       } else {
+                           echo "Invalid date format";
+                       }
+                       if($month==$mon){
                         ?>
                         <li style="vertical-align: middle; cursor: pointer">
                             <p style="vertical-align: middle">

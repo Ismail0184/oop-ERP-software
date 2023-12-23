@@ -1536,6 +1536,7 @@ order by c.do_no";
                     <?
                     $sql2="select * from accounts_ledger where ledger_id like '%00000000' and ledger_group_id='".$grp->group_id."' and ".$sec_com_connection."";
                     $query2=mysqli_query($conn, $sql2);
+                    $count_group = 0;
                     if(mysqli_num_rows($query2)>0){
                         while($ledger=mysqli_fetch_object($query2)){
                             $count_group=$count_group+1;

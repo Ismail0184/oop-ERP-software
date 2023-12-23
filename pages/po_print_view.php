@@ -4,14 +4,14 @@ require_once 'support_file.php';
 require_once 'class.numbertoword.php';
 $po_no = $_REQUEST['po_no'];
 if(isset($_POST['cash_discount']))
-
 {
-
 	$po_no = $_POST['po_no'];
 	$cash_discount = $_POST['cash_discount'];
 	$ssql='update purchase_master set cash_discount="'.$_POST['cash_discount'].'" where po_no="'.$po_no.'"';
 	mysqli_query($conn, $ssql);
 
+} else {
+    $cash_discount = 0;
 }
 
 
@@ -152,7 +152,7 @@ $sql2="select p.*,i.*,i.unit_name from purchase_invoice p, item_info i where p.i
 p.item_id=i.item_id
 ";
 $data2=mysqli_query($conn, $sql2);
-//echo $sql2;
+$total_item_value = 0;
 while($info=mysqli_fetch_object($data2)){
 $pi++;
 $amount=$info->qty*$info->rate;
@@ -263,8 +263,9 @@ $disc=$info->disc;
                   <td width="20%" align="left" valign="top"><li>Buyer</li></td>
                   <td width="3%" align="right" valign="top">:</td>
                   <td align="left" valign="top"><strong>
-                    <?=$_SESSION['company_name']?> (BIN:<?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?>) <br> <?=$_SESSION['company_address'];?>
-                    </strong></td>
+                    <?=$_SESSION['company_name']?> (BIN:<?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?>) <br> <?=$_SESSION['company_address'];?>
+                    </strong>
+                  </td>
                 </tr>
                 <tr>
                   <td align="left" valign="top"><li>Final Destination </li></td>
@@ -279,18 +280,18 @@ $disc=$info->disc;
                 <tr>
                   <td align="left" valign="top"><li>Delievery  Instruction</li></td>
                   <td align="right" valign="top">:</td>
-                  <td align="left" valign="top">Delivery Should Reached at Destination Point within 5PM. </td>
+                  <td align="left" valign="top">Delivery Should be Reached at Destination Point within 5PM. </td>
                 </tr>
                 <tr>
                   <td align="left" valign="top"><li>Payment</li></td>
                   <td align="right" valign="top">:</td>
-                  <td align="left" valign="top"><?=$cehckstatus=find_a_field('purchase_master','payment_terms','po_no="'.$_GET[po_no].'"');?></td>
+                  <td align="left" valign="top"><?=$cehckstatus=find_a_field('purchase_master','payment_terms','po_no="'.$_GET['po_no'].'"');?></td>
                 </tr>
               </table></td>
           </tr>
           
           <?php
-		  $cehckstatus=find_a_field('purchase_master','status','po_no="'.$_GET[po_no].'"');
+		  $cehckstatus=find_a_field('purchase_master','status','po_no="'.$_GET['po_no'].'"');
 		  if($cehckstatus=='PROCESSING' || $cehckstatus=='COMPLETED'){
 		   ?>
           <tr>

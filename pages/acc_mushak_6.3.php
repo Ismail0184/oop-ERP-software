@@ -18,23 +18,26 @@ $jv_no=find_a_field('journal','distinct jv_no','tr_from="Sales" and tr_no='.$cha
 $mushak=find_all_field('VAT_mushak_6_3','','do_no='.$do_no_GET);
 $mushak_fiscal_year = @$mushak->fiscal_year;
 $mushak_issue_date = @$mushak->issue_date;
+$mushak_mushak_no = @$mushak->mushak_no;
 $fiscal_year=find_a_field('fiscal_term','fiscal_year','status="1"');
 $fs_year=find_all_field('fiscal_term','','fiscal_year='.$mushak_fiscal_year);
+$fs_year_term_year = @$fs_year->term_year;
 $VAT_narration='VAT against sale, Do No # '.$do_no_GET.', Challan No # '.$chalan_no.', VAT 6.3 No # ';
 $SD_narration='SD against sale, Do No # '.$do_no_GET.', Challan No # '.$chalan_no.', VAT 6.3 No # ';
 
 if(prevent_multi_submit()){
     if(isset($_POST['delete'])){
+        $PostDeleteMushakNo = $_POST['delete_mushak_no'];
         $sql_1=mysqli_query($conn, "INSERT INTO VAT_mushak_6_3_deleted (R_id,do_no,mushak_no,warehouse_id,dealer_code,issue_date,issue_time,responsible_person,source,entry_by,entry_at,checked_by,checked_at,duplicate_status) 
         SELECT id,do_no,mushak_no,warehouse_id,dealer_code,issue_date,issue_time,responsible_person,source,entry_by,entry_at,checked_by,checked_at,duplicate_status FROM VAT_mushak_6_3 WHERE
-        do_no=".$do_no_GET." and mushak_no=".$_POST['delete_mushak_no']."");
+        do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");
         $sql_1=mysqli_query($conn, "INSERT INTO VAT_mushak_6_3_details_deleted (R_id,do_no,issue_date,item_id,in_total_unit,total_unit,unit_price,total_price,rate_of_SD,amount_of_SD,rate_of_VAT,amount_of_VAT,total_including_all,entry_by,entry_at,warehouse_id,mushak_no,dealer_code,source) 
         SELECT id,do_no,issue_date,item_id,in_total_unit,total_unit,unit_price,total_price,rate_of_SD,amount_of_SD,rate_of_VAT,amount_of_VAT,total_including_all,entry_by,entry_at,warehouse_id,mushak_no,dealer_code,source FROM VAT_mushak_6_3_details WHERE
-        do_no=".$do_no_GET." and mushak_no=".$_POST['delete_mushak_no']."");
-        mysqli_query($conn, "Update VAT_mushak_6_3_deleted set deleted_by='".$_SESSION['userid']."' where do_no=".$do_no_GET." and mushak_no=".$_POST['delete_mushak_no']."");
+        do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");
+        mysqli_query($conn, "Update VAT_mushak_6_3_deleted set deleted_by='".$_SESSION['userid']."' where do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");
         mysqli_query($conn, "DELETE FROM journal WHERE tr_no=".$_POST['chalan_no']." and tr_from='Sales' and ledger_id in ('4015000100000000','1005000400000000','4016000100000000','1005000700000000')");
-        mysqli_query($conn, "DELETE FROM VAT_mushak_6_3_details WHERE do_no=".$do_no_GET." and mushak_no=".$_POST['delete_mushak_no']."");
-        mysqli_query($conn, "DELETE FROM VAT_mushak_6_3 WHERE do_no=".$do_no_GET." and mushak_no=".$_POST['delete_mushak_no']."");
+        mysqli_query($conn, "DELETE FROM VAT_mushak_6_3_details WHERE do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");
+        mysqli_query($conn, "DELETE FROM VAT_mushak_6_3 WHERE do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");
         mysqli_query($conn, "Update sale_do_master set mushak_challan_status='UNRECORDED' where do_no=".$do_no_GET."");
     }
 
@@ -85,13 +88,22 @@ if(isset($_POST['record'])){
 
 
 if(isset($_POST['create_journal'])){
+    $PostLedgerId1 = @$_POST['ledger_1'];
+    $PostDrAmount1 = @$_POST['dr_amount_1'];
+    $PostCrAmount2 = @$_POST['cr_amount_2'];
+    $PostCrAmount4 = @$_POST['cr_amount_4'];
+    $PostDrAmount3 = @$_POST['dr_amount_3'];
+
+    $PostLedgerId2 = @$_POST['ledger_2'];
+    $PostLedgerId3 = @$_POST['ledger_3'];
+    $PostLedgerId4 = @$_POST['ledger_4'];
   if($_POST['chalan_no']>0){
-  if (($_POST['ledger_1'] > 0) && (($_POST['ledger_2'] && $_POST['dr_amount_1']) > 0) && ($_POST['cr_amount_2'] > 0)) {
+  if (($PostLedgerId1 > 0) && (($PostLedgerId2 && $PostDrAmount1) > 0) && ($PostCrAmount2 > 0)) {
       add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], 0, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
       add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], 0, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['cr_amount_2'], 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
   }
 
-  if (($_POST['ledger_3'] > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_3']) > 0) && ($_POST['cr_amount_4'] > 0)) {
+  if (($PostLedgerId3 > 0) && (($PostLedgerId4 && $PostDrAmount3) > 0) && ($PostCrAmount4 > 0)) {
       add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_3'], $_POST['narration_3'], $_POST['dr_amount_3'], 0, 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
       add_to_journal_new($mushak->issue_date, $proj_id, $_POST['jv_no'], $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'], 'Sales', $_POST['chalan_no'], $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $$unique,'','','','');
   }
@@ -109,16 +121,17 @@ $COUNT_journal=find_a_field('journal','COUNT(id)','ledger_id in ("40150001000000
 
 $do_master=find_all_field('sale_do_master','','do_no='.$_GET[$unique]);
 $warehouse_master=find_all_field('warehouse','','warehouse_id='.$do_master->depot_id);
+$warehouse_master_warehouse_name = $warehouse_master->warehouse_name;
+$warehouse_master_VAT_responsible_person = $warehouse_master->VAT_responsible_person;
 $dealer_master=find_all_field('dealer_info','','dealer_code='.$do_master->dealer_code);
 $dealer_master=find_all_field('dealer_info','','dealer_code='.$do_master->dealer_code);
-
 
 $status=find_a_field('VAT_mushak_6_3','COUNT(id)','do_no='.$do_no_GET);
 $VAT_master=find_all_field('VAT_mushak_6_3','','do_no='.$do_no_GET);
 $VAT_master_mushak_no = @$VAT_master->mushak_no;
 $VAT_master_issue_date = @$VAT_master->issue_date;
+$VAT_master_issue_time = @$VAT_master->issue_time;
 $latest_id=find_a_field('VAT_mushak_6_3','MAX(mushak_no)','fiscal_year='.$fiscal_year.' and warehouse_id='.$do_master->depot_id);
-
 if($status>0){
     if($group_by_GET=='VAT_item_group'){
         $query="SELECT mus.*,SUM(mus.total_unit) as total_unit,mus.total_price,vtg.group_name as item_name,mus.rate_of_SD,SUM(mus.amount_of_SD) as amount_of_SD,mus.rate_of_VAT,SUM(mus.amount_of_VAT) as amount_of_VAT,SUM(mus.total_including_all) as total_including_all,i.unit_name,i.SD AS VAT 
@@ -181,7 +194,7 @@ $result=mysqli_query($conn, $query);
 <form method="post" action="">
   <input type="hidden" name="warehouse_id" value="<?=$do_master->depot_id?>">
   <input type="hidden" name="dealer_code" value="<?=$do_master->dealer_code?>">
-  <input type="hidden" name="responsible_person" value="<?=$warehouse_master->VAT_responsible_person?>">
+  <input type="hidden" name="responsible_person" value="<?=$warehouse_master_VAT_responsible_person?>">
   <input type="hidden" name="chalan_no" value="<?=$chalan_no?>">
   <input type="hidden" name="jv_no" value="<?=$jv_no?>">
   <input type="hidden" name="jvdate" value="<?=$mushak_issue_date?>">
@@ -204,9 +217,9 @@ $result=mysqli_query($conn, $query);
         <th style="width: 10%; text-align: right">চালানপত্র নম্বর</th><th style="width: 1%">:</th><td style="width: 29%">
 <?php if($status>0){
         if($do_master->depot_id==5){
-            echo $fs_year->term_year.'-CW-'.$VAT_master_mushak_no;
+            echo $fs_year_term_year.'-CW-'.$VAT_master_mushak_no;
         } else {
-            echo $fs_year->term_year.'-DK-'.$VAT_master_mushak_no;
+            echo $fs_year_term_year.'-DK-'.$VAT_master_mushak_no;
         }
 
      } else { ?>
@@ -424,8 +437,9 @@ $result=mysqli_query($conn, $query);
     if($status>0){?>
      <?php } else { ?>
         <h1 align="center">
-            <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan"></p>
-          <?php } ?>
+            <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to Record & Create?");' name="record" value="Record & Create VAT Challan">
+        </h1>
+    <?php } ?>
 <br><br>
           <?php if($do_no_GET>0 && $COUNT_mushak>0 && $COUNT_journal==0): ?>
           <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px; display:none">
@@ -451,7 +465,7 @@ $result=mysqli_query($conn, $query);
                           <option  value="4015000100000000">4015000100000000-<?=$customer_name=find_a_field('accounts_ledger','ledger_name','ledger_id="4015000100000000"'); ?></option>
                       </select>
                   </td>
-                  <td rowspan="2" style="text-align: center; vertical-align: middle"><textarea name="narration_1" id="narration_1" class="form-control col-md-7 col-xs-12" style="width:100%; height:92px; font-size: 11px; text-align:center"><?=$VAT_narration?><?=$mushak->mushak_no?>, <?=$warehouse_master->warehouse_name?>, Fiscal Year # <?=$fs_year->term_year?></textarea></td>
+                  <td rowspan="2" style="text-align: center; vertical-align: middle"><textarea name="narration_1" id="narration_1" class="form-control col-md-7 col-xs-12" style="width:100%; height:92px; font-size: 11px; text-align:center"><?=$VAT_narration?><?=$mushak_mushak_no?>, <?=$warehouse_master_warehouse_name?>, Fiscal Year # <?=$fs_year_term_year?></textarea></td>
                   <td align="center" style="vertical-align: middle"><input type="text" name="dr_amount_1" readonly value="<?=$total_amount_of_VAT;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                   <td align="center" style="vertical-align: middle"><input type="text" name="cr_amount_1" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
               </tr>

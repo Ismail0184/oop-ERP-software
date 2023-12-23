@@ -310,8 +310,13 @@ $edatess="$year2-$monthe-$daye";
 							 p2.PBI_DEPARTMENT=d.DEPT_ID order by p2.PBI_DOB asc ');
 				   while($birthday=mysqli_fetch_object($res)){
                        $bday=$birthday->PBI_DOB;
-                       list( $year2, $month2, $day2) = split('[/.-]', $bday);
-                       if($month2==$mon){
+                       $dateArray = explode("-", $bday);
+                       if (count($dateArray) === 3) {
+                           list($year, $month, $day) = $dateArray;
+                       } else {
+                           echo "Invalid date format";
+                       }
+                       if($month==$mon){
                         ?>
                         <li style="vertical-align: middle; cursor: pointer">
                             <p style="vertical-align: middle">

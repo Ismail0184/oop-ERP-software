@@ -52,7 +52,7 @@ $unCHECKEDHandover = find_a_field('handover_application_details','count(id)','ta
 $totChecked = $workordercheck+$stationary_purchased_checked+$unCHECKEDHandover+$APcheck;
 $totApproval = $unApprovedLeave+$unApprovedReq+$unApprovedTravel+$unApprovedTravelExp+$unApprovedVehicle+$unApprovedManpower+$workorderrecommended+$sample_gift_recommended+$unApprovedReqFood+$fg_purchased_recommended+$unApprovedIOU+$APrecommended;
 $totUnauthorised = $unAuthorisedLeave+$unAuthorisedReq+$unAuthorisedTravel+$unAuthorisedTravelExp+$unAuthorisedVehicle+$unAuthorisedManpower+$unAuthorisedLate+$workorderathu+$sample_gift_authorise+$unAuthorisedReqFood+$unAuthorisedearlyLeave+$fg_purchased_authorise+$unAuthorisedOD+$unAuthorisedIOU+$APathu;
-$_SESSION[totCheckedemployee_access]=$totChecked+$totApproval+$totUnauthorised;
+$_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised;
 
 ?>
 
