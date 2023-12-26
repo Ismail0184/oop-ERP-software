@@ -9,7 +9,7 @@ $table_fg_deatils = 'lc_pi_fg_details';
 $details_unique = 'pi_id';
 $page="LC_create_PI.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 
 
 if(prevent_multi_submit()){
@@ -28,8 +28,8 @@ if(prevent_multi_submit()){
 
 //for modify..................................
     if(isset($_POST['modify']))
-    {   $sd=$_POST[pi_issue_date];
-        $_POST[pi_issue_date]=date('Y-m-d' , strtotime($sd));
+    {   $sd=$_POST['pi_issue_date'];
+        $_POST['pi_issue_date']=date('Y-m-d' , strtotime($sd));
         $_POST['edit_at']=time();
         $_POST['edit_by']=$_SESSION['userid'];
         $crud->update($unique);
@@ -38,20 +38,22 @@ if(prevent_multi_submit()){
 
     if(isset($_POST['add']))
     {   $_POST['entry_at'] = date('Y-m-d H:s:i');
-        $_POST[status] = "MANUAL";
+        $_POST['status'] = "MANUAL";
         $_POST['section_id'] = $_SESSION['sectionid'];
         $_POST['company_id'] = $_SESSION['companyid'];
-        $_POST[fg_id]=$_POST[fg_id];
-        $_POST[fg_line_id]=$_POST[fg_line_id];
-        $_POST[pi_id] = $_SESSION['initiate_lc_proforma_invoice'];
+        $_POST['fg_id']=@$_POST['fg_id'];
+        $_POST['fg_line_id']=@$_POST['fg_line_id'];
+        $_POST['pi_id'] = $_SESSION['initiate_lc_proforma_invoice'];
         $crud = new crud($table_details);
         $crud->insert();
         $type=1;
         $msg='New Entry Successfully Inserted.';
         unset($_POST);
         unset($$unique);
-        unset($_SESSION[fgid]);
+        unset($_SESSION['fgid']);
     }}
+
+$initiate_lc_proforma_invoice = @$_SESSION['initiate_lc_proforma_invoice'];
 if (isset($_POST['confirm'])){
     mysqli_query($conn,"Update ".$table." set status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_lc_proforma_invoice']."");
     mysqli_query($conn, "Update ".$table_details." set status='UNCHECKED' where pi_id=".$_SESSION['initiate_lc_proforma_invoice']."");
@@ -62,41 +64,47 @@ if (isset($_POST['confirm'])){
 
 $results=mysqli_query($conn,"Select d.*,i.* from ".$table_details." d,item_info i where
 d.item_id=i.item_id and
-d.".$details_unique."='$_SESSION[initiate_lc_proforma_invoice]'");
+d.".$details_unique."='".$initiate_lc_proforma_invoice."'");
 while($row=mysqli_fetch_array($results)){
-    $ids=$row[id];
+    $ids=$row['id'];
     if(isset($_POST['deletedata'.$ids]))
     {$del="DELETE FROM ".$table_details." WHERE id='$ids'";
         $del_item=mysqli_query($conn, $del);
         unset($_POST);}
     if(isset($_POST['editdata'.$ids]))
-    {  mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST[item_id]."', qty='".$_POST[qty]."',rate='".$_POST[rate]."',amount='".$_POST[amount]."' WHERE id=".$ids));
+    {  mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST['item_id']."', qty='".$_POST['qty']."',rate='".$_POST['rate']."',amount='".$_POST['amount']."' WHERE id=".$ids));
         unset($_POST);
     }
 }
 
 if(isset($_POST['cancel']))
 {   $crud = new crud($table);
-    $condition=$unique."=".$_SESSION['initiate_lc_proforma_invoice'];
+    $condition=$unique."=".$initiate_lc_proforma_invoice;
     $crud->delete($condition);
     $crud = new crud($table_details);
-    $condition = $details_unique . "=" . $_SESSION['initiate_lc_proforma_invoice'];
+    $condition = $details_unique . "=" . $initiate_lc_proforma_invoice;
     $crud->delete_all($condition);
     $crud = new crud($table_fg_deatils);
-    $condition = $details_unique . "=" . $_SESSION['initiate_lc_proforma_invoice'];
+    $condition = $details_unique . "=" . $initiate_lc_proforma_invoice;
     $crud->delete_all($condition);
     unset($_SESSION['initiate_lc_proforma_invoice']);
+    unset($initiate_lc_proforma_invoice);
 
 }
-if (isset($_GET[id])) {
-    $edit_value=find_all_field(''.$table_details.'','','id='.$_GET[id].'');
+$PostID = @$_GET['id'];
+$initiate_lc_proforma_invoice = @$_SESSION['initiate_lc_proforma_invoice'];
+if (isset($PostID)) {
+    $edit_value=find_all_field(''.$table_details.'','','id='.$PostID.'');
 }
-$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)','pi_id='.$_SESSION['initiate_lc_proforma_invoice'].'');
+$edit_value_item_id = @$edit_value->item_id;
+$edit_value_qty = @$edit_value->qty;
+$edit_value_amount = @$edit_value->amount;
+$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)','pi_id='.$initiate_lc_proforma_invoice.'');
 
 
 // data query..................................
-if(isset($_SESSION[initiate_lc_proforma_invoice]))
-{   $condition=$unique."=".$_SESSION[initiate_lc_proforma_invoice];
+if(isset($initiate_lc_proforma_invoice))
+{   $condition=$unique."=".$initiate_lc_proforma_invoice;
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
@@ -110,7 +118,7 @@ if(isset($_SESSION[initiate_lc_proforma_invoice]))
                 {   //It wiil insert a row to our subject table from our csv file`
             if(is_numeric($emapData[0])) {
             $sql = "INSERT INTO ".$table_details." (`fg_line_id`,`pi_issue_date`,`item_id`,`pi_id`,`qty`,`rate`,`amount`,`party_id`,`status`,`section_id`,`company_id`)
-            VALUES('1','$pi_issue_date','$emapData[0]','$_SESSION[initiate_lc_proforma_invoice]','$emapData[1]','$emapData[2]','$emapData[3]','$party_id','UNCHECKED','$_SESSION[sectionid]','$_SESSION[companyid]')";
+            VALUES('1','$pi_issue_date','$emapData[0]','".$_SESSION['initiate_lc_proforma_invoice']."','$emapData[1]','$emapData[2]','$emapData[3]','$party_id','UNCHECKED','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')";
                     }
                     $result = mysqli_query( $conn, $sql);
                     if(! $result )
@@ -143,13 +151,13 @@ currency c
  m.id=d.pi_id and
  m.currency=c.id and
  d.fg_id=i.item_id and
- d.pi_id='".$_SESSION['initiate_lc_proforma_invoice']."' group by d.fg_id,d.fg_rate order by d.fg_id");
+ d.pi_id='".$initiate_lc_proforma_invoice."' group by d.fg_id,d.fg_rate order by d.fg_id");
 
-$PCOUNT=find_a_field('lc_pi_details','COUNT(id)','pi_id='.$_SESSION[initiate_lc_proforma_invoice].'');
+$PCOUNT=find_a_field('lc_pi_details','COUNT(id)','pi_id='.$initiate_lc_proforma_invoice.'');
 
 $sql="Select d.id,i.item_id,i.item_name,i.unit_name,d.qty,d.rate,d.amount from ".$table_details." d,item_info i where
 d.item_id=i.item_id and
-d.pi_id='$_SESSION[initiate_lc_proforma_invoice]'";
+d.pi_id='".$initiate_lc_proforma_invoice."'";
 $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name,' (',sg.sub_group_name,')')
                             FROM
                             item_info i,
@@ -158,6 +166,13 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
 							WHERE
 							i.sub_group_id=sg.sub_group_id and
 							 sg.group_id=g.group_id   order by i.item_name";
+$pi_id = @$pi_id;
+$pi_no = @$pi_no;
+$pi_issue_date = @$pi_issue_date;
+$party_id = @$party_id;
+$currency = @$currency;
+$remarks = @$remarks;
+$GetItemId = @$_GET['item_id'];
 ?>
 
 <?php require_once 'header_content.php'; ?>
@@ -174,7 +189,7 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
 <div class="col-md-12 col-xs-12">
     <div class="x_panel">
         <div class="x_title">
-            <h2><?php echo $title; ?></h2>
+            <h2><?=$title?></h2>
             <ul class="nav navbar-right panel_toolbox">
                 <div class="input-group pull-right">
                 </div>
@@ -193,8 +208,8 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
                                 <div class="col-md-6 col-sm-6 col-xs-12">
                                     <input type="text" id="<?=$unique?>"  required="required" name="<?=$unique?>" value="<?
                                     $pids=find_a_field($table,'max('.$unique.')','1');
-                                    if($_SESSION['initiate_lc_proforma_invoice']>0) {
-                                        $pid = $_SESSION['initiate_lc_proforma_invoice'];
+                                    if($initiate_lc_proforma_invoice>0) {
+                                        $pid = $initiate_lc_proforma_invoice;
                                     } else {
                                         $pid=$pids+1;
                                         if($pids<1) $pid = 1;
@@ -211,7 +226,7 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
                                     <?
                                     $dates=date('Y-m-d');
                                     $pi_ids =  find_a_field('lc_pi_master','COUNT(id)','create_date="'.$dates.'"');
-                                    if($_SESSION['initiate_lc_proforma_invoice']>0) {
+                                    if($initiate_lc_proforma_invoice>0) {
                                         $pi_id = $pi_id;
                                     } else {
                                         $pi_id=$pi_ids+1;
@@ -270,15 +285,18 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
                 </table>
                 <div class="form-group" style="margin-left:40%; margin-top: 15px">
                     <div class="col-md-6 col-sm-6 col-xs-12">
-                        <?php if($_SESSION[initiate_lc_proforma_invoice]){  ?>
+                        <?php if($initiate_lc_proforma_invoice){  ?>
                             <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 12px">Update <?=$title;?></button>
                         <?php   } else {?>
                             <button type="submit" name="initiate" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary" style="font-size: 12px">Initiate <?=$title;?></button>
                         <?php } ?>
                     </div></div>
-            </form></div></div></div>
-<?php if($_SESSION[initiate_lc_proforma_invoice]):  ?>
+            </form>
+        </div>
+    </div>
+</div>
 
+<?php if($initiate_lc_proforma_invoice):  ?>
     <form action="<?=$page?>" enctype="multipart/form-data" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
         <? require_once 'support_html.php';?>
         <input type="hidden" id="fg_line_id"  required="required" name="fg_line_id" value="<?
@@ -309,16 +327,16 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
                 <td style="vertical-align:middle" align="center">
                     <select class="select2_single form-control" style="width:100%;" tabindex="-1" required="required"  id="item_id" name="item_id">
                         <option></option>
-                        <?=advance_foreign_relation($sql_item_id,($_GET[item_id]!='')? $_GET[item_id] : $edit_value->item_id);?>
+                        <?=advance_foreign_relation($sql_item_id,($GetItemId!='')? $_GET['item_id'] : $edit_value_item_id);?>
                     </select></td>
 
                 <td style="width:10%;vertical-align:middle" align="center">
-                    <input  type="number" step="any" min="1" style="width:150px; height:35px; font-size: 12px; text-align:center" value="<?=$edit_value->qty?>" name="qty" id="qty" autocomplete="off" class="form-control col-md-7 col-xs-12" class='qty'>
+                    <input  type="number" step="any" min="1" style="width:150px; height:35px; font-size: 12px; text-align:center" value="<?=$edit_value_qty?>" name="qty" id="qty" autocomplete="off" class="form-control col-md-7 col-xs-12" class='qty'>
                 </td>
                 <td style="width:10%;vertical-align:middle" align="center">
-                    <input  type="number" step="any" style="width:150px; height:35px; font-size: 12px; text-align:center" value="<?=$edit_value->amount?>" name="rate" id="price" autocomplete="off" class="form-control col-md-7 col-xs-12" class='price'></td>
-                <td style="width:10%;vertical-align:middle" align="center"><input style="width:150px; height:35px; font-size: 12px; text-align:center" readonly type='text' id='sum' value="<?=$edit_value->amount?>" name='amount' class="form-control col-md-7 col-xs-12" class='sum' /></td>
-                <td style="width:5%;vertical-align:middle" align="center"><?php if (isset($_GET[id])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET[id];?>" id="editdata<?=$_GET[id];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
+                    <input  type="number" step="any" style="width:150px; height:35px; font-size: 12px; text-align:center" value="<?=$edit_value_amount?>" name="rate" id="price" autocomplete="off" class="form-control col-md-7 col-xs-12" class='price'></td>
+                <td style="width:10%;vertical-align:middle" align="center"><input style="width:150px; height:35px; font-size: 12px; text-align:center" readonly type='text' id='sum' value="<?=$edit_value_amount?>" name='amount' class="form-control col-md-7 col-xs-12" class='sum' /></td>
+                <td style="width:5%;vertical-align:middle" align="center"><?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
                 <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?></td></tr>
             </tbody>
         </table>
@@ -335,7 +353,7 @@ $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',
 
 
 
-    <?=added_data_delete_edit($sql,$details_unique,$unique_GET,$COUNT_details_data,$page);?>
+    <?=added_data_delete_edit($sql,$details_unique,$unique_GET,$COUNT_details_data,$page,'','');?>
 <?php endif; ?>
 <?=$html->footer_content();?>
 

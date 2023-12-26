@@ -9,18 +9,20 @@ $table="lc_lc_master";
 $table_details = 'lc_lc_details';
 $page="LC_create_LC.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-
-if($_GET['first_lc']>0)
+$$unique = @$_GET[$unique];
+$GetFirstLC = @$_GET['first_lc'];
+$PostUnLCID = @$_REQUEST['unlc_id'];
+$GetLCID = @$_GET['lc_id'];
+$PostLCID = @$_POST['lc_id'];
+if($GetFirstLC>0)
     unset($_SESSION['lc_id']);
-elseif($_REQUEST['unlc_id']>0)
+elseif($PostUnLCID>0)
     $lc_id=$_SESSION['lc_id']=$_REQUEST['unlc_id'];
-elseif($_GET['lc_id']>0){
-    $lc_id=$_SESSION['lc_id']=$_GET['lc_id'];
+elseif($GetLCID>0){
+    $lc_id=$_SESSION['lc_id']=$GetLCID;
 }
-elseif($_POST['lc_id']>0)
-    $lc_id=$_SESSION['lc_id']=$_POST['lc_id'];
-
+elseif($PostLCID>0)
+    $lc_id=$_SESSION['lc_id']=$PostLCID;
 
 if(prevent_multi_submit()){
     if(isset($_POST[$unique_field]))
@@ -44,25 +46,23 @@ if(prevent_multi_submit()){
         {   $_POST['edit_at']=time();
             $_POST['edit_by']=$_SESSION['userid'];
             $crud->update($unique);
-            $type=1;
-            //echo $targeturl;
-            //unset($_SESSION[under_PI]);
-        }}
+        }
+    }
 
     if(isset($_POST['add_PI'])) {
         $_POST['edit_at'] = time();
         $_POST['edit_by'] = $_SESSION['userid'];
-        $_POST[lc_id]=$_SESSION[initiate_create_LC];
-        $_POST[pi_id]=$_POST[under_lc];
-        $pi_currency=find_a_field('lc_pi_master','currency','id='.$_POST[under_lc]);
-        mysqli_query($conn, "Update lc_lc_master SET pi_id='".$_POST[under_lc]."',currency='".$pi_currency."' where id=".$_SESSION[initiate_create_LC]."");
-        unset($_SESSION[under_PI]);
-        $_SESSION[under_PI]=$_POST[under_lc];
+        $_POST['lc_id']=@$_SESSION['initiate_create_LC'];
+        $_POST['pi_id']=$_POST['under_lc'];
+        $pi_currency=find_a_field('lc_pi_master','currency','id='.$_POST['under_lc']);
+        mysqli_query($conn, "Update lc_lc_master SET pi_id='".$_POST['under_lc']."',currency='".$pi_currency."' where id=".$_SESSION['initiate_create_LC']."");
+        unset($_SESSION['under_PI']);
+        $_SESSION['under_PI']=$_POST['under_lc'];
         $type = 1;
     } // PI Added
 
     if(isset($_POST['cancel_PI']))
-    {   unset($_SESSION[under_PI]);} // cancel PI
+    {   unset($_SESSION['under_PI']);} // cancel PI
 
 
     if (isset($_POST['confirmsave'])){
@@ -78,36 +78,36 @@ lc_pi_details d,
 item_info i
   where 
  d.item_id=i.item_id and 
- d.pi_id='".$_SESSION[under_PI]."'
+ d.pi_id='".$_SESSION['under_PI']."'
   group by d.id
  ");
         while($uncheckrow=mysqli_fetch_array($rs)){
             $js=$js+1;
-            $ids=$uncheckrow[id];
+            $ids=$uncheckrow['id'];
             $lcqty=$_POST['lc_qty_'.$ids];
             $lcrate=$_POST['lc_rate_'.$ids];
             $lcamt=$lcqty*$lcrate;
-            $party_id=$uncheckrow[party_id];
+            $party_id=$uncheckrow['party_id'];
             $_POST['section_id'] = $_SESSION['sectionid'];
             $_POST['company_id'] = $_SESSION['companyid'];
             if($lcqty>0 & $lcrate>0){
-                $_POST[item_id]=$uncheckrow[item_id];
-                $_POST[qty]=$lcqty;
-                $_POST[rate]=$lcrate;
-                $_POST[amount]=$lcamt;
-                $_POST[amount_NEG]=$lcamt;
-                $_POST[buyer_id]=$uncheckrow[buyer_id];
-                $_POST[party_id]=$uncheckrow[party_id];
-                $_POST[item_id]=$uncheckrow[item_id];
-                $_POST[rate_in_NEG_currency]=$lcrate-($_POST['rate_in_USD_currency'.$ids]*$_POST[con_rate_NEG_LC]);
-                $_POST[rate_in_USD_currency]=$_POST['rate_in_USD_currency'.$ids];
-                $_POST[amount_NEG]=$_POST['amount_NEG'.$ids];
-                $_POST[amount_USD]=$_POST['lc_amount_'.$ids];
+                $_POST['item_id']=$uncheckrow['item_id'];
+                $_POST['qty']=$lcqty;
+                $_POST['rate']=$lcrate;
+                $_POST['amount']=$lcamt;
+                $_POST['amount_NEG']=$lcamt;
+                $_POST['buyer_id']=$uncheckrow['buyer_id'];
+                $_POST['party_id']=$uncheckrow['party_id'];
+                $_POST['item_id']=$uncheckrow['item_id'];
+                $_POST['rate_in_NEG_currency']=$lcrate-($_POST['rate_in_USD_currency'.$ids]*$_POST['con_rate_NEG_LC']);
+                $_POST['rate_in_USD_currency']=$_POST['rate_in_USD_currency'.$ids];
+                $_POST['amount_NEG']=$_POST['amount_NEG'.$ids];
+                $_POST['amount_USD']=$_POST['lc_amount_'.$ids];
 
                 $crud = new crud($table_details);
                 $crud->insert();
             }}
-        mysqli_query($conn, "Update ".$table." set currency='".$_POST[currency]."', party_id='".$party_id."',status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_create_LC']."");
+        mysqli_query($conn, "Update ".$table." set currency='".$_POST['currency']."', party_id='".$party_id."',status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_create_LC']."");
         unset($_SESSION["under_PI"]);
         unset($_SESSION["initiate_create_LC"]);
         unset($_POST);
@@ -127,23 +127,18 @@ if(isset($_POST['delete']))
     unset($_SESSION["initiate_create_LC"]);
 }
 
-
-
-
-
-
-
+$initiate_create_LC = @$_SESSION['initiate_create_LC'];
+$under_PI = @$_SESSION['under_PI'];
 // data query..................................
-if(isset($_SESSION[initiate_create_LC]))
-{   $condition=$unique."=".$_SESSION[initiate_create_LC];
+if(isset($initiate_create_LC))
+{   $condition=$unique."=".$_SESSION['initiate_create_LC'];
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-
-
-$PI=find_all_field('lc_pi_master','','id='.$_SESSION[under_PI].'');
-$currencys=find_all_field('currency','','id='.$PI->currency.'');
+$PI=find_all_field('lc_pi_master','','id='.$under_PI.'');
+$PI_currency = @$PI->currency;
+$currencys=find_all_field('currency','','id='.$PI_currency.'');
 $rs=mysqli_query($conn,"Select 
 d.id,
 d.item_id,
@@ -158,7 +153,7 @@ lc_pi_details d,
 item_info i
   where 
  d.item_id=i.item_id and 
- d.pi_id='".$_SESSION[under_PI]."'
+ d.pi_id='".$under_PI."'
   group by d.id
  ");
 
@@ -226,7 +221,7 @@ item_info i
                         </td>
                     </tr>
                     <tr>
-                        <?php if($_SESSION[initiate_create_LC]){  ?>
+                        <?php if($_SESSION['initiate_create_LC']){  ?>
                             <td colspan="6" align="center" style="padding-top: 10px">
                                 <button type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Modify?");' name="modify" id="modify" class="btn btn-primary" style="font-size: 11px">Update LC Information</button>
                             </td>
@@ -240,14 +235,14 @@ item_info i
         </div>
     </div>
 </div>
-<?php if($_SESSION[initiate_create_LC]):  ?>
+<?php if($_SESSION['initiate_create_LC']):  ?>
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_content">
                 <form action="" enctype="multipart/form-data" name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
                     <?php require_once 'support_html.php';?>
-                    <input type="hidden" name="lc_id" id="lc_id" value="<?=$_SESSION[initiate_create_LC];?>" >
-                    <input type="hidden" name="pi_id" id="pi_id" value="<?=$_SESSION[under_PI];?>" >
+                    <input type="hidden" name="lc_id" id="lc_id" value="<?=$_SESSION['initiate_create_LC'];?>" >
+                    <input type="hidden" name="pi_id" id="pi_id" value="<?=$_SESSION['under_PI'];?>" >
                     <table align="center" style="width:60%">
                         <tbody>
                         <tr>
@@ -255,11 +250,11 @@ item_info i
                             <td align="left" style="width: 65%">
                                 <select class="select2_single form-control" style="width:400px" tabindex="-1" required="required"  id="under_lc" name="under_lc">
                                     <option></option>
-                                    <?=foreign_relation('lc_pi_master', 'id', 'CONCAT(id," : ", pi_no)', $_SESSION[under_PI], 'status not in ("COMPLETED")', 'order by id'); ?>
+                                    <?=foreign_relation('lc_pi_master', 'id', 'CONCAT(id," : ", pi_no)', $_SESSION['under_PI'], 'status not in ("COMPLETED")', 'order by id'); ?>
                                 </select></td>
                             <?php
-                            $PIstatus=find_a_field('lc_pi_master','status','id='.$_SESSION[under_PI].'');
-                            if($_SESSION[under_PI]>0){?>
+                            $PIstatus=find_a_field('lc_pi_master','status','id='.$_SESSION['under_PI'].'');
+                            if($_SESSION['under_PI']>0){?>
                                 <td><button type="submit" name="cancel_PI" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' class="btn btn-danger" style="float: left; font-size: 11px">Cancel this PI</button>
                             <?php } else { ?>
                             <td align="left" style=""><button type="submit" class="btn btn-primary" name="add_PI" id="add_PI" style="font-size: 11px">Add this PI</button></td>
@@ -276,10 +271,10 @@ item_info i
 <?php endif; ?>
 
 
-<?php if($_SESSION[initiate_create_LC]>0):  ?>
+<?php if($_SESSION['initiate_create_LC']>0):  ?>
     <form id="ismail" name="ismail"  method="post"  class="form-horizontal form-label-left">
-        <input type="hidden" name="lc_id" id="lc_id" value="<?=$_SESSION[initiate_create_LC];?>" >
-        <input type="hidden" name="pi_id" id="pi_id" value="<?=$_SESSION[under_PI];?>" >
+        <input type="hidden" name="lc_id" id="lc_id" value="<?=$_SESSION['initiate_create_LC'];?>" >
+        <input type="hidden" name="pi_id" id="pi_id" value="<?=$_SESSION['under_PI'];?>" >
         <input type="hidden" name="currency" id="currency" value="<?=$currencys->id;?>" >
         <table align="center" id="customers" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
             <thead>
@@ -330,7 +325,7 @@ item_info i
                     <td align="center" style="width:10%; text-align:center"><input type="text" class="form-control col-md-7 col-xs-12" style="font-size: 11px; height: 25px" id="pi_qty_<?=$ids;?>" style="width: 80px; text-align: center" value="<?=$uncheckrow[qty]?>" readonly tabindex="-1" >
                         <input type="hidden" class="form-control col-md-7 col-xs-12" style="font-size: 11px; height: 25px" id="con_rate_NEG_LC" style="width: 80px; text-align: center" value="<?=$con_rate_NEG_LC?>" name="con_rate_NEG_LC" readonly tabindex="-1" >
                     </td>
-                    <td align="center" style="text-align:right"><input type="text" class="form-control col-md-7 col-xs-12" style="font-size: 11px; height: 25px" id="used_lc_qty_<?=$ids;?>" style="width: 80px; text-align: center" value="<?=$rcvqty=find_a_field('lc_lc_details','SUM(qty)','item_id='.$uncheckrow[item_id].' and pi_id='.$_SESSION[under_PI].''); ?>" readonly tabindex="-1">
+                    <td align="center" style="text-align:right"><input type="text" class="form-control col-md-7 col-xs-12" style="font-size: 11px; height: 25px" id="used_lc_qty_<?=$ids;?>" style="width: 80px; text-align: center" value="<?=$rcvqty=find_a_field('lc_lc_details','SUM(qty)','item_id='.$uncheckrow[item_id].' and pi_id='.$_SESSION['under_PI'].''); ?>" readonly tabindex="-1">
                         <input type="hidden" id="usable_pi_qty_<?=$ids;?>" style="width: 80px; text-align: center" class="form-control col-md-7 col-xs-12" value="<?=$uncheckrow[qty]-$rcvqty; ?>" readonly tabindex="-1">
                     </td>
 
@@ -385,7 +380,7 @@ item_info i
             </tr>
         </table>
         <?php
-		if($_SESSION[under_PI]>0){
+		if($_SESSION['under_PI']>0){
         if($cow<1){
             $vars['status']='COMPLETED';
             $table_master='lc_pi_master';

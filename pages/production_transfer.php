@@ -105,7 +105,10 @@ if(isset($_POST['cancel']))
     unset($_SESSION['pi_tr']);
     unset($_SESSION['initiate_production_transfer']);
     unset($_POST);
+    unset($initiate_production_transfer);
 }
+$initiate_production_transfer = @$_SESSION['initiate_production_transfer'];
+$pi_tr = @$_SESSION['pi_tr'];
 
 if (isset($_GET['id'])) {
     $edit_value=find_all_field(''.$table_details.'','','id='.$_GET['id'].'');

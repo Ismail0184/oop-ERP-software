@@ -1538,6 +1538,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
     $fdate = @$_POST['f_date'];
     $tdate = @$_POST['t_date'];
     $pc_code = @$_POST['pc_code'];
+    $_POSTWarehouseId = @$_POST['warehouse_id'];
     $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
     $now = $dateTime->format("d/m/Y  h:i:s A");
     if($sql==NULL) return NULL;
@@ -1546,7 +1547,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">'.$_SESSION['company_name'].'</p>
         <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">'.$title.'</p>';
-        $str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$_POST['t_date'].'</p> ';
+        $str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$tdate.'</p> ';
         if($fdate>0){
             $str.='
 		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
@@ -1555,7 +1556,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
         $str .='<thead>
 <div class="col-md-12 head">
                 <div style="float: left; margin-left: 2%">
-                    <a href="export.php?f_date='.$fdate.'&t_date='.$tdate.'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POST['warehouse_id'].'&pc_code='.$pc_code.''.'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
+                    <a href="export.php?f_date='.$fdate.'&t_date='.$tdate.'&report_id='.$_POST['report_id'].'&warehouse_id='.$_POSTWarehouseId.'&pc_code='.$pc_code.''.'" target="_blank" class="btn btn-success"><i class="dwn"></i> Export</a>
                 </div>
             </div>
 <p style="width:'.$width.'%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: '.$now.' </p><tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">';
@@ -1996,6 +1997,7 @@ function adds_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pag
 function dataview($sql,$unique,$unique_GET,$COUNT_details_data,$page){
     global $conn;
     if($sql==NULL) return NULL;
+    $str = '';
     $str.='<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
     $str .='<thead><tr style="background-color: bisque; "><th style="vertical-align:middle; text-align:center">#</th>';
 
@@ -2007,7 +2009,7 @@ function dataview($sql,$unique,$unique_GET,$COUNT_details_data,$page){
         }
         $str .='</tr></thead><tbody>';
         $c=0;
-        if (mysqli_num_rows($result)>0){
+        if (mysqli_num_rows($result)>0){ $sl = 0;
             while($row = mysqli_fetch_array($result)) {
                 $str .='<tr style="vertical-align:middle"><td style="vertical-align:middle; text-align:center">'.($sl=$sl+1).'</td>';
                 for($i=1;$i<$cols;$i++) {

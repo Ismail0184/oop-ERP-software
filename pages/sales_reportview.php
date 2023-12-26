@@ -694,15 +694,15 @@ area a
              order by m.do_date,m.do_no,d.dealer_code,c.item_id"; echo reportview($query,'Invoice wise sales summery','99');?>
 
 
-    <?php elseif ($report_id=='9006001'):?>
+    <?php elseif ($report_id=='9006001'): $cc_code = @$_POST['cc_code']; $tr_from = @$_POST['tr_from'];?>
        <title><?=$ledger_name=getSVALUE('accounts_ledger','ledger_name','where ledger_id='.$_REQUEST['ledger_id']);?> | Transaction Statement</title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
         <p align="center" style="margin-top:-18px; font-size: 15px">Transaction Statement</p>
         <p align="center" style="margin-top:-10px; font-size: 12px; font-weight: bold"><?=($_REQUEST['ledger_id']>0)? 'Customer: '.$_REQUEST['ledger_id'].' - '.$ledger_name.'' : '' ?></p>
-        <?php if($_POST['cc_code']){ ?>
+        <?php if($cc_code){ ?>
         <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Cost Center:</strong> <?=find_a_field('cost_center','center_name','id='.$_REQUEST['cc_code']);?> (<?=$_REQUEST['cc_code'];?>)</p>
         <?php } ?>
-        <?php if($_POST['tr_from']){ ?>
+        <?php if($tr_from){ ?>
         <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Transaction Type:</strong> <?=$_REQUEST['tr_from'];?></p>
         <?php } ?>
         <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> to <?=$_POST['t_date']?></p>

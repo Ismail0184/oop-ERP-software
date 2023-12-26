@@ -15,14 +15,14 @@ $page='QC_good_received_note.php';
 $page_worksheet='inspection_print_view_pr.php';
 $page_inspection_sheet='Inspection_Work_Sheet.php';
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 $condition="create_date='".date('Y-m-d')."'";
 
 
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
-        $_POST['checked_by']=$_SESSION[userid];
+        $_POST['checked_by']=$_SESSION['userid'];
         $_POST['checked_at']=time();
         $_POST['status']="RETURNED";
         $crud->update($unique);
@@ -53,14 +53,14 @@ if(prevent_multi_submit()){
             $_POST['entry_at'] = date('Y-m-d H:i:s');
             $_POST['section_id'] = $_SESSION['sectionid'];
             $_POST['company_id'] = $_SESSION['companyid'];
-            $_POST[ip]=$ip;
+            $_POST['ip']=$ip;
             $crud      =new crud($journal_item);
             $crud->insert();   // inventory received
         }
 	    	
         if(isset($_GET[custom_grn_no])){
-        $up_master=mysqli_query($conn,"UPDATE purchase_receive_master SET status='CHECKED',checked_by='".$_SESSION[userid]."',checked_at='".$todayss."' where custom_grn_no=".$_GET[custom_grn_no]."");
-		$up_master=mysqli_query($conn,"UPDATE grn_service_receive SET status='CHECKED',qc_by='".$_SESSION[userid]."',QC_at='".$todayss."' where custom_grn_no=".$_GET[custom_grn_no]."");
+        $up_master=mysqli_query($conn,"UPDATE purchase_receive_master SET status='CHECKED',checked_by='".$_SESSION['userid']."',checked_at='".$todayss."' where custom_grn_no=".$_GET['custom_grn_no']."");
+		$up_master=mysqli_query($conn,"UPDATE grn_service_receive SET status='CHECKED',qc_by='".$_SESSION['userid']."',QC_at='".$todayss."' where custom_grn_no=".$_GET['custom_grn_no']."");
         $up_details=mysqli_query($conn,"UPDATE ".$table_secondary_journal." SET checked='PENDING',QC_by='$_SESSION[userid]',QC_at='$todayss' where ".$sj_unique."=".$$unique." and tr_from in ('Purchase')");
 		} else 
 		{
@@ -75,57 +75,57 @@ if(prevent_multi_submit()){
     if(isset($_POST['record_batch_split']))
     {
         $condition="create_date='".date('Y-m-d')."'";
-        $_POST['warehouse_id'] = $_POST[warehouse_id]; 
-        $_POST['po_no'] = $_POST[po_no];
-        $_POST['pr_no'] = $_GET[pr_no];
+        $_POST['warehouse_id'] = $_POST['warehouse_id'];
+        $_POST['po_no'] = $_POST['po_no'];
+        $_POST['pr_no'] = $_GET['pr_no'];
         $_POST['lc_id'] = $po_no;
-        $_POST['item_id'] = $_GET[item_id];
-        $_POST['line_id'] = $_GET[line_id];
+        $_POST['item_id'] = $_GET['item_id'];
+        $_POST['line_id'] = $_GET['line_id'];
         $_POST['source'] = 'PO';
         $_POST['status'] = 'PROCESSING';
         $_POST['create_date'] = date('Y-m-d');
     
-        $_POST[ip]=$ip;
-        $_POST[entry_at] = date('Y-m-d H:s:i');
+        $_POST['ip']=$ip;
+        $_POST['entry_at'] = date('Y-m-d H:s:i');
         $crud      =new crud($lc_lc_received_batch_split);
-        if($_POST[qty_1]>0) {
-            $_POST[qty]=$_POST[qty_1];
-            $_POST[batch_no]=$_POST[batch_1];
-            $_POST[rate]=$_POST[rate_1];
-            $_POST[mfg]=$_POST[exp_date_1];
-            $_POST[batch]=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
+        if($_POST['qty_1']>0) {
+            $_POST['qty']=$_POST['qty_1'];
+            $_POST['batch_no']=$_POST['batch_1'];
+            $_POST['rate']=$_POST['rate_1'];
+            $_POST['mfg']=$_POST['exp_date_1'];
+            $_POST['batch']=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
             $crud->insert();
-        }if($_POST[qty_2]>0) {
-        $_POST[qty]=$_POST[qty_2];
-        $_POST[rate]=$_POST[rate_2];
-        $_POST[batch_no]=$_POST[batch_2];
-        $_POST[mfg]=$_POST[exp_date_2];
-        $_POST[batch]=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
+        }if($_POST['qty_2']>0) {
+        $_POST['qty']=$_POST['qty_2'];
+        $_POST['rate']=$_POST['rate_2'];
+        $_POST['batch_no']=$_POST['batch_2'];
+        $_POST['mfg']=$_POST['exp_date_2'];
+        $_POST['batch']=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
         $crud->insert();
-    }if($_POST[qty_3]>0) {
-        $_POST[qty]=$_POST[qty_3];
-        $_POST[rate]=$_POST[rate_3];
-        $_POST[batch_no]=$_POST[batch_3];
-        $_POST[mfg]=$_POST[exp_date_3];
-        $_POST[batch]=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
+    }if($_POST['qty_3']>0) {
+        $_POST['qty']=$_POST['qty_3'];
+        $_POST['rate']=$_POST['rate_3'];
+        $_POST['batch_no']=$_POST['batch_3'];
+        $_POST['mfg']=$_POST['exp_date_3'];
+        $_POST['batch']=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
         $crud->insert();
-    }if($_POST[qty_4]>0) {
-        $_POST[qty]=$_POST[qty_4];
-        $_POST[rate]=$_POST[rate_4];
-        $_POST[batch_no]=$_POST[batch_4];
-        $_POST[mfg]=$_POST[exp_date_4];
-        $_POST[batch]=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
+    }if($_POST['qty_4']>0) {
+        $_POST['qty']=$_POST['qty_4'];
+        $_POST['rate']=$_POST['rate_4'];
+        $_POST['batch_no']=$_POST['batch_4'];
+        $_POST['mfg']=$_POST['exp_date_4'];
+        $_POST['batch']=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
         $crud->insert();
-    }if($_POST[qty_5]>0) {
-        $_POST[qty]=$_POST[qty_5];
-        $_POST[rate]=$_POST[rate_5];
-        $_POST[batch_no]=$_POST[batch_5];
-        $_POST[mfg]=$_POST[exp_date_5];
-        $_POST[batch]=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
+    }if($_POST['qty_5']>0) {
+        $_POST['qty']=$_POST['qty_5'];
+        $_POST['rate']=$_POST['rate_5'];
+        $_POST['batch_no']=$_POST['batch_5'];
+        $_POST['mfg']=$_POST['exp_date_5'];
+        $_POST['batch']=automatic_number_generate(20,$lc_lc_received_batch_split,'batch',$condition,'000');
         $crud->insert();
     }
-        $update=mysqli_query($conn, "Update purchase_receive set batch_split_status='CHECKED' where ".$unique."=".$_GET[$unique]." and id=".$_GET[line_id]." and item_id=".$_GET[item_id]."");
-        echo "<script>self.opener.location = '$page?".$unique."=$_GET[$unique]'; self.blur(); </script>";
+        $update=mysqli_query($conn, "Update purchase_receive set batch_split_status='CHECKED' where ".$unique."=".$$unique." and id=".$_GET['line_id']." and item_id=".$_GET['item_id']."");
+        echo "<script>self.opener.location = '$page?".$unique."=$$unique'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }
 
@@ -154,7 +154,7 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-if(isset($_POST[viewreport])) {
+if(isset($_POST['viewreport'])) {
     $resultss = "Select g.pr_no,g.pr_no as GRN_NO,g.rcv_Date as 'GRN_date',g.po_no as 'PO No',w.warehouse_name as 'Warehouse / CMU',v.vendor_name,(select concat(id,' : ',MAN_ID) from MAN_master where MAN_ID=g.MAN_ID) as 'MAN ID',FORMAT(SUM(g.amount),2) as 'GRN_amount',concat(u.fname,'<br>','at: ', g.entry_at) as GRN_by,g.status
 from 
 " . $table . " g,
@@ -184,6 +184,8 @@ g.status in ('UNCHECKED','MANUAL') group by g.pr_no
 order by g." . $unique . " DESC ";
 }
 $pquery=mysqli_query($conn, $resultss);
+
+$custom_grn_no = @$_GET['custom_grn_no'];
 ?>
 
 
@@ -211,8 +213,8 @@ td{
     require_once 'body_content_without_menu.php'; else :
     require_once 'body_content.php'; endif;  ?>
 
-<?php if(isset($_GET[custom_grn_no])){ ?>
-<?php $prm=find_all_field('purchase_receive_master','','custom_grn_no='.$_GET[custom_grn_no].''); ?>
+<?php if(isset($custom_grn_no)){ ?>
+<?php $prm=find_all_field('purchase_receive_master','','custom_grn_no='.$custom_grn_no.''); ?>
     <!-- input section-->
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
@@ -232,16 +234,18 @@ td{
                         </thead>
                         <tbody>
                         <?php
-                        $results="select b.*,concat(m.monthfullName,', ',b.year) as monthfullName from grn_service_receive b,monthname m where b.custom_grn_no = '".$_GET[custom_grn_no]."' and m.id=b.month";
+                        $results="select b.*,concat(m.monthfullName,', ',b.year) as monthfullName from grn_service_receive b,monthname m where b.custom_grn_no = '".$custom_grn_no."' and m.id=b.month";
                         $query=mysqli_query($conn, $results);
+                        $i=0;
+                        $ttotal_amt =0;
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row[id];
+                            $ids=$row['id'];
                             ?>
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?=$i;?></td>
-                                <td style="vertical-align:middle"><?=$row[service_details];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[monthfullName];?></td>
+                                <td style="vertical-align:middle"><?=$row['service_details'];?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['monthfullName'];?></td>
                                 <td align="center" style=" text-align:center"><?=number_format($row['qty']); ?></td>
                                 <td align="center" style=" text-align:center"><?=$row['rate']; ?></td>
                                 <td align="center" style="text-align:right"><?=number_format($row['amount'],2);?></td>
@@ -325,7 +329,7 @@ td{
                             <tr style="cursor:pointer" >
                                 <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
                                 <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
-                                <td style="vertical-align:middle;" onclick='OpenPopupCenter("<?=$page?>?<?=$unique?>=<?=$_GET[$unique]?>&item_id=<?=$row['item_id']?>&line_id=<?=$row['id']?>", "TEST!?", 850, 600)'><?=$row[item_name];?></td>
+                                <td style="vertical-align:middle;" onclick='OpenPopupCenter("<?=$page?>?<?=$unique?>=<?=$_GET[$unique]?>&item_id=<?=$row['item_id']?>&line_id=<?=$row['id']?>", "TEST!?", 850, 600)'><?=$row['item_name'];?></td>
                                 <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
                                 <td style=" text-align:right;vertical-align:middle;"><?=$row['qty']; ?></td>
                                 <td style=" text-align:center;vertical-align:middle;"><?=$row['rate']; ?></td>
@@ -377,7 +381,7 @@ td{
             <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
         </tr>
     </table>
-    <?=$crud->report_templates_with_status($resultss);?>
+    <?=$crud->report_templates_with_status($resultss,'');?>
 </form>
 
 

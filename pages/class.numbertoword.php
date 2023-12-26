@@ -20,10 +20,10 @@
 			    'Minus' => 'minus',
 			    'Exceptions' => array (
 			        '11'=> 'elf',
-			        '12'=> 'zwölf',
+			        '12'=> 'zwï¿½lf',
 			        '13'=> 'dreizehn',
 			        '14'=> 'viezehn',
-			        '15'=> 'fünfzehn',
+			        '15'=> 'fï¿½nfzehn',
 			        '16'=> 'sechzehn',    
 			        '17'=> 'siebzehn',    
 			        '18'=> 'achtzehn',    
@@ -35,7 +35,7 @@
 			        'zwei',
 			        'drei',
 			        'vier',
-			        'fünf',
+			        'fï¿½nf',
 			        'sechs',
 			        'sieben',
 			        'acht',
@@ -47,7 +47,7 @@
 			        array ('zwanzig',		self::bDontUseAndOne),
 			        array ('dreisig',		self::bDontUseAndOne),
 			        array ('vierzig',		self::bDontUseAndOne),
-			        array ('fünfzig',		self::bDontUseAndOne),
+			        array ('fï¿½nfzig',		self::bDontUseAndOne),
 			        array ('sechszig',		self::bDontUseAndOne),
 			        array ('siebzig',		self::bDontUseAndOne),
 			        array ('achtzig',		self::bDontUseAndOne),
@@ -134,7 +134,7 @@
 					'96'=> 'quatre-vingt-seize'
 				),
 				'Units' => array (
-					'zéro',
+					'zï¿½ro',
 					'un',
 					'deux',
 					'trois',
@@ -343,7 +343,7 @@
 	 $credit_amt = explode('.',$cr_amt);
 	 if($credit_amt[0]>0)
 	 echo 'Taka '.convertNumberToWordsForIndia($credit_amt[0]);
-	 if($credit_amt[1]>0){
+     if (isset($credit_amt[1]) && $credit_amt[1] > 0) {
 	 if($credit_amt[1]<10) $credit_amt[1] = $credit_amt[1]*10;
 	 echo  ' & '.convertNumberToWordsForIndia($credit_amt[1]).' paisa ';}
 	 echo ' Only';

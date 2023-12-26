@@ -223,8 +223,10 @@ $re_query=mysqli_query($conn, $rs);
 if(isset($_SESSION['initiate_credit_note']))
 {   $condition=$unique."=".$initiate_credit_note;
     $data=db_fetch_object($table_journal_master,$condition);
-    while (list($key, $value)=each($data))
-    { $$key=$value;}}
+    $array = (array)$data;
+    foreach ($array as $key => $value)
+    { $$key=$value;}
+}
 
 $voucher_date = @$voucher_date;
 $date = date('Y-m-d');

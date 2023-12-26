@@ -37,7 +37,7 @@ from
             $deleted = mysqli_query($conn, "DELETE from ".$journal_item." where  item_id=".$uncheckrow['item_id']." and tr_no=".$$unique." and sr_no=".$uncheckrow['id']." and tr_from='ProductionTransfer'");
             }
 
-        $_POST['checked_by']=$_SESSION[userid];
+        $_POST['checked_by']=$_SESSION['userid'];
         $_POST['checked_at']=time();
         //$_POST['verifi_status']="RETURNED";
         $crud->update($unique);
@@ -63,34 +63,34 @@ item_info i
             $qty=$_POST['received_qty'.$id];
             $cost_price=$_POST['cost_price'.$id];
             $_POST['ji_date'] = date('Y-m-d');
-            $_POST['item_id'] = $uncheckrow[item_id];
-            $_POST['warehouse_id'] = $uncheckrow[relevant_warehouse];
-            $_POST['relevant_warehouse'] = $uncheckrow[warehouse_id];
+            $_POST['item_id'] = $uncheckrow['item_id'];
+            $_POST['warehouse_id'] = $uncheckrow['relevant_warehouse'];
+            $_POST['relevant_warehouse'] = $uncheckrow['warehouse_id'];
             $_POST['item_in'] = $_POST['received_qty'.$id];
             $_POST['item_price'] = $cost_price;
             $_POST['total_amt'] = $_POST['received_qty'.$id]*$cost_price;
             $_POST['tr_from'] = 'ProductionReceived';
-            $_POST['batch'] = $uncheckrow[lot_number];
-            $_POST['lot_number'] = $uncheckrow[batch];
-            $_POST['expiry_date'] = $uncheckrow[expiry_date];
-            $_POST['custom_no'] = $uncheckrow[custom_pi_no];
+            $_POST['batch'] = $uncheckrow['lot_number'];
+            $_POST['lot_number'] = $uncheckrow['batch'];
+            $_POST['expiry_date'] = $uncheckrow['expiry_date'];
+            $_POST['custom_no'] = $uncheckrow['custom_pi_no'];
             $_POST['tr_no'] = $_GET[$unique];
-            $_POST['sr_no'] = $uncheckrow[id];
-            $_POST['entry_by'] = $_SESSION[userid];
+            $_POST['sr_no'] = $uncheckrow['id'];
+            $_POST['entry_by'] = $_SESSION['userid'];
             $_POST['entry_at'] = date('Y-m-d H:s:i');
-            $_POST[ip]=$ip;
+            $_POST['ip']=$ip;
             if($qty>0) {
                 $crud = new crud($journal_item);
                 $crud->insert();
             }
-            $total_Rcvd=find_a_field('journal_item','SUM(item_in)','item_id='.$uncheckrow[item_id].' and tr_from="ProductionReceived" and tr_no='.$$unique);
-            $up_details="UPDATE ".$table_details." SET total_unit_received='$total_Rcvd' where item_id=".$uncheckrow[item_id]."";
+            $total_Rcvd=find_a_field('journal_item','SUM(item_in)','item_id='.$uncheckrow['item_id'].' and tr_from="ProductionReceived" and tr_no='.$$unique);
+            $up_details="UPDATE ".$table_details." SET total_unit_received='$total_Rcvd' where item_id=".$uncheckrow['item_id']."";
         }
         $jv=next_journal_voucher_id();
         $rev_Date=date('Y-m-d');
-        if (($_POST[ledger_1] > 0) && (($_POST[ledger_2] && $_POST[dr_amount_1]) > 0) && ($_POST[cr_amount_2] > 0)) {
-            add_to_journal_new($rev_Date, $proj_id, $jv, $date, $_POST[ledger_1], $_POST[narration_1], $_POST[dr_amount_1], 0, ProductionReceived, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
-            add_to_journal_new($rev_Date, $proj_id, $jv, $date, $_POST[ledger_2], $_POST[narration_1], 0, $_POST[dr_amount_1], ProductionReceived, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+        if (($_POST['ledger_1'] > 0) && (($_POST['ledger_2'] && $_POST['dr_amount_1']) > 0) && ($_POST['cr_amount_2'] > 0)) {
+            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
+            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['dr_amount_1'], 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
         }
         $up_master="UPDATE ".$table." SET receive_date='$rev_Date' where ".$unique."=".$$unique."";
         $update_table_master=mysqli_query($conn, $up_master);
@@ -150,7 +150,7 @@ order by m.".$unique." DESC ";
 }
 $received_from_warehouse=find_a_field('warehouse','warehouse_name','warehouse_id='.$pi_master_warehouse_from);
 $narration='FG Received from '.$received_from_warehouse.', STONO#'.$$unique.', Remarks # '.$pi_master_remarks;
-
+$warehouse_id = @$_POST['warehouse_id'];
 ?>
 
 <?php require_once 'header_content.php'; ?>
@@ -202,7 +202,7 @@ item_info i
  i.item_id=d.item_id  and 
  d.tr_no=".$$unique." and tr_from='ProductionTransfer'
  order by d.id";
-                        $pdetails=mysqli_query($conn, $rs);
+                        $pdetails=mysqli_query($conn, $rs);$js=0;$amountqty=0;$cow=0;
                         while($data=mysqli_fetch_object($pdetails)){
                             $id=$data->id;
                             $total_unit=$data->item_ex;
@@ -317,7 +317,7 @@ item_info i
                 <td style="width:10px; text-align:center"> -</td>
                 <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="warehouse_id" id="warehouse_id">
                         <option selected></option>
-                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_POST['warehouse_id']);?>
+                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                     </select></td>
                 <td style="padding: 10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Received STO</button></td>
             </tr></table>

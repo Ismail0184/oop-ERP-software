@@ -8,7 +8,7 @@ $status = 'UNCHECKED';
 $page="po_status.php";
 $print_page="po_print_view.php";
 $crud      =new crud($table);
-$$unique=$_GET[$unique];
+$$unique=@$_GET[$unique];
 if (isset($_POST['reprocess'])) {
 
         $_POST['status'] = 'MANUAL';
@@ -19,13 +19,14 @@ if (isset($_POST['reprocess'])) {
         echo "<script>window.close(); </script>";
     }
 $po_master=find_all_field(''.$table.'','',''.$unique.'='.$$unique.'');	
-$GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
+$GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$$unique);
 
 if(isset($_POST['viewreport'])){
     $res='select  
     a.po_no,
     a.vendor_id, 
     a.po_no, 
+    a.return_comments,
     a.exim_status as type, 
     a.po_date as Work_order_Date, 
     v.vendor_name, 
@@ -76,6 +77,16 @@ if(isset($_POST['viewreport'])){
     a.status in ("MANUAL","CANCELED","UNCHECKED") 
     order by a.po_no desc';
     }
+
+$PostFDate = @$_POST['f_date'];
+$PostTDate = @$_POST['t_date'];
+
+$cash_discount = @$cash_discount;
+$tax_ait = @$tax_ait;
+$asf = @$asf;
+$transport_bill = @$transport_bill;
+$labor_bill = @$labor_bill;
+$tax = @$tax;
 	?>
 
 
@@ -88,9 +99,9 @@ if(isset($_POST['viewreport'])){
 
 
 <?php 
- if(isset($_GET[$unique])){ 
+ if(isset($$unique)){
  require_once 'body_content_without_menu.php'; } else {  
- require_once 'body_content.php'; } if(isset($_GET[$unique])){ ?>
+ require_once 'body_content.php'; } if(isset($$unique)){ ?>
      <!-------------------list view ------------------------->
      <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
      <div class="col-md-12 col-sm-12 col-xs-12">
@@ -119,7 +130,7 @@ if(isset($_POST['viewreport'])){
 				 item_info i,warehouse w
 				  where td.item_id=i.item_id and
 				  td.warehouse_id=w.warehouse_id and  				  
-				  td.'.$unique.'='.$_GET[$unique].'');
+				  td.'.$unique.'='.$_GET[$unique].'');$i = 0;$total=0;
 				   while($req_data=mysqli_fetch_object($res)){
 				   ?>
                    <tr>
@@ -191,7 +202,7 @@ if(isset($_POST['viewreport'])){
                                 </table>
                                 
                                 <?php if($GET_status=='UNCHECKED' || $GET_status=='MANUAL' || $GET_status=='CANCELED'){
-					if($po_master->entry_by==$_SESSION[userid]){ ?>
+					if($po_master->entry_by==$_SESSION['userid']){ ?>
                         <p align="center">
                             <button style="font-size:12px" type="submit" name="reprocess" id="reprocess" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Re-process?");'>Re-process the Work Order</button>
                             <!--button style="float: right; margin-right: 1%; font-size:12px" type="submit" name="checked" id="checked" class="btn btn-primary" onclick='return window.confirm("Are you confirm?");'>Checked & Completed</button-->
@@ -206,13 +217,13 @@ if(isset($_POST['viewreport'])){
  <?php } ?>
 
 
-<?php if(!isset($_GET[$unique])){ ?>
+<?php if(!isset($$unique)){ ?>
 <form action="" name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px;"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px;"  value="<?=($PostFDate!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($PostTDate!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Report</button></td>
             </tr>
         </table>
@@ -240,7 +251,7 @@ if(isset($_POST['viewreport'])){
                 <tbody>
 
 <? 
-$qqq=mysqli_query($conn, $res);
+$qqq=mysqli_query($conn, $res); $i = 0;
 while($data=mysqli_fetch_object($qqq)){
     $i=$i+1;
 	$department=$data->Created_By_Department;

@@ -7,7 +7,7 @@ $jv_no=$_GET['jv_no'];
 $bill_no=$_REQUEST['bill_no'];
 $bill_date=$_REQUEST['bill_date'];
 $tdates = date("Y-m-d");
-$day = date('l', strtotime($idatess));
+$day = date('l', strtotime($tdates));
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $timess = $dateTime->format("d-m-y  h:i A");
 
@@ -32,7 +32,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 
 	$jv=next_journal_voucher_id();
 	if(prevent_multi_submit()) {
-	sec_journal_journal($jv_no,$jv,'Purchase',$c_no,$c_date,$create_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
+	sec_journal_journal($jv_no,$jv,'Purchase',0,0,0,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
     unset($_POST);
 	}
 }
@@ -55,7 +55,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 	$sssql = 'delete from journal where group_for="'.$_SESSION['usergroup'].'" and tr_from ="Purchase" and tr_no="'.$prold->pr_no.'"';
 	mysqli_query($conn, $sssql);
 	$jv=next_journal_voucher_id();
-    sec_journal_journal($jv_no,$jv,'Purchase',$c_no,$c_date,$create_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
+    sec_journal_journal($jv_no,$jv,'Purchase',0,0,0,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
 
 }
 
@@ -142,27 +142,18 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
             <td width="83%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 
               <tr>
-
                 <td align="center" class="title">
-
-
-
-				<?=$_SESSION['company_name']?>                </td>
-
+				<?=$_SESSION['company_name']?>
+                </td>
               </tr>
 
               <tr>
-
                 <td align="center"><?=$address?></td>
-
               </tr>
 
               <tr>
-
                 <td align="center"><table  class="debit_box" border="0" cellspacing="0" cellpadding="0">
-
                     <tr>
-
                       <td>&nbsp;</td>
 
                       <td width="325"><div align="center">JOURNAL VOUCHER</div></td>

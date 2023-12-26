@@ -8,7 +8,7 @@ $table_details = 'lc_pi_details';
 $details_unique = 'pi_id';
 $page='LC_view_PI.php';
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 
 if(prevent_multi_submit()) {
 
@@ -43,7 +43,7 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-
+$GetID = @$_GET['id'];
 $rs=mysqli_query($conn, "Select 
 d.qty,
 d.amount,
@@ -58,7 +58,8 @@ lc_pi_master m
  m.id=d.pi_id and 
  d.item_id=i.item_id and 
  m.currency=cu.id and 
- d.pi_id='".$_GET['id']."' group by d.id,d.fg_rate order by d.fg_id");
+ d.pi_id='".$GetID."' group by d.id,d.fg_rate order by d.fg_id");
+$GetPiID =  @$_GET['pi_id'];
 ?>
 
 
@@ -91,6 +92,9 @@ lc_pi_master m
                         </thead>
                         <tbody>
                         <?php
+                        $js = 0;
+                        $amounttotal = 0;
+                        $qtytotal = 0;
                         while($uncheckrow=mysqli_fetch_object($rs)){
                             $js=$js+1; ?>
                             <tr>
@@ -111,7 +115,7 @@ lc_pi_master m
                             <td style="text-align: right"><?=number_format($amounttotal,2)?>, <?=$currency;?></td></tr>
                         </tbody></table>
                     <?php
-                    $PCOUNT = find_a_field('lc_lc_master', 'COUNT(id)', 'pi_id=' . $_GET[pi_id] . '');
+                    $PCOUNT = find_a_field('lc_lc_master', 'COUNT(id)', 'pi_id=' . $GetPiID . '');
                     if ($PCOUNT > 0) {
                         ?>
                         <p><h5 style="text-align: center; color: black; font-style: italic; color: red "><i><?=$PCOUNT;?>, LC has been created under this Proforma Invoice!!</i></h5></p>
@@ -130,9 +134,9 @@ lc_pi_master m
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date">
+                    <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date">
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d');?>" required   name="t_date"></td>
+                <td><input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d');?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" name="viewreport"  class="btn btn-primary" style="font-size: 12px">View Available PI</button></td>
             </tr></table>
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -155,8 +159,8 @@ lc_pi_master m
                         <tbody>
 
                         <?php
-                        if(isset($_POST[viewreport])){
-                            $con.= ' and a.pi_issue_date BETWEEN  "'.$_POST[f_data].'" and "'.$_POST[t_date]. '"';
+                        if(isset($_POST['viewreport'])){
+                            $con.= ' and a.pi_issue_date BETWEEN  "'.$_POST['f_data'].'" and "'.$_POST['t_date']. '"';
                             $res=mysqli_query($conn, 'select a.id,a.id as ID,a.pi_no,a.pi_issue_date,a.entry_at,c.buyer_name as Party_Name,u.fname,cu.code,a.status, (select sum(amount) from lc_pi_fg_details where pi_id=a.id ) as amount
 							 from 
 							 lc_pi_master a,
@@ -179,8 +183,9 @@ lc_pi_master m
                             a.entry_by = u.user_id and 
                             a.currency=cu.id');
                         }
-                            while($data=mysqli_fetch_object($res)){
-                                ?>
+                        $i = 0;
+                        $totalamt = 0;
+                            while($data=mysqli_fetch_object($res)){?>
                                 <tr>
                                     <td style="cursor: pointer" onclick="DoNavPOPUP('<?=$data->id?>', 'TEST!?', 900, 600)"><?=$i=$i+1;?></td>
                                     <td style="cursor: pointer" onclick="DoNavPOPUP('<?=$data->id?>', 'TEST!?', 900, 600)"><?=$data->ID;?></td>

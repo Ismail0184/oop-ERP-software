@@ -14,7 +14,7 @@ $cheq_no = @$_POST["cheq_no"];
 $cheq_date = strtotime(@$_POST["cheq_date"]);
 $date=@$_POST["vdate"];
 $now=time();
-
+$page = 'acc_voucher_view_popup.php';
 if($v_type=='receipt'){$voucher_name='RECEIPT VOUCHER';$vtype='receipt';$tr_from='receipt';$dtype='receiptdate';$olddtype='receipt_date';}
 elseif($v_type=='payment'){$voucher_name='PAYMENT VOUCHER';$vtype='payment';$tr_from='payment';$dtype='paymentdate';$olddtype='payment_date';}
 elseif($v_type=='Purchase'){$voucher_name='Purchase VOUCHER';$vtype='secondary_journal';$tr_from='Purchase';$dtype='jvdate';$olddtype='jv_date';}
@@ -271,7 +271,7 @@ $sql1."<br>";
             $datetime2 = date_create(date('Y-m-d'));
             $interval = date_diff($datetime1, $datetime2);
             $v_d=$interval->format('%a');
-            if($_SESSION[userlevel]=='2'){
+            if($_SESSION['userlevel']=='2'){
                 if($v_d>$access_days){ echo '<h6 style="text-align: center; color:red">Access Restricted.</h6>';} else {?>
                     <tr><td colspan="6"><textarea style="float: left; margin-left:1%; font-size: 11px; width: 250px" name="note" id="note" placeholder="Type the reason for the update or deletion" ></textarea></td></tr>
                     <tr><td colspan="2"><button style="float: left; margin-left:1%; font-size: 11px" type="submit" name="delete" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Completed?");'>Delete Voucher</button></td>
@@ -300,7 +300,7 @@ $sql1."<br>";
                 dr_total = dr_total + dr_amt_new2;}
             <?
             for($i=1;$i<=$pi;$i++){
-                if($entry[$i]>0){
+                if(@$entry[$i]>0){
                     echo "cr_total = cr_total+((document.getElementById('cr_amt_".$entry[$i]."').value)*1);";
                     echo "dr_total = dr_total+((document.getElementById('dr_amt_".$entry[$i]."').value)*1);";
                 }} ?>

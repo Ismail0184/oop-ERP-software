@@ -104,7 +104,7 @@ if(isset($_POST['viewreport'])){
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Goods / Services Received</button></td>
             </tr></table>
                 
-<?=$crud->report_templates_with_status($sql);?>  
+<?=$crud->report_templates_with_status($sql,'');?>
 <?php 
 $srn=find_a_field('purchase_receive_master','COUNT(custom_grn_no)','grn_inventory_type in ("Service") and status in ("CHECKED")');
 if($srn>0): ?>

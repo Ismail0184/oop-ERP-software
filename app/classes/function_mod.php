@@ -1390,7 +1390,7 @@ function unauthorised_page_tried_to_view($page_id,$url)
 	    global $conn;
 		global $ip;
         $tdates = date("Y-m-d");
-        $day = date('l', strtotime($idatess));
+        $day = date('l', strtotime($tdates));
         $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
         $timess = $dateTime->format("d-m-y  h:i A");
  $sql="INSERT INTO `unauthorised_page_tried_to_view` ( `page_id`, `url`, `user_id`, `date`, `time`, `ip`, `section_id`,`company_id`) VALUES ('$page_id', '$url', '".$_SESSION['userid']."', '$tdates','$timess','$ip','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')";

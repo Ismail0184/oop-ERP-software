@@ -88,7 +88,7 @@ require_once 'class.numbertoword.php';
 
 
 $title='Voucher View';
-$proj_id=$_SESSION['proj_id'];
+$proj_id=@$_SESSION['proj_id'];
 $vtype= strtolower($_REQUEST['v_type']);
 if($vtype=='receipt'){$voucher_name='RECEIPT VOUCHER';$vtypes='receipt';$vid='receipt_no';}
 elseif($vtype=='purchase'){$voucher_name='PURCHASE VOUCHER';$vtypes='secondary_journal';}
@@ -99,13 +99,13 @@ else{$vtype=='coutra';$voucher_name='CONTRA VOUCHER';$vtypes='contra';}
 
 $no=$vtype."_no";
 $vdate=$vtype."_date";
-$vo_no=$_GET[vo_no];
+$vo_no=$_GET['vo_no'];
 $address=getSVALUE('project_info','proj_address',"where 1");
-
+$cccode = 0;
 $pi=0;
 $cr_amt=0;
 $dr_amt=0;
-$sql2="SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, ".$vtype." b where b.".$vid."='$_GET[vo_no]' and entry_status='MANUAL' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
+$sql2="SELECT a.ledger_name,a.ledger_group_id,b.* FROM accounts_ledger a, ".$vtype." b where b.".$vid."='".$_GET['vo_no']."' and entry_status='MANUAL' and a.ledger_id=b.ledger_id order by b.dr_amt desc,b.id";
 ?>
 
 
@@ -132,8 +132,9 @@ function hide()
 	    <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td width="1%">
-			<? $path='../logo/'.$_SESSION['proj_id'].'.jpg';
-			if(is_file($path)) echo '<img src="'.$path.'" height="80" />';?>			</td>
+			<? $path='';
+			if(is_file($path)) echo '<img src="'.$path.'" height="80" />';?>
+            </td>
             <td width="83%"><table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td align="center" class="title"><?=$_SESSION['company_name'];?></td>
@@ -152,23 +153,11 @@ function hide()
               </tr>
             </table></td>
           </tr>
-
-
-
         </table></td>
-
 	    </tr>
-
-
-
     </table>
-
     </div></td>
-
   </tr>
-
-
-  
 
   <tr>
     <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -189,55 +178,31 @@ if(is_file($attachment)){?>
 
 <? }?>
 </td>
-
-        </tr>
-
+      </tr>
       <tr>
-
         <td class="tabledesign_text"> Voucher No  : <?=$vo_no?></td>
-
-        <td class="tabledesign_text">Voucher Date : <?=$_GET[v_date];?></td>
-
+        <td class="tabledesign_text">Voucher Date : <?=$_GET['v_date'];?></td>
       </tr>
-
-    </table></td>
-
+    </table>
+    </td>
   </tr>
-
-  
-
   <tr>
-
     <td><? if($cccode>0){?>CC CODE/PROJECT NAME: <? echo getSVALUE('cost_center','center_name',"where id='$cccode'")?><? }?></td>
-
   </tr>
 
   <tr>
-
-    <td><table width="100%" border="0" cellpadding="0" cellspacing="0" bordercolor="#000000" class="tabledesign">
-
+    <td>
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" bordercolor="#000000" class="tabledesign">
       <tr>
-
         <td width="30%" rowspan="2" align="center">A/C Ledger Head</td>
-
         <td width="30%" rowspan="2" align="center">Particulars</td>
-
         <td colspan="2">Amount (Taka) </td>
-
       </tr>
-
       <tr>
-
         <td width="9%">Debit </td>
-
         <td width="9%">Credit</td>
-
       </tr>
-
 	  <?
-
-
-
 $data2=mysqli_query($conn, $sql2);
 			  while($info=mysqli_fetch_object($data2)){ $pi++;
 			  $cr_amt=$cr_amt+$info->cr_amt;
@@ -270,110 +235,56 @@ $data2=mysqli_query($conn, $sql2);
   </tr>
   <tr>
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>Amount in Word : 	 (<?
-
 	 echo convertNumberCustom($cr_amt);
-
 	 ?>)
-
 	 </td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;<h3 style="color:red">You are trying to print an unauthorized Voucher. Please wait until approval!!</h3></td>
-
   </tr>
 
   <tr>
-
     <td class="tabledesign_text"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-
       <tr>
-
-        
-
         <td align="center" valign="bottom"><b>
-
           <?=$user_name?>
-
         </b></td>
-
-        
-
         <td align="center" valign="bottom">&nbsp;</td>
-
         <td align="center" valign="bottom">&nbsp;</td>
-
         <td align="center" valign="bottom">&nbsp;</td>
-
         <td align="center" valign="bottom">&nbsp;</td>
-
       </tr>
 
       <tr>
-
         <td><div align="center">.........................</div></td>
-
         <td><div align="center">.........................</div></td>
-
         <td><div align="center">.........................</div></td>
-
         <td><div align="center">.........................</div></td>
-
         <td><div align="center">.........................</div></td>
-
       </tr>
 
       <tr>
-
-        
-
         <td><div align="center">Prepared by Accountant </div></td>
-
-       
-
         <td><div align="center">Checked by </div></td>
-
         <td><div align="center">Head of Accounts</div></td>
-
         <td><div align="center">Head Of Operations</div></td>
-
         <td><div align="center">COO</div></td>
-
       </tr>
-
-    </table></td>
-
+    </table>
+    </td>
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
 </table>
-
 </body>
-
 </html>
-

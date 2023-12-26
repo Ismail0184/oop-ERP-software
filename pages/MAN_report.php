@@ -13,13 +13,13 @@ $page='MAN_report.php';
 $re_page='Incoming_Material_Received.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-$masterDATA=find_all_field(''.$table.'','','id='.$_GET[$unique] );
+$$unique = @$_GET[$unique];
+$masterDATA=find_all_field(''.$table.'','','id='.$$unique );
 if(prevent_multi_submit()){
 	if(isset($_POST['reprocess']))
     {   $_POST['status']='MANUAL';
         $crud->update($table);
-        $_SESSION['m_id']=$_GET[$unique];
+        $_SESSION['m_id']=$$unique;
         $_SESSION['initiate_man_documents']=find_a_field(''.$table.'','MAN_ID',''.$unique.'='.$_GET[$unique].'');
         $type=1;
         echo "<script>self.opener.location = '$re_page'; self.blur(); </script>";
@@ -55,13 +55,13 @@ $results="Select i.item_id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name
  srd.".$unique_details."=".$$unique." order by srd.id";
 
 
-$GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
-if(isset($_POST[viewreport])){
-    if($_POST['vendor_code']>0) 			 $vendor_code=$_POST['vendor_code'];
-    if(isset($vendor_code))				{$vendor_code_CON=' and m.vendor_code='.$vendor_code;}
+$GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$$unique);
+if(isset($_POST['viewreport'])){
+    if(@$_POST['vendor_code']>0) 			 $vendor_code=$_POST['vendor_code'];
+    if(isset($vendor_code))				{$vendor_code_CON=' and m.vendor_code='.$vendor_code;} else {$vendor_code_CON='';}
 
-    if($_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
-    if(isset($warehouse_id))				{$warehouse_id_CON=' and m.warehouse_id='.$warehouse_id;}
+    if(@$_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
+    if(isset($warehouse_id))				{$warehouse_id_CON=' and m.warehouse_id='.$warehouse_id;} else {$warehouse_id_CON='';}
 
 $sql="Select m.id,m.id as ID,m.MAN_ID as MAN_NO,m.man_date as date,w.warehouse_name as warehouse,v.vendor_name,m.remarks,m.return_resone,m.delivary_challan,m.VAT_challan,concat(u.fname,' - ',m.entry_at) as entry_by,m.status
 from 
@@ -74,7 +74,7 @@ vendor v
   m.entry_by=u.user_id and 
  w.warehouse_id=m.warehouse_id and  
  v.vendor_id=m.vendor_code and 
- m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' ".$vendor_code_CON.$warehouse_id_CON." order by m.".$unique." DESC ";
+ m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by m.".$unique." DESC ";
 } else {
 $sql="Select m.id,m.id as ID,m.MAN_ID as MAN_NO,m.man_date as date,w.warehouse_name as warehouse,v.vendor_name,m.remarks,m.return_resone,m.delivary_challan,m.VAT_challan,concat(u.fname,' - ',m.entry_at) as entry_by,m.status
 from 
@@ -95,6 +95,10 @@ $sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),
 							warehouse w  WHERE  upp.warehouse_id=w.warehouse_id and 
 							 upp.user_id=".$_SESSION['userid']." and upp.status>0					 
 							  order by w.warehouse_id";
+
+$PostFDate = @$_POST['f_date'];
+$PostTDate = @$_POST['t_date'];
+$COUNT_details_data = 0;
 ?>
 
 
@@ -130,14 +134,14 @@ $sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),
     <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
         <table align="center" style="width: 50%;">
             <tr>
-                <td><input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required name="f_date" class="form-control col-md-7 col-xs-12" >
+                <td><input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($PostFDate!='')? $_POST['f_date'] : date('Y-m-01') ?>" required name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px;height: 25px" value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px;height: 25px" value="<?=($PostTDate!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View MAN</button></td>
             </tr></table>
             </form>
-<?=$crud->report_templates_with_status($sql);?>                
+<?=$crud->report_templates_with_status($sql,'');?>
 <?php endif; ?>
 <?=$html->footer_content();?> 

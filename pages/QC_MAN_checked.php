@@ -11,9 +11,9 @@ $page = 'QC_MAN_checked.php';
 $re_page = 'Incoming_Material_Received.php';
 $ji_date = date('Y-m-d');
 $crud = new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl = "<meta http-equiv='refresh' content='0;$page'>";
-$masterDATA = find_all_field('purchase_return_master', '', 'id=' . $_GET[$unique]);
+$masterDATA = find_all_field('purchase_return_master', '', 'id=' . $$unique);
 if(isset($_POST['returned']))
 {   $up_master="UPDATE ".$table." SET status='RETURNED' where ".$unique."=".$$unique."";
     $update_table_master=mysqli_query($conn, $up_master);
@@ -181,7 +181,6 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
 
 
 
-
     <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
         <table align="center" style="width: 50%;">
             <tr>
@@ -204,38 +203,38 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
             </div>
 
             <div class="x_content">
-                                    <table style="width:100%; font-size: 11px" class="table table-striped table-bordered">
-                                        <thead>
-                                        <tr>
-                                            <th style="width: 2%; vertical-align: middle">#</th>
-                                            <th style="vertical-align: middle">MAN ID</th>
-                                            <th style="vertical-align: middle">MAN NO</th>
-                                            <th style="width:8%;vertical-align: middle">MAN Date</th>
-                                            <th style="vertical-align: middle">Warehouse</th>
-                                            <th style="vertical-align: middle">Vendor Name</th>
-                                            <th style="vertical-align: middle">Remarks</th>
-                                            <th style="vertical-align: middle">Delivary<br>Challan</th>
-                                            <th style="vertical-align: middle">VAT<br>Challan</th>
-                                            <th style="text-align: center;vertical-align: middle">Entry By</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php while ($rows=mysqli_fetch_array($pquery)){ ?>
-                                            <tr style="font-size:11px; cursor: pointer">
-                                                <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[id];?></a></td>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[MAN_ID];?></a></td>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[man_date]; ?></td>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[warehouse_name];?></td>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[vendor_name];?></td>
-                                                <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[remarks];?></td>
-                                                <td><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[delivary_challan];?></strong></u></a></td>
-                                                <td style="text-align:left"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[VAT_challan];?></strong></u></a></td>
-                                                <td style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[fname];?></td>
-                                            </tr>
-                                        <?php } ?>
-                                        </tbody>
-                                    </table>
+                <table style="width:100%; font-size: 11px" class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th style="width: 2%; vertical-align: middle">#</th>
+                        <th style="vertical-align: middle">MAN ID</th>
+                        <th style="vertical-align: middle">MAN NO</th>
+                        <th style="width:8%;vertical-align: middle">MAN Date</th>
+                        <th style="vertical-align: middle">Warehouse</th>
+                        <th style="vertical-align: middle">Vendor Name</th>
+                        <th style="vertical-align: middle">Remarks</th>
+                        <th style="vertical-align: middle">Delivery<br>Challan</th>
+                        <th style="vertical-align: middle">VAT<br>Challan</th>
+                        <th style="text-align: center;vertical-align: middle">Entry By</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php while ($rows=mysqli_fetch_array($pquery)){ ?>
+                        <tr style="font-size:11px; cursor: pointer">
+                            <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['id'];?></a></td>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['MAN_ID'];?></a></td>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['man_date']; ?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['warehouse_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['vendor_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['remarks'];?></td>
+                            <td><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['delivary_challan'];?></strong></u></a></td>
+                            <td style="text-align:left"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['VAT_challan'];?></strong></u></a></td>
+                            <td style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['fname'];?></td>
+                        </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

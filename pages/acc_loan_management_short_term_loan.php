@@ -7,7 +7,7 @@ $table="acc_short_term_loan";
 $table_details="acc_short_term_loan_details";
 $page="acc_loan_management_short_term_loan.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $title='Create Short Term Loan';
 $find_date = date('Y-m-d');
 $maturity_date_get = find_a_field('acc_short_term_loan_details','maturity_date','maturity_date="'.$find_date.'"');
@@ -19,8 +19,8 @@ while($data=mysqli_fetch_object($query)){
     $interest_amount = (($ledger_balance/100)*$data->interest_rate)/360*1;
     $jv=next_journal_voucher_id();
     $narration = $data->interest_rate."% Interest on loan of ".$data->bank_name." ".$data->stl_no;
-    add_to_journal_new($data->jv_date, $proj_id, $jv, $date, $data->expenses_head, $narration, $interest_amount, 0,'interest_on_Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-    add_to_journal_new($data->jv_date, $proj_id, $jv, $date, $data->interest_ledger, $narration, 0, $interest_amount,'interest_on_Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
+    add_to_journal_new($data->jv_date, $proj_id, $jv, 0, $data->expenses_head, $narration, $interest_amount, 0,'interest_on_Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0,'');
+    add_to_journal_new($data->jv_date, $proj_id, $jv, 0, $data->interest_ledger, $narration, 0, $interest_amount,'interest_on_Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0,'');
     $up = mysqli_query($conn, "Update acc_short_term_loan_details set journal_status='created' where maturity_date between '0000-00-00' and '".$find_date."'");
 
 
@@ -117,10 +117,10 @@ if(prevent_multi_submit()){
             $interest_amounts = ((($_POST['loan_amount']/100)*$_POST['interest_rate'])/360*1);
             $interest_narration = $_POST['interest_rate'].'% Interest on loan of '.$_POST['bank_name'].', STL No # '.$_SESSION['sub_sub_name'];
             if (($_POST['ledger_id'] > 0) && ($_POST['loan_amount'])) {
-                add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['ledger_id'], $narration, $_POST['loan_amount'], 0,'Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-                add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['STL_ledger'], $narration, 0, $_POST['loan_amount'],'Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-                //add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['expenses_head'], $interest_narration, $interest_amounts, 0,'interest_on_Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
-                //add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['interest_ledger'], $interest_narration, 0, $interest_amounts,'interest_on_Loan','', $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO']);
+                add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['ledger_id'], $narration, $_POST['loan_amount'], 0,'Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0,'');
+                add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['STL_ledger'], $narration, 0, $_POST['loan_amount'],'Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0,'');
+                //add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['expenses_head'], $interest_narration, $interest_amounts, 0,'interest_on_Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0);
+                //add_to_journal_new($_POST['date'], $proj_id, $jv, $date, $_POST['interest_ledger'], $interest_narration, 0, $interest_amounts,'interest_on_Loan','', $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, 0);
                 $up = mysqli_query($conn, "Update acc_short_term_loan_details set journal_status='created' where maturity_date='".$_POST['date']."'");
 
             }
@@ -128,9 +128,9 @@ if(prevent_multi_submit()){
             for($i=0;$i<$_POST['days'];$i++)
             {
                 $_POST['installment_no'] = $i+1;
-                $_POST['date'] = $_POST['date'];
+                $_POST['date'] = @$_POST['date'];
                 $_POST['uid']=find_a_field('acc_short_term_loan','id','stl_no="'.$_POST['stl_no'].'"');
-                $_POST['interest_effective_date']=$_POST['interest_effective_date'];
+                $_POST['interest_effective_date']=@$_POST['interest_effective_date'];
                 $_POST['maturity_date']=date('Y-m-d', strtotime($_POST['interest_effective_date'] .' '.$i.' days'));
                 $_POST['amount']=((($_POST['loan_amount']/100)*$_POST['interest_rate'])/360)*1;
                 $crud      =new crud($table_details);
@@ -177,6 +177,19 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}
 }
+$ledger_id = @$ledger_id;
+$expenses_head = @$expenses_head;
+$bank_name = @$bank_name;
+$stl_no = @$stl_no;
+$loan_amount = @$loan_amount;
+$interest_rate = @$interest_rate;
+$interest_on_late_payment = @$interest_on_late_payment;
+$date = @$date;
+$interest_effective_date = @$interest_effective_date;
+$days = @$days;
+$remarks = @$remarks;
+$interest_effective_date = @$interest_effective_date;
+
 $res="SELECT a.id,a.id as uid,a.stl_no,l.ledger_name as bank_name,(select ledger_name from accounts_ledger where ledger_id=a.STL_ledger) as STL_ledger,(select ledger_name from accounts_ledger where ledger_id=a.interest_ledger) as interest_ledger,a.loan_amount,a.interest_rate,a.interest_on_late_payment,a.date,a.maturity_date,a.remarks,a.status as status from ".$table." a,accounts_ledger l where a.ledger_id=l.ledger_id";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
@@ -332,7 +345,7 @@ while($data=mysqli_fetch_object($result)){
                                     </div>
                                 <?php endif;?>
                                 <hr>
-                                <?php if($_GET[$unique]):  ?>
+                                <?php if(@$_GET[$unique]):  ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <?php
@@ -353,7 +366,7 @@ while($data=mysqli_fetch_object($result)){
                                     </div>
                                 <?php endif; ?>
                             </form>
-                            <?php if($_GET[$unique]):  ?>
+                            <?php if(@$_GET[$unique]):  ?>
                             <form action="" method="post">
 
                                     <div class="form-group" style="margin-left:40%">
@@ -372,7 +385,6 @@ while($data=mysqli_fetch_object($result)){
                 <?php if(!isset($_GET[$unique])): ?>
             </div>
         <?php endif; ?><?php if(!isset($_GET[$unique])):?>
-                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
             <?php endif; ?>
             <?=$html->footer_content();mysqli_close($conn);?>
-            <?php ob_end_flush();ob_flush(); ?>

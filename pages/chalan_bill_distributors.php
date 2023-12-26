@@ -229,7 +229,7 @@ font-size: 14px
                           $credit_amt = explode('.',$gnet_tot);
                           if($credit_amt[0]>0){
                               echo convertNumberToWordsForIndia($credit_amt[0]);}
-                          if($credit_amt[1]>0){
+                          if (isset($credit_amt[1]) && $credit_amt[1] > 0) {
                               echo  ' & Paisa '.convertNumberToWordsForIndia($credit_amt[1]);}
                           echo ' Only';
                           ?>
