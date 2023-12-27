@@ -2,7 +2,6 @@
 <?=$html->header_content('Dashboard');?>
 <?php require_once 'body_content.php'; ?>
 
-
 <div class="col-md-12 col-sm-12 col-xs-12">
                   <div class="x_panel">
                   <div class="x_title">

@@ -145,7 +145,7 @@ if(isset($_POST['cancel']))
 }
 
 if(isset($_POST['confirm'])){
-    $commission_amount=$_POST['commission_amount'];
+    $commission_amount=@$_POST['commission_amount'];
     unset($_POST);
     $_POST['commission_amount']=$commission_amount;
     $_POST[$unique_master]=$unique_master_for_regular;
@@ -162,14 +162,17 @@ if(isset($_POST['confirm'])){
     unset($_SESSION['select_dealer_do_regular']);
     unset($_SESSION['unique_master_for_regular']);
     $type=1;
-    $msg='Successfully Instructed to Depot.';}
+    $msg='Successfully Instructed to Depot.';
+}
 
 $unique_master_for_regular = @$_SESSION['unique_master_for_regular'];
 if($unique_master_for_regular>0)
 {   $condition=$unique_master."=".$unique_master_for_regular;
     $data=db_fetch_object($table_master,$condition);
     while (list($key, $value)=@each($data))
-    { $$key=$value;}}
+    { $$key=$value;}
+
+}
 
 $depot_id = @$depot_id;
 

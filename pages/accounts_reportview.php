@@ -1253,9 +1253,10 @@ d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and
         </tr></thead>
         <tbody>
         <?php
-        $lc_id =$_REQUEST['lc_id'];
-        if($_POST['subledger_id']>0){
-            $subledger_id.=" and a.sub_ledger_id='".$_POST['subledger_id']."'";}
+        $lc_id =@$_REQUEST['lc_id'];
+        $subledger_id = '';
+        if(@$_POST['subledger_id']>0){
+            $subledger_id.=" and a.sub_ledger_id='".$_POST['subledger_id']."'";} else {$subledger_id='';}
         if($lc_id > 0)
         { $p="select
 a.jvdate,
@@ -1293,6 +1294,8 @@ c.dr_amt>0
 group by c.id
 order by a.jvdate,a.id";}
         $sql=mysqli_query($conn, $p);
+        $pi =0;
+        $total_expense_amount =0;
         while($data=mysqli_fetch_object($sql)){
             $link="voucher_print1.php?v_type=".$data->tr_from."&v_date=".$data->jvdate."&view=1&vo_no=".$data->jv_no;?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
@@ -2081,7 +2084,7 @@ order by c.do_no";
                 echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
             <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
                 <th colspan="8" style="border: solid 1px #999; padding:2px; background-color: bisque">LC Information</th>
-                <?php
+                <?php $i =0;
                 $lctablew=mysqli_query($conn, "Select * from LC_expenses_head where status in ('1')");
                 while($lcrow=mysqli_fetch_array($lctablew)){
                     $i=$i+1;
@@ -2192,7 +2195,7 @@ group by llm.id
 				where
 				llm.id=lld.lc_id and
 				lld.item_id=i.item_id and
-				llm.id='.$_POST[lc_id].' and
+				llm.id="'.$_POST["lc_id"].'" and
 				llr.lcr_no=lld.lc_id and
 				llr.item_id=lld.item_id
 group by lld.item_id
@@ -2202,26 +2205,26 @@ group by lld.item_id
             $_POST['lc_id']=$_POST['lc_id'];
             $_POST['lcr_no']=$data->lcr_no;
             $_POST['item_id']=$data->item_id;
-            $_POST['lc_comission'] = $_POST['lc_comission'.$data->id];
-            $_POST['lc_insurance'] = $_POST['lc_insurance'.$data->id];
-            $_POST['lc_bank_bill'] = $_POST['lc_bank_bill'.$data->id];
-            $_POST['freight_charge'] = $_POST['freight_charge'.$data->id];
-            $_POST['lc_port_bill'] = $_POST['lc_port_bill'.$data->id];
-            $_POST['lc_transport'] = $_POST['lc_transport'.$data->id];
-            $_POST['lc_mis_cost'] = $_POST['lc_mis_cost'.$data->id];
-            $_POST['lc_others'] = $_POST['lc_others'.$data->id];
-            $_POST['air_bill'] = $_POST['air_bill'.$data->id];
-            $_POST['duty'] = $_POST['duty'.$data->id];
-            $_POST['shipping_bill'] = $_POST['shipping_bill'.$data->id];
-            $_POST['labor_bill'] = $_POST['labor_bill'.$data->id];
-            $_POST['BSTI_expense'] = $_POST['BSTI_expense'.$data->id];
-            $_POST['total_LC_cost'] = $_POST['total_LC_cost'.$data->id];
+            $_POST['lc_comission'] = @$_POST['lc_comission'.$data->id];
+            $_POST['lc_insurance'] = @$_POST['lc_insurance'.$data->id];
+            $_POST['lc_bank_bill'] = @$_POST['lc_bank_bill'.$data->id];
+            $_POST['freight_charge'] = @$_POST['freight_charge'.$data->id];
+            $_POST['lc_port_bill'] = @$_POST['lc_port_bill'.$data->id];
+            $_POST['lc_transport'] = @$_POST['lc_transport'.$data->id];
+            $_POST['lc_mis_cost'] = @$_POST['lc_mis_cost'.$data->id];
+            $_POST['lc_others'] = @$_POST['lc_others'.$data->id];
+            $_POST['air_bill'] = @$_POST['air_bill'.$data->id];
+            $_POST['duty'] = @$_POST['duty'.$data->id];
+            $_POST['shipping_bill'] = @$_POST['shipping_bill'.$data->id];
+            $_POST['labor_bill'] = @$_POST['labor_bill'.$data->id];
+            $_POST['BSTI_expense'] = @$_POST['BSTI_expense'.$data->id];
+            $_POST['total_LC_cost'] = @$_POST['total_LC_cost'.$data->id];
 
-            $_POST['per_unit_cost']=$_POST['per_unit_cost'.$data->id];
-            $_POST['entry_by']=$_SESSION['userid'];
+            $_POST['per_unit_cost']=@$_POST['per_unit_cost'.$data->id];
+            $_POST['entry_by']=@$_SESSION['userid'];
             $_POST['entry_at']=date("Y-m-d h:i:sa");
-            $_POST['section_id']=$_SESSION['sectionid'];
-            $_POST['company_id']=$_SESSION['companyid'];
+            $_POST['section_id']=@$_SESSION['sectionid'];
+            $_POST['company_id']=@$_SESSION['companyid'];
             $LC_item_wise_cost_sheet='LC_item_wise_cost_sheet';
             if(isset($_POST['record_lc_cost'])){
                 if(prevent_multi_submit()) {
@@ -2254,7 +2257,7 @@ group by lld.item_id
                     echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
                 <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
                     <th colspan="7" style="border: solid 1px #999; padding:2px; background-color: bisque">LC Information</th>
-                    <?php
+                    <?php $i = 0;
                     $lctablew=mysqli_query($conn, "Select * from LC_expenses_head where status in ('1')");
                     while($lcrow=mysqli_fetch_array($lctablew)){
                         $i=$i+1;
@@ -2290,6 +2293,19 @@ group by lld.item_id
                 </tr></thead>
                 <tbody>
                 <?php
+                $g = 0;
+                $actualcollection = 0;
+                $totalactualcollection =0;
+                $grandtotals =0;
+                $gtt=0;
+                $totallcamount=0;
+                $total_CD_amount=0;
+                $total_RD_amount=0;
+                $total_SD_amount=0;
+                $total_VAT_amount=0;
+                $total_AIT_amount=0;
+                $total_ATV_amount=0;
+
                 $cost_recorded_status=find_a_field('LC_item_wise_cost_sheet','COUNT(id)','lc_id='.$_POST['lc_id']);
                 $customization_permmissin=find_a_field('lc_lc_master','cost_customization','id='.$_POST['lc_id']);
                 if($customization_permmissin=='1') echo '<h4 style="color:red">Permitted to modify<h4>'; else echo '';
@@ -2348,7 +2364,7 @@ group by lld.item_id
                         ?><td style="border: solid 1px #999;text-align:center; ">
 
 
-                            <?php $COST=find_a_field('lc_lc_master',''.$lcrow[db_column_name].'',''.$lcrow[db_column_name].'='.$lcrow[db_column_name].' and id='.$_POST[lc_id].'');?>
+                            <?php $COST=find_a_field('lc_lc_master',''.$lcrow['db_column_name'].'',''.$lcrow['db_column_name'].'='.$lcrow['db_column_name'].' and id='.$_POST['lc_id'].'');?>
                             <?php
                             $pwisecose=$COST/$totalqty*$data->total_unit;
 
@@ -2357,7 +2373,7 @@ group by lld.item_id
                             <?php if ($cost_recorded_status > 0){?>
                                 <?php if($pwisecose>0) echo $pwisecose; else echo '-'; ?>
                             <?php } else { ?>
-                                <input style="text-align: right; font-size: 10px; width:70px" <?php if($customization_permmissin==0) echo 'readonly' ?> type="text" name="<?=$lcrow[db_column_name].$data->id;?>" id="<?=$lcrow[db_column_name].$data->id;?>" value="<?php if($pwisecose>0) echo $pwisecose; else echo '-';?>" class="<?=$lcrow[db_column_name]?>" />
+                                <input style="text-align: right; font-size: 10px; width:70px" <?php if($customization_permmissin==0) echo 'readonly' ?> type="text" name="<?=$lcrow['db_column_name'].$data->id;?>" id="<?=$lcrow['db_column_name'].$data->id;?>" value="<?php if($pwisecose>0) echo $pwisecose; else echo '-';?>" class="<?=$lcrow['db_column_name']?>" />
                             <?php } ?>
                             <?php }
                             $total_LC_cost=$data->amount_in_local_currency+$data->TTI;
@@ -2465,10 +2481,12 @@ group by lld.item_id
                     <?php
                     $lctablew=mysqli_query($conn, "Select lh.* from LC_expenses_head lh where lh.status in ('1')");
                     while($lcrow=mysqli_fetch_array($lctablew)){
-                        ?><td style="border: solid 1px #999; text-align:right; padding:2px"><?php $COST=find_a_field('lc_lc_master',''.$lcrow[db_column_name].'',''.$lcrow[db_column_name].'='.$lcrow[db_column_name].' and id='.$_POST[lc_id].''); if($COST>0) echo $COST; else echo '';?></td>
+                        ?><td style="border: solid 1px #999; text-align:right; padding:2px"><?php $COST=find_a_field('lc_lc_master',''.$lcrow['db_column_name'].'',''.$lcrow['db_column_name'].'='.$lcrow['db_column_name'].' and id='.$_POST['lc_id'].''); if($COST>0) echo $COST; else echo '';?></td>
                     <?php } ?>
-                    <td style="border: solid 1px #999; text-align:right"><input style="text-align: right; font-size: 10px; width:65px" type="text" name="grandtotal<?=$data->id?>" id="grandtotal<?=$data->id?>" value="<?=$grandtotals?>"></td>
-                    <td></td>
+                    <td style="border: solid 1px #999; text-align:right">
+                        <input style="text-align: right; font-size: 10px; width:65px" type="text" name="grandtotal" id="grandtotal" value="<?=$grandtotals?>"></td>
+                    <td>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -2476,9 +2494,14 @@ group by lld.item_id
             $LC_received=find_a_field('lc_lc_received','COUNT(id)','lc_id='.$_POST['lc_id']);
             if($LC_received>0){
             if($cost_recorded_status>0){?><h5 align="center" style="color:red; font-weight: italic; font-weight: bold">This LC cost sheet has been recorded!!</h5> <?php } else { ?>
-            <h1 align="center">
-                <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' name="record_lc_cost" value="Confirm the sheet & proceed to next"></p><?php } ?>
-                <?php } else { ?> <h5 align="center" style="color:red; font-weight: italic; font-weight: bold">This LC has not yet been received!!</h5><?php } ?>
+                <h1 align="center">
+                <input type="submit" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' name="record_lc_cost" value="Confirm the sheet & proceed to next">
+                </h1>
+            <?php } ?>
+
+            <?php } else { ?>
+                <h5 align="center" style="color:red; font-weight: italic; font-weight: bold">This LC has not yet been received!!</h5>
+            <?php } ?>
         </form>
 
 
@@ -4018,13 +4041,13 @@ group by lld.item_id
             <?php
             $datecon=' and a.ji_date between  "'.$f_date.'" and "'.$t_date.'"';
             if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
-            if(isset($warehouse_id)) 				{$warehouse_con=' and a.warehouse_id='.$warehouse_id;}
+            if(isset($warehouse_id)) 				{$warehouse_con=' and a.warehouse_id='.$warehouse_id;} else {$warehouse_id='';}
             if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
-            if(isset($item_id))				{$item_con=' and a.item_id='.$item_id;}
+            if(isset($item_id))				{$item_con=' and a.item_id='.$item_id;} else {$item_con='';}
             if($_POST['status']=='Received')
             {$status_con=' and a.item_in>0';}
             elseif($_POST['status']=='Issue')
-            {$status_con=' and a.item_ex>0';}
+            {$status_con=' and a.item_ex>0';} else {$status_con='';}
 
             $result=mysqli_query($conn, 'select
 
@@ -4063,6 +4086,7 @@ group by lld.item_id
 				a.warehouse_id=w.warehouse_id and
 
 		    a.item_id=i.item_id '.$datecon.$warehouse_con.$item_con.$status_con.' order by a.ji_date,a.id asc');
+            $i = 0;$intotal=0;$outtotal=0;
             while($data=mysqli_fetch_object($result)){
                 $i=$i+1; ?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">

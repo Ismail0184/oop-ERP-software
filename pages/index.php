@@ -1,18 +1,19 @@
 <?php
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $access_time=$dateTime->format("Y-m-d, h:i:s A");
+$key = implode('-', str_split(substr(strtolower(md5(microtime().rand(1000, 9999))), 0, 30), 6));
 
-
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
 $browser="";
-if(strrpos(strtolower($_SERVER["HTTP_USER_AGENT"]),strtolower("MSIE")))
+if(strrpos(strtolower($userAgent),strtolower("MSIE")))
 {$browser="Internet Explorer";
-} else if(strrpos(strtolower($_SERVER["HTTP_USER_AGENT"]),strtolower("Presto")))
+} else if(strrpos(strtolower($userAgent),strtolower("Presto")))
 {$browser="Opera";
-} else if(strrpos(strtolower($_SERVER["HTTP_USER_AGENT"]),strtolower("CHROME")))
+} else if(strrpos(strtolower($userAgent),strtolower("CHROME")))
 {$browser="Google Chrome";
-} else if(strrpos(strtolower($_SERVER["HTTP_USER_AGENT"]),strtolower("SAFARI")))
+} else if(strrpos(strtolower($userAgent),strtolower("SAFARI")))
 {$browser="Safari";
-} else if(strrpos(strtolower($_SERVER["HTTP_USER_AGENT"]),strtolower("FIREFOX")))
+} else if(strrpos(strtolower($userAgent),strtolower("FIREFOX")))
 { $browser="FIREFOX";} else
 { $browser="OTHER";}
 
@@ -90,8 +91,9 @@ $_SESSION['company_name']=$userRow['company_name'];
 $_SESSION['company_address']=$userRow['address'];
 $_SESSION['com_short_name']=$userRow['com_short_name'];
 $_SESSION['section_name']=$userRow['section_name'];
-$login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os)
-VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','success','".$operating_system."')");
+$_SESSION['aToken']=$key;
+$login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os,access_token)
+VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','success','".$operating_system."','".$key."')");
 header("Location: dashboard.php");
 			} else{
     $login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os)

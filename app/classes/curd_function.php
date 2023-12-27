@@ -42,7 +42,7 @@ class crud{
     {   $vars = get_vars($this->fields);
         if ( count($vars) > 0 )
             db_update($this->table_name,$_POST[$tag],$vars,$tag);
-        return $id;
+        return $tag;
     }
     public function delete($condition)
     {
