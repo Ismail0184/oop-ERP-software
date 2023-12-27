@@ -99,16 +99,7 @@ $startday = date('Y-m-d',$startTime);
 $endday = date('Y-m-d',$endTime);
 $start_date = $year.'-'.($mon-1).'-26';
 $end_date = $year.'-'.$mon.'-25';
-$days_mon=ceil(($endTime - $startTime)/(3600*24))+1; $i = 0; $day='';
-for ($i = $startTime1; $i <= $endTime1; $i = $i + 86400) {
-    $day   = date('l',$i);
-    ${'day'.date('N',$i)}++;
-//if(isset($$day))
-//$$day .= ',"'.date('Y-m-d', $i).'"';
-//else
-//$$day .= '"'.date('Y-m-d', $i).'"';
-}
-$r_count=${'day5'};
+
 
 $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)','user_id='.$_SESSION['userid'].' and module_id='.$_SESSION['module_id'].'');
 ?>

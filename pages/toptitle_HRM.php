@@ -103,15 +103,15 @@ $endday = date('Y-m-d',$endTime);
 $start_date = $year.'-'.($mon-1).'-26';
 $end_date = $year.'-'.$mon.'-25';
 $days_mon=ceil(($endTime - $startTime)/(3600*24))+1;
-for ($i = $startTime1; $i <= $endTime1; $i = $i + 86400) {
-    $day   = date('l',$i);
-    ${'day'.date('N',$i)}++;
-//if(isset($$day))
-//$$day .= ',"'.date('Y-m-d', $i).'"';
-//else
-//$$day .= '"'.date('Y-m-d', $i).'"';
-}
-$r_count=${'day5'};
+
+
+
+
+
+
+
+
+
 $holy_day=find_a_field('salary_holy_day','count(holy_day)','holy_day between "'.$year.'-'.$mon.'-'.'01'.'" and "'.$year.'-'.$mon.'-'.$days_mon.'"');
 $late_attendance=find_a_field('hrm_late_attendance','count(id)','attendance_date between "'.$year.'-'.$mon.'-'.'01'.'" and "'.$year.'-'.$mon.'-'.$days_mon.'" and PBI_ID="'.$_SESSION['PBI_ID'].'"');
 $sdte=$year.'-'.$mon.'-'."01";
@@ -520,10 +520,22 @@ while($marital=mysqli_fetch_object($resmarital)){
                     $cday=date('d');
                     $sdate='$year-$mon-$cday';
                     $todate=$dyear-$dmon-$dday;
-                    list( $years, $months, $days) = split('[/.-]', $sdate);
-                    list( $yeare, $monthe, $daye) = split('[/.-]', $todate);
-                    $sdatess="$year2-$months-$days";
-                    $edatess="$year2-$monthe-$daye";
+
+                    $dateArrays = explode("-", $sdate);
+                    if (count($dateArrays) === 3) {
+                        list($years, $months, $days) = $dateArrays;
+                    } else {
+                        echo "Invalid date format";
+                    }
+
+                    $dateArraye = explode("-", $todate);
+                    if (count($dateArraye) === 3) {
+                        list($yeare, $monthe, $daye) = $dateArraye;
+                    } else {
+                    }
+
+                    $sdatess="$years-$months-$days";
+                    $edatess="$yeare-$monthe-$daye";
 
                     $res=mysqli_query($conn, 'select p2.*,d.*,de.* FROM 							 
 							personnel_basic_info p2,
@@ -534,11 +546,13 @@ while($marital=mysqli_fetch_object($resmarital)){
 							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
 							 p2.PBI_DEPARTMENT=d.DEPT_ID order by p2.PBI_DOB asc ');
                     while($birthday=mysqli_fetch_object($res)){
-                        $dsplit=$birthday->PBI_DOB;
-                        $dsplit = explode('-', $dsplit);
-                        //$day   = $dsplit[2];
-                        $month = $dsplit[1];
-                        //$year  = $dsplit[0];
+                        $bday=$birthday->PBI_DOB;
+                        $dateArray = explode("-", $bday);
+                        if (count($dateArray) === 3) {
+                            list($year, $month, $day) = $dateArray;
+                        } else {
+                            echo "Invalid date format";
+                        }
                         if($month==$mon){?>
                             <li style="vertical-align: middle; cursor: pointer">
                                 <p style="vertical-align: middle">
