@@ -3,22 +3,22 @@ require_once 'support_file.php';
 require ("../app/classes/class.numbertoword.php");
 
 
-$jv_no=$_GET['jv_no'];
-$bill_no=$_REQUEST['bill_no'];
-$bill_date=$_REQUEST['bill_date'];
+$jv_no=@$_GET['jv_no'];
+$bill_no=@$_REQUEST['bill_no'];
+$bill_date=@$_REQUEST['bill_date'];
 $tdates = date("Y-m-d");
 $day = date('l', strtotime($tdates));
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $timess = $dateTime->format("d-m-y  h:i A");
 
 
-if($_POST['check']=='CHECK')
+if(@$_POST['check']=='CHECK')
 
 {
 
 $time_now = date('Y-m-d H:s:i');
 $voucher_date = strtotime($_POST['voucher_date']);
-$cc_code = $_POST['cc_code'];
+$cc_code = @$_POST['cc_code'];
 
 $jvold = find_all_field('secondary_journal','','tr_from = "Purchase" and jv_no='.$jv_no);
 $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
@@ -40,7 +40,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 
 
 
-if($_POST['check']=='RE-CHECK'){
+if(@$_POST['check']=='RE-CHECK'){
 $time_now = date('Y-m-d H:s:i');
 $voucher_date = strtotime($_POST['voucher_date']);
 $cc_code = $_POST['cc_code'];
@@ -61,8 +61,8 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 
 
 $address=find_a_field('project_info','proj_address',"1");
-$jv = find_all_field('secondary_journal','jv_date','tr_from = "Purchase" and jv_no='.$jv_no);
-//echo $jv->tr_id;
+$jv = find_all_field('secondary_journal','','tr_from = "Purchase" and jv_no='.$jv_no);
+$jv_jv_on = @$jv->jv_on;
 $pr = find_all_field('purchase_receive','pr_no','pr_no='.$jv->tr_no);
 ?>
 
@@ -135,7 +135,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
             <td width="1%">
 
-			<? $path='../logo/'.$_SESSION['proj_id'].'.jpg';
+			<? $path='../logo/'.'.jpg';
 
 			if(is_file($path)) echo '<img src="'.$path.'" height="80" />';?>			</td>
 
@@ -225,7 +225,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 <input name="voucher_date" type="text" id="voucher_date" value="<?=date('Y-m-d',$jv->jv_date);?>" />
 <input type="button" name="Submit" value="EDIT VOUCHER"  onclick="DoNav('<?php echo '&v_no='.$jv_no.'&view=Show' ?>');" /></td>
     <td><input name="check" type="submit" id="check" value="CHECK" />
-        <input type="hidden" name="req_no" id="req_no" value="<?=$jv->jv_on?>" /></td></tr></table>
+        <input type="hidden" name="req_no" id="req_no" value="<?=$jv_jv_on?>" /></td></tr></table>
 
 
 
@@ -250,18 +250,18 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
     <td width="0" align="right">Voucher Date :</td>
 
     <td width="0">
-
-
-
-<input name="jv_no" type="hidden" value="<?=$jv_no?>" />
-<input name="voucher_date" type="text" id="voucher_date" value="<?=date('Y-m-d',$jv->jv_date);?>" />
-<!--input type="button" name="Submit" value="EDIT VOUCHER"  onclick="DoNav('<?php echo '&v_no='.$jv_no.'&view=Show' ?>');" /--></td>
-    <td><!--input name="check" type="submit" id="check" value="RE-CHECK" /-->
-        <input type="hidden" name="req_no" id="req_no" value="<?=$jv->jv_on?>" /></td>
-          </tr>
+        <input name="jv_no" type="hidden" value="<?=$jv_no?>" />
+        <input name="voucher_date" type="text" id="voucher_date" value="<?=date('Y-m-d',$jv->jv_date);?>" />
+    </td>
+    <td>
+        <input type="hidden" name="req_no" id="req_no" value="<?=$jv->jv_on?>" />
+    </td>
+  </tr>
 </table>
-<a target="_blank" href="<?=$link_view;?>?v_no=<?=$pr->pr_no?>"></a></div><? }?>
-</div></td>
+
+    <a target="_blank" href="<?=$link_view;?>?v_no=<?=$pr->pr_no?>"></a></div><? }?>
+</div>
+        </td>
 
         </tr>
 
@@ -330,9 +330,6 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
   </tr>
 
   <tr>
-
-    <td><? if($cccode>0){?>CC CODE/PROJECT NAME: <? echo find_a_field('cost_center','center_name',"id='$cccode'")?><? }?></td>
-
   </tr>
 
   <tr>
@@ -357,41 +354,26 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
 
 	  <?
-
-$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and dr_amt>0 group by b.ledger_id desc");
-while($info=mysqli_fetch_object($sql2)){
-
-	  ?>
+$s = 0;$ttd=0;$ttc=0;
+$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and dr_amt>0 group by b.ledger_id desc");
+while($info=mysqli_fetch_object($sql2)){?>
 
       <tr>
-
         <td align="left"><div align="center">
-
-          <?=++$s;
-
-		  ?>
-
+          <?=++$s; ?>
         </div></td>
-
         <td align="left"><?=$info->ledger_id?></td>
-
         <td align="left"><?=$info->ledger_name;?></td>
         <td align="left"><?=$info->narration;?></td>
-
         <td align="right"><? echo number_format($info->dr_amt,2); $ttd = $ttd + $info->dr_amt;?></td>
-
         <td align="right"><? echo number_format($info->cr_amt,2); $ttc = $ttc + $info->cr_amt;?></td>
-
         </tr>
-
 <?php }?>
 
 <?
-$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and cr_amt>0 group by b.ledger_id desc");
+$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and cr_amt>0 group by b.ledger_id desc");
 while($info=mysqli_fetch_object($sql2)){
-
-	  ?>
-
+$s=0; ?>
       <tr>
         <td align="left"><div align="center"><?=++$s;?></div></td>
         <td align="left"><?=$info->ledger_id?></td>
@@ -400,97 +382,55 @@ while($info=mysqli_fetch_object($sql2)){
         <td align="right"><? echo number_format($info->dr_amt,2); $ttd = $ttd + $info->dr_amt;?></td>
         <td align="right"><? echo number_format($info->cr_amt,2); $ttc = $ttc + $info->cr_amt;?></td>
         </tr>
-
 <?php }?>
-
-
-
       <tr>
         <td colspan="4" align="right">Total Taka: </td>
         <td align="right"><?=number_format($ttd,2)?></td>
         <td align="right"><?=number_format($ttc,2)?></td>
         </tr>
-
-
-
-    </table></td>
-
+        </table>
+    </td>
   </tr>
 
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>Amount in Word :
-
-
-
 	 (<?=convertNumberCustom($ttc)?>)	 </td>
-
   </tr>
 
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
   <tr>
-
     <td class="tabledesign_text"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-
       <tr>
-
         <td align="center" valign="bottom">................................</td>
-
         <td align="center" valign="bottom">................................</td>
-
         <td align="center" valign="bottom">................................</td>
-
         <td align="center" valign="bottom">................................</td>
-
       </tr>
 
       <tr>
-
         <td width="33%"><div align="center">Received by </div></td>
-
         <td width="33%"><div align="center">Prepared by </div></td>
-
         <td width="33%"><div align="center">Head of Accounts </div></td>
-
         <td width="34%"><div align="center">Approved By </div></td>
-
       </tr>
-
-    </table></td>
-
+    </table>
+    </td>
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
-</table></form>
-
+</table>
+</form>
 </body>
-
 </html>

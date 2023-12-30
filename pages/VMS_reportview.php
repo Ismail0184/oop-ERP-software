@@ -6,7 +6,7 @@ if(!empty($_POST['source'])) $source=$_POST['source'];
 if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET;}
 if(!empty($_POST['order_by']) && !empty($_POST['sort'])) $order_by_GET=$_POST['order_by'];
-if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST[sort].'';}
+if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['sort'].'';}
 ?>
 
 
@@ -59,7 +59,7 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST[sor
 
 if(isset($warehouse_id))				{$warehouse_CON=' AND d.warehouse_id='.$warehouse_id;}
 if(isset($source))				{$source_CON=' AND d.source="'.$source.'"';}
-if($_POST[source]=='Sales'){
+if($_POST['source']=='Sales'){
 $sql="SELECT i.item_id,i.finish_goods_code as item_ID,itm.H_S_code,i.item_name as 'Description, ERP',(select group_name from VAT_item_group where group_id=i.VAT_item_group) as 'Description, VAT',i.pack_size,i.unit_name,d.total_unit as 'VC Qty, Pcs',d.total_price as 'SD Chargeable Value',d.amount_of_SD as 'SD Amount',
 d.rate_of_VAT as 'VAT %',d.amount_of_VAT as 'VAT Amount',d.total_including_all as total_value,d.mushak_no,m.fiscal_year,d.issue_date as VAT_date,m.issue_time as 'VAT Entry Time',w.warehouse_name,d.do_no,v.dealer_name_e as vendor,v.address_e as address
  from VAT_mushak_6_3 m,VAT_mushak_6_3_details d,item_info i,dealer_info v, item_tariff_master itm,warehouse w
@@ -69,27 +69,27 @@ i.item_id=d.item_id AND
 d.issue_date BETWEEN '".$_POST['f_date']."' and '".$_POST['t_date']."' AND
 i.H_S_code=itm.id and d.warehouse_id=w.warehouse_id and
 d.dealer_code=v.dealer_code".$warehouse_CON.$source_CON."".$order_by."";
-} elseif($_POST[source]=='Purchase_Returned'){
+} elseif($_POST['source']=='Purchase_Returned'){
     $sql="SELECT i.item_id,i.finish_goods_code as item_ID,itm.H_S_code,i.item_name as Description,i.pack_size,i.unit_name,d.total_unit as 'VC Qty, Pcs',d.total_price as 'SD Chargeable Value',d.amount_of_SD as 'SD Amount',
     d.rate_of_VAT as 'VAT %',d.amount_of_VAT as 'VAT Amount',d.total_including_all as total_value,d.mushak_no,d.issue_date as VAT_date,d.entry_at as 'VAT Entry Time',w.warehouse_name,d.do_no as IR,v.vendor_name as vendor,v.address
      from VAT_mushak_6_3_details d,item_info i,vendor v, item_tariff_master itm,warehouse w
     where i.item_id=d.item_id AND
-    d.issue_date BETWEEN '".$_POST[f_date]."' and '".$_POST[t_date]."' AND
+    d.issue_date BETWEEN '".$_POST['f_date']."' and '".$_POST['t_date']."' AND
     i.H_S_code=itm.id and d.warehouse_id=w.warehouse_id and
     d.dealer_code=v.vendor_id".$warehouse_CON.$source_CON."".$order_by."";   
 }
-echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
+echo reportview($sql,'Monthly VAT 6.3','99','1','5','');?>
 
 
 <?php elseif ($_POST['report_id']=='1301002'):?>
   <?php
 
-  if(isset($warehouse_id))				{$warehouse_CON=' AND md.warehouse_id='.$warehouse_id;}
+  if(isset($warehouse_id))				{$warehouse_CON=' AND md.warehouse_id='.$warehouse_id;} else {$warehouse_CON='';}
   $result=mysqli_query($conn, "SELECT md.mushak_no,md.issue_date,SUM(md.unit_price) as unit_price,SUM(md.total_unit) as total_unit,SUM(md.total_price) as total_price,SUM(md.amount_of_SD) as amount_of_SD,SUM(md.amount_of_VAT) as amount_of_VAT,SUM(md.total_including_all) as total_including_all,d.dealer_name_e,d.address_e from VAT_mushak_6_3_details md, dealer_info d
-    where md.dealer_code=d.dealer_code and issue_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'".$warehouse_CON." group by md.mushak_no order by md.mushak_no");?>
-  <div style="text-align: center; font-size:11px"><strong><?=$_SESSION[company_name]?></strong></div>
-  <div style="text-align: center; font-size:11px"><?=$_SESSION[company_address]?></div>
-  <div style="text-align: center; font-size:11px">BIN: <?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></div>
+    where md.dealer_code=d.dealer_code and issue_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'".$warehouse_CON." group by md.mushak_no order by md.mushak_no");?>
+  <div style="text-align: center; font-size:11px"><strong><?=$_SESSION['company_name']?></strong></div>
+  <div style="text-align: center; font-size:11px"><?=$_SESSION['company_address']?></div>
+  <div style="text-align: center; font-size:11px">BIN: <?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></div>
   <div style="text-align: center; font-size:11px">সাবর্ফম - ক</div>
   <div style="text-align: center; font-size:11px">(নোট ১,২,৩,৪,৫,৭,১০,১১,১২,১৩,১৪,১৫,১৬,১৭,১৯,২০,২১,২২ এর জন্য প্রযোজ্য)</div>
 
@@ -114,7 +114,15 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
           <th style="border: 1px solid #CCC;width: 10%">মন্তব্য</th>
       </tr></thead>
       <tbody>
-      <?php while($data=mysqli_fetch_object($result)): ?>
+      <?php
+      $i=0;
+      $total_units=0;
+      $unit_prices=0;
+      $total_prices=0;
+      $amount_of_SDs=0;
+      $amount_of_VATs=0;
+      $total_including_alls=0;
+      while($data=mysqli_fetch_object($result)): ?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$data->mushak_no?></td>
@@ -127,7 +135,7 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->amount_of_SD;?></td>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->amount_of_VAT;?></td>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->total_including_all;?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->remarks?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"></td>
       </tr>
       <?php
           $total_units=$total_units+$data->total_unit;
@@ -150,7 +158,7 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
   <div>&nbsp;</div>
   <div>&nbsp;</div>
   <div style="font-size:11px">দায়িত্ব ব্যক্তির স্বাক্ষর  </div>
-  <div style="font-size:11px">নাম : <?=$_SESSION[username];?></div>
+  <div style="font-size:11px">নাম : <?=$_SESSION['username'];?></div>
   <div style="font-size:11px">তারিখ : <?=date('Y-m-d')?></div>
 
 
@@ -188,10 +196,10 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
       md.depot_id=w.warehouse_id and
       i.H_S_code=hs.id and
       i.finish_goods_code not in ('2001') and
-      md.do_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'".$warehouse_CON." group by md.item_id,md.do_no order by md.do_no,md.item_id");
+      md.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'".$warehouse_CON." group by md.item_id,md.do_no order by md.do_no,md.item_id");
     ?>
-  <div style="text-align: center; font-size:11px"><strong><?=$_SESSION[company_name]?></strong></div>
-  <div style="text-align: center; font-size:11px"><?=$_SESSION[company_address]?></div>
+  <div style="text-align: center; font-size:11px"><strong><?=$_SESSION['company_name']?></strong></div>
+  <div style="text-align: center; font-size:11px"><?=$_SESSION['company_address']?></div>
   <div style="text-align: center; font-size:11px">DO vs VAT 6.3</div>
   <br>
   <table id=customers style="border-collapse: collapse; border: 1px solid #CCC; width: 100%; font-size:11px">
@@ -217,7 +225,12 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
           <th style="border: 1px solid #CCC;">Variance</th>
       </tr></thead>
       <tbody>
-      <?php while($data=mysqli_fetch_object($result)): ?>
+      <?php
+      $i=0;
+      $total_units=0;
+      $vat_qty_total=0;
+      $total_variance=0;
+      while($data=mysqli_fetch_object($result)): ?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$data->finish_goods_code?></td>
@@ -234,21 +247,18 @@ echo reportview($sql,'Monthly VAT 6.3','99','1','5');?>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->do_date?></td>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->mushak_no?></td>
       <td style="border: 1px solid #CCC;text-align: right;"><?=$data->issue_date?></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><?=$data->remarks?></td>
+      <td style="border: 1px solid #CCC;text-align: right;"></td>
       </tr>
       <?php
           $total_units=$total_units+$data->total_unit;
           $vat_qty_total=$vat_qty_total+$data->vat_qty;
           $total_variance=$total_variance+($data->total_unit-$data->vat_qty);
-          $amount_of_SDs=$amount_of_SDs+$data->amount_of_SD;
-          $amount_of_VATs=$amount_of_VATs+$data->amount_of_VAT;
-          $total_including_alls=$total_including_alls+$data->total_including_all;
       endwhile; ?>
       <tr><th colspan="6" style="text-align:left">Total</th>
           <th style="border: 1px solid #CCC;text-align: right;"><?=$total_units?></th>
           <th style="border: 1px solid #CCC;text-align: right;"><?=$vat_qty_total?></th>
           <th style="border: 1px solid #CCC;text-align: right;"><?=$total_variance?></th>
-          <th style="border: 1px solid #CCC;text-align: right;"><?=number_format($amount_of_SDs,2)?></th>
+          <th style="border: 1px solid #CCC;text-align: right;"></th>
           <th style="border: 1px solid #CCC;text-align: right;"></th>
           <th style="border: 1px solid #CCC;text-align: right;"></th>
           <th style="border: 1px solid #CCC;text-align: right;"></th>
@@ -276,10 +286,10 @@ VAT_mushak_6_3 m,dealer_info d WHERE m.dealer_code=d.dealer_code group by m.mush
   <br>
   <table style="width: 100%;font-size:11px">
       <tr>
-          <td style="text-align: left; width:15%">নিবন্ধিত/তালিকাভুক্ত ব্যক্তির নাম</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION[company_name]?></td>
+          <td style="text-align: left; width:15%">নিবন্ধিত/তালিকাভুক্ত ব্যক্তির নাম</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION['company_name']?></td>
       </tr>
       <tr>
-          <td style="text-align: left;">বি আই এন</td><td style="width: 1%">:</td><td style="width: 50%"><?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></td>
+          <td style="text-align: left;">বি আই এন</td><td style="width: 1%">:</td><td style="width: 50%"><?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></td>
       </tr>
   </table>
   <br>  <br>
@@ -310,7 +320,7 @@ VAT_mushak_6_3 m,dealer_info d WHERE m.dealer_code=d.dealer_code group by m.mush
       </tr>
       </thead>
       <tbody>
-      <?php $result=mysqli_query($conn, $sql);while($data=mysqli_fetch_object($result)):?>
+      <?php $i=0;$total_amount_of_SD=0;$c=0; $result=mysqli_query($conn, $sql);while($data=mysqli_fetch_object($result)):?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$data->mushak_no?></td>
@@ -353,16 +363,16 @@ VAT_mushak_6_3 m,dealer_info d WHERE m.dealer_code=d.dealer_code group by m.mush
   <br>
   <table style="width: 100%;font-size:11px">
       <tr>
-          <td style="text-align: left; width:15%">ক্রেতার নাম</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION[company_name]?></td>
+          <td style="text-align: left; width:15%">ক্রেতার নাম</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION['company_name']?></td>
       </tr>
       <tr>
-          <td style="text-align: left;">ক্রেতার বিআইএন</td><td style="width: 1%">:</td><td style="width: 50%"><?=find_a_field('company','BIN','company_id="'.$_SESSION[companyid].'" and section_id='.$_SESSION[sectionid])?></td>
+          <td style="text-align: left;">ক্রেতার বিআইএন</td><td style="width: 1%">:</td><td style="width: 50%"><?=find_a_field('company','BIN','company_id="'.$_SESSION['companyid'].'" and section_id='.$_SESSION['sectionid'])?></td>
       </tr>
       <tr>
-          <td style="text-align: left;">সরবরাহের গন্তব্যস্থল</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION[company_address]?></td>
+          <td style="text-align: left;">সরবরাহের গন্তব্যস্থল</td><td style="width: 1%">:</td><td style="width: 50%"><?=$_SESSION['company_address']?></td>
       </tr>
   </table><br>
-<div style="text-align: left;font-size:11px; font-weight:bold"><?=$item_name=find_a_field('item_info','item_name','item_id='.$_POST[item_id])?></div><br>
+<div style="text-align: left;font-size:11px; font-weight:bold"><?=$item_name=find_a_field('item_info','item_name','item_id='.$_POST['item_id'])?></div><br>
   <table style="border-collapse: collapse; border: 1px solid #CCC; width: 100%;font-size:11px">
       <thead>
       <tr>
@@ -431,7 +441,12 @@ VAT_mushak_6_3 m,dealer_info d WHERE m.dealer_code=d.dealer_code group by m.mush
       </tr>
       </thead>
       <tbody>
-      <?php $result=mysqli_query($conn, $sql);while($data=mysqli_fetch_object($result)):?>
+      <?php
+      $i=0;
+      $c=0;
+      $total_amount_of_SD=0;
+      $result=mysqli_query($conn, $sql);
+      while($data=mysqli_fetch_object($result)):?>
       <tr>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
       <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$data->mushak_no?></td>

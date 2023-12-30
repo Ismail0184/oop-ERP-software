@@ -27,7 +27,7 @@ $SD_narration='SD against sale, Do No # '.$do_no_GET.', Challan No # '.$chalan_n
 
 if(prevent_multi_submit()){
     if(isset($_POST['delete'])){
-        $PostDeleteMushakNo = $_POST['delete_mushak_no'];
+        $PostDeleteMushakNo = @$_POST['delete_mushak_no'];
         $sql_1=mysqli_query($conn, "INSERT INTO VAT_mushak_6_3_deleted (R_id,do_no,mushak_no,warehouse_id,dealer_code,issue_date,issue_time,responsible_person,source,entry_by,entry_at,checked_by,checked_at,duplicate_status) 
         SELECT id,do_no,mushak_no,warehouse_id,dealer_code,issue_date,issue_time,responsible_person,source,entry_by,entry_at,checked_by,checked_at,duplicate_status FROM VAT_mushak_6_3 WHERE
         do_no=".$do_no_GET." and mushak_no=".$PostDeleteMushakNo."");

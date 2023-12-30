@@ -32,7 +32,7 @@ if(isset($_POST['add_bank_ledger'])){
 if(isset($_POST['add_expenses_ledger'])){
   $_POST['entry_by'] = $_SESSION['userid'];
   $_POST['parameter_name'] = 'expenses_ledger';
-  $_POST[status] = '1';
+  $_POST['status'] = '1';
   $crud->insert();
   unset($_POST);
 }
@@ -58,6 +58,7 @@ warehouse_essential_data wed, accounts_ledger al,warehouse w where wed.parameter
 
 $cost_center_view="SELECT distinct wed.value,concat(wed.value,' : ', cc.center_name) as cost_Center_name  FROM                        
 warehouse_essential_data wed, cost_center cc where wed.parameter_name='cc_code' and warehouse_id='".$_SESSION['warehouse']."' and cc.id=wed.value and wed.status>0 ";
+$warehouse_id = @$_POST['warehouse_id'];
 ?>
 
 
@@ -107,7 +108,7 @@ warehouse_essential_data wed, cost_center cc where wed.parameter_name='cc_code' 
                             <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%" name="value">
                             <option></option>
-                            <?=foreign_relation('sub_ledger', 'sub_ledger_id', 'CONCAT(sub_ledger_id," : ", sub_ledger)',$value, 'ledger_id="1002000100000000"','order by sub_ledger_id'); ?>
+                            <?=foreign_relation('sub_ledger', 'sub_ledger_id', 'CONCAT(sub_ledger_id," : ", sub_ledger)','', 'ledger_id="1002000100000000"','order by sub_ledger_id'); ?>
                             </select>
                             </div></div>
                             <hr>
@@ -145,7 +146,7 @@ warehouse_essential_data wed, cost_center cc where wed.parameter_name='cc_code' 
                             <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%" name="value">
                             <option></option>
-                            <?=foreign_relation('sub_ledger', 'sub_ledger_id', 'CONCAT(sub_ledger_id," : ", sub_ledger)',$value, 'ledger_id="1002000900000000"','order by sub_ledger_id'); ?>
+                            <?=foreign_relation('sub_ledger', 'sub_ledger_id', 'CONCAT(sub_ledger_id," : ", sub_ledger)','', 'ledger_id="1002000900000000"','order by sub_ledger_id'); ?>
                             </select>
                             </div></div>
                             <hr>
@@ -183,7 +184,7 @@ warehouse_essential_data wed, cost_center cc where wed.parameter_name='cc_code' 
                             <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%" name="value">
                             <option></option>
-                            <?=foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',$value, 'ledger_group_id between "3000" and "5000"','order by ledger_id'); ?>
+                            <?=foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)','', 'ledger_group_id between "3000" and "5000"','order by ledger_id'); ?>
                             </select>
                             </div></div>
                             <hr>
@@ -220,7 +221,7 @@ warehouse_essential_data wed, cost_center cc where wed.parameter_name='cc_code' 
                             <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%" name="value">
                             <option></option>
-                            <?=foreign_relation('cost_center', 'id', 'CONCAT(id," : ", center_name)',$value, 'status=1','order by ledger_id'); ?>
+                            <?=foreign_relation('cost_center', 'id', 'CONCAT(id," : ", center_name)','', 'status=1','order by ledger_id'); ?>
                             </select>
                             </div></div>
                             <hr>

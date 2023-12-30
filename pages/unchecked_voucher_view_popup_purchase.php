@@ -1,28 +1,14 @@
 <?php
 require_once 'support_file.php';
-$proj_id	= $_SESSION['proj_id'];
-$vdate		= $_REQUEST['vdate'];
-$jv_no =  $_REQUEST['v_no'];
-$cheq_no = $_POST["cheq_no"];
-$cheq_date = strtotime($_POST["cheq_date"]);
-$vdate = strtotime($_POST["vdate"]);
-if($v_type=='receipt'){$voucher_name='RECEIPT VOUCHER';$vtype='receipt';$tr_from='receipt';}
-elseif($v_type=='payment'){$voucher_name='PAYMENT VOUCHER';$vtype='payment';$tr_from='payment';}
-elseif($v_type=='journal_info'){$voucher_name='JOURNAL VOUCHER';$vtype='journal_info';$tr_from='journal_info';}
-elseif($v_type=='contra'){$voucher_name='CONTRA VOUCHER';$vtype='coutra';$tr_from='contra';}
-else{$v_type=='coutra';$voucher_name='CONTRA VOUCHER';$vtype='coutra';$tr_from='contra';}
+$proj_id	= @$_SESSION['proj_id'];
+$vdate		= @$_REQUEST['vdate'];
+$jv_no =  @$_REQUEST['v_no'];
+$cheq_no = @$_POST["cheq_no"];
+$cheq_date = strtotime(@$_POST["cheq_date"]);
+$vdate = strtotime(@$_POST["vdate"]);
+$page = '';
 
-if(isset($_REQUEST['delete']))
-{   $sqlDel2 = "DELETE FROM secondary_journal WHERE tr_no='$v_no' AND tr_from='$tr_from'";
-	if(mysqli_query($conn, $sqlDel2)){}
-	if($_GET['in']=='Journal_info')	echo "<script>self.opener.location = 'journal_note_new.php'; self.blur(); </script>";
-	elseif($_GET['in']=='Contra')	echo "<script>self.opener.location = 'coutra_note_new.php'; self.blur(); </script>";
-	elseif($_GET['in']=='Credit')	echo "<script>self.opener.location = 'credit_note.php'; self.blur(); </script>";
-	elseif($_GET['in']=='Debit')	echo "<script>self.opener.location = 'debit_note.php'; self.blur(); </script>";
-	else	echo "<script>self.opener.location = 'voucher_view.php'; self.blur(); </script>";
-	echo "<script>window.close(); </script>";
-}
-if($v_type=='coutra') $v_type='Contra'; else $v_type=$v_type;
+
 if(isset($_POST['narr']))
 {$count = $_POST["count"];
 $sql2="select a.id,a.tr_id from secondary_journal a where  a.jv_no='$jv_no' and 1";
@@ -106,7 +92,7 @@ if($info[0]==0) $type='Credit';
                       <?=foreign_relation('accounts_ledger', 'ledger_id', 'ledger_name', $info[3], 'status=1'); ?>
                   </select>
                 </td>
-                <td><input type="text" name="narration_<?=$info[5];?>" id="narration_<?=$info[5];?>" style="" value="<?=$info[4];?>" />
+                  <td><textarea type="text" name="narration_<?=$info[5];?>" id="narration_<?=$info[5];?>" style="width: 99%"><?=$info[4];?></textarea>
                 <input type="hidden" name="l_<?=$pi;?>" id="l_<?=$pi;?>" value="<?=$info[3];?>" />
                 </td>
                 <td><input name="dr_amt_<?=$info[5];?>" type="text" id="dr_amt_<?=$info[5];?>" value="<?=$info[0]?>" style="width:80px;" /></td>
@@ -123,21 +109,14 @@ if($info[0]==0) $type='Credit';
       </table>
 
       <br />
-<?php
-//page select
-if($vtype=='receipt'||$vtype=='Receipt') $page="credit_note.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-if($vtype=='payment'||$vtype=='Payment') $page="debit_note.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-if($vtype=='coutra'||$vtype=='Coutra') $page="coutra_note_new.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-if($vtype=='journal_info'||$vtype=='Journal_info') $page="journal_note_new.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-//end
-?>
+
 <div align="center" style="margin-top:10px;">
 <table border="0" cellspacing="10" cellpadding="0" align="center" style="width:400px;">
   <tr>
     <td><input name="narr" type="submit" class="btn btn-primary" value="Edit Voucher" onmouseover="this.style.cursor='pointer';" /></td>
     <td>&nbsp;</td>
     <td><div class="btn_p">
-        <div align="center"><a href="voucher_print_sec.php?v_type=<?php echo $vtype;?>&amp;vo_no=<?php echo $jv_no;?>" target="_blank">Print This Invoice</a></div>
+
     </div></td>
   </tr>
 </table>

@@ -7,7 +7,7 @@ $unique_detail='id';
 $title='Sales Invoice';
 
 if(isset($_POST['select_dealer_do'])) {
-    $_SESSION['select_dealer_do_SP']=$_POST['dealer_code'];
+    $_SESSION['select_dealer_do_SP']=@$_POST['dealer_code'];
 }
 $select_dealer_do_SP = @$_SESSION['select_dealer_do_SP'];
 if(isset($_POST['dealer_cancel'])) {
@@ -145,9 +145,9 @@ if(isset($_POST['cancel']))
 }
 
 if(isset($_POST['confirm'])){
-    $commission_amount=$_POST['commission_amount'];
+    //$commission_amount=$_POST['commission_amount'];
     unset($_POST);
-    $_POST['commission_amount']=$commission_amount;
+    //$_POST['commission_amount']=$commission_amount;
     $_POST[$unique_master]=$unique_master_for_SP;
     $_POST['entry_at']=date('Y-m-d H:i:s');
     $_POST['status']='PROCESSING';

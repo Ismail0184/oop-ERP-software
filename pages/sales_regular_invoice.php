@@ -145,9 +145,9 @@ if(isset($_POST['cancel']))
 }
 
 if(isset($_POST['confirm'])){
-    $commission_amount=@$_POST['commission_amount'];
+    //$commission_amount=@$_POST['commission_amount'];
     unset($_POST);
-    $_POST['commission_amount']=$commission_amount;
+    //$_POST['commission_amount']=$commission_amount;
     $_POST[$unique_master]=$unique_master_for_regular;
     $_POST['entry_at']=date('Y-m-d H:i:s');
     $_POST['status']='PROCESSING';

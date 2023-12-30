@@ -2,6 +2,8 @@
 require_once ('support_file.php');
 $so_target=find_a_field('ims_monthly_target_master','count(id)','status="UNCHECKED"');
 $stock_transfer=find_a_field('ims_transfer_from_super_DB_master','count(do_no)','status="UNCHECKED"');
+
+$creditLimitRequested = find_a_field('dealer_credit_limit_request','count(id)','status="PENDINGS"');
 $sales_IMS_Management=$so_target+$stock_transfer;
 ?>
 
@@ -55,6 +57,7 @@ $sales_IMS_Management=$so_target+$stock_transfer;
         while($mainrow=mysqli_fetch_object($master_result)):  ?>
             <?php if($mainrow->main_menu_name!="Sales Reports"): ?>
                 <li><a href="#"><i class="<?=$mainrow->iconmain;?>"></i><?=$mainrow->main_menu_name;?>
+                        <?php if($mainrow->main_menu_id=="10012") if($creditLimitRequested>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$creditLimitRequested.' </span>]'?><?php } else {echo'';} ?>
                         <?php if($mainrow->main_menu_id=="10024") if($sales_IMS_Management>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$sales_IMS_Management.' </span>]'?><?php } else {echo'';} ?>
 						<?php if($mainrow->main_url=='#'):?><span class="fa fa-chevron-down"></span><?php endif; ?></a>
                     <ul class="nav child_menu">
@@ -97,6 +100,7 @@ $sales_IMS_Management=$so_target+$stock_transfer;
                         $sub_menu=mysqli_query($conn, $result);
                         while($subnrow=mysqli_fetch_object($sub_menu)): ?>
                             <li><a href="<?=$subnrow->sub_url;?>"><?=$subnrow->sub_menu_name;?>
+                                    <?php if($subnrow->sub_menu_id=="20030") if($creditLimitRequested>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$creditLimitRequested.' </span>]'?><?php } else {echo'';} ?>
                                     <?php if($subnrow->sub_menu_id=="20167") if($so_target>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$so_target.' </span>]'?><?php } else {echo'';} ?>
                                     <?php if($subnrow->sub_menu_id=="20178") if($stock_transfer>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$stock_transfer.' </span>]'?><?php } else {echo'';} ?>
                                 </a>

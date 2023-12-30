@@ -8,7 +8,7 @@ $unique_field='vendor_type';
 $table="vendor_type";
 $page="vendor_type.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 if(prevent_multi_submit()){
@@ -55,6 +55,7 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
+$vendor_type = @$vendor_type;
 ?>
 
 
@@ -70,7 +71,7 @@ if(isset($$unique))
 
 
 
- <?php if(!isset($_GET[id])){ ?>
+ <?php if(!isset($_GET['id'])){ ?>
      <!-------------------list view ------------------------->
      <div class="col-md-6 col-sm-12 col-xs-12">
          <div class="x_panel">
@@ -122,7 +123,7 @@ if(isset($$unique))
                                     <br><br><br>
 
                                         <br>
-                                        <?php if($_GET[id]){  ?>
+                                        <?php if(@$_GET['id']){  ?>
                                             <? if($_SESSION['userlevel']==5){?>                                            
                                              <div class="form-group" style="margin-left:40%; display: none">
                                              <div class="col-md-6 col-sm-6 col-xs-12">
@@ -139,15 +140,8 @@ if(isset($$unique))
                                             <button type="submit" name="record" id="record"  class="btn btn-success">Add New </button>
                                             </div></div>                                                                                        
                                             <?php } ?> 
-
-
                                 </form>
-                                </div>
-                                </div>
-                                </div>
-
-
-
-
-                
+                            </div>
+                        </div>
+                    </div>
 <?=$html->footer_content();mysqli_close($conn);?>        

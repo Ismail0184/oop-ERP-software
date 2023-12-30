@@ -249,7 +249,7 @@ function next_journal_sec_voucher_id($date='')
         $max = $min+10000;
     }
     $s ="select MAX(jv_no) jv_no from secondary_journal where jv_no between '".$min."' and '".$max."'";
-    $jv_no=@mysql_fetch_row(mysql_query($s));
+    $jv_no=@mysqli_fetch_row(mysqli_query($conn, $s));
 
     if($jv_no[0]>$min)
         $jv=$jv_no[0]+1;

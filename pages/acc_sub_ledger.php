@@ -79,7 +79,7 @@ $sub_ledger = @$sub_ledger;
 $ledger_id = @$ledger_id;
 $POST_under = @$_POST['under'];
 $POST_status = @$_POST['status'];
-$res='select a.sub_ledger_id,a.sub_ledger_id,a.sub_ledger, (select ledger_name from accounts_ledger where ledger_id=a.ledger_id) as ledger_name, c.group_name,(select COUNT(ledger_id) from journal where ledger_id=a.sub_ledger_id) as has_transactions,
+$res='select a.sub_ledger_id,a.sub_ledger_id,a.sub_ledger, (select ledger_name from accounts_ledger where ledger_id=a.ledger_id) as ledger_name, c.group_name,
 IF(a.status=1, "Active",IF(a.status="SUSPENDED", "SUSPENDED","Inactive")) as status
 FROM sub_ledger a,accounts_ledger b,ledger_group c where
 a.sub_ledger_id=b.ledger_id and b.ledger_group_id=c.group_id';

@@ -7,11 +7,11 @@ $table_master="sale_do_master";
 $table_details="sale_do_details";
 $page="acc_sales_special_invoice.php";
 $crud      =new crud($table_master);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 
 if(prevent_multi_submit()) {
   if (isset($_POST['returned'])) {
-      $_POST['returned_by']=$_SESSION[userid];
+      $_POST['returned_by']=$_SESSION['userid'];
       $_POST['returned_at']=date('Y-m-d H:i:s');
       $_POST['status']="RETURNED";
       $crud->update($unique);
@@ -34,12 +34,12 @@ if(prevent_multi_submit()) {
     }// if insert confirm
 }
 
-$ress="SELECT d.id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,i.d_price,d.total_unit,d.unit_price,d.total_amt from item_info i, ".$table_details." d where d.item_id=i.item_id and do_no=".$_GET[$unique]."";
+$ress="SELECT d.id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,i.d_price,d.total_unit,d.unit_price,d.total_amt from item_info i, ".$table_details." d where d.item_id=i.item_id and do_no=".$$unique."";
 
 
-  if(isset($_POST[viewreport])){
+  if(isset($_POST['viewreport'])){
     $res="SELECT m.do_no,m.do_no,m.do_date,m.remarks,d.dealer_name_e as dealer_name,w.warehouse_name,concat(u.fname,'<br>','at: ',m.entry_at) as entry_by,m.status from ".$table_master." m, dealer_info d,users u, warehouse w
-    where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and do_section='Special_invoice' and m.depot_id=w.warehouse_id and m.do_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'";
+    where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and do_section='Special_invoice' and m.depot_id=w.warehouse_id and m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'";
   } else {
       $res="SELECT m.do_no,m.do_no,m.do_date,m.remarks,d.dealer_name_e as dealer_name,w.warehouse_name,concat(u.fname,'<br>','at: ',m.entry_at) as entry_by,m.status from ".$table_master." m, dealer_info d,users u,warehouse w
       where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and m.status='UNCHECKED' and do_section='Special_invoice' and m.depot_id=w.warehouse_id";}
@@ -76,7 +76,8 @@ $ress="SELECT d.id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_
                         </tr>
                         </thead>
                         <tbody>
-                        <?php
+                        <?php $sl =0;
+                        $total_total_amt =0;
                         $query=mysqli_query($conn, $ress);
                         while($data=mysqli_fetch_object($query)): ?>
                         <tr>
@@ -128,13 +129,13 @@ $ress="SELECT d.id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_
 <?php } ?>
 
 
-<?php if(!isset($_GET[$unique])): ?>
+<?php if(!isset($$unique)): ?>
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if($_POST[f_date]) echo $_POST[f_date]; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if(@$_POST['f_date']) echo $_POST['f_date']; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if($_POST[t_date]) echo $_POST[t_date]; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(@$_POST['t_date']) echo $_POST['t_date']; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Record</button></td>
             </tr></table>
     </form>

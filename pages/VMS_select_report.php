@@ -3,12 +3,8 @@ require_once 'support_file.php';
 $title='Accounts Report';
 $page='VMS_select_report.php';
 $target_reportview_page='VMS_reportview.php';
-
-$sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),upp.* FROM
-user_plant_permission upp,
-warehouse w  WHERE  upp.warehouse_id=w.warehouse_id and
-upp.user_id=".$_SESSION[userid]." and upp.status>0
-order by w.warehouse_id";
+$item_id = @$_POST['item_id'];
+$warehouse_id = @$_POST['warehouse_id'];
 
 $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name,' (',sg.sub_group_name,')') FROM  item_info i,
 item_sub_group sg,
@@ -40,7 +36,7 @@ function reload1(form)
     }
 
 </style>
-<?php require_once 'body_content.php'; ?>
+<?php require_once 'body_content_nva_sm.php'; ?>
 <form class="form-horizontal form-label-left" method="POST" action="<?=$target_reportview_page?>" style="font-size: 11px" target="_blank">
               <div class="col-md-5 col-sm-12 col-xs-12">
                 <div class="x_panel">
@@ -65,7 +61,7 @@ function reload1(form)
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1" name="warehouse_id" >
                                                 <option></option>
-                                                <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_POST[warehouse_id]);?>
+                                                <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                                             </select>
                                         </div>
                                     </div>
@@ -108,7 +104,7 @@ function reload1(form)
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1" name="item_id" >
                                                 <option></option>
-                                                <?=advance_foreign_relation($sql_item_id,$_POST[item_id]);?>
+                                                <?=advance_foreign_relation($sql_item_id,$item_id);?>
                                             </select>
                                         </div>
                                     </div>
@@ -118,7 +114,7 @@ function reload1(form)
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1" name="warehouse_id" >
                                                 <option></option>
-                                                <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_POST[warehouse_id]);?>
+                                                <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                                             </select>
                                         </div>
                                     </div>
@@ -149,7 +145,7 @@ function reload1(form)
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1" name="warehouse_id" >
                                                 <option></option>
-                                                <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),$_POST[warehouse_id]);?>
+                                                <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                                             </select>
                                         </div>
                                     </div>

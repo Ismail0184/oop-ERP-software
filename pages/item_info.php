@@ -436,7 +436,7 @@ $sql_brand_category="Select category_name,category_name from brand_category";
     <?php if(!isset($unique_GET)): ?>
 </div>
 
-                            <?php endif; ?>
+<?php endif; ?>
 <?php if(!isset($_GET[$unique])):?>
 <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,$page);?>
 <?php endif; ?>

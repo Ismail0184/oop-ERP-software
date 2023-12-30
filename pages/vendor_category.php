@@ -8,7 +8,7 @@ $unique_field='category_name';
 $table="vendor_category";
 $page="vendor_category.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 if(prevent_multi_submit()){
@@ -55,6 +55,7 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
+$category_name = @$category_name;
 ?>
 
 
@@ -63,7 +64,7 @@ if(isset($$unique))
 <?php require_once 'body_content.php'; ?>
 
 
- <?php if(!isset($_GET[id])){ ?>
+ <?php if(!isset($_GET['id'])){ ?>
      <!-------------------list view ------------------------->
      <div class="col-md-6 col-sm-12 col-xs-12">
          <div class="x_panel">
@@ -113,7 +114,7 @@ if(isset($$unique))
                                     <br><br><br>
 
                                         <br>
-                                        <?php if($_GET[id]){  ?>
+                                        <?php if(@$_GET['id']){  ?>
                                             <? if($_SESSION['userlevel']==5){?>                                            
                                              <div class="form-group" style="margin-left:40%; display: none">
                                              <div class="col-md-6 col-sm-6 col-xs-12">

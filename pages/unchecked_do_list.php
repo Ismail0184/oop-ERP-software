@@ -69,7 +69,7 @@ m.dealer_code=d.dealer_code and
 m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
 m.entry_by=u.user_id and
-m.status in ('PROCESSING','RETURNED')    
+m.status in ('PROCESSING','RETURNED','MANUAL','UNCHECKED')    
 group by m.do_no order by m.do_no desc";
 }
     ?>

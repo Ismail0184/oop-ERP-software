@@ -14,11 +14,11 @@ if(isset($_POST[$shown])) {
 $$unique = @$_POST[$unique];
 if(isset($_POST['insert']))
 {
-$proj_id			= $_SESSION['proj_id'];
+$proj_id			= @$_SESSION['proj_id'];
 $now				= time();
-$entry_by = $_SESSION['user'];
+$entry_by = @$_SESSION['user'];
 $crud->insert();
-$id = $_POST['dealer_code'];
+$id = @$_POST['dealer_code'];
 $type=1;
 $msg='New Entry Successfully Inserted.';
 unset($_POST);
@@ -49,8 +49,9 @@ if(isset($$unique))
 {
 $condition=$unique."=".$$unique;
 $data=db_fetch_object($table,$condition);
-while (list($key, $value)=each($data))
-{ $$key=$value;}
+    $array = (array)$data;
+    foreach ($array as $key => $value)
+    { $$key=$value;}
 }
 if(!isset($$unique)) $$unique=db_last_insert_id($table,$unique);
 $serial = @$serial;

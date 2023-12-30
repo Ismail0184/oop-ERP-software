@@ -115,7 +115,7 @@ where
 a.AREA_CODE=d.area_code
 and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and m.do_type  in ('sales','') and m.do_section not in ('Rice') and w.warehouse_id=m.depot_id and
 c.item_id not in ('1096000100010312') and
-a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$pg_con.$dealer_code_CON.$dtype_con.$product_team_con."
+a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$dealer_code_CON."
 group by c.do_no
 order by c.do_no";
     $query = mysqli_query($conn, $sql); ?>
@@ -140,14 +140,13 @@ order by c.do_no";
         </tr>
         </thead>
         <tbody>
-        <?php  while($data=mysqli_fetch_object($query)){$s++;
-            list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $data->do_date); ?>
+        <?php $s=0;$discounttotal=0;$total_invoice_amount=0; while($data=mysqli_fetch_object($query)){$s++; ?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                 <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
                 <td style="border: solid 1px #999; text-align:center"><a href="chalan_view.php?v_no=<?=$data->chalan_no?>" target="_blank"><?=$data->chalan_no?></a></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->chalan_date?></td>
                 <td style="border: solid 1px #999; text-align:center"><a href="chalan_bill_distributors.php?do_no=<?=$data->do_no?>" target="_blank"><?=$data->do_no;?></a></td>
-                <td style="border: solid 1px #999; text-align:center"><?=$day.'-'.$month.'-'.$year1;?></td>
+                <td style="border: solid 1px #999; text-align:center"><?=$data->do_date?></td>
                 <td style="border: solid 1px #999; text-align:left"><?=$data->dealer_name;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->area;?></td>
                 <td style="border: solid 1px #999; text-align:left"><?=$data->tsm;?></td>
@@ -155,7 +154,7 @@ order by c.do_no";
                 <td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><? if(substr($data->discount,1)>0) echo  number_format(substr($data->discount,1),2); else echo'-';?></td>
                 <td style="border: solid 1px #999; text-align:right"><? if($data->comissionamount>0) echo  number_format($data->comissionamount,2); else echo'-';?></td>
-                <td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount-(substr($data->discount)+$data->comissionamount),2)?></td>
+                <td style="border: solid 1px #999; text-align:right"><?=number_format(($data->invoice_amount+$data->comissionamount)+$data->discount,2)?></td>
             </tr>
 
             <?php
@@ -163,7 +162,6 @@ order by c.do_no";
             $discounttotal=$discounttotal+$discounts;
             $total_invoice_amount=$total_invoice_amount+$data->invoice_amount;
             $totalsaleafterdiscount=($total_invoice_amount-($discounttotal+$data->comissionamount));
-            $actualsalestotalamts=$actualsalestotalamts+$totalamts;
 
             $totalsaleafterdiscounts=$totalsaleafterdiscounts+$totalsaleafterdiscount;
             $totalcomissionamount=$totalcomissionamount+$data->comissionamount;

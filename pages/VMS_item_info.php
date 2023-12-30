@@ -15,17 +15,17 @@ $$unique = @$_GET[$unique];
 if(isset($_POST[$unique_field]))
 { $$unique = $_POST[$unique];
 //for Record..................................
-    $_POST['item_name'] = str_replace('"',"``",$_POST['item_name']);
-    $_POST['item_name'] = str_replace("'","`",$_POST['item_name']);
-	$_POST['item_description'] = str_replace(Array("\r\n","\n","\r"), " ", $_POST['item_description']);
-    $_POST['item_description'] = str_replace('"',"``",$_POST['item_description']);
-    $_POST['item_description'] = str_replace("'","`",$_POST['item_description']);
+    $_POST['item_name'] = str_replace('"',"``",@$_POST['item_name']);
+    $_POST['item_name'] = str_replace("'","`",@$_POST['item_name']);
+	$_POST['item_description'] = str_replace(Array("\r\n","\n","\r"), " ", @$_POST['item_description']);
+    $_POST['item_description'] = str_replace('"',"``",@$_POST['item_description']);
+    $_POST['item_description'] = str_replace("'","`",@$_POST['item_description']);
     if(isset($_POST['record']))
     {
         $_POST['entry_at']=time();
         $_POST['entry_by']=$_SESSION['userid'];
-        $min=number_format($_POST['sub_group_id'] + 1, 0, '.', '');
-        $max=number_format($_POST['sub_group_id'] + 10000, 0, '.', '');
+        $min=number_format(@$_POST['sub_group_id'] + 1, 0, '.', '');
+        $max=number_format(@$_POST['sub_group_id'] + 10000, 0, '.', '');
         $_POST[$unique]=number_format(next_value('item_id','item_info','1',$min,$min,$max), 0, '.', '');
         $crud->insert();
         $type=1;

@@ -60,7 +60,6 @@ if(isset($_POST['viewreport'])){
 
 				WHERE 
 				
-				  checked!='NO' and 
 				  w.warehouse_id=r.warehouse_id AND
 				  j.tr_no = r.pr_no AND
 				  j.tr_from = 'Purchase' AND 
@@ -90,15 +89,15 @@ if(isset($_POST['viewreport'])){
 
     <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
         <table align="center" style="width: 50%;">
-            <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+            <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td>
                     <select name="checked" id="checked" class="form-control col-md-7 col-xs-12" style="width:auto; font-size:11px; height:25px">
                         <option value=""> Status</option>
-                        <option value="PENDING" <?=($_POST['checked']=='PENDING')?'Selected':'';?>>PENDING</option>
-                        <option value="YES" <?=($_POST['checked']=='YES')?'Selected':'';?>>YES</option>
+                        <option value="PENDING" <?=(@$_POST['checked']=='PENDING')?'Selected':'';?>>PENDING</option>
+                        <option value="YES" <?=(@$_POST['checked']=='YES')?'Selected':'';?>>YES</option>
                     </select>
                 </td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Goods / Services Received</button></td>

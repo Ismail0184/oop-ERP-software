@@ -1349,7 +1349,7 @@ function ledger_generate($ledger_id,$ledger_name,$ledger_group_id,$opening_balan
 function ledger_excess($ledger_name,$ledger_id='')
 { global $conn;
  if($ledger_id!='')
-  $advance_check=" and ledger_id!='$ledger_id'";
+  $advance_check=" and ledger_id!='$ledger_id'"; else $advance_check='';
  $check="select ledger_id from accounts_ledger where ledger_name='$ledger_name'".$advance_check;
  if(mysqli_num_rows(mysqli_query($conn, $check))>0)
   return FALSE;

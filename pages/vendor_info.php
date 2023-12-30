@@ -7,7 +7,7 @@ $unique_field='vendor_name';
 $table="vendor";
 $page="vendor_info.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 if(prevent_multi_submit()){
@@ -66,32 +66,32 @@ if(isset($_POST['modify']))
 
     $id = $_POST['vendor_id'];
 
-    if($_FILES['vtc']['tmp_name']!=''){
+    if(@$_FILES['vtc']['tmp_name']!=''){
         $file_temp = $_FILES['vtc']['tmp_name'];
         $folder = "../../v_pic/vtc/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
 
-    if($_FILES['vvc']['tmp_name']!=''){
+    if(@$_FILES['vvc']['tmp_name']!=''){
         $file_temp = $_FILES['vvc']['tmp_name'];
         $folder = "../../v_pic/vvc/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
 
-    if($_FILES['vtl']['tmp_name']!=''){
+    if(@$_FILES['vtl']['tmp_name']!=''){
         $file_temp = $_FILES['vtl']['tmp_name'];
         $folder = "../../v_pic/vtl/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
 
-    if($_FILES['qt1']['tmp_name']!=''){
+    if(@$_FILES['qt1']['tmp_name']!=''){
         $file_temp = $_FILES['qt1']['tmp_name'];
         $folder = "../../v_pic/qt1/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
 
-    if($_FILES['qt2']['tmp_name']!=''){
+    if(@$_FILES['qt2']['tmp_name']!=''){
         $file_temp = $_FILES['qt2']['tmp_name'];
         $folder = "../../v_pic/qt2/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
 
-    if($_FILES['qt3']['tmp_name']!=''){
+    if(@$_FILES['qt3']['tmp_name']!=''){
         $file_temp = $_FILES['qt3']['tmp_name'];
         $folder = "../../v_pic/qt3/";
         move_uploaded_file($file_temp, $folder.$id.'.jpg');}
@@ -119,6 +119,22 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 $res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as accounts_ledger, if(contact_person_name > "",concat(contact_person_name," , ",contact_person_designation),"")  as POC,contact_person_mobile as phone,email,status from '.$table.' order by '.$unique;
+$ledger_id = @$ledger_id;
+$vendor_name = @$vendor_name;
+$vendor_company = @$vendor_company;
+$address = @$address;
+$contact_no = @$contact_no;
+$email = @$email;
+$contact_person_name = @$contact_person_name;
+$contact_person_designation = @$contact_person_designation;
+$contact_person_mobile = @$contact_person_mobile;
+$vendor_category = @$vendor_category;
+$vendor_type = @$vendor_type;
+$vendor_for_department = @$vendor_for_department;
+$vtl = @$vtl;
+$vtc = @$vtc;
+$vvc = @$vvc;
+$commission = @$commission;
 ?>
 
 
@@ -172,7 +188,7 @@ $res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as acco
                                 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
                                     <?require_once 'support_html.php';?>
 
-                                    <input type="hidden" id="group_for" style="width:100%"    name="group_for" value="<?=$_SESSION[usergroup];?>" class="form-control col-md-7 col-xs-12" >
+                                    <input type="hidden" id="group_for" style="width:100%"    name="group_for" value="<?=$_SESSION['usergroup'];?>" class="form-control col-md-7 col-xs-12" >
 
                                     <div class="form-group" style="display: none">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 40%">Vendor ID<span class="required">*</span></label>
@@ -304,7 +320,7 @@ $res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as acco
 
                                     <hr>
 
-                                    <?php if($_GET[$unique]):  ?>
+                                    <?php if(@$_GET[$unique]):  ?>
                                         <div class="form-group" style="margin-left:40%">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-danger" onclick="self.close()">Close</button>
@@ -320,7 +336,7 @@ $res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as acco
 
 
  <?php if(!isset($_GET[$unique])):?>
-     <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+     <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
  <?php endif; ?>
  <?=$html->footer_content();mysqli_close($conn);?>
 

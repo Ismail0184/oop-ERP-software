@@ -83,7 +83,7 @@ if(prevent_multi_submit()) {
 //for single FG Add...........................
         if (isset($_POST['add'])) {
             $tdates = date("Y-m-d");
-            $day = date('l', strtotime($idatess));
+            $day = date('l', strtotime($tdates));
             $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
             $timess = $dateTime->format("d-m-y  h:i A");
             $date=date('Y-m-d');

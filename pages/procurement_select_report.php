@@ -1,6 +1,8 @@
 <?php require_once 'support_file.php'; 
 $title='Procurement Report';
-$page='procurement_select_report.php';?>
+$page='procurement_select_report.php';
+$vendor_id = @$vendor_id;
+?>
 <?php require_once 'header_content.php'; ?>
 <SCRIPT language=JavaScript>
     function reload(form)
@@ -34,7 +36,7 @@ $page='procurement_select_report.php';?>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" name="vendor_id" >
                                 <option></option>
-                                <?php foreign_relation('vendor', 'vendor_id', 'CONCAT(vendor_id," : ", vendor_name)', $_POST[vendor_id], 'status in ("ACTIVE")'); ?>
+                                <?php foreign_relation('vendor', 'vendor_id', 'CONCAT(vendor_id," : ", vendor_name)', $vendor_id, 'status in ("ACTIVE")'); ?>
                             </select>
                         </div>
                     </div>

@@ -117,7 +117,7 @@ class crud{
             for($i=1;$i<$cols;$i++)
             { $str .='<td></td>'; }
             $str .='</tr></tfoot-->';
-            $c=0;
+            $sl=0;
             if (mysqli_num_rows($result)>0){
                 while($row = mysqli_fetch_array($result)) {
                     $str .='<tr onclick="DoNavPOPUP('.$row[0].')"><td>'.($sl=$sl+1).'</td>';
@@ -426,6 +426,8 @@ ORDER BY zm.sl, zs.sl");
                             $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
                         elseif ($b=='PENDING'):
                             $sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
+                        elseif ($b=='PENDINGS'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';
                         elseif ($b=='PREMATURE'):
                             $sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
                         elseif($b=='PROCESSING'):
@@ -436,6 +438,8 @@ ORDER BY zm.sl, zs.sl");
                             $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
                         elseif($b=='APPROVED'):
                             $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVEDS'):
+                            $sp='<span class="label label-success" style="font-size:10px">Approved</span>';
                         elseif($b=='SETTLED'):
                             $sp='<span class="label label-success" style="font-size:10px">SETTLED</span>';
                         elseif($b=='RETURNED'):
