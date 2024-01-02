@@ -12,11 +12,12 @@ $unique='po_no';
 $unique_field='po_details';
 $table="purchase_master";
 $table_details="purchase_invoice";
-$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+$$unique = @$_GET[$unique];
+$current_status=find_a_field("".$table."","status","".$unique."=".$$unique."");
 $required_status="UNCHECKED";
 $page="emp_acess_unchecked_work_order.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+
 
 if(prevent_multi_submit()){
   
@@ -55,7 +56,7 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-$master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
+$master=find_all_field("".$table."","","".$unique."=".$$unique."");
 
 	
 	
@@ -177,7 +178,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)"><?=$req->$unique_field;?></td>
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)"><?=$req->entry_by;?><br>
 								<?=$req->entry_at;?></td>
-                                <?php if(isset($_POST[viewreport])){ ?>
+                                <?php if(isset($_POST['viewreport'])){ ?>
                                 <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$req->checkby);?><br><?=$req->checkby_date;?></td>
                                 <?php } ?>
                                 

@@ -11,6 +11,7 @@ item_sub_group sg,
 item_group g WHERE  i.sub_group_id=sg.sub_group_id and
 sg.group_id=g.group_id
 order by i.item_name";
+$report_id = @$_GET['report_id'];
 ?>
 
 
@@ -46,7 +47,7 @@ function reload1(form)
                       <div class="col-md-7 col-sm-12 col-xs-12">
                           <div class="x_panel">
                               <div class="x_content">
-                                  <?php if ($_GET['report_id']=='1301001'):?>
+                                  <?php if ($report_id=='1301001'):?>
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required">*</span>
                                         </label>
@@ -98,7 +99,7 @@ function reload1(form)
                                             </select>
                                         </div>
                                     </div>
-                                  <?php elseif ($_GET['report_id']=='1301004'):?>
+                                  <?php elseif ($report_id=='1301004'):?>
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Item Name :</label>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -130,7 +131,7 @@ function reload1(form)
 
 
 
-                                  <?php elseif ($_GET['report_id']=='1301002' || $_GET['report_id']=='1301003' || $_GET['report_id']=='1302001'):?>
+                                  <?php elseif ($report_id=='1301002' || $report_id=='1301003' || $report_id=='1302001'):?>
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required">*</span>
                                         </label>
@@ -156,7 +157,7 @@ function reload1(form)
 <?php  else:  ?>
 <p style="text-align: center">Please select a report from left</p>
 <?php endif; ?>
-<?php if ($_GET['report_id']>0): ?>
+<?php if ($report_id>0): ?>
                       <div class="ln_solid"></div>
                       <div class="form-group">
                         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">

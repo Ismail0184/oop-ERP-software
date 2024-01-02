@@ -127,45 +127,45 @@ item_info i
                 add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $_POST['cr_amount_4'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'],0,0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // COGS start form here
             if (($PostLedger5> 0) && (($PostLedger6 && $_POST['dr_amount_5']) > 0) && ($_POST['cr_amount_6'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_5'], $_POST['narration_5'], $_POST['dr_amount_5'], 0,'Sales', $_POST['chalan_no'], $unique_GET, $_POST['sales_cost_center'], 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_6'], $_POST['narration_5'], 0, $_POST['cr_amount_6'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_5'], $_POST['narration_5'], $_POST['dr_amount_5'], 0,'Sales', $_POST['chalan_no'], $unique_GET, $_POST['sales_cost_center'], 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_6'], $_POST['narration_5'], 0, $_POST['cr_amount_6'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Comission form here
             if (($PostLedger7 > 0) && ($_POST['dr_amount_7'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_7'], $_POST['narration_7'], $_POST['dr_amount_7'], 0,'Sales',$_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_7'], $_POST['narration_7'], $_POST['dr_amount_7'], 0,'Sales',$_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Free own products
             if (($PostLedger8 > 0) && ($_POST['dr_amount_8'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_8'], $_POST['narration_8'], $_POST['dr_amount_8'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_8'], $_POST['narration_8'], $_POST['dr_amount_8'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Free other SKU
             if (($PostLedger9 > 0) && ($_POST['dr_amount_9'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_9'], $_POST['narration_9'], $_POST['dr_amount_9'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_9'], $_POST['narration_9'], $_POST['dr_amount_9'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Free other SKU
             if (($PostLedger10 > 0) && ($_POST['cr_amount_10'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_10'], $_POST['narration_10'], 0, $_POST['cr_amount_10'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_10'], $_POST['narration_10'], 0, $_POST['cr_amount_10'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Free other SKU
             if (($PostLedger11 > 0) && ($_POST['dr_amount_11'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_11'], $_POST['narration_11'], $_POST['dr_amount_11'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_11'], $_POST['narration_11'], $_POST['dr_amount_11'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Cash discounted on style forever products
             if (($PostLedger12 > 0) && ($_POST['dr_amount_12'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_12'], $_POST['narration_12'], $_POST['dr_amount_12'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_12'], $_POST['narration_12'], $_POST['dr_amount_12'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Cash discount on Remond
 
             if (($PostLedger16 > 0) && ($_POST['dr_amount_16'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_16'], $_POST['narration_16'], $_POST['dr_amount_16'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_16'], $_POST['narration_16'], $_POST['dr_amount_16'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Cash discount on Believe
 
             if (($PostLedger17 > 0) && ($_POST['dr_amount_17'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_17'], $_POST['narration_17'], $_POST['dr_amount_17'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_17'], $_POST['narration_17'], $_POST['dr_amount_17'], 0,'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Cash discount on Bosh
             if (($PostLedger13 > 0) && ($_POST['cr_amount_13'] > 0)) {
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_13'], $_POST['narration_13'], 0, $_POST['cr_amount_13'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_13'], $_POST['narration_13'], 0, $_POST['cr_amount_13'],'Sales', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             } // Total Cash Discount
 
         } // end of sales invoice
         if($_POST['do_type']=='sample' || $_POST['do_type']=='display' || $_POST['do_type']=='gift' || $_POST['do_type']=='free'){
             if (($PostLedger1 > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_1']) > 0)) {
                 $sample_amount=find_a_field('journal_item','SUM(total_amt)',''.$unique.'='.$_SESSION['wpc_DO']);
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['other_sales_invoice_ledger'], $_POST['narration_1'], $sample_amount, 0, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, $_POST['cc_code'], 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
-                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $sample_amount, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['other_sales_invoice_ledger'], $_POST['narration_1'], $sample_amount, 0, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, $_POST['cc_code'], 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
+                add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $sample_amount, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
             }} // end of other invoice
 
         $up_master=mysqli_query($conn,"UPDATE ".$table_details." SET status='COMPLETED' where ".$unique."=".$_SESSION['wpc_DO']."");

@@ -1,13 +1,12 @@
-<?php require_once 'support_file.php'; ?>
-<?
-//(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
+<?php require_once 'support_file.php';?>
+<?=(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
 $now=time();
 $unique='town_code';
 $unique_field='town_name';
 $table="town";
 $page="sales_market_setup_town.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $title='Town Setup';
 
 if(prevent_multi_submit()){
@@ -20,7 +19,7 @@ if(prevent_multi_submit()){
             $type=1;
             $msg='New Entry Successfully Inserted.';
             //unset($_POST);
-            unset($$unique);
+            //unset($$unique);
         }
 
 //for modify..................................
@@ -50,17 +49,23 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
+$status = @$status;
+$territory_code = @$territory_code;
+$town_name = @$town_name;
+$incharge_id = @$incharge_id;
+$POSTTterritoryCode = @$_POST['territory_code'];
 $sql = "SELECT typeshorname, typedetails from distributor_type
 where 1 order by typedetails";
 
 $res="SELECT t.town_code,t.town_name,(select PBI_NAME from personnel_basic_info where PBI_ID=t.incharge_id) as Incharge_person,if(t.status>0, 'Active','Inactive') as status from ".$table." t where 1";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
-    $id=$data->ZONE_CODE;
+    $id=$data->town_code;
 
     if(isset($_POST['deletedata'.$id]))
-    { $del=mysqli_query($conn, "Delete from ".$table." where ".$unique."=".$id."");}
+    {
+        //$del=mysqli_query($conn, "Delete from ".$table." where ".$unique."=".$id."");
+    }
 }
 
 $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') FROM 						 
@@ -117,7 +122,7 @@ $sql = "SELECT AREA_CODE, AREA_NAME from area where status=1 order by AREA_CODE"
                                     <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
                                         <select class="select2_single form-control" style="width: 100%;" tabindex="-1" required="required" name="territory_code" id="territory_code">
                                             <option></option>
-                                            <?=advance_foreign_relation($sql,($_GET[$unique]>0)? $territory_code : $_POST[territory_code]);?>
+                                            <?=advance_foreign_relation($sql,($$unique>0)? $territory_code : $POSTTterritoryCode);?>
                                         </select>
                                     </div>
                                 </div>
@@ -152,7 +157,7 @@ $sql = "SELECT AREA_CODE, AREA_NAME from area where status=1 order by AREA_CODE"
                                 <?php endif;?>
                                 <hr>
 
-                                <?php if($_GET[$unique]):  ?>
+                                <?php if(isset($_GET[$unique])): ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-danger" onclick="self.close()">Close</button>
@@ -166,7 +171,6 @@ $sql = "SELECT AREA_CODE, AREA_NAME from area where status=1 order by AREA_CODE"
                             </form>
                         </div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
             <?php if(!isset($_GET[$unique])):?>
-                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
             <?php endif; ?>
             <?=$html->footer_content();mysqli_close($conn);?>
-            <?php ob_end_flush();ob_flush(); ?>

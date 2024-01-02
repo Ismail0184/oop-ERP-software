@@ -1188,7 +1188,6 @@ where
                 <td style="border: solid 1px #999; text-align:right"><?=($data->OtherIssue==0)? '-' : number_format($data->OtherIssue,2);?></td>
                 <td style="border: solid 1px #999; text-align:right"><?=((($data->opening+$data->collection+$data->OtherReceived+$data->salesReturn)-($data->shipment+$data->OtherIssue))==0)? '-' : number_format((($data->opening+$data->collection+$data->OtherReceived+$data->salesReturn)-($data->shipment+$data->OtherIssue)),2);?></td>
                 </tr>
-
             <?php
             $total_opening = $total_opening+$data->opening;
             $total_SalesReturn = $total_SalesReturn+$data->salesReturn;
@@ -1196,7 +1195,6 @@ where
             $totalOtherReceived = $totalOtherReceived+$data->OtherReceived;
             $total_shipment = $total_shipment+$data->shipment;
             $totalOtherIssue = $totalOtherIssue+$data->OtherIssue;
-
         } ?>
         <tr style="font-size:11px; font-weight:bold">
             <td colspan="6" style="border: solid 1px #999; text-align:right;  padding:2px">Total</td>
@@ -1206,7 +1204,7 @@ where
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_collection,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_shipment,2);?></td>
             <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($totalOtherIssue,2);?></td>
-            <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format((($total_opening+$total_collection)-$total_shipment),2);?></td>
+            <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format((($total_opening+$total_SalesReturn+$total_collection+$totalOtherReceived)-($total_shipment+$totalOtherIssue)),2);?></td>
         </tr></tbody>
     </table>
 
@@ -1999,7 +1997,9 @@ order by c.do_no";
                 ji.*,
                 SUM(sd.unit_price * ji.item_ex) as invoice_amount,
                 ib.brand_name,
-                (select SUM(total_amt) from sale_do_details where do_no=sd.do_no and item_id="1096000100010312" and gift_on_item=sd.item_id) as cash_discount
+                (select SUM(total_amt) from sale_do_details where do_no=sd.do_no and item_id="1096000100010312" and gift_on_item=sd.item_id) as cash_discount,
+                (select SUM(total_unit) from sale_do_details where do_no=sd.do_no and item_id=sd.item_id) as totalQty
+                
 
 				from
 				sale_do_chalan sd,
@@ -2040,7 +2040,7 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->item_price,2);?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->item_ex;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($amount=$data->item_ex*$data->item_price,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->cash_discount,2);?></td>
+                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format(($data->cash_discount/$data->totalQty)*$data->item_ex,2);?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->invoice_price,2);?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($invoice_amounts=$data->invoice_amount+$data->cash_discount,2);?></td>
                 </tr>

@@ -188,7 +188,7 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
             <td style="text-align: center"><?=$days_in_month;?></td>
             <td style="text-align: center"></td>
             <td style="text-align: center"></td>
-            <td style="text-align: center"><?=$days_in_month-$r_count;?></td>
+            <td style="text-align: center"></td>
             <td style="text-align: center"></td>
             <td style="text-align: center"></td>
             <td style="text-align: center"></td>

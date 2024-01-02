@@ -6,7 +6,7 @@ $unique_field='AREA_NAME';
 $table="area";
 $page="sales_market_setup_territory.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $title='Territory Setup';
 
 if(prevent_multi_submit()){
@@ -50,8 +50,9 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
-
+$AREA_NAME = @$AREA_NAME;
+$ZONE_ID = @$ZONE_ID;
+$PBI_ID = @$PBI_ID;
 $res="SELECT t.".$unique.",t.".$unique." as ID,t.".$unique_field." as territory_name,(select PBI_NAME from personnel_basic_info where PBI_ID=t.PBI_ID) as territory_manager,(select ZONE_NAME from zon where ZONE_CODE=t.ZONE_ID) as Area,if(t.status>0, 'Active','Inactive') as status from ".$table." t where 1";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
@@ -148,7 +149,7 @@ designation des
                                 <?php endif;?>
                                 <hr>
 
-                                <?php if($_GET[$unique]):  ?>
+                                <?php if(isset($_GET[$unique])): ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-danger" onclick="self.close()">Close</button>
@@ -162,7 +163,6 @@ designation des
                             </form>
                         </div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
             <?php if(!isset($_GET[$unique])):?>
-                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
             <?php endif; ?>
             <?=$html->footer_content();mysqli_close($conn);?>
-            <?php ob_end_flush();ob_flush(); ?>

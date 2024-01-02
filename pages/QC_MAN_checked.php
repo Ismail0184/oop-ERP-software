@@ -12,6 +12,7 @@ $re_page = 'Incoming_Material_Received.php';
 $ji_date = date('Y-m-d');
 $crud = new crud($table);
 $$unique = @$_GET[$unique];
+$$unique_field = @$_GET[$unique_field];
 $targeturl = "<meta http-equiv='refresh' content='0;$page'>";
 $masterDATA = find_all_field('purchase_return_master', '', 'id=' . $$unique);
 if(isset($_POST['returned']))
@@ -52,15 +53,15 @@ if(isset($_POST['checked']))
     $up_details="UPDATE ".$table_details." SET status='CHECKED',po_no='".$_POST['po_no']."' where ".$unique_details."=".$$unique."";
     $update_table_details=mysqli_query($conn, $up_details);
     unset($_POST);
-    unset($$unique);
+
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
     echo "<script>window.close(); </script>";
 }
 
-$results = "Select srd.*,i.* from " . $table_details . " srd, item_info i  where
- srd.item_id=i.item_id and 
- srd." . $unique_details . "=" . $$unique . " order by srd.id";
-$query = mysqli_query($conn, $results);
+
+
+
+
 
 
 
@@ -94,7 +95,7 @@ $pquery = mysqli_query($conn, $resultss);
 
 $resu=mysqli_query($conn, "Select d.*,i.* from 
 ".$table_details." d,item_info i where 
-d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
+d.".$unique_details."='".$$unique."' and d.item_id=i.item_id");
 ?>
 
 
@@ -107,7 +108,7 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
 
 
 
-<?php if($_GET[$unique]) { ?>
+<?php if($$unique) { ?>
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="x_panel">
 
@@ -128,11 +129,11 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                                                 <th style="text-align:center; vertical-align: middle; background-color:#F90">Qty	</th>
                                                 <!--th style="text-align:center; vertical-align: middle">Inspection<br />Add</th-->
                                             </tr>
-                                            <?php while($MANdetrow=mysqli_fetch_array($resu)){
+                                            <?php $j=0;$tqty=0; while($MANdetrow=mysqli_fetch_array($resu)){
 											
 												$query_for_last_MAN=mysqli_query($conn, "Select * from MAN_details where item_id=".$MANdetrow['item_id']." order by item_id desc limit 1");
 												$last_row=mysqli_fetch_object($query_for_last_MAN);
-												 ; ?>
+												  ?>
                                                 <tr style="background-color:#FFF">
                                                     <td style="width:2%; text-align:center"><?=$j=$j+1;?></td>
                                                     <td style="text-align:left"><?=$MANdetrow['item_id']?></td>
@@ -144,20 +145,13 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                                                     <td style="width:10%; text-align:right"><input type="text" name="po_no" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->man_date; ?></td>
                                                     <td style="width:10%; text-align:right"><?=$last_row->qty; ?></td>
-                                                    <!--td align="center" style="width:10%">
-                                                        <?php $dones = getSVALUE('QC_Inspection_Work_Sheet_master','COUNT(item_id)','where '.$unique.'="'.$_GET['man_id'].'" and item_id='.$MANdetrow['item_id']); if($dones>0){ ?>
-                                                            <img src="done.png" style="margin-left:10px" height="25" width="25" />
-                                                        <?php } else { ?>
-                                                            <a href="Inspection_Work_Sheet.php?manid=<?php echo $MANdetrow['MAN_ID']; ?>&item_id=<?php echo $MANdetrow['item_id']; ?>&t_id=<?php echo $MANdetrow['id']; ?>" style="text-decoration:none"><img src="add.png" style="margin-left:10px" height="25" width="25" /></a>
-                                                        <?php }?>
-                                                        </a></td-->
                                                 </tr>
                                                 <?php
                                                 $tqty=$tqty+$MANdetrow['qty'];
                                                 $tamount=$tqty+$MANdetrow['amount'];
                                             } ?>
                                             <tr><td colspan="3">Total</td>
-                                                <td style="text-align:right"><?php echo $tqty; ?></td>
+                                                <td style="text-align:right"><?=$tqty?></td>
                                                 <td style="text-align:right"></td><td style="text-align:right"></td>
                                                 <td></td><td></td>
                                             </tr>
@@ -185,10 +179,10 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
         <table align="center" style="width: 50%;">
             <tr>
                 <td>
-                    <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
+                    <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
                 </td>
                 <td style="width:10px; text-align:center"></td>
-                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
             </tr>
@@ -219,7 +213,7 @@ d.".$unique_details."='$_GET[$unique]' and d.item_id=i.item_id");
                     </tr>
                     </thead>
                     <tbody>
-                    <?php while ($rows=mysqli_fetch_array($pquery)){ ?>
+                    <?php $i=0; while ($rows=mysqli_fetch_array($pquery)){ ?>
                         <tr style="font-size:11px; cursor: pointer">
                             <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
                             <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['id'];?></a></td>

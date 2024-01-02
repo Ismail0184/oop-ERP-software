@@ -22,7 +22,7 @@ if(isset($_GET[$unique]))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
+$main_menu_name = @$main_menu_name;
 $query='Select mm.id,mm.main_menu_id,mm.main_menu_name,mm.url,mm.quick_access_url,mm.faicon,dm.modulename as module,mm.table_name,IF(mm.status=1, "Active", "Inactive") as status from '.$table.' mm, dev_modules dm
 where mm.module_id=dm.id
 order by dm.module_id,mm.sl';
@@ -82,7 +82,7 @@ order by dm.module_id,mm.sl';
                                         </div>
                                     </div>
                                     
-                                    <?php if($_GET[$unique]):  ?>
+                                    <?php if(@$_GET[$unique]):  ?>
                                         <div class="form-group" style="width: 100%">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Serial</label>
                                             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -103,7 +103,7 @@ order by dm.module_id,mm.sl';
 
                                     <hr> 
 
-                                    <?php if($_GET[$unique]):  ?>
+                                    <?php if(@$_GET[$unique]):  ?>
                                     <div class="form-group" style="margin-left:30%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                         <button type="submit" name="cancel" id="cancel" style="font-size:12px"  class="btn btn-danger">Cancel</button>
@@ -123,8 +123,6 @@ order by dm.module_id,mm.sl';
                            
 
 <?php if(!isset($_GET[$unique])):?> 
-<?=$crud->report_templates_with_add_new($query,$title,12,$action=$_SESSION["userlevel"],$create=0);?>  
+<?=$crud->report_templates_with_add_new($query,$title,12,$action=$_SESSION["userlevel"],$create=0,'');?>
 <?php endif; ?>
 <?=$html->footer_content();mysqli_close($conn);?>
-<?php ob_end_flush();
-ob_flush(); ?>                            

@@ -150,7 +150,7 @@ if(isset($_POST['confirm'])){
     //$_POST['commission_amount']=$commission_amount;
     $_POST[$unique_master]=$unique_master_for_SP;
     $_POST['entry_at']=date('Y-m-d H:i:s');
-    $_POST['status']='PROCESSING';
+    $_POST['status']='UNCHECKED';
 
     $crud   = new crud($table_master);
     $crud->update($unique_master);

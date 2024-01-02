@@ -28,7 +28,6 @@ if(prevent_multi_submit()) {
         }
         $up_payment=mysqli_query($conn, "UPDATE ".$table_master." SET status='PROCESSING' where ".$unique."=".$$unique."");
         unset($_POST);
-        unset($$unique);
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }// if insert confirm

@@ -12,8 +12,8 @@ $title="Primary DO List";
  $show='dealer_code';
  $id='do_no';
  $text_field_id='old_do_no';
- $target_url = 'uncheck_do_one.php';
- $page = 'unchecked_do_list.php';
+ $target_url = 'MIS_invoice_view.php';
+ $page = 'MIS_data_delete_invoice_delete.php';
  ?>
 
  <?php require_once 'header_content.php'; ?>
@@ -37,9 +37,9 @@ $title="Primary DO List";
 
 <?php
 if(isset($_POST['viewreport'])){
-$res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
-concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
-SUM(dt.total_amt)	 as Order_Amount,m.remarks,m.sent_to_warehuse_at as sent_warehouse,m.status
+
+    $res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
+concat(u.fname) as Invoice_By,m.status
 from
 sale_do_master m,
 dealer_info d ,
@@ -52,24 +52,6 @@ m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
 m.entry_by=u.user_id and
 m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' 
-group by m.do_no order by m.do_no desc"; } else {
-$res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
-concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
-(SELECT concat('DO :',do_no,' Date :',do_date,'<br>DO Status: ',status) from sale_do_master where dealer_code=d.dealer_code and do_no<m.do_no order by do_no desc limit 1) as last_invoice_status,
-(SELECT SUM(cr_amt-dr_amt) from journal where ledger_id=d.account_code) as ledger_balance,
-concat(d.credit_limit,'<br> validation: ', d.credit_limit_time) as credit_limit,SUM(dt.total_amt)	 as Order_Amount,m.remarks,m.status
-from
-sale_do_master m,
-dealer_info d ,
-sale_do_details dt,
-users u,
-warehouse w
-where
-m.dealer_code=d.dealer_code and
-m.do_no=dt.do_no  and
-m.depot_id=w.warehouse_id and
-m.entry_by=u.user_id and
-m.status in ('PROCESSING','RETURNED','MANUAL')    
 group by m.do_no order by m.do_no desc";
 }
     ?>

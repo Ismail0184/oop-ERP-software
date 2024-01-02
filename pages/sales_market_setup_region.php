@@ -6,7 +6,7 @@ $unique_field='BRANCH_NAME';
 $table="branch";
 $page="sales_market_setup_region.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $title='Region Setup';
 
 if(prevent_multi_submit()){
@@ -19,7 +19,6 @@ if(prevent_multi_submit()){
             $type=1;
             $msg='New Entry Successfully Inserted.';
             //unset($_POST);
-            unset($$unique);
         }
 
 //for modify..................................
@@ -49,7 +48,9 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
+$BRANCH_NAME = @$BRANCH_NAME;
+$BRANCH_ID = @$BRANCH_ID;
+$branch_rsm_name = @$branch_rsm_name;
 $sql = "SELECT typeshorname, typedetails from distributor_type
 where 1 order by typedetails";
 $sql_item = "SELECT item_id, concat(item_id,' : ',finish_goods_code,' : ', item_name) from item_info
@@ -57,11 +58,11 @@ $sql_item = "SELECT item_id, concat(item_id,' : ',finish_goods_code,' : ', item_
 $res="SELECT r.BRANCH_ID,r.BRANCH_NAME as Region_name,(select PBI_NAME from personnel_basic_info where PBI_ID=r.branch_rsm_name) as Regional_Manager,if(r.status>0, 'Active','Inactive') as status from ".$table." r where 1";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
-    $id=$data->ZONE_CODE;
+    $id=$data->BRANCH_ID;
 
     if(isset($_POST['deletedata'.$id]))
     {
-        $del=mysqli_query($conn, "Delete from ".$table." where ".$unique."=".$id."");
+        //$del=mysqli_query($conn, "Delete from ".$table." where ".$unique."=".$id."");
     }
 }
 
@@ -145,7 +146,7 @@ designation des
 
                                 <hr>
 
-                                <?php if($_GET[$unique]):  ?>
+                                <?php if(@$_GET[$unique]):  ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-danger" onclick="self.close()">Close</button>
@@ -159,7 +160,6 @@ designation des
                             </form>
                         </div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
             <?php if(!isset($_GET[$unique])):?>
-                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>
+                <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
             <?php endif; ?>
             <?=$html->footer_content();mysqli_close($conn);?>
-            <?php ob_end_flush();ob_flush(); ?>

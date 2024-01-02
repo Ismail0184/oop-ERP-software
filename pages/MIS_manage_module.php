@@ -1,7 +1,7 @@
 <?php require_once 'support_file.php';?>
 <?(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
 $title='Manage Module';
-$proj_id=$_SESSION['proj_id'];
+
 $now=time();
 $page="MIS_manage_module.php";
 $table="dev_modules";
@@ -25,6 +25,11 @@ if(isset($_GET[$unique]))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
+
+$sl = @$sl;
+$modulename = @$modulename;
+$status = @$status;
+
 $res='select '.$unique.','.$unique.' as module_id,sl as serial,'.$unique_field.' as module_name,module_short_name,fa_icon,fa_icon_color,IF(status=1, "Active", "Inactive") as status from '.$table.'  where 
 1 order by '.$unique;
 ?>
@@ -60,7 +65,7 @@ $res='select '.$unique.','.$unique.' as module_id,sl as serial,'.$unique_field.'
         <?php endif; ?>
                     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post"  style="font-size: 11px">
                         <?php require_once 'support_html.php';?>
-                        <?php if($_GET[$unique]):  ?>
+                        <?php if(@$_GET[$unique]):  ?>
                         <div class="form-group" style="width: 100%">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Serial <span class="required text-danger">*</span></label>
                                 <div class="col-md-6 col-sm-6 col-xs-12">
@@ -76,7 +81,7 @@ $res='select '.$unique.','.$unique.' as module_id,sl as serial,'.$unique_field.'
                         </div>
                         
                        
-                        <?php if($_GET[$unique]):  ?>
+                        <?php if(@$_GET[$unique]):  ?>
                             <div class="form-group" style="width: 100%">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Status</label>
                                     <div class="col-md-6 col-sm-6 col-xs-12">
@@ -88,7 +93,7 @@ $res='select '.$unique.','.$unique.' as module_id,sl as serial,'.$unique_field.'
                             </div>
                         <?php endif ?>
                         <hr>   
-                        <?php if($_GET[$unique]):  ?>
+                        <?php if(@$_GET[$unique]):  ?>
                                     <div class="form-group" style="margin-left:30%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                         <button type="submit" name="cancel" id="cancel" style="font-size:12px"  class="btn btn-danger">Cancel</button>
@@ -104,8 +109,8 @@ $res='select '.$unique.','.$unique.' as module_id,sl as serial,'.$unique_field.'
                                     <?php endif; ?>     
 
                     </form></div></div></div><?php if(!isset($_GET[$unique])): ?></div><?php endif; ?>
-<?php if(!isset($_GET[$unique])):?> 
-<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=0);?>  
+<?php if(!isset($_GET[$unique])):?>
+<?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=0,'');?>
 <?php endif; ?>
 <?=$html->footer_content();mysqli_close($conn);?>
 <?php ob_end_flush();

@@ -79,7 +79,7 @@ $report_id = @$_POST['report_id'];
     if($_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
     if(isset($warehouse_id))				{$warehouse_id_CON=' and m.depot_id='.$warehouse_id;}
     if($_POST['dealer_code']>0) 			 $dealer_code=$_POST['dealer_code'];
-    if(isset($dealer_code))				{$dealer_code_CON=' and m.dealer_code='.$dealer_code;}
+    if(isset($dealer_code))				{$dealer_code_CON=' and m.dealer_code='.$dealer_code;} else {$dealer_code_CON='';}
     $sql="select
 distinct c.chalan_no,
 
@@ -140,7 +140,13 @@ order by c.do_no";
         </tr>
         </thead>
         <tbody>
-        <?php $s=0;$discounttotal=0;$total_invoice_amount=0; while($data=mysqli_fetch_object($query)){$s++; ?>
+        <?php
+        $s=0;
+        $discounttotal=0;
+        $total_invoice_amount=0;
+        $totalsaleafterdiscounts=0;
+        $totalcomissionamount = 0;
+        while($data=mysqli_fetch_object($query)){$s++; ?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                 <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
                 <td style="border: solid 1px #999; text-align:center"><a href="chalan_view.php?v_no=<?=$data->chalan_no?>" target="_blank"><?=$data->chalan_no?></a></td>
@@ -337,7 +343,7 @@ order by c.do_no";
             <th style="border: solid 1px #999; padding:2px; width: 10%">Type</th>
         </tr></thead>
         <tbody>
-        <? 	$res=mysqli_query($conn, 'select p.PBI_ID,p.so_type,p.PBI_ID_UNIQUE as SO_code,p.ESSENTIAL_NATIONAL_ID as nid,p.PBI_NAME, p.PBI_JOB_STATUS as status,e.*,
+        <? $i=0;	$res=mysqli_query($conn, 'select p.PBI_ID,p.so_type,p.PBI_ID_UNIQUE as SO_code,p.ESSENTIAL_NATIONAL_ID as nid,p.PBI_NAME, p.PBI_JOB_STATUS as status,e.*,
 								(SELECT PBI_NAME from personnel_basic_info where PBI_ID=p.tsm) as tsm,
 								(select sub_dealer_name_e from sub_db_info where sub_db_code=p.sub_db_code)	as sub_dealer,
 								  a.AREA_NAME as territory,b.BRANCH_NAME as region,
@@ -373,7 +379,7 @@ order by c.do_no";
 <?php elseif ($report_id=='9004002'):
   $sql="SELECT d.dealer_code,d.dealer_code,d.dealer_custom_code,d.account_code as ledger_id,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person,d.contact_number,d.address_e as address,d.national_id,d.TIN_BIN as 'TIN / BIN'  from dealer_info d, town t, area a, branch b WHERE
 d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and
-   d.canceled in ('".$_POST['canceled']."') ".$order_by.""; echo reportview($sql,'Customer Report','98');
+   d.canceled in ('".$_POST['canceled']."') ".$order_by.""; echo reportview($sql,'Customer Report','98','','','');
   ?>
 
 
@@ -402,7 +408,7 @@ area a
   d.PBI_ID=p2.PBI_ID and
   d.TSM_PBI_ID=p.PBI_ID and
   d.TSM_PBI_ID=a.PBI_ID'.$datecon.$tsm_con.' group by d.id order by d.ims_date,p.PBI_NAME,p2.PBI_NAME,d.ims_no,d.item_id asc';
-    echo reportview($query,'Daily IMS Report','99');
+    echo reportview($query,'Daily IMS Report','99','','','');
     ?>
 
 
@@ -426,7 +432,7 @@ area a
 <title><?=$_SESSION['company_name'];?> | Monthly Target Report</title>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-13px">Monthly Target Report</h4>
-<h6 align="center" style="margin-top:-13px">For the month of <?=find_a_field("monthname","monthfullName","month=".$_POST[month]."");?>, <?=$_POST[year];?></h6>
+<h6 align="center" style="margin-top:-13px">For the month of <?=find_a_field("monthname","monthfullName","month=".$_POST['month']."");?>, <?=$_POST[year];?></h6>
 
 <table align="center" id="customers" style="width:90%; border: solid 1px #999; border-collapse:collapse; ">
     <thead>
@@ -466,7 +472,7 @@ area a
   d.PBI_ID=p2.PBI_ID and
   d.TSM_PBI_ID=p.PBI_ID and
   d.TSM_PBI_ID=a.PBI_ID and
-  d.month=".$_POST[month]." and d.year=".$_POST[year]." group by d.id order by p.PBI_ID,p2.PBI_ID asc,d.item_id");
+  d.month=".$_POST['month']." and d.year=".$_POST['year']." group by d.id order by p.PBI_ID,p2.PBI_ID asc,d.item_id");
  while($target_row=mysqli_fetch_object($query)){
 
 
@@ -513,7 +519,7 @@ area a
     <?php elseif ($report_id=='9005002'):?>
         <title>Cash Collection (Region)</title>
         <?php
-        $datecon=' and d.region="'.$_POST[BRANCH_ID].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+        $datecon=' and d.region="'.$_POST['BRANCH_ID'].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         $query='Select
 				d.dealer_code,
 				d.account_code,
@@ -657,9 +663,9 @@ area a
             <title>Shipment Helper | Sales Report</title>
             <?php
             if($_POST['dealer_code']>0) 					$dealer_code=$_POST['dealer_code'];
-            if(isset($dealer_code))				{$dealer_con=' and c.dealer_code='.$dealer_code;}
+            if(isset($dealer_code))				{$dealer_con=' and c.dealer_code='.$dealer_code;} else {$dealer_con='';}
             if($_POST['dealer_type_con']>0) 					$dealer_type_con=$_POST['dealer_type_con'];
-            if(isset($dealer_type_con))				{$dealer_type_con=' and c.dealer_type_con='.$dealer_type_con;}
+            if(isset($dealer_type_con))				{$dealer_type_con=' and c.dealer_type_con='.$dealer_type_con;} else {$dealer_type_con='';}
             $query="SELECT i.brand_id,i.finish_goods_code as FG_code,i.item_name as 'FG Description',i.unit_name,i.pack_size as 'Pcs (Per Ctn)',
             (select SUM(c.total_unit)  from dealer_info d,sale_do_details c
             where c.item_id=i.item_id and c.total_amt!='0.00' and c.do_type in ('sales','') and status not in ('MANUAL','UNCHECKED') and c.dealer_code=d.dealer_code  and c.do_date between  '".$_POST['f_date']."' and '".$_POST['t_date']."' ".$dealer_type_con.$dealer_con.") as total_unit
@@ -667,7 +673,7 @@ area a
             							item_sub_group sg,
             							item_group g WHERE  i.sub_group_id=sg.sub_group_id and sg.group_id=g.group_id and
             							 g.group_id	in ('500000000') and i.status in ('Active') and i.item_id not in ('1096000100010312','1096000100010313','700020001')
-            							  order by i.".$_POST['order_by'].""; echo reportview($query,'Shipment Helper','99');?>
+            							  order by i.".$_POST['order_by'].""; echo reportview($query,'Shipment Helper','99','','','');?>
 
 
 <?php elseif ($report_id=='9002010'):?>
