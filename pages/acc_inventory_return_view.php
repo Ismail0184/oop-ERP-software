@@ -12,10 +12,10 @@ $journal_accounts="journal";
 $page='acc_inventory_return_view.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $todaysss=date('Y-m-d H:i:s');
 $jv=next_journal_voucher_id();
-$masterDATA=find_all_field('purchase_return_master','','id='.$_GET[$unique] );
+$masterDATA=find_all_field('purchase_return_master','','id='.$$unique );
 $lc_lc_received_batch_split = "lc_lc_received_batch_split";
 $condition="create_date='".date('Y-m-d')."'";
 
@@ -30,7 +30,7 @@ m.id=d.m_id and
 i.item_id=d.item_id and
 m.warehouse_id=w.warehouse_id and
 m.vendor_id=v.vendor_id and
-m.id='.$_GET[$unique].'
+m.id='.$$unique.'
 group by d.id';
 
 if(prevent_multi_submit()){
@@ -169,7 +169,7 @@ vendor v
                         </tr>
                         </thead>
                         <tbody>
-                        <?php $query=mysqli_query($conn, $res_details);while($data=mysqli_fetch_object($query)){$ids=$row[id]; ?>
+                        <?php $i=0;$total_amount=0;$cogs_amount=0;$total_VAT=0;$VAT_amount=0; $query=mysqli_query($conn, $res_details);while($data=mysqli_fetch_object($query)){$ids=$data->id; ?>
                             <tr>
                               <td style="vertical-align:middle"><?=$i=$i+1;?></td>
                               <td style="vertical-align:middle"><?=$data->finish_goods_code;?></td>
@@ -335,7 +335,7 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
                             <td style="text-align: center; vertical-align:middle">Income Ledger</td>
                             <td style="vertical-align:middle">
                                 <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_4">
-                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $ledger_4, 'ledger_id in ("3001000600000000")'); ?>
+                                    <?php //foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $ledger_4, 'ledger_id in ("3001000600000000")'); ?>
                                 </select>
                             </td>
                             <td style="text-align: right;vertical-align:middle"><input type="text" name="dr_amount_4" readonly value="<?php if($other_income<0) echo substr($other_income,1); else echo '0.00';?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
@@ -367,9 +367,9 @@ $cogs_amount=$cogs_amount+($data->qc_qty*$data->batch_rate_get);
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Inventory Return</button></td>
             </tr></table>
 </form>

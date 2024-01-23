@@ -4,7 +4,7 @@ $title='Mushak 6.8';
 $page="VMS_mushak_6.8_IR.php";
 $table='purchase_return_details';
 $unique='id';
-$$unique=$_GET[$unique];
+$$unique=@$_GET[$unique];
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $timess = $dateTime->format("h:i A");
 $year=date('Y');
@@ -18,7 +18,7 @@ $fiscal_year=find_a_field('fiscal_term','fiscal_year','status="1"');
 
 if(prevent_multi_submit()){
 if(isset($_POST['record'])){
-    $mushak_no_validation_check=find_a_field('VAT_mushak_6_8','mushak_no','mushak_no='.$_POST['mushak_no'].' and fiscal_year="'.$fiscal_year.'" and warehouse_id='.$_POST['warehouse_id'].'');
+    $mushak_no_validation_check=find_a_field('VAT_mushak_6_8','mushak_no','mushak_no='.$_POST['mushak_no'].' and fiscal_year="'.$fiscal_year.'" and year="'.$year.'" and warehouse_id='.$_POST['warehouse_id'].'');
     if($mushak_no_validation_check == $_POST['mushak_no']) {
         $message='This Mushak No has already been input!!';
         echo "<script>alert('$message');</script>";
@@ -27,12 +27,12 @@ if(isset($_POST['record'])){
     elseif($_POST['mushak_no']>0 && !empty($_POST['issue_date'])){
   $_POST['do_no']=$$unique;
   $_POST['fiscal_year']=$fiscal_year;
-  $_POST['mushak_no']=$_POST['mushak_no'];
-  $_POST['warehouse_id']=$_POST['warehouse_id'];
-  $_POST['dealer_code']=$_POST['dealer_code'];
-  $_POST['issue_date']=$_POST['issue_date'];
-  $_POST['issue_time']=$_POST['issue_time'];
-  $_POST['responsible_person']=$_POST['responsible_person'];
+  $_POST['mushak_no']=@$_POST['mushak_no'];
+  $_POST['warehouse_id']=@$_POST['warehouse_id'];
+  $_POST['dealer_code']=@$_POST['dealer_code'];
+  $_POST['issue_date']=@$_POST['issue_date'];
+  $_POST['issue_time']=@$_POST['issue_time'];
+  $_POST['responsible_person']=@$_POST['responsible_person'];
   $_POST['entry_by']=$_SESSION['userid'];
   $_POST['entry_at']=$now;
   $_POST['year']=$year;
@@ -95,6 +95,8 @@ if($status>0){
 $query="SELECT sdc.*,SUM(sdc.qc_qty) as total_unit,i.item_name,i.unit_name,i.SD AS VAT,i.VAT_percentage,i.SD_percentage from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.m_id=".$_GET[$unique]." group by i.item_id order by i.finish_goods_code";
 }
 $result=mysqli_query($conn, $query);
+
+$chalan_no = @$chalan_no;
 ?>
 
 
@@ -137,7 +139,6 @@ $result=mysqli_query($conn, $query);
   <input type="hidden" name="dealer_code" value="<?=$do_master->vendor_id?>">
   <input type="hidden" name="responsible_person" value="<?=$warehouse_master->VAT_responsible_person?>">
   <input type="hidden" name="chalan_no" value="<?=$chalan_no?>">
-  <input type="hidden" name="jv_no" value="<?=$jv_no?>">
   <input type="hidden" name="jvdate" value="<?=$mushak->issue_date?>">
   <input type="hidden" name="source" value="Purchase_Returned">
 <table style="width: 100%">

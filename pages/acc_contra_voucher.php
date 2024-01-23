@@ -21,7 +21,7 @@ if(prevent_multi_submit()) {
             $_POST['ip'] = $ip;
             if(isset($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = $_POST['Cheque_Date'];
+                $_POST['Cheque_Date'] =@$_POST['Cheque_Date'];
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -94,6 +94,8 @@ j.cheq_no,
 j.cheq_date,
 j.bank,
 j.cc_code,
+j.sub_ledger_id,
+j.day_name,
 a.*,c.center_name as cname 
 from 
 ".$table_contra." j,

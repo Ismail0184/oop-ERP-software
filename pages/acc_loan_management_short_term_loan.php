@@ -30,7 +30,7 @@ while($data=mysqli_fetch_object($query)){
 
 if(prevent_multi_submit()){
     if(isset($_POST[$unique_field]))
-    {    $$unique = $_POST[$unique];
+    {    $$unique = @$_POST[$unique];
         if(isset($_POST['record']))
         {
             $_POST['section_id'] = $_SESSION['sectionid'];

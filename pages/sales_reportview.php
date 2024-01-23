@@ -548,7 +548,7 @@ area a
     <?php elseif ($report_id=='9005003'):?>
         <title>Cash Collection (Territory)</title>
         <?php
-        $datecon=' and d.area_code="'.$_POST[AREA_CODE].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+        $datecon=' and d.area_code="'.$_POST['AREA_CODE'].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         $query='Select
 				d.dealer_code,
 				d.account_code,
@@ -577,7 +577,7 @@ area a
 
 <?php elseif ($report_id=='9002005'):?>
             <?php
-            $datecon=' and d.area_code="'.$_POST[AREA_CODE].'" and sdc.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+            $datecon=' and d.area_code="'.$_POST['AREA_CODE'].'" and sdc.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
             $query='Select
     				d.dealer_code,
     				d.account_code,
@@ -604,7 +604,7 @@ area a
     <?php elseif ($report_id=='9005004'):?>
         <title>Cash Collection (Town)</title>
         <?php
-        $datecon=' and d.town_code="'.$_POST[town_code].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+        $datecon=' and d.town_code="'.$_POST['town_code'].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         $query='Select
 				d.dealer_code,
 				d.account_code,
@@ -632,7 +632,7 @@ area a
     <?php elseif ($report_id=='9005005'):?>
         <title>Cash Collection (Dealer)</title>
         <?php
-        $datecon=' and d.dealer_code="'.$_POST[dealer_code].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+        $datecon=' and d.dealer_code="'.$_POST['dealer_code'].'" and j.jvdate between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         $query='Select
 				d.dealer_code,
 				d.account_code,
@@ -695,7 +695,7 @@ area a
             c.item_id=i.item_id and
             i.brand_id=b.brand_id and  
             m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and c.total_amt>0 ".$warehouse_id_CON."".$brand_id_con."
-             order by m.do_date,m.do_no,d.dealer_code,c.item_id"; echo reportview($query,'Invoice wise sales summery','99');?>
+             order by m.do_date,m.do_no,d.dealer_code,c.item_id"; echo reportview($query,'Invoice wise sales summery','99','','');?>
 
 
     <?php elseif ($report_id=='9006001'): $cc_code = @$_POST['cc_code']; $tr_from = @$_POST['tr_from'];?>
@@ -792,7 +792,7 @@ order by a.jvdate,a.id";
         </tr>
 
         <?php
-        $sql=mysqli_query($conn, $p);
+        $sql=mysqli_query($conn, $p); $i=0;
         while($data=mysqli_fetch_row($sql)){?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
             <td align="center" style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>

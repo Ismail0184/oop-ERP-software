@@ -256,7 +256,12 @@ $datecon=' and m.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date']
         if(isset($warehouse_id))				{$warehouse_id_CON=' and m.depot_id='.$warehouse_id;} else {$warehouse_id_CON='';}
 		if($_POST['dealer_code']>0) 			 $dealer_code=$_POST['dealer_code'];
         if(isset($dealer_code))				{$dealer_code_CON=' and m.dealer_code='.$dealer_code;} else {$dealer_code_CON='';}
-$sql="select
+
+    if(!empty($_POST['do_type'])) 					$do_type=@$_POST['do_type'];
+    if(($do_type=='sales' || $do_type=='sample' || $do_type=='gift'|| $do_type=='free'|| $do_type=='display')) {$do_type_conn=' and m.do_type="'.$do_type.'"';} else {$do_type_conn='';}
+
+
+    $sql="select
 distinct c.chalan_no,
 
 c.chalan_date,
@@ -294,7 +299,7 @@ where
 a.AREA_CODE=d.area_code
 and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and m.do_section not in ('Rice') and w.warehouse_id=m.depot_id and
 c.item_id not in ('1096000100010312') and
-a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$dealer_code_CON."
+a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$dealer_code_CON.$do_type_conn."
 group by c.do_no
 order by c.do_no";
 $query = mysqli_query($conn, $sql); ?>

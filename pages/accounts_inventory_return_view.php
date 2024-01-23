@@ -12,12 +12,12 @@ $journal_accounts="journal";
 $page='accounts_inventory_return_view.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
-$masterDATA=find_all_field('purchase_return_master','','id='.$_GET[$unique] );
+$masterDATA=find_all_field('purchase_return_master','','id='.$$unique);
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
-        $_POST['checked_by']=$_SESSION[userid];
+        $_POST['checked_by']=$_SESSION['userid'];
         $_POST['checked_at']=time();
         $_POST['status']="RETURNED";
         $crud->update($unique);
@@ -32,18 +32,18 @@ if(prevent_multi_submit()){
         $date=date('Y-m-d');
 		$results=mysqli_query($conn, "Select srd.*,i.* from ".$table_details." srd, item_info i  where
  srd.item_id=i.item_id and 
- srd.".$unique_details."=".$_GET[$unique]." order by srd.id");
+ srd.".$unique_details."=".$$unique." order by srd.id");
             while($row=mysqli_fetch_array($results)){
-            $ids=$row[id];
-            mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,item_ex,item_price,total_amt,tr_from,tr_no,entry_by,entry_at,Remarks,ip,section_id,company_id) VALUES ('$date','$row[item_id]','$row[warehouse_id]','$row[qty]','$row[rate]','$row[amount]','Purchase_Return','$_GET[id]','$_SESSION[userid]','$enat','','$ip','$_SESSION[sectionid]','$_SESSION[companyid]')");
+            $ids=$row['id'];
+            mysqli_query($conn, "INSERT INTO journal_item (ji_date,item_id,warehouse_id,item_ex,item_price,total_amt,tr_from,tr_no,entry_by,entry_at,Remarks,ip,section_id,company_id) VALUES ('$date','".$row['item_id']."','".$row['warehouse_id']."','".$row['qty']."','".$row['rate']."','".$row['amount']."','Purchase_Return','".$_GET['id']."','".$_SESSION['userid']."','$enat','','$ip','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')");
         }
 		
 		$jv=next_journal_voucher_id();
         $transaction_date=date('Y-m-d');
         $enat=date('Y-m-d h:s:i');
-        $cd =$_POST[c_date];
+        $cd =@$_POST['c_date'];
         $c_date=date('Y-m-d' , strtotime($cd));
-        $invoice=$_POST[invoice];
+        $invoice=@$_POST['invoice'];
         $date=date('d-m-y' , strtotime($transaction_date));
         $j=0;
         for($i=0;$i<strlen($date);$i++)
@@ -53,11 +53,11 @@ if(prevent_multi_submit()){
             } else {
                 $j++; } }
         $date=mktime(0,0,0,$time[1],$time[0],$time[2]);
-        if($_POST[dr_amount_1]>0) {
-            add_to_journal_new($transaction_date, $proj_id, $jv, $date, $_POST[ledger_1], $_POST[narration_1], $_POST[dr_amount_1], $_POST[cr_amount_1], Purchase_Return, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
-            add_to_journal_new($transaction_date, $proj_id, $jv, $date, $_POST[ledger_2], $_POST[narration_2], $_POST[dr_amount_2], $_POST[cr_amount_2], Purchase_Return, $$unique, $$unique, 0, 0, $_SESSION[usergroup], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
+        if(@$_POST['dr_amount_1']>0) {
+            add_to_journal_new($transaction_date, $proj_id, $jv, $date, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], $_POST['cr_amount_1'], 'Purchase_Return', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
+            add_to_journal_new($transaction_date, $proj_id, $jv, $date, $_POST['ledger_2'], $_POST['narration_2'], $_POST['dr_amount_2'], $_POST['cr_amount_2'], 'Purchase_Return', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
         }
-        //$up_master="UPDATE ".$table." SET status='COMPLETED' where ".$unique."=".$$unique."";
+        $up_master="UPDATE ".$table." SET status='COMPLETED' where ".$unique."=".$$unique."";
         $update_table_master=mysqli_query($conn, $up_master);
         $up_details="UPDATE ".$table_details." SET status='COMPLETED' where ".$unique_details."=".$$unique."";
         $update_table_details=mysqli_query($conn, $up_details);
@@ -92,9 +92,9 @@ if(isset($$unique))
     { $$key=$value;}}
 ?>
 <?php                      
-$from_date=date('Y-m-d' , strtotime($_POST[f_date]));
-$to_date=date('Y-m-d' , strtotime($_POST[t_date]));
-                        if(isset($_POST[viewreport])){
+$from_date=date('Y-m-d' , strtotime($_POST['f_date']));
+$to_date=date('Y-m-d' , strtotime($_POST['t_date']));
+                        if(isset($_POST['viewreport'])){
 $sql="Select p.id,p.id,p.ref_no as Referance,p.remarks,p.return_date as date,w.warehouse_name,v.vendor_name,concat(u.fname,' - ',p.entry_at) as entry_by,concat((SELECT PBI_NAME from personnel_basic_info where PBI_ID=p.checked_by_qc),' - ',checked_at) as Checked_By,p.status
 from 
 ".$table." p,
@@ -159,23 +159,18 @@ vendor v
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row[id];
+                            $ids=$row['id'];
                             ?>
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
-                                <td style="vertical-align:middle"><?=$row[finish_goods_code];?></td>
-                                <td style="vertical-align:middle;"><?=$row[item_name];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[unit_name];?></td>
-                                <td align="center" style=" text-align:right"><?=$row[rate]; ?></td>
-                                <td align="center" style=" text-align:center"><?=number_format($row[qty],2); ?></td>
-                                <td align="center" style="text-align:right"><?=number_format($row[amount],2);?></td>
-
+                                <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
+                                <td style="vertical-align:middle;"><?=$row['item_name'];?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
+                                <td align="center" style=" text-align:right"><?=$row['rate']; ?></td>
+                                <td align="center" style=" text-align:center"><?=number_format($row['qty'],2); ?></td>
+                                <td align="center" style="text-align:right"><?=number_format($row['amount'],2);?></td>
                             </tr>
-                            <?php $total_amount=$total_amount+$row[amount];
-                        }
-
-
-                        ?>
+                            <?php $total_amount=$total_amount+$row['amount'];} ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="4" style="font-weight:bold; font-size:11px" align="right">Total Inventory Return in Value = </td>
@@ -235,8 +230,6 @@ vendor v
                         </tbody>
                     </table>
 
-
-
                     <?php
                     $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                     if($GET_status='ROCOMMENDED'){  ?>
@@ -257,9 +250,9 @@ vendor v
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Inventory Return</button></td>
             </tr></table> 
 </form>

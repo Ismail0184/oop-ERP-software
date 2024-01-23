@@ -8,13 +8,13 @@ $table="purchase_return_master";
 $page="warehouse_inventory_return_report.php";
 $target_page='warehouse_inventory_return.php';
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $todaysss=$dateTime->format("d/m/Y  h:i A");
 $IR_master=find_all_field(''.$table.'','',''.$unique.'='.$$unique);
 
 if(prevent_multi_submit()){
-    $$unique = $_GET[$unique];
+    $$unique = @$_GET[$unique];
 //check by qc..................................
     if(isset($_POST['reprocess']))
     {
@@ -30,7 +30,6 @@ if(prevent_multi_submit()){
         $_POST['status']='CHECKED';
         $crud->update($unique);
         $type=1;
-
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }
@@ -46,7 +45,7 @@ if(prevent_multi_submit()){
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }}
-if (isset($_POST[viewreport])) {
+if (isset($_POST['viewreport'])) {
     $res='select
     m.id,
     m.id,
@@ -66,13 +65,13 @@ if (isset($_POST[viewreport])) {
     m.vendor_id=v.vendor_id and
     m.section_id='.$_SESSION['sectionid'].' and
     m.company_id='.$_SESSION['companyid'].' and
-    m.warehouse_id='.$_POST[warehouse_id].'
+    m.warehouse_id='.$_POST['warehouse_id'].'
     group by m.id order by m.id desc';
   }
     $sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),upp.* FROM
     user_plant_permission upp,
     warehouse w  WHERE  upp.warehouse_id=w.warehouse_id and
-    upp.user_id=".$_SESSION[userid]." and upp.status>0
+    upp.user_id=".$_SESSION['userid']." and upp.status>0
     order by w.warehouse_id";?>
 
 <?php require_once 'header_content.php'; ?>
@@ -126,8 +125,8 @@ m.warehouse_id=w.warehouse_id and
 m.vendor_id=v.vendor_id and
 m.id='.$_GET[$unique].'
 group by d.id';
-                         $data2=mysql_query($res);
-                         while($data=mysql_fetch_object($data2)){?>
+                         $data2=mysqli_query($res);
+                         while($data=mysqli_fetch_object($data2)){?>
                              <tr>
                                  <td><?=$i=$i+1;?></td>
                                  <td><?=$data->finish_goods_code;?></td>
@@ -145,7 +144,7 @@ group by d.id';
 
 <?php $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);?>
 <?php if($GET_status=='UNCHECKED' || $GET_status=='MANUAL' || $GET_status=='CANCELED'){
-if($IR_master->entry_by==$_SESSION[userid]){ ?>
+if($IR_master->entry_by==$_SESSION['userid']){ ?>
 <p align="center">
 <button style="font-size:12px" type="submit" name="reprocess" id="reprocess" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Re-process?");'>Re-process the IR</button>
 </p>
@@ -161,9 +160,9 @@ if($IR_master->entry_by==$_SESSION[userid]){ ?>
 <?php if(!isset($_GET[$unique])): ?>
    <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
        <table align="center" style="width: 50%;">
-           <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+           <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                <td style="width:10px; text-align:center"> -</td>
-               <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+               <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                <td style="width:10px; text-align:center"> -</td>
                <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="warehouse_id" id="warehouse_id">
                        <option selected></option>
@@ -172,6 +171,6 @@ if($IR_master->entry_by==$_SESSION[userid]){ ?>
                <td style="padding: 10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Return Challan</button></td>
            </tr></table>
 </form>
-<?=$crud->report_templates_with_status($res,$title);?>
 <?php endif;?>
+<?=$crud->report_templates_with_status($res,$title);?>
 <?=$html->footer_content();mysqli_close($conn);?>

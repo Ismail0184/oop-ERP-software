@@ -153,6 +153,7 @@ j.cheq_date,
 j.bank,
 j.cc_code,
 j.day_name,
+j.sub_ledger_id,
 a.*,c.center_name as cname 
 from 
 payment j,
@@ -167,7 +168,7 @@ where
     while ($uncheckrow = mysqli_fetch_array($re_query)) {
         $ids=$uncheckrow['jid'];
         if (isset($_POST['confirmsave']) && ($uncheckrow['payment_no']>0)) {
-            add_to_journal_new($uncheckrow['paymentdate'], $proj_id, $jv, $uncheckrow['payment_date'], $uncheckrow['ledger_id'], $uncheckrow['narration'], $uncheckrow['dr_amt'], $uncheckrow['cr_amt'],'Payment', $uncheckrow['payment_no'], $uncheckrow['jid'], $uncheckrow['cc_code'], $uncheckrow['sub_ledger_id'], $_SESSION['usergroup'], $uncheckrow['cheq_no'], $uncheckrow['cheq_date'], $create_date, $ip, $now, $uncheckrow['day_name'], $thisday, $thismonth, $thisyear);
+            add_to_journal_new($uncheckrow['paymentdate'], $proj_id, $jv, $uncheckrow['payment_date'], $uncheckrow['ledger_id'], $uncheckrow['narration'], $uncheckrow['dr_amt'], $uncheckrow['cr_amt'],'Payment', $uncheckrow['payment_no'], $uncheckrow['jid'], $uncheckrow['cc_code'], $uncheckrow['sub_ledger_id'], $_SESSION['usergroup'], $uncheckrow['cheq_no'], $uncheckrow['cheq_date'], $create_date, $ip, $now, $uncheckrow['day_name'], $thisday, $thismonth, $thisyear,'','','');
         } // end of confirm
         if(isset($_POST['deletedata'.$ids]))
         {  $res=mysqli_query($conn, ("DELETE FROM ".$table_payment." WHERE id=".$ids));
@@ -218,7 +219,8 @@ where
 // data query..................................
     $condition=$unique."=".$initiate_debit_note ;
     $data=@db_fetch_object($table_journal_master,$condition);
-    while (list($key, $value)=each($data))
+    $array = (array)$data;
+    foreach ($array as $key => $value)
     { $$key=$value;}
     $inputted_amount=find_a_field("".$table_payment."","SUM(dr_amt)","".$payment_unique."='".$initiate_debit_note ."'".$sec_com_connection_wa."");
 }

@@ -1593,7 +1593,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
         }
 
         if($tfoot>0 || $tfoot2>0){
-            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot2,2).'</th></tr></tfoot>';
+            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot2, '.', ',').'</th></tr></tfoot>';
         }
 
         $str .='</table>';
@@ -1607,6 +1607,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
 
 function bl_pl_support_data_view($sql,$title,$width){
     global $conn;
+    $str ='';
     if($sql==NULL) return NULL;
     $str.='
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
@@ -1618,7 +1619,7 @@ function bl_pl_support_data_view($sql,$title,$width){
         foreach (array_slice($fieldinfo, 1) as $key=>$val) {
             $str .='<th style="border: solid 1px #999; padding:2px;vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
         }$str .='</tr></thead>';
-        $c=0;
+        $sl=0;$ta=0;$tb=0;$tc=0;
         if (mysqli_num_rows($result)>0){
             while($row = mysqli_fetch_array($result)) {
                 $str .='<tr style="border: solid 1px #999; font-size:11px; font-weight:normal;cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td align="center" style="border: solid 1px #999; padding:2px">'.($sl=$sl+1).'</td>';

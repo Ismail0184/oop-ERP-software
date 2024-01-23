@@ -11,9 +11,9 @@ $vdate		= $_REQUEST['vdate'];
 
 $jvdate=date('Y-m-d' , strtotime($vdate));
 
-$jv_no =  $_REQUEST['v_no'];
+$jv_no =  @$_REQUEST['v_no'];
 
-$v_type 		= find_a_field('journal','distinct tr_from','jv_no='.$_REQUEST['v_no']);
+$v_type 		= find_a_field('journal','distinct tr_from','jv_no='.$jv_no);
 
 echo $v_type ;
 
@@ -76,7 +76,7 @@ mysqli_query($conn, "UPDATE journal_deleted SET delete_at='$todaysss' WHERE tr_n
     $headers .= 'Cc: ismail@icpbd.com,subrata@icpbd.com,s.f.akhter@icpbd.com' . "\n";
     $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
     mail($to,$subject,$txt,$headers);
-    $sqlDel1 = mysqli_query($conn, "DELETE FROM coutra WHERE coutra_no=".$_GET[v_no]." and 1");
+    $sqlDel1 = mysqli_query($conn, "DELETE FROM coutra WHERE coutra_no=".$jv_no." and 1");
 	$sqlDel1 = "DELETE FROM $vtype WHERE $no='$v_no' and 1";
     $sqlDel2 = "DELETE FROM journal WHERE tr_no='$v_no' AND tr_from='$tr_from'";
     if(mysqli_query($conn, $sqlDel1)){}
@@ -218,20 +218,6 @@ $sql1."<br>";
         });
     });
 </script>
-<SCRIPT LANGUAGE="JavaScript">
-    <!--// Hide script from non-javascript browsers.
-    // Load Page Into Parent Window
-    // Version 1.0
-    // Last Updated: May 18, 2000
-    // Code maintained at: http://www.moock.org/webdesign/javascript/
-    // Copy permission granted any use provided this notice is unaltered.
-    // Written by Colin Moock.
-    function loadinparent(url, closeSelf){
-        self.opener.location = url;
-        if(closeSelf) self.close();
-    }
-    //-->
-</SCRIPT>
 <style>
     body{
         font-family:Verdana, Arial, Helvetica, sans-serif;
@@ -317,11 +303,11 @@ $sql1."<br>";
                 <table width="100%" border="0" align="center" bordercolor="#0099FF" bgcolor="#D9EFFF" cellspacing="0">
                     <tr>
                         <td width="15%" align="right"><strong>Voucher  No:</strong></td>
-                        <td width=20%" align="left"><?php echo $v_no;?>&nbsp;</td>
+                        <td width=20%" align="left"><?=$v_no;?>&nbsp;</td>
                         <td height="20" align="right"><strong>Cq No:</strong> </td>
-                        <td height="20" align="left"><input name="cheq_no" id="cheq_no" type="text" value="<?php echo $data1[1];?>" style="width:100px" /></td>
+                        <td height="20" align="left"><input name="cheq_no" id="cheq_no" type="text" value="<?=$data1[1]?>" style="width:100px" /></td>
                         <td width="25%" align="right" valign="top"><strong>Purpose</strong>:</td>
-                        <td width="20%" align="left" valign="top" colspan="2"><?php echo $data1[0];?>&nbsp;</td>
+                        <td width="20%" align="left" valign="top" colspan="2"><?=$data1[0]?>&nbsp;</td>
                     </tr>
                     <tr style="height:30px">
                         <td align="right"><strong>Voucher Date:</strong></td>
@@ -329,7 +315,7 @@ $sql1."<br>";
                         <td width="20%" align="right" valign="middle"><strong>Cq Date: </strong></td>
                         <td width="" align="left" valign="middle" width="15%"><input name="cheq_date" id="cheq_date" type="text" value="<?=($data1[2]>943898400)?(date("d-m-Y",$data1[2])):'';?>" style="width:100px" /></td>
                         <td width="25%" height="20" align="right"><strong>From / To:</strong></td>
-                        <td width="15%" align="left"><input name="PorR" id="PorR" type="text" value="<?php echo $data1[1];?>&nbsp;" /></td>
+                        <td width="15%" align="left"><input name="PorR" id="PorR" type="text" value="<?=$data1[1]?>&nbsp;" /></td>
                     </tr>
                 </table>
             </td>
@@ -356,7 +342,7 @@ $sql1."<br>";
                     $d_total=$d_total+$info[0];
                     $c_total=$c_total+$info[1];
                     ?>
-                    <tr align="center" <? if(++$x%2!=0) echo 'class="spec"';?>>
+                    <tr>
                         <td><?=$pi;?></td>
                         <td>
                             <select class="select2_single form-control" style="width:99%" tabindex="-1" required="required"  name="ledger_<?=$info[5]?>" id="ledger_<?=$info[5]?>">
@@ -384,7 +370,7 @@ $sql1."<br>";
                             </div></td>
                     </tr>
                 <?php } ?>
-                <tr align="center" <? if(++$x%2!=0) echo 'class="spec"';?>>
+                <tr>
                     <td align="right"><div align="center">
                             <?=++$pi;?>
                         </div></td>
@@ -397,17 +383,17 @@ $sql1."<br>";
                                 <option  value="<?=$row[0].'#>'.$row[1];?>"><?=$row[0].'#>'.$row[1];?></option>
                             <?php } ?>
                         </select>
-                        <!--input type="text" name="ledger_new1" id="ledger_new1"  style="width:220px;" value="" /-->
                     </td>
                     <td align="center"><input type="text" name="narration_new1" id="narration_new1" style="width:250px;" value="" /></td>
                     <td align="right"><input name="cc_new1" type="text" id="cc_new1" style="width:80px;"  /></td>
                     <td align="right"><input name="dr_amt_new1" type="text" id="dr_amt_new1" style="width:80px;" onchange="add_sum()" /></td>
                     <td align="right"><input name="cr_amt_new1" type="text" id="cr_amt_new1" style="width:80px;" onchange="add_sum()" /></td>
                 </tr>
-                <tr align="center" <? if(++$x%2!=0) echo 'class="spec"';?>>
+                <tr>
                     <td align="right"><div align="center">
                             <?=++$pi;?>
-                        </div></td>
+                        </div>
+                    </td>
                     <td>
                         <select class="select2_single form-control" style="width:99%" tabindex="-1"   name="ledger_new2" id="ledger_new2">
                             <option></option>

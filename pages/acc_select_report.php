@@ -2,7 +2,6 @@
 <?=(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
 $title='Accounts Report';
 $page='acc_select_report.php';
-
 $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name,' (',sg.sub_group_name,')') FROM  item_info i,
 item_sub_group sg,
 item_group g WHERE  i.sub_group_id=sg.sub_group_id and
@@ -738,7 +737,7 @@ function reload1(form)
                     </div>
 
 
-                <?php elseif ($report_id=='1012002'): ?>
+                <?php elseif ($report_id=='1012002' || $report_id=='1012011'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">

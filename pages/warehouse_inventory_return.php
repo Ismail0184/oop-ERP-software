@@ -9,7 +9,7 @@ $unique_details='m_id';
 $table_details="purchase_return_details";
 $page="warehouse_inventory_return.php";
 $crud      =new crud($table);
-$$unique = $_POST[$unique];
+$$unique = @$_POST[$unique];
 
 $sql_item_id="SELECT i.item_id,concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name) FROM  item_info i,
 item_sub_group sg,
@@ -118,7 +118,7 @@ if(isset($_SESSION['wir_unique']))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
+$type = @$type;
 
 if (isset($_GET['id'])) {
 $edit_value=find_all_field(''.$table_details.'','','id='.$_GET['id'].'');}
@@ -145,7 +145,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                     <div class="col-md-12 col-sm-12 col-xs-12">
                         <div class="x_panel">
                           <div class="x_title">
-                              <h2><?php echo $title; ?></h2>
+                              <h2><?=$title;?></h2>
                               <a  style="float: right" target="_blank" class="btn btn-sm btn-default"  href="warehouse_inventory_return_report.php">
                                   <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">View Report</span></a>
                               <div class="clearfix"></div>

@@ -57,7 +57,7 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
 
 <?php if ($_POST['report_id']=='1301001'):
 
-if(isset($warehouse_id))				{$warehouse_CON=' AND d.warehouse_id='.$warehouse_id;}
+if(isset($warehouse_id))				{$warehouse_CON=' AND d.warehouse_id='.$warehouse_id;} else {$warehouse_CON='';}
 if(isset($source))				{$source_CON=' AND d.source="'.$source.'"';}
 if($_POST['source']=='Sales'){
 $sql="SELECT i.item_id,i.finish_goods_code as item_ID,itm.H_S_code,i.item_name as 'Description, ERP',(select group_name from VAT_item_group where group_id=i.VAT_item_group) as 'Description, VAT',i.pack_size,i.unit_name,d.total_unit as 'VC Qty, Pcs',d.total_price as 'SD Chargeable Value',d.amount_of_SD as 'SD Amount',
@@ -78,7 +78,7 @@ d.dealer_code=v.dealer_code".$warehouse_CON.$source_CON."".$order_by."";
     i.H_S_code=itm.id and d.warehouse_id=w.warehouse_id and
     d.dealer_code=v.vendor_id".$warehouse_CON.$source_CON."".$order_by."";   
 }
-echo reportview($sql,'Monthly VAT 6.3','99','1','5','');?>
+echo reportview($sql,'Monthly VAT 6.3','99','1','5',0);?>
 
 
 <?php elseif ($_POST['report_id']=='1301002'):?>
@@ -479,11 +479,11 @@ $sql="Select v.ledger_id,v.vendor_id,v.ledger_id,v.vendor_name,FORMAT(SUM(j.dr_a
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','80'); ?>
+v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','80','',0,0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1011001'):
-if($_POST[v_type]!=''){$v_type .= "AND j.tr_from = '".$_POST[v_type]."'";}
+if($_POST[v_type]!=''){$v_type .= "AND j.tr_from = '".$_POST['v_type']."'";}
 $sql="Select i.item_id,i.item_id,i.finish_goods_code as custom_code,i.item_name,i.unit_name, s.sub_group_name, g.group_name,lc.landad_cost,lc.entry_date as last_updated_date from
 item_info i,
 item_sub_group s,

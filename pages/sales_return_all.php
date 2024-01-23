@@ -9,7 +9,7 @@ $table_deatils="sale_return_details";
 
 $page="sales_return_all.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $create_date=date('Y-m-d');
 
 if(prevent_multi_submit()){
@@ -30,7 +30,8 @@ if(prevent_multi_submit()){
         unset($_POST);
         unset($$unique);
     }
-
+$sales_return_id = @$_SESSION['sales_return_id'];
+$initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
 //for modify PS information ...........................
     if(isset($_POST['modify']))
     {
@@ -62,13 +63,13 @@ if(prevent_multi_submit()){
 //for single FG Delete..................................
     $results="Select srd.*,i.* from ".$table_deatils." srd, item_info i  where
  srd.item_id=i.item_id and
- srd.do_no='$_SESSION[sales_return_id]' order by srd.id";
+ srd.do_no='".$sales_return_id."' order by srd.id";
     $query=mysqli_query($conn, $results);
     while($row=mysqli_fetch_array($query)){
-        $ids=$row[id];
+        $ids=$row['id'];
         if(isset($_POST['deletedata'.$ids]))
         {
-            $del="DELETE FROM ".$table_deatils." WHERE id='$ids' and ".$unique."=".$_SESSION['sales_return_id']."";
+            $del="DELETE FROM ".$table_deatils." WHERE id='$ids' and ".$unique."=".$sales_return_id."";
             $del_item=mysqli_query($conn, $del);
             unset($_POST);
         }}
@@ -76,41 +77,49 @@ if(prevent_multi_submit()){
 //for Delete..................................
     if(isset($_POST['cancel']))
     {   $crud = new crud($table_deatils);
-        $condition =$unique."=".$_SESSION['sales_return_id'];
+        $condition =$unique."=".$sales_return_id;
         $crud->delete_all($condition);
         $crud = new crud($table);
-        $condition=$unique."=".$_SESSION['sales_return_id'];
+        $condition=$unique."=".$sales_return_id;
         $crud->delete($condition);
         unset($_SESSION['sales_return_id']);
         unset($_SESSION['initiate_sr_documents']);
         unset($_POST);
     }
 
-    $COUNT_details_data=find_a_field(''.$table_deatils.'','Count(id)',''.$unique.'='.$_SESSION['sales_return_id'].'');
+    $COUNT_details_data=find_a_field(''.$table_deatils.'','Count(id)',''.$unique.'='.$sales_return_id.'');
     if(isset($_POST['confirmsave']))
     {
-        $up_master="UPDATE ".$table." SET status='UNCHECKED' where ".$unique."='$_SESSION[sales_return_id]'";
+        $up_master="UPDATE ".$table." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
         $update_table_master=mysqli_query($conn, $up_master);
-        $up_details="UPDATE ".$production_table_issue_master." SET status='UNCHECKED' where ".$unique."='$_SESSION[sales_return_id]'";
+        $up_details="UPDATE ".$production_table_issue_master." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
         $update_table_details=mysqli_query($conn, $up_details);
         unset($_SESSION['sales_return_id']);
         unset($_SESSION['initiate_sr_documents']);
         unset($_POST);
     } // if insert posting
 }
-
+$sales_return_id = @$_SESSION['sales_return_id'];
+$initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
 $results="Select srd.*,i.* from sale_return_details srd, item_info i  where
 srd.item_id=i.item_id and
-srd.do_no='$_SESSION[sales_return_id]' order by srd.id";
+srd.do_no='".$sales_return_id."' order by srd.id";
 
 // data query..................................
 if(isset($_SESSION['sales_return_id']))
-{   $condition=$unique."=".$_SESSION['sales_return_id'];
+{   $condition=$unique."=".$sales_return_id;
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
-$batch_get=find_all_field('lc_lc_received_batch_split','','item_id="'.$_GET['item_id'].'" and batch="'.$_GET['batch'].'" and warehouse_id="'.$depot_id.'"');?>
+$depot_id = @$depot_id;
+$GetItemId = @$_GET['item_id'];
+$GetBatch = @$_GET['batch'];
+$sr_type = @$sr_type;
+$do_date = @$do_date;
+$dealer_code = @$dealer_code;
+$depot_id = @$depot_id;
+$remarks = @$remarks;
+$batch_get=find_all_field('lc_lc_received_batch_split','','item_id="'.$GetItemId.'" and batch="'.$GetBatch.'" and warehouse_id="'.$depot_id.'"');?>
 
 <?php require_once 'header_content.php'; ?>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js "></script>
@@ -121,7 +130,7 @@ var val=form.item_id.options[form.item_id.options.selectedIndex].value;
 self.location='<?=$page;?>?item_id=' + val ;}
 function reload_batch(form){
 var val=form.batch.options[form.batch.options.selectedIndex].value;
-self.location='<?=$page;?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
+self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
 </script>
 <style>
     input[type=text]{
@@ -148,15 +157,15 @@ self.location='<?=$page;?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
                      <td style="width:20%; text-align:center">
                      <?
                         $sr_ids=find_a_field(''.$table.'','max('.$unique.')','1');
-                        if($_SESSION['sales_return_id']>0) {
-                            $sr_idGET = $_SESSION['sales_return_id'];
+                        if($sales_return_id>0) {
+                            $sr_idGET = $sales_return_id;
                         } else {
                             $sr_idGET=$sr_ids+1;
                             if($sr_ids<1) $sr_idGET = 1;
                         }
                         ?>
                         <input type="text" readonly style="width:25%" class="form-control col-md-7 col-xs-12" name="<?=$unique;?>" id="<?=$unique;?>" value="<?=$sr_idGET;?>">
-                     <input type="text" id="sr_no"   required="required" style="width:65%" name="sr_no" value="<?=($_SESSION['initiate_sr_documents']!='')? $_SESSION['initiate_sr_documents'] : automatic_number_generate("SR","sale_return_master","sr_no","inspection_date='".date('Y-m-d')."' and sr_no like '$sekeyword%'");?>" class="form-control col-md-7 col-xs-12" ></td>
+                     <input type="text" id="sr_no"   required="required" style="width:65%" name="sr_no" value="<?=($initiate_sr_documents!='')? $initiate_sr_documents : automatic_number_generate("SR","sale_return_master","sr_no","inspection_date='".date('Y-m-d')."'",'');?>" class="form-control col-md-7 col-xs-12" ></td>
 
                  <th style="width:10%">SR Date </th>
                         <th style="width:1%; text-align:center">:</th>
@@ -198,7 +207,7 @@ self.location='<?=$page;?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
 
               <tr><td colspan="9"> <div class="form-group" style="margin-left:40%">
                <div class="col-md-6 col-sm-6 col-xs-12">
-               <?php if($_SESSION['initiate_sr_documents']){  ?>
+               <?php if($initiate_sr_documents){  ?>
                <button type="submit" style="font-size: 12px; margin-top:10px" name="modify" id="modify" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary">Update Return Info</button>
 			 <?php   } else {?>
                <button type="submit" style="font-size: 12px; margin-top:10px" name="initiate" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary">Initiate Sales Return</button>
@@ -207,14 +216,16 @@ self.location='<?=$page;?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
                   </div></div></div>
 
 
-<?php if($_SESSION['initiate_sr_documents']){  ?>
+<?php if($initiate_sr_documents){  ?>
 
     <form action="" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
         <? require_once 'support_html.php';?>
         <input type="hidden" name="<?=$unique;?>" id="<?=$unique;?>" value="<?=$$unique;?>" >
-        <input type="hidden" name="sr_no" id="sr_no" value="<?=$_SESSION['initiate_sr_documents'];?>" >
+        <input type="hidden" name="sr_no" id="sr_no" value="<?=$initiate_sr_documents;?>" >
         <input type="hidden" name="custom_pr_no" id="custom_pr_no" value="<?=$custom_pr_no;?>" >
         <input type="hidden" name="pr_date" id="pr_date" value="<?=$pr_date;?>">
+        <input type="hidden" name="do_date"  value="<?=$do_date;?>">
+        <input type="hidden" name="dealer_code"  value="<?=$dealer_code;?>">
         <input type="hidden" name="depot_id" id="depot_id" value="<?=$depot_id;?>">
         <input type="hidden" name="warehouse_to" id="warehouse_to" value="<?=$warehouse_to;?>">
         <table align="center" style="width:98%; font-size: 11px" class="table table-striped table-bordered">
@@ -303,7 +314,7 @@ self.location='<?=$page;?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
         </thead>
         <tbody>
         <?php
-        $query=mysqli_query($conn, $results);
+        $query=mysqli_query($conn, $results); $i = 0;
         while($row=mysqli_fetch_array($query)){
             $i=$i+1;
             $ids=$row['id'];

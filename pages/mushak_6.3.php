@@ -129,7 +129,17 @@ if($VAT_master->duplicate_status==1){?>
     <?php
     while($data=mysqli_fetch_object($result)):
       $id=$data->item_id;
-      $ab=$data->rate_of_SD;$ef=$data->rate_of_VAT;
+      $ab=$data->rate_of_SD;
+      $ef=$data->rate_of_VAT;
+      $i=0;
+      $total_unit=0;
+      $total_unit_amounts=0;
+      $total_VATs=0;
+      $actual_VATs=0;
+      $total_amount_of_SD =0;
+      $amount_of_SD =0;
+      $a =0;
+      $c =0;
       ?>
     <tr>
     <td style="border: 1px solid #CCC;text-align: center; margin: 10px"><?=$i=$i+1?></td>
@@ -151,6 +161,8 @@ if($VAT_master->duplicate_status==1){?>
     $total_VATs=$total_VATs+$total_VAT;
         $actual_VATs=$actual_VATs+$actual_VAT;
         $total_amount_of_SD=$total_amount_of_SD+$amount_of_SD;
+        $a=0;
+        $c=0;
     endwhile; ?>
     <tr><th>Total</th><td></td><td></td><th style="border: 1px solid #CCC;text-align: center;"><?=$total_unit?></th>
     <td></td>
@@ -176,11 +188,11 @@ if($VAT_master->duplicate_status==1){?>
 </div>
 </body>
 <?php
-if(isset($_GET[do_no])){
+if(isset($_GET['do_no'])){
   $id=$$unique;
   $table_master='sale_do_master';
   $vars['duplicate_status']='1';
-  $vars['checked_by']=$_SESSION[userid];
+  $vars['checked_by']=@$_SESSION['userid'];
   $vars['checked_at']=date('Y-m-d h:i:s');
   db_update($table_VAT_Master, $id, $vars, $unique);
   mysqli_query($conn, 'Update '.$table_master.' set mushak_challan_status="COMPLETED" where '.$unique.'='.$$unique);

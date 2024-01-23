@@ -34,6 +34,10 @@ function reload1(form)
     </div>
     <div class="col-md-7 col-sm-12 col-xs-12">
         <div class="x_panel">
+            <div class="x_title">
+                <h2><small class="text-danger">field marked with * are mandatory</small></h2>
+                <div class="clearfix"></div>
+            </div>
             <div class="x_content">
                 <?php if ($report_id=='50000'):?>
                     <div class="form-group">
@@ -48,7 +52,7 @@ function reload1(form)
                     </div>
                 <?php elseif ($report_id=='7001001'|| $report_id=='7001002'): ?>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Warehouse :</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Warehouse <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px ;height: 25px" tabindex="-1" required   name="warehouse_id" id="warehouse_id">
                                 <option></option>
@@ -57,16 +61,20 @@ function reload1(form)
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">DO Type :</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Do Type <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
-                            <select class="form-control" style="width:100%; font-size: 12px" tabindex="-1"  name="do_type" >
-                                <option></option>
-                                <?php foreign_relation('sale_do_master', 'distinct do_type', 'do_type','', '1'); ?>
+                            <select class="select2_single form-control" style="width:100%"  name="do_type" >
+                                <option value="all">All</option>
+                                <option value="sales">Sales</option>
+                                <option value="sample">Sample</option>
+                                <option value="display">Product Display</option>
+                                <option value="gift">Gift</option>
+                                <option value="free">Free</option>
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Dealer Name :</label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Dealer Name </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1"  name="dealer_code" >
                                 <option></option>
@@ -75,7 +83,7 @@ function reload1(form)
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <input type="date" style="font-size: 11px; width: 49%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-01');?>" class="form-control col-md-7 col-xs-12" required name="f_date">
                             <input type="date" style="font-size: 11px; width: 49%; margin-left:2%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"  required name="t_date">

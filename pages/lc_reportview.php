@@ -4,7 +4,7 @@ $title='LC Report';
 if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by lb.'.$order_by_GET;}
 if(!empty($_POST['order_by']) && !empty($_POST['sort'])) $order_by_GET=$_POST['order_by'];
-if(isset($order_by_GET))				{$order_by=' order by lb.'.$order_by_GET.' '.$_POST[sort].'';}
+if(isset($order_by_GET))				{$order_by=' order by lb.'.$order_by_GET.' '.$_POST['sort'].'';}
 
 if(!empty($_POST['party_id'])) $party_id=$_POST['party_id'];
 if(isset($party_id))				{$party_id_conn=' and llm.party_id='.$party_id;}
@@ -47,21 +47,21 @@ if(isset($party_id))				{$party_id_conn=' and llm.party_id='.$party_id;}
 
 
 <?php if ($_POST['report_id']=='2001001'): $sql="SELECT lb.party_id,lb.party_id,lb.ledger_id,lb.buyer_name,lb.contact_person,lb.contact_number,lb.email_id,lb.address,lb.origin from lc_buyer lb
-where  lb.status in ('".$_POST[status]."') ".$order_by.""; echo reportview($sql,'LC Buyer Report','98');?>
+where  lb.status in ('".$_POST['status']."') ".$order_by.""; echo reportview($sql,'LC Buyer Report','98','','0');?>
 
 
 <?php elseif ($_POST['report_id']=='2002001'): $sql="SELECT lb.id,lb.id,lb.pi_no,lb.pi_issue_date,b.buyer_name from lc_pi_master lb, lc_buyer b
 where lb.party_id=b.party_id
-"; echo reportview($sql,'PI Summery','98');?>
+"; echo reportview($sql,'PI Summery','98','','0');?>
 
 
 
 
 <?php elseif ($_POST['reporttypes']=='4003'): ?>
 
-    <h2 align="center" style="margin-top: -5px"><?=$_SESSION[company_name];?></h2>
+    <h2 align="center" style="margin-top: -5px"><?=$_SESSION['company_name'];?></h2>
     <h5 align="center" style="margin-top:-15px">LC Wise Cost Summery</h5>
-    <h6 align="center" style="margin-top:-15px">LC No: <?=find_a_field('lc_lc_master','lc_no','id='.$_POST[lc_id].'');?></h6>
+    <h6 align="center" style="margin-top:-15px">LC No: <?=find_a_field('lc_lc_master','lc_no','id='.$_POST['lc_id'].'');?></h6>
     <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse; font-size: 11px; margin-top: -5px">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -91,7 +91,7 @@ where lb.party_id=b.party_id
             <?php
             $lctablew=mysql_query("Select * from LC_expenses_head where status in ('1')");
             while($lcrow=mysql_fetch_array($lctablew)){
-                ?><th style="border: solid 1px #999; padding:2px; "><?=$lcrow[LC_expenses_head];?></th>
+                ?><th style="border: solid 1px #999; padding:2px; "><?=$lcrow['LC_expenses_head'];?></th>
             <?php } ?>
         </tr></thead>
         <tbody>
@@ -116,7 +116,7 @@ where lb.party_id=b.party_id
 				where
 				llm.id=lld.lc_id and
 				lld.item_id=i.item_id and
-				llm.id='.$_POST[lc_id].'
+				llm.id='.$_POST['lc_id'].'
 group by lld.id
 				order by llm.id, lld.id';
         $query2 = mysql_query($result);
@@ -135,7 +135,7 @@ group by lld.id
                 <td style="border: solid 1px #999; text-align:right; padding:5px"><?=number_format($data->amount,2); ?></td>
                 <?php
                 $totallcamount=$totallcamount+$data->amount;
-                $totalqty=find_a_field('lc_lc_details','SUM(qty)','lc_id='.$_POST[lc_id].'');
+                $totalqty=find_a_field('lc_lc_details','SUM(qty)','lc_id='.$_POST['lc_id'].'');
                 $totalactualcollection=$totalactualcollection+$actualcollection;
                 $lctablew=mysql_query("Select lh.* from LC_expenses_head lh where lh.status in ('1')");
                 $pwisecosetotal=0;
@@ -164,7 +164,7 @@ group by lld.id
             <?php
             $lctablew=mysql_query("Select lh.* from LC_expenses_head lh where lh.status in ('1')");
             while($lcrow=mysql_fetch_array($lctablew)){
-                ?><td style="border: solid 1px #999; text-align:right; padding:2px"><?php $COST=find_a_field('lc_lc_master',''.$lcrow[db_column_name].'',''.$lcrow[db_column_name].'='.$lcrow[db_column_name].' and id='.$_POST[lc_id].''); if($COST>0) echo $COST; else echo '';?></td>
+                ?><td style="border: solid 1px #999; text-align:right; padding:2px"><?php $COST=find_a_field('lc_lc_master',''.$lcrow['db_column_name'].'',''.$lcrow['db_column_name'].'='.$lcrow['db_column_name'].' and id='.$_POST['lc_id'].''); if($COST>0) echo $COST; else echo '';?></td>
             <?php } ?>
             <td style="border: solid 1px #999; text-align:right"><?=number_format($grandtotals,0);?></td>
         </tr>
@@ -261,7 +261,7 @@ des.*,dep.*
     llm.id=lld.lc_id and
     llm.lc_issue_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'".$party_id_conn." and
     llm.party_id=lb.party_id and
-    lld.item_id=i.item_id order by llm.id,lld.item_id"; echo reportview($sql,'LC Summery Report','98');?>
+    lld.item_id=i.item_id order by llm.id,lld.item_id"; echo reportview($sql,'LC Summery Report','98','','0','');?>
 
     <?php elseif ($_POST['report_id']=='2003002'):
     $sql="Select 

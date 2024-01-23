@@ -748,7 +748,7 @@ i.status in ('".$_POST['status']."') and
 ".$sec_com_connection."
 
 order by i.".$_POST['order_by'].""?>
-    <?=reportview($sql,'Item Info Master','99','','',''); ?>
+    <?=reportview($sql,'Item Info Master','99',0,'',0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012001'):?>
@@ -761,7 +761,7 @@ i.item_id=p.item_id and
 v.vendor_id='".$_POST['pc_code']."' and 
 m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
 order by m.po_no,v.vendor_id"?>
-    <?=reportview($sql,'Purchase Report','99','','',''); ?>
+    <?=reportview($sql,'Purchase Report','99',0,'',0); ?>
 
 <?php elseif ($_POST['report_id']=='1012002'):?>
     <?php
@@ -771,7 +771,7 @@ d.dealer_name_e as 'Dealer Name',d.dealer_type,sdd.do_no,sdd.do_date,sdd.do_type
 i.finish_goods_code as 'FG Code',i.item_name as 'FG Description',i.unit_name as UoM,i.pack_size,sdd.unit_price,sdd.total_unit as qty,
 sdd.total_amt as amount,
 (select SUM(total_amt) from sale_do_details where do_no=sdd.do_no and item_id='1096000100010312' and gift_on_item=sdd.item_id) as cash_discount,
-sdd.do_type as 'for'
+IF(sdd.total_amt>'0', 'sales','') as sales_for
 
 from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
 where sdd.depot_id=w.warehouse_id and
@@ -783,7 +783,29 @@ where sdd.depot_id=w.warehouse_id and
       sdd.item_id not in ('1096000100010312') and
       sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
       "?>
-    <?=reportview($sql,'Sales Report','99','','',''); ?>
+    <?=reportview($sql,'Sales Report','99',0,'',0); ?>
+
+
+
+<?php elseif ($_POST['report_id']=='1012011'):?>
+    <?php
+
+    $sql="SELECT sdd.id,sdd.id as 'T.ID',w.warehouse_name as Depot,d.dealer_custom_code as 'DB Code',
+d.dealer_name_e as 'Dealer Name',d.dealer_type,sdd.do_no,sdd.do_date,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
+i.finish_goods_code as 'FG Code',i.item_name as 'FG Description',i.unit_name as UoM,i.pack_size,sdd.unit_price,sdd.total_unit as qty,
+sdd.total_amt as amount
+
+from sale_return_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
+where sdd.depot_id=w.warehouse_id and
+      sdd.dealer_code=d.dealer_code and
+      d.dealer_category='".$_POST['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      sdd.item_id=i.item_id and 
+      sdd.item_id not in ('1096000100010312') and
+      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
+      "?>
+    <?=reportview($sql,'Sales Return Report','99',0,'',0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012003'):
@@ -803,7 +825,7 @@ j.ji_date <= '".$_POST['t_date']."' and
 i.brand_id=b.brand_id and
 b.vendor_id='".$_POST['pc_code']."'
 group by j.item_id";?>
-<?=reportview($sql,'Present Stock',100,'','','')?>
+<?=reportview($sql,'Present Stock',100,0,'',0)?>
 
 
 
@@ -821,7 +843,7 @@ where
       j.jvdate<='".$_POST['t_date']."' and 
       d.account_code=j.ledger_id group by d.account_code
       "?>
-    <?=reportview($sql,'Customer Outstanding Report','99','','',''); ?>
+    <?=reportview($sql,'Customer Outstanding Report','99',0,'',0); ?>
 
 
 
@@ -1211,7 +1233,7 @@ where
 
 <?php elseif ($_POST['report_id']=='1012008'):
     $sql="SELECT d.dealer_code,d.dealer_code,d.dealer_custom_code as dealer_custom_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person,d.contact_number,d.address_e as address,d.national_id,d.TIN_BIN as 'TIN / BIN'  from dealer_info d, town t, area a, branch b WHERE
-d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('".$_POST['pc_code']."')  order by d.dealer_code"; echo reportview($sql,'Customer Report','98','','',''); ?>
+d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('".$_POST['pc_code']."')  order by d.dealer_code"; echo reportview($sql,'Customer Report','98',0,'',0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1002003'): $LC_no=find_a_field('lc_lc_master','lc_no','id='.$_POST['lc_id']);
@@ -1472,14 +1494,21 @@ order by c.do_no";
             </tr>
             </thead>
             <tbody>
-            <?php  while($data=mysqli_fetch_object($query)){$s++;
-                list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $data->do_date); ?>
+            <?php
+            $s                          =0;
+            $discounttotal              =0;
+            $total_invoice_amount       =0;
+            $totalamts                  =0;
+            $totalsaleafterdiscount     =0;
+            $totalsaleafterdiscounts    =0;
+            $totalcomissionamount       =0;
+            while($data=mysqli_fetch_object($query)){$s++; ?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                     <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
                     <td style="border: solid 1px #999; text-align:center"><a href="chalan_view.php?v_no=<?=$data->chalan_no?>" target="_blank"><?=$data->chalan_no?></a></td>
                     <td style="border: solid 1px #999; text-align:center"><?=$data->chalan_date?></td>
                     <td style="border: solid 1px #999; text-align:center"><a href="chalan_bill_distributors.php?do_no=<?=$data->do_no?>" target="_blank"><?=$data->do_no;?></a></td>
-                    <td style="border: solid 1px #999; text-align:center"><?=$day.'-'.$month.'-'.$year1;?></td>
+                    <td style="border: solid 1px #999; text-align:center"><?=$data->do_date;?></td>
                     <td style="border: solid 1px #999; text-align:left"><?=$data->dealer_name;?></td>
                     <td style="border: solid 1px #999; text-align:center"><?=$data->area;?></td>
                     <td style="border: solid 1px #999; text-align:left"><?=$data->tsm;?></td>
@@ -1487,7 +1516,7 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount,2);?></td>
                     <td style="border: solid 1px #999; text-align:right"><? if(substr($data->discount,1)>0) echo  number_format(substr($data->discount,1),2); else echo'-';?></td>
                     <td style="border: solid 1px #999; text-align:right"><? if($data->comissionamount>0) echo  number_format($data->comissionamount,2); else echo'-';?></td>
-                    <td style="border: solid 1px #999; text-align:right"><?=number_format($data->invoice_amount-(substr($data->discount)+$data->comissionamount),2)?></td>
+                    <td style="border: solid 1px #999; text-align:right"><?=number_format(($data->invoice_amount+$data->comissionamount)+$data->discount,2)?></td>
                 </tr>
 
                 <?php
@@ -1499,7 +1528,6 @@ order by c.do_no";
 
                 $totalsaleafterdiscounts=$totalsaleafterdiscounts+$totalsaleafterdiscount;
                 $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
-
             } ?>
             <tr style="font-size:11px; font-weight:bold">
                 <td colspan="9" style="border: solid 1px #999; text-align:right;  padding:2px">Total</td>
@@ -1507,11 +1535,9 @@ order by c.do_no";
                 <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($discounttotal,2);?></td>
                 <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($totalcomissionamount,2);?></td>
                 <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_invoice_amount-($discounttotal+$totalcomissionamount),2);?></td>
-            </tr></tbody>
+            </tr>
+            </tbody>
         </table>
-
-
-
 
 
     <?php elseif ($_POST['report_id']=='1001001'):?>
@@ -1977,6 +2003,8 @@ order by c.do_no";
             </tr></thead>
             <tbody>
             <?php
+            if(!empty($_POST['do_type'])) 					$do_type=$_POST['do_type'];
+            if(($do_type=='sales' || $do_type=='sample' || $do_type=='gift'|| $do_type=='free'|| $do_type=='display')) {$do_type_conn=' and sd.challan_type="'.$do_type.'"';} else {$do_type_conn='';}
             $datecon=' and sd.do_date between  "'.$f_date.'" and "'.$t_date.'"';
             $total_amount = 0;
             $total_invoice_amount = 0;
@@ -1988,13 +2016,13 @@ order by c.do_no";
 				d.dealer_name_e,
 				d.dealer_type,
 				w.warehouse_name,
-				b.BRANCH_NAME,
 				i.item_id as itemid,
 				i.finish_goods_code as FGCODE,
 				i.item_name as FGdescription,
 				i.pack_unit as UOM,
 				i.pack_size as psize,
                 ji.*,
+                ji.gift_type as gt,
                 SUM(sd.unit_price * ji.item_ex) as invoice_amount,
                 ib.brand_name,
                 (select SUM(total_amt) from sale_do_details where do_no=sd.do_no and item_id="1096000100010312" and gift_on_item=sd.item_id) as cash_discount,
@@ -2004,7 +2032,6 @@ order by c.do_no";
 				from
 				sale_do_chalan sd,
 				dealer_info d,
-				branch b,
 				item_brand ib,
 				warehouse w,
 				item_info i,
@@ -2016,20 +2043,17 @@ order by c.do_no";
                 sd.item_id=ji.item_id and
 				i.item_id not in ("1096000100010312") and
 				i.item_id=sd.item_id and
-				sd.total_amt>0 and
 				sd.depot_id=w.warehouse_id and
-				sd.dealer_code=d.dealer_code and
-				sd.region=b.BRANCH_ID  '.$datecon.' group by sd.do_no,ji.batch,ji.item_id,ji.id
-				order by ji.id DESC');
+				sd.dealer_code=d.dealer_code '.$datecon.$do_type_conn.' group by sd.do_no,ji.batch,ji.item_id,ji.id
+				order by sd.do_no,ji.id asc');
             while($data=mysqli_fetch_object($result)){$i=$i+1; ?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
                     <td style="border: solid 1px #999; text-align:center"><?=$i;?></td>
                     <td style="border: solid 1px #999; text-align:center"><?=$data->id;?></td>
-                    <!--td style="border: solid 1px #999; text-align:left"><?=$data->warehouse_name; ?></td-->
                     <td style="border: solid 1px #999; text-align:left"><?=$data->dealer_custom_code; ?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->dealer_name_e; ?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_no; ?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_date; ?></td>
+                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_no;?></td>
+                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_date?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->challan_type; ?></td>
                     <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->FGCODE;?></td>
                     <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->FGdescription;?></td>
@@ -2041,8 +2065,8 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->item_ex;?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($amount=$data->item_ex*$data->item_price,2);?></td>
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format(($data->cash_discount/$data->totalQty)*$data->item_ex,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->invoice_price,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($invoice_amounts=$data->invoice_amount+$data->cash_discount,2);?></td>
+                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?php if($data->gt=='None') { ?><?=number_format($data->invoice_price,2);?><?php } else {echo '-';} ?> </td>
+                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?php if($data->gt=='None') { ?><?=number_format($invoice_amounts=$data->invoice_amount+$data->cash_discount,2);?><?php } else {echo '-';} ?></td>
                 </tr>
                 <?php
                 $total_amount=$total_amount+$amount;
@@ -3162,7 +3186,7 @@ group by lld.item_id
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="padding-left:20px; text-align: left;font-size: 11px"><? $headname="Sales"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$fdate,$tdate,$sec_com_connection); $salesNormal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$fdate,$tdate,$sec_com_connection); $salesNormal = $amount; $total = $amount; $total1 = $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
                 <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $salespreNormal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
@@ -3308,8 +3332,8 @@ group by lld.item_id
 
             <tr style="color:#000; font-weight:bold; font-size: 12px">
                 <td style="border: solid 1px #999;text-align: right; padding-right:5px;color:#000"><strong>Total Other Expenses </strong></td>
-                <td align="right"  style="border: solid 1px #999;text-align: right; padding-right:5px;color:#000"><strong><? $otherExpCurrent = $totalfinancialcost+$totaleol+$totalembenifit+$totalroyality; echo number_format($otherExpCurrent,2); ?></strong></td>
-                <td align="right"  style="border: solid 1px #999;text-align: right; padding-right:5px;color:#000"><strong><? $otherExpPrevious = $totalfinancialcostpre+$totaleolpre+$totalembenifitpre+$totalroyalitypre; echo number_format($otherExpPrevious,2); ?></strong></td>
+                <td align="right"  style="border: solid 1px #999;text-align: right; padding-right:5px;color:#000"><strong><? $otherExpCurrent = $totalfinancialcost+$totaleol+$totalroyality; echo number_format($otherExpCurrent,2); ?></strong></td>
+                <td align="right"  style="border: solid 1px #999;text-align: right; padding-right:5px;color:#000"><strong><? $otherExpPrevious = $totalfinancialcostpre+$totaleolpre+$totalroyalitypre; echo number_format($otherExpPrevious,2); ?></strong></td>
             </tr>
 
             <tr style="color:#000; font-weight:bold; font-size: 12px">
@@ -4395,14 +4419,14 @@ group by j.item_id order by g.group_id DESC,i.serial";
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportview($sql,'Accounts Payable Status','98','','',''); ?>
+v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportview($sql,'Accounts Payable Status','98',0,'',0); ?>
 
     <?php elseif ($_POST['report_id']=='1006001'):
         $sql="Select v.ledger_id,v.vendor_id,v.ledger_id,v.vendor_name,FORMAT(SUM(j.dr_amt),2) as Dr_amt,FORMAT(SUM(j.cr_amt),2) as Cr_amt,FORMAT(SUM(j.dr_amt-j.cr_amt),2) as Closing_Balance  from
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98','','',''); ?>
+v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98',0,'',0); ?>
 
 
     <?php elseif ($_POST['report_id']=='1011001'):
@@ -4417,7 +4441,7 @@ i.item_id=lc.item_id and
 lc.status='Active' and
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
-s.group_id in (".selectmultipleoptions($_POST['group_id']).")"; echo reportview($sql,'Material Costing','80','','',''); ?>
+s.group_id in (".selectmultipleoptions($_POST['group_id']).")"; echo reportview($sql,'Material Costing','80',0,'',0); ?>
 
     <?php endif; ?>
     </body>
