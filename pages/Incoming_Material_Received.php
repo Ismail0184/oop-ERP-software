@@ -65,8 +65,8 @@ if(prevent_multi_submit()){
     if(isset($_POST['add']))
     {  if($_POST['qty']>0) {        
         $_POST['status']="UNCHECKED";
-        $_POST['mfg_year']=date('Y' , strtotime($m));
-        $_POST['mfg_month']=date('m' , strtotime($m));
+        //$_POST['mfg_year']=date('Y' , strtotime($m));
+        //$_POST['mfg_month']=date('m' , strtotime($m));
         $_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
         $crud = new crud($table_details);
