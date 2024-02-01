@@ -7,7 +7,7 @@ $table_details="purchase_return_details";
 $page='VMS_mushak_6.8_IR.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-if (isset($_POST[viewreport])) {
+if (isset($_POST['viewreport'])) {
     $res = "SELECT  m.id,m.id,m.return_date,v.vendor_name,
     w.warehouse_name as warehouse,uam.fname as prepared_by,m.entry_at as prepared_at,m.mushak_challan_status as status FROM
 							".$table." m,
@@ -49,9 +49,9 @@ if (isset($_POST[viewreport])) {
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <input type="date"  style="width:150px; font-size: 11px; height: 30px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 30px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td><select  class="form-control" style="width: 200px;font-size:11px; height: 30px" required="required"  name="depot_id" id="depot_id">
                         <option selected></option>

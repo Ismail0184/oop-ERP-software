@@ -3,6 +3,7 @@
  $title='Production Report';
  $item_info = find_all_field('item_info','','item_id='.$_GET['item_id']);
  $QC_IWS_master = find_all_field('QC_Inspection_Work_Sheet_master','','item_id='.$_GET['item_id']);
+ $QC_IWS_master_warehouse_id = @$QC_IWS_master->warehouse_id;
  $pr_master = find_all_field('purchase_receive','','item_id='.$_GET['item_id'].' and id='.$_GET['id'].' and pr_no='.$_GET['pr_no']);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -39,10 +40,9 @@ function hide()
                               <td style="text-align:center; font-size:18px; font-weight:bold;"><?=$_SESSION['company_name'];?></td>
                             </tr>
                             <tr>
-                              <td style="text-align:center; font-size:15px; font-weight:bold;">Production Line: <?=find_a_field("warehouse", "warehouse_name", "warehouse_id=".$QC_IWS_master->warehouse_id);?>
+                              <td style="text-align:center; font-size:15px; font-weight:bold;">Production Line: <?=find_a_field("warehouse", "warehouse_name", "warehouse_id=".$QC_IWS_master_warehouse_id);?>
                               </td>
                             </tr>
-                            
                             <tr>
                               <td style="text-align:center; font-size:15px; font-weight:bold;"><span class="style1">Worksheet <br>(<?=$pr_master->work_sheet?> Copy)</span></td>
                             </tr>
@@ -68,18 +68,18 @@ function hide()
                       <tr>
                         <th align="left" valign="middle">Inspection Lot	</th>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=find_a_field("QC_Inspection_Work_Sheet_master", "inspection_lot_no", "item_id='$_GET[fgid]' and MAN_ID='$_GET[custom_pr_no]'");?></td>
+                        <td><?=find_a_field("QC_Inspection_Work_Sheet_master", "inspection_lot_no", "item_id='".$_GET['fgid']."' and MAN_ID='".$_GET['custom_pr_no']."'");?></td>
                       </tr>
                       <tr>
                         <th align="left" valign="top">Mfg Date	</td>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=find_a_field("QC_Inspection_Work_Sheet_master", "mfg", "item_id='$_GET[fgid]' and MAN_ID='$_GET[custom_pr_no]'");?></td>
+                        <td><?=find_a_field("QC_Inspection_Work_Sheet_master", "mfg", "item_id='".$_GET['fgid']."' and MAN_ID='".$_GET['custom_pr_no']."'");?></td>
                       </tr>
                       
                       <tr>
                         <th align="left" valign="top">Exp Date</th>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=getSVALUE("QC_Inspection_Work_Sheet_master", "Exp_Date", "where item_id='$_GET[fgid]' and MAN_ID='$_GET[custom_pr_no]'");?></td>
+                        <td><?=getSVALUE("QC_Inspection_Work_Sheet_master", "Exp_Date", "where item_id='".$_GET['fgid']."' and MAN_ID='".$_GET['custom_pr_no']."'");?></td>
                       </tr>
                       
                       
@@ -98,7 +98,7 @@ function hide()
                       <tr>
                         <th align="left" valign="middle">Lot No.</th>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=$hghjg;?></td>
+                        <td></td>
                       </tr>
                       <tr>
                         <th align="left" valign="middle">Quantity</th>
@@ -110,13 +110,13 @@ function hide()
                       <tr>
                         <th align="left" valign="middle">Sample Size</th>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=$aqty=getSVALUE("QC_Inspection_Work_Sheet_master", "Sample_Size", "where item_id='$_GET[fgid]' and MAN_ID='$_GET[custom_pr_no]'");?></td>
+                        <td><?=$aqty=getSVALUE("QC_Inspection_Work_Sheet_master", "Sample_Size", "where item_id='".$_GET['fgid']."' and MAN_ID='".$_GET['custom_pr_no']."'");?></td>
                       </tr>
                       
                       <tr>
                         <th align="left" valign="middle">Release Dt</th>
                         <td  align="left" valign="middle" style="width:2%">: </td>
-                        <td><?=$aqty=getSVALUE("QC_Inspection_Work_Sheet_master", "Release_Date", "where item_id='$_GET[fgid]' and MAN_ID='$_GET[custom_pr_no]'");?></td>
+                        <td><?=$aqty=getSVALUE("QC_Inspection_Work_Sheet_master", "Release_Date", "where item_id='".$_GET['fgid']."' and MAN_ID='".$_GET['custom_pr_no']."'");?></td>
                       </tr>
                       
                     </table></td>
@@ -150,7 +150,7 @@ function hide()
 
 
         </tr>
-        <?php
+        <?php $i=0;
         $res=mysqli_query($conn,"Select isp.TEST_PARAMETERS,isp.SPECIFICATION,concat(p.PARAMETERS_CODE,' : ',PARAMETERS_Name) as parameters from item_SPECIFICATION isp, PARAMETERS p where  isp.item_id='$_GET[item_id]' and isp.TEST_PARAMETERS=p.id order by isp.id");
 		while($data=mysqli_fetch_object($res)){?>
         <tr>
@@ -158,42 +158,33 @@ function hide()
           <td align="left" valign="top"><?=$data->parameters;?></td>
           <td align="center" valign="top"><?=$data->SPECIFICATION;?></td>
             <td align="left" valign="top"></td>
-
-
         </tr>
         <?php } ?>
-      </table></td>
-  </tr>
-  <tr>
-    <td align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-        
-        
-        <tr>
-          <td colspan="2" align="center">
-           
-           
-          
-             <table style="font-size:11px; margin-top:50px" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr>
-                <td style="text-align: center"><?=$_SESSION['username']?></td>
-                <td></td>
-                <td></td>
-
-              </tr>
-              
-              <tr>
-                <td align="center" style="text-decoration:overline"><strong>Analysis by</strong></td>
-                <td align="center" style="text-decoration:overline"><strong>Checked By </strong></td>
-                
-                <td align="center" style="text-decoration:overline"><strong>Approved By </strong></td>
-                
-              </tr>
-            </table>
-            <strong><br />
-            </strong></td>
-        </tr>
-        
       </table>
+    </td>
+  </tr>
+
+    <tr>
+        <td align="center"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td colspan="2" align="center">
+                        <table style="font-size:11px; margin-top:50px" width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td style="text-align: center"><?=$_SESSION['username']?></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td align="center" style="text-decoration:overline"><strong>Analysis by</strong></td>
+                                <td align="center" style="text-decoration:overline"><strong>Checked By </strong></td>
+                                <td align="center" style="text-decoration:overline"><strong>Approved By </strong></td>
+                            </tr>
+                        </table>
+                        <strong><br />
+                        </strong>
+                    </td>
+                </tr>
+            </table>
     <div class="footer1"> </div></td>
   </tr>
 </table>

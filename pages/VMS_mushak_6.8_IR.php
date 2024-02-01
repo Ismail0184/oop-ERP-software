@@ -81,6 +81,12 @@ $latest_id=find_a_field('VAT_mushak_6_8','MAX(mushak_no)','year='.$year.' and wa
 if($status>0){
   $query="SELECT
   mus.*,
+  sum(mus.qty5) as qty5,
+  sum(mus.qty6) as qty6,
+  sum(mus.qty7) as qty7,
+  sum(mus.qty9) as qty9,
+  sum(mus.qty10) as qty10,
+  sum(mus.qty11) as qty11,
   i.*
   from
   item_info i,
@@ -92,7 +98,7 @@ if($status>0){
   group by mus.item_id order by i.finish_goods_code";
 
 } else {
-$query="SELECT sdc.*,SUM(sdc.qc_qty) as total_unit,i.item_name,i.unit_name,i.SD AS VAT,i.VAT_percentage,i.SD_percentage from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.m_id=".$_GET[$unique]." group by i.item_id order by i.finish_goods_code";
+$query="SELECT sdc.*,SUM(sdc.qc_qty) as total_unit,SUM(sdc.amount) as amount,i.item_name,i.unit_name,i.SD AS VAT,i.VAT_percentage,i.SD_percentage from ".$table." sdc, item_info i where sdc.item_id=i.item_id and i.item_id not in ('1096000100010312') and sdc.m_id=".$_GET[$unique]." group by i.item_id order by sdc.id";
 }
 $result=mysqli_query($conn, $query);
 
@@ -282,7 +288,7 @@ $chalan_no = @$chalan_no;
       <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty6<?=$id?>"></td>
       <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty7<?=$id?>"></td>
       <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=$data->amount?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="price8<?=$id?>"></td>
-      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=$data->qty?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty9<?=$id?>"></td>
+      <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=$data->total_unit?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty9<?=$id?>"></td>
       <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value="<?=($data->amount/100)*15?>" style="font-size:11px; text-align:right;border: 1px solid #999999;" name="qty10<?=$id?>"></td>
       <td style="border: 1px solid #CCC;text-align: right;"><input type="text" tabindex="-1"  value=""  style="font-size:11px; text-align:right;border: 1px solid #999999;" name="total_including_all<?=$id?>" id="qty11<?=$id?>"></td>
       </tr>

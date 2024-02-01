@@ -78,7 +78,7 @@ if(prevent_multi_submit()){
         $_POST['warehouse_id'] = $_POST['warehouse_id'];
         $_POST['po_no'] = $_POST['po_no'];
         $_POST['pr_no'] = $_GET['pr_no'];
-        $_POST['lc_id'] = $po_no;
+        $_POST['lc_id'] = $_POST['po_no'];
         $_POST['item_id'] = $_GET['item_id'];
         $_POST['line_id'] = $_GET['line_id'];
         $_POST['source'] = 'PO';
@@ -125,7 +125,7 @@ if(prevent_multi_submit()){
         $crud->insert();
     }
         $update=mysqli_query($conn, "Update purchase_receive set batch_split_status='CHECKED' where ".$unique."=".$$unique." and id=".$_GET['line_id']." and item_id=".$_GET['item_id']."");
-        echo "<script>self.opener.location = '$page?".$unique."=$$unique'; self.blur(); </script>";
+        //echo "<script>self.opener.location = '$page?".$unique."=$$unique'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }
 
@@ -151,9 +151,11 @@ if(prevent_multi_submit()){
 if(isset($$unique))
 {   $condition=$unique."=".$$unique;
     $data=db_fetch_object($table,$condition);
-    while (list($key, $value)=each($data))
+    $array = (array)$data;
+    foreach ($array as $key => $value)
     { $$key=$value;}}
 
+$po_no = @$po_no;
 if(isset($_POST['viewreport'])) {
     $resultss = "Select g.pr_no,g.pr_no as GRN_NO,g.rcv_Date as 'GRN_date',g.po_no as 'PO No',w.warehouse_name as 'Warehouse / CMU',v.vendor_name,(select concat(id,' : ',MAN_ID) from MAN_master where MAN_ID=g.MAN_ID) as 'MAN ID',FORMAT(SUM(g.amount),2) as 'GRN_amount',concat(u.fname,'<br>','at: ', g.entry_at) as GRN_by,g.status
 from 
@@ -317,7 +319,7 @@ td{
                         <tbody>
 
 
-                        <?php
+                        <?php $i=0;$ttotal_unit=0;$tfree_qty=0;$ttotal_qty=0;$tdiscount=0;$ttotal_amt=0;
                         $results="Select g.*,i.* from ".$table." g, item_info i  where
  g.item_id=i.item_id and 
  g.".$unique."=".$$unique." group by g.id,g.item_id order by g.id ";
@@ -327,7 +329,7 @@ td{
                             $ids=$row['id'];
                             ?>
                             <tr style="cursor:pointer" >
-                                <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
+                                <td style="width:3%; vertical-align:middle"><?=$i?></td>
                                 <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
                                 <td style="vertical-align:middle;" onclick='OpenPopupCenter("<?=$page?>?<?=$unique?>=<?=$_GET[$unique]?>&item_id=<?=$row['item_id']?>&line_id=<?=$row['id']?>", "TEST!?", 850, 600)'><?=$row['item_name'];?></td>
                                 <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
@@ -339,10 +341,7 @@ td{
                                 <td style="text-align:center;vertical-align:middle;" onclick='OpenPopupCenter("<?=$page_inspection_sheet?>?item_id=<?=$row['item_id']?>&pr_no=<?=$row['pr_no']?>&id=<?=$row['id']?>", "TEST!?", 850, 600)'><img src="../assets/images/icon/inspection.png" height="25" width="25"></td>
 
                             </tr>
-                            <?php  $ttotal_unit=$ttotal_unit+$row['total_unit'];
-                            $tfree_qty=$tfree_qty+$row['free_qty'];
-                            $ttotal_qty=$ttotal_qty+$row['total_qty'];
-                            $tdiscount=$tdiscount+$row['discount'];
+                            <?php
                             $ttotal_amt=$ttotal_amt+$row['amount'];  } ?>
                         </tbody>
                         <tr style="font-weight: bold">
@@ -373,10 +372,10 @@ td{
     <table align="center" style="width: 50%;">
         <tr>
             <td>
-                <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
+                <input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" />
             </td>
             <td style="width:10px; text-align:center"></td>
-            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
             <td style="width:10px; text-align:center"></td>
             <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View LC Received</button></td>
         </tr>
@@ -469,7 +468,7 @@ vendor v
                             <th style="text-align:center">Exp. Date</th>
                         </tr>
                         </thead>
-                        <?php
+                        <?php $i=0;
                         $item_status=find_a_field('purchase_receive','count(id)','item_id='.$_GET['item_id'].' and id='.$_GET['line_id'].' and batch_split_status in ("CHECKED") and pr_no='.$_GET['pr_no']);
                         $item_name=find_a_field('item_info','item_name','item_id='.$_GET['item_id']);
                         $rs="Select * from lc_lc_received_batch_split where ".$unique."=".$_GET[$unique]." and item_id=".$_GET['item_id']." and line_id=".$_GET['line_id']."";

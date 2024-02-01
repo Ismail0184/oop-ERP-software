@@ -36,7 +36,7 @@ if(isset($_POST[$unique_field]))
         unset($_POST);
         unset($$unique);
     }
-
+$wir_unique = $_SESSION['wir_unique'];
 
 
 //for modify..................................
@@ -60,31 +60,29 @@ if(isset($_POST['add']))
         $_POST['entry_at']=date('Y-m-d h:s:i');
         $_POST['m_id']=$_SESSION['wir_unique'];
         $_POST['cogs_price']=$_POST['batch_rate'];
-
         $_POST['status']='MANUAL';
         $_POST['section_id']=$_SESSION['sectionid'];
         $_POST['company_id']=$_SESSION['companyid'];
         $crud->insert();
     }
-
 } // prevent_multi_submit
 
-
+$wir_unique = $_SESSION['wir_unique'];
 //for Delete..................................
 if(isset($_POST['cancel']))
 {
     $crud   = new crud($table);
-    $condition=$unique."=".$_SESSION['wir_unique'];
+    $condition=$unique."=".$wir_unique;
     $crud->delete($condition);
     $crud   = new crud($table_details);
-    $condition=$unique_details."=".$_SESSION['wir_unique'];
+    $condition=$unique_details."=".$wir_unique;
     $crud->delete_all($condition);
     unset($_SESSION['wir_unique']);
     unset($_SESSION['pono']);}
 
 
 //for single FG Delete..................................
-$res='select a.id, concat(b.item_id," # ", b.item_name) as item_description,a.batch,b.unit_name as unit ,a.qty ,a.rate as unit_price,a.amount from purchase_return_details a,item_info b where b.item_id=a.item_id and a.m_id='.$_SESSION['wir_unique'];
+$res='select a.id, concat(b.item_id," # ", b.item_name) as item_description,a.batch,b.unit_name as unit ,a.qty ,a.rate as unit_price,a.amount from purchase_return_details a,item_info b where b.item_id=a.item_id and a.m_id='.$wir_unique;
 $results=mysqli_query($conn,$res);
 while($data=mysqli_fetch_object($results)){
     $id=$data->id;
@@ -101,7 +99,7 @@ while($data=mysqli_fetch_object($results)){
 
  if(isset($_POST['confirm']))
  {
-     $_POST[$unique]=$_SESSION['wir_unique'];
+     $_POST[$unique]=@$_SESSION['wir_unique'];
      $_POST['entry_by']=$_SESSION['userid'];
      $_POST['entry_at']=date('Y-m-d h:s:i');
      $_POST['status']='UNCHECKED';
@@ -114,17 +112,18 @@ while($data=mysqli_fetch_object($results)){
 
 // data query..................................
 if(isset($_SESSION['wir_unique']))
-{   $condition=$unique."=".$_SESSION['wir_unique'];
+{   $condition=$unique."=".$wir_unique;
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 $type = @$type;
-
+$GetItemId = $_GET['item_id'];
+$GetBatch = $_GET['batch'];
 if (isset($_GET['id'])) {
 $edit_value=find_all_field(''.$table_details.'','','id='.$_GET['id'].'');}
-$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique_details.'='.$_SESSION['wir_unique'].'');
-$batch_stock_get=find_a_field('journal_item','SUM(item_in-item_ex)','item_id='.$_GET['item_id'].' and batch='.$_GET['batch'].' and warehouse_id='.$warehouse_id.'');
-$batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSING" and item_id='.$_GET['item_id'].' and batch='.$_GET['batch'].' and warehouse_id='.$warehouse_id.'');
+$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique_details.'='.$wir_unique.'');
+$batch_stock_get=find_a_field('journal_item','SUM(item_in-item_ex)','item_id='.$GetItemId.' and batch='.$GetBatch.' and warehouse_id='.$warehouse_id.'');
+$batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSING" and item_id='.$GetItemId.' and batch='.$GetBatch.' and warehouse_id='.$warehouse_id.'');
 ?>
 
 
@@ -136,7 +135,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
 
  function reload2(form)
  {var val=form.batch.options[form.batch.options.selectedIndex].value;
- self.location='<?=$page?>?item_id=<?=$_GET['item_id']?>&batch=' + val ;}
+ self.location='<?=$page?>?item_id=<?=$GetItemId?>&batch=' + val ;}
  </script>
  <script src="js/vendor/modernizr-2.8.3.min.js"></script>
  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js "></script>
@@ -191,7 +190,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                                     </table>
 
                                             <br>
-                                            <?php if($_SESSION['wir_unique']){  ?>
+                                            <?php if($wir_unique){  ?>
                                             <div class="form-group" style="margin-left:40%">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                             <button type="submit" name="modify" id="modify" style="font-size:12px" class="btn btn-primary">Update Info</button>
@@ -209,7 +208,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
 
 
 
-<?php if($_SESSION['wir_unique']>0):?>
+<?php if($wir_unique>0):?>
              <form action="<?=$page;?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
              <?php require_once 'support_html.php';?>
              <input type="hidden" name="<?=$unique_field?>" id="<?=$unique_field?>" value="<?=$$unique_field?>">
@@ -240,13 +239,13 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                          <input  name="pono" type="hidden" id="pono" value="<?=$_SESSION['initiate_pono'];?>"/>
                          <select class="select2_single form-control" style="width: 100%" tabindex="-1" onchange="javascript:reload(this.form)" required="required" name="item_id" id="item_id">
                              <option></option>
-                             <?=advance_foreign_relation($sql_item_id, ($_GET['item_id']>0)? $_GET['item_id'] : $edit_value->item_id)?>
+                             <?=advance_foreign_relation($sql_item_id, ($GetItemId>0)? $GetItemId : $edit_value->item_id)?>
                          </select>
                          </td>
                          <td style="vertical-align:middle;width: 10%">
                            <select class="select2_single form-control" style="width: 100%" tabindex="-1" onchange="javascript:reload2(this.form)" required="required" name="batch" id="batch">
                                <option></option>
-                               <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GET['batch'], 'warehouse_id='.$warehouse_id.' and item_id='.$_GET['item_id']); ?>
+                               <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $GetBatch, 'warehouse_id='.$warehouse_id.' and item_id='.$GetItemId); ?>
                            </select>
                          </td>
                        <td style="vertical-align:middle;width: 10%">
@@ -270,7 +269,7 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                        <input type="number" name="amount" readonly id="amount" class="form-control col-md-7 col-xs-12" style="width:96%; margin-left:2%; height:38px; font-size: 11px;text-align:center;" value="<?=$edit_value->amount?>" step="any" min="1" />
                        </td>
                        <td align="center" style="vertical-align:middle;width:7%">
-                       <?php if (isset($_GET[id])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET[id];?>" id="editdata<?=$_GET[id];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
+                       <?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
                                  <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?></td>
                    </tr>
                  </table></form>

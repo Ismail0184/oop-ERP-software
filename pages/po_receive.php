@@ -65,8 +65,7 @@ if(prevent_multi_submit()){
             $total_amt=$GRN_Qty*$row['rate'];
             $_POST['ip']=$ip;
             $crud      =new crud($journal_item);
-            //$crud->insert();   // inventory received
-                $total_amount=$total_amount+$total_amt;
+            $total_amount=$total_amount+$total_amt;
 			}}
 
 
@@ -434,12 +433,9 @@ td {
             <th>Recd </th>
             <th>UnRecd </th>
             <th>RecQty </th>            
-            <th>No. of Pack</th>            
-            <!--th style="width:10%">MFG/ Warranty</th-->
+            <th>No. of Pack</th>
           </tr>
           </thead>
-
-
           <? $bg=0;$ss=0;$cow=0;while($row=mysqli_fetch_object($res)){
 			 $MAN_details = find_all_field('MAN_details','','status="VERIFIED" and po_no="'.$_GET['po_no'].'" and m_id="'.$m_id.'" and item_id="'.$row->item_id.'"');
 			  $bg++?>
