@@ -273,10 +273,10 @@ d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and
 
 
 
-// Headers for download
-header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=\"$fileName\"");
-
+ // Download the generated CSV file
+ header('Content-Type: text/csv');
+ header('Content-Disposition: attachment; filename=' . $fileName);
+ readfile($fileName);
 // Render excel data
 echo $excelData;
 exit;

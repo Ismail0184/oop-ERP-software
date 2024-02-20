@@ -10,6 +10,14 @@ $unique_field="ledger_name";
 $crud      =new crud($table);
 $separator	= @$_SESSION['separator'];
 
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and al.company_id='".$companyid."' and al.section_id in ('400000','".$sectionid."')";
+}
+
 if(isset($_REQUEST['ledger_name'])||isset($_REQUEST['ledger_id']))
 {	$ledger_id			= @mysqli_real_escape_string($conn, $_REQUEST['ledger_id']);
 	$ledger_name 		= @mysqli_real_escape_string($conn, $_REQUEST['ledger_name']);
@@ -98,7 +106,7 @@ $unique_GET = @$_GET[$unique];
 $post_ledger_group_id = @$_POST['ledger_group_id'];
 $res='select al.'.$unique.',al.'.$unique.' as Code,al.'.$unique_field.',lg.group_name,
 IF(al.status=1, "Active",IF(al.status="SUSPENDED", "SUSPENDED","Inactive")) as status from '.$table.' al,ledger_group lg where 
-al.ledger_group_id=lg.group_id order by al.ledger_group_id,al.'.$unique;
+al.ledger_group_id=lg.group_id '.$sec_com_connection.' order by al.ledger_group_id,al.'.$unique;
 $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
 if(isset($_POST['deletedata'.$row->$unique]))

@@ -47,20 +47,20 @@ if(prevent_multi_submit()) {
     }
     if(isset($_POST['deleteJournal']))
     {
-        mysqli_query($conn, "DELETE from journal_info where entry_status in ('UNCHECKED') and journal_info_no=".$_GET[$unique_journal]." and received_from in ('External')");
+        mysqli_query($conn, "DELETE from journal_info where entry_status in ('UNCHECKED') and journal_info_no=".$_GET[$unique]." and received_from in ('External')");
         echo "<script>window.close(); </script>";
     }
 
 
     if (isset($_POST['confirmsaveJournal'])) {
         $ress="SELECT er.id as jid,er.journal_info_no,er.journal_info_no,er.ledger_id,er.j_date as date,a.ledger_name,er.narration,er.cr_amt,er.dr_amt,er.cr_amt from journal_info er,accounts_ledger a where 
-  er.ledger_id=a.ledger_id and er.entry_status in ('UNCHECKED') and er.journal_info_no=".$_GET[$unique_journal]." and er.received_from in ('External')";
+  er.ledger_id=a.ledger_id and er.entry_status in ('UNCHECKED') and er.journal_info_no=".$_GET[$unique]." and er.received_from in ('External')";
         $re_query = mysqli_query($conn, $ress);
         while ($data = mysqli_fetch_object($re_query)) {
             $receiptdate=$data->date;
             add_to_journal_new($receiptdate, $proj_id, $jv, $data->j_date, $data->ledger_id, $data->narration, $data->dr_amt, $data->cr_amt, 'Journal_info', $data->journal_info_no, $data->jid, 0, 0, $_SESSION['usergroup'], $data->cheq_no, $data->cheq_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear);
         }
-        $up_payment="UPDATE ".$table_journal." SET entry_status='CHECKED' where journal_info_no=".$_GET[$unique_journal]."";
+        $up_payment="UPDATE ".$table_journal." SET entry_status='CHECKED' where journal_info_no=".$$unique."";
         $up_query=mysqli_query($conn, $up_payment);
         unset($_POST);
         unset($$unique);
@@ -188,7 +188,7 @@ $ress_journal="SELECT er.journal_info_no,er.journal_info_no,er.ledger_id,er.j_da
                         </tbody>
                     </table>
                     <?php
-                    $GET_status=find_a_field(''.$table_journal.'','entry_status','journal_info_no='.$_GET[$unique_journal]);
+                    $GET_status=find_a_field(''.$table_journal.'','entry_status','journal_info_no='.$_GET[$unique]);
                     if($GET_status=='UNCHECKED'){  ?>
                         <p>
                             <button style="float: left; margin-left:1%;  font-size: 11px" type="submit" name="deleteJournal" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to returned?");'>Delete</button>
@@ -226,6 +226,7 @@ $ress_journal="SELECT er.journal_info_no,er.journal_info_no,er.ledger_id,er.j_da
          }
     echo $crud->report_templates_with_title_and_class($res,'External Receive Voucher',''); ?>
 
+
     <div class="col-md- col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -250,15 +251,15 @@ $ress_journal="SELECT er.journal_info_no,er.journal_info_no,er.ledger_id,er.j_da
   er.ledger_id=a.ledger_id and er.entry_status in ('UNCHECKED') and er.dr_amt>0 and er.received_from in ('External') group by er.journal_info_no";
                     $query_journal = mysqli_query($conn, $res_journal);
                     while($data=mysqli_fetch_object($query_journal)){?>
-                        <tr style="cursor:pointer"  onclick="DoNavPOPUPS(<?=$data->journal_info_no?>)">
-                            <td><?=$i=$i+1?></td>
-                            <td><?=$data->journal_info_no?></td>
-                            <td><?=$data->date?></td>
-                            <td><?=$data->ledger_name?></td>
-                            <td><?=$data->narration?></td>
-                            <td><?=$data->amount?></td>
-                            <td><?=$data->status?></td>
-                        </tr>
+                    <tr style="cursor:pointer"  onclick="DoNavPOPUPS(<?=$data->journal_info_no?>)">
+                        <td><?=$i?></td>
+                        <td><?=$data->journal_info_no?></td>
+                        <td><?=$data->date?></td>
+                        <td><?=$data->ledger_name?></td>
+                        <td><?=$data->narration?></td>
+                        <td><?=$data->amount?></td>
+                        <td><?=$data->status?></td>
+                    </tr>
                     <?php } ?>
                 </table>
             </div>

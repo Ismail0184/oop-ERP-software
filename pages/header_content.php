@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?=$_SESSION['company_name']; $title = @$title;$unique = @$unique;?> | <?=$title; ?></title>
-    <link rel="icon" href="../assets/images/icon/title.png" type="image/icon type">
+    <link rel="icon" href="../assets/images/icon/<?=$_SESSION['sectionid']?>.png" type="image/icon type">
     <link href="../assets/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
     <link href="../assets/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">

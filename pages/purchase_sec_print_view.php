@@ -26,13 +26,13 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 	mysqli_query($conn, $ssql);
 	$narration = $jvold->narration.'(Bill#'.$bill_no.'/Dt:'.$bill_date.')';
 
-	$ssql='update secondary_journal set narration="'.$narration.'",jv_date="'.$voucher_date.'", cc_code="'.
+	$ssql='update secondary_journal set narration="'.$narration.'",jvdate="'.$voucher_date.'", cc_code="'.
 	$cc_code.'", checked_at="'.$time_now.'", checked_by="'.$_SESSION['userid'].'", checked="YES" , 	final_jv_no="'.$jv.'" where tr_from = "Purchase" and jv_no="'.$jv_no.'"';
 	mysqli_query($conn, $ssql);
 
 	$jv=next_journal_voucher_id();
 	if(prevent_multi_submit()) {
-	sec_journal_journal($jv_no,$jv,'Purchase',0,0,0,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
+	sec_journal_journal($jv_no,$jv,'Purchase',0,0,$voucher_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
     unset($_POST);
 	}
 }
@@ -49,7 +49,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 	$ssql='update purchase_receive set bill_no="'.$bill_no.'", bill_date="'.$bill_date.'" where pr_no="'.$prold->pr_no.'"';
 	mysqli_query($conn, $ssql);
 	$narration = 'GR#'.$prold->id.'/'.$prold->pr_no.'(PO#'.$prold->po_no.')(Bill#'.$bill_no.'/Dt:'.$bill_date.')';
-	$ssql='update secondary_journal set narration="'.$narration.'",jv_date="'.$voucher_date.'", cc_code="'.
+	$ssql='update secondary_journal set narration="'.$narration.'",jvdate="'.$voucher_date.'", cc_code="'.
 	$cc_code.'", checked_at="'.$time_now.'", checked_by="'.$_SESSION['userid'].'", checked="YES" , 	final_jv_no="'.$jv.'" where tr_from = "Purchase" and jv_no="'.$jv_no.'"';
 	mysqli_query($conn, $ssql);
 	$sssql = 'delete from journal where group_for="'.$_SESSION['usergroup'].'" and tr_from ="Purchase" and tr_no="'.$prold->pr_no.'"';
@@ -222,7 +222,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
     <td width="0" align="right">Voucher Date :</td>
     <td width="0">
 <input name="jv_no" type="hidden" value="<?=$jv_no?>" />
-<input name="voucher_date" type="text" id="voucher_date" value="<?=date('Y-m-d',$jv->jv_date);?>" />
+<input name="voucher_date" type="text" id="voucher_date" value="<?=$jv->jvdate;?>" />
 <input type="button" name="Submit" value="EDIT VOUCHER"  onclick="DoNav('<?php echo '&v_no='.$jv_no.'&view=Show' ?>');" /></td>
     <td><input name="check" type="submit" id="check" value="CHECK" />
         <input type="hidden" name="req_no" id="req_no" value="<?=$jv_jv_on?>" /></td></tr></table>
@@ -251,7 +251,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
     <td width="0">
         <input name="jv_no" type="hidden" value="<?=$jv_no?>" />
-        <input name="voucher_date" type="text" id="voucher_date" value="<?=date('Y-m-d',$jv->jv_date);?>" />
+        <input name="voucher_date" required type="date"  value="<?=$jv->jvdate?>" />
     </td>
     <td>
         <input type="hidden" name="req_no" id="req_no" value="<?=$jv->jv_on?>" />
@@ -269,7 +269,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
         <td class="tabledesign_text">Voucher Date :
 
-          <?=date('d-m-Y',$jv->jv_date);?></td>
+          <?=date('d-m-Y',$jv->jvdate);?></td>
 
         <td class="tabledesign_text">Bill No :
 

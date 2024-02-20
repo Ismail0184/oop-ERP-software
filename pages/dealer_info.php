@@ -9,6 +9,14 @@ $dealer_custom_codess='dealer_custom_code';				// For a New or Edit Data a must 
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and d.company_id='".$_SESSION['companyid']."' and d.section_id in ('400000','".$_SESSION['sectionid']."')";
+}
+
 
 if(isset($_POST[$shown])) {
 $$unique = @$_POST[$unique];
@@ -98,7 +106,7 @@ if(@$_GET['area_codeGET']>0){
 	$area_code=@$area_code;
 	}
 $res='select d.'.$unique.',d.'.$dealer_custom_codess.' as Code,d.account_code,d.'.$shown.' as dealer_name,d.dealer_category as Category,d.dealer_type as Screm_Type,d.customer_type as DB_Type,d.credit_limit as Credit_Limit,d.commission,(select account_name from bank_account_name where id=d.bank_account) as bank_account,d.canceled as status from '.$table.' d where
- 1 order by '.$unique;
+ 1 '.$sec_com_connection.' order by '.$unique;
 $sql_TOWN="Select town_code,concat(town_code,' : ',town_name) from town order by town_name";
 $res_daeler_type="Select typeshorname,typedetails from distributor_type order by id";
 $dealer_code_GET = @$_GET['dealer_code'];

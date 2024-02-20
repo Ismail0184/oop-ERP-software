@@ -10,8 +10,16 @@ $table_log='acc_voucher_config_log';
 $page="acc_admin_backdate_voucher.php";
 $crud      =new crud($table);
 $unique_GET = @$_GET[$unique];
- $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
- $todayss=$dateTime->format("d/m/Y  h:i A");
+$dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
+$todayss=$dateTime->format("d/m/Y  h:i A");
+
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and l.company_id='".$companyid."' and l.section_id in ('400000','".$sectionid."')";
+}
 
 
 if(prevent_multi_submit()){
@@ -34,6 +42,8 @@ if(isset($_POST['modify']))
 {
     $_POST['entry_at']=$todayss;
     $_POST['edit_by']=$_SESSION['userid'];
+    $_POST['section_id']=$_SESSION['sectionid'];
+    $_POST['company_id']=$_SESSION['companyid'];
     $crud->update($unique);
     $up_previous=mysqli_query($conn, "Update ".$table_log." set status='Inactive' where status in ('Active')");
     $_POST['user_id']=$_SESSION['userid'];
@@ -42,7 +52,7 @@ if(isset($_POST['modify']))
     $crud      =new crud($table_log);
     $crud->insert();
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
-    echo "<script>window.close(); </script>";
+    //echo "<script>window.close(); </script>";
 }
 
 //for Delete..................................
@@ -64,7 +74,7 @@ if(isset($unique_GET))
     { $$key=$value;}}
 	
 $table='acc_voucher_config_log';
-$res='select l.id,u.fname as Changed_by,l.entry_at as changed_at,concat(l.limit_old," Days") as Previous_limit,concat(l.back_date_limit," Days") as New_limit,l.status  from '.$table.' l,users u where l.user_id=u.user_id order by '.$unique;
+$res='select l.id,u.fname as Changed_by,l.entry_at as changed_at,concat(l.limit_old," Days") as Previous_limit,concat(l.back_date_limit," Days") as New_limit,l.status  from '.$table.' l,users u where l.user_id=u.user_id '.$sec_com_connection.' order by '.$unique;
 ?>
 
 

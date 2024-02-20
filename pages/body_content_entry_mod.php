@@ -9,7 +9,7 @@
     border-radius: 25px; background-color:#069"></a>
                     <?php } else { ?>
                     <a href="dashboard.php" class="site_title">
-                        <img src="../assets/images/icon/title.png" width="60px" height="50" title="Company Logo"> <span><?=$_SESSION['com_short_name']?></span>
+                        <img src="../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="60px" height="50" title="Company Logo"> <span><?=$_SESSION['com_short_name']?></span>
                         <?php } ?></a>
                 </div>
 

@@ -8,6 +8,14 @@ $page="acc_ledger_group.php";
 $crud      =new crud($table);
 $unique_GET = @$_GET[$unique];
 
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and lg.company_id='".$companyid."' and lg.section_id in ('400000','".$sectionid."')";
+}
+
 if(prevent_multi_submit()) {
 if(isset($_REQUEST['group_name'])||isset($_POST['group_id']))
 {   $group_id		= mysqli_real_escape_string($conn, $_POST['group_id']);
@@ -76,7 +84,8 @@ $res='select lg.'.$unique.',lg.'.$unique.' as Code,lg.'.$unique_field.',(select 
 IF(lg.status=1, "Active",IF(lg.status="SUSPENDED", "SUSPENDED","Inactive")) as status  from '.$table.' lg,
                                 acc_class ac
                                 where 
-                                lg.group_class=ac.class_id                                 
+                                lg.group_class=ac.class_id
+                                '.$sec_com_connection.'                                 
                                  order by lg.'.$unique;
 
 $query=mysqli_query($conn, $res);

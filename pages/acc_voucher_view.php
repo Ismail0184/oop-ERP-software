@@ -11,6 +11,15 @@ $fdate=@$_REQUEST["fdate"];
 $tdate=@$_REQUEST["tdate"];
 $vou_no=@$_REQUEST['vou_no'];
 $tr_from = @$_POST['tr_from'];
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
 if(isset($_REQUEST['show']))
 {
 
@@ -36,8 +45,9 @@ if (!empty($_POST['vou_no'])){
 				  accounts_ledger l
 				WHERE
 				  j.tr_no='".$_POST['vou_no']."' and 
-				  j.user_id=u.user_id 
-				  AND j.ledger_id = l.ledger_id group BY j.tr_no ";
+				  j.user_id=u.user_id and
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND 
+				  j.ledger_id = l.ledger_id group BY j.tr_no ";
 } else {
 
     if($_POST['tr_from']!=''){$tr_from .= " AND j.tr_from = '".$_POST['tr_from']."'";}
@@ -58,6 +68,7 @@ if (!empty($_POST['vou_no'])){
 				  accounts_ledger l
 				WHERE
 				  j.jvdate BETWEEN '" . $_POST['fdate'] . "' AND '" . $_POST['tdate'] . "' and  
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND
 				  j.user_id=u.user_id ".$tr_from." 
 				  AND j.ledger_id = l.ledger_id group BY j.tr_no ";}}
 ?>

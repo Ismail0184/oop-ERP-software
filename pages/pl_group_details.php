@@ -1,6 +1,6 @@
 <?php
 require_once 'support_file.php';
-$cname = $_GET[headname];
+$cname = $_GET['headname'];
 
 $sectionid=$_SESSION['sectionid'];
 $companyid=$_SESSION['companyid'];
@@ -8,6 +8,16 @@ if($sectionid=='400000'){
     $sec_com_connection=' and 1';
 } else {
     $sec_com_connection=" and j.section_id='".$sectionid."' and j.company_id='".$companyid."'";
+}
+
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
 }
 ?>
 <title><?=$cname;?></title>
@@ -51,6 +61,7 @@ if($sectionid=='400000'){
             <th style="border: solid 1px #999; padding:2px; width: 15%">Balance Amount</th>
         </tr>
         <?php
+        $i=0;
        $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -59,6 +70,7 @@ ledger_group g
 where 
 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
 j.cr_amt>0 and
@@ -101,6 +113,7 @@ order by l.ledger_id ');
             </tr>
 
             <?php
+            $i=0;
             $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -109,6 +122,7 @@ ledger_group g
 where 
 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
 j.dr_amt>0 and
@@ -149,6 +163,7 @@ order by l.ledger_id ');
             <th style="border: solid 1px #999; padding:2px; width: 15%">Balance Amount</th>
         </tr>
         <?php
+        $i = 0;
        $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -157,6 +172,7 @@ ledger_group g
 where 
 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
 g.com_id in ('.$_GET['com_id'].')'.$sec_com_connection.' 
@@ -178,6 +194,7 @@ order by l.ledger_id ');
         }?>
 
         <?php
+        $j=0;
         $res = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -186,6 +203,7 @@ ledger_group g
 where 
 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
 j.cc_code in ('.$_GET['cc_code'].')'.$sec_com_connection.' 
@@ -221,6 +239,7 @@ accounts_ledger l,
 ledger_group g 
 where 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and
 j.cc_code in ('.$_GET['cc_code'].')'.$sec_com_connection.' 
@@ -237,6 +256,7 @@ accounts_ledger l,
 ledger_group g 
 where 
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and
 j.cc_code in ('.$_GET['cc_code'].')'.$sec_com_connection.' 
@@ -259,19 +279,18 @@ order by l.ledger_id';
             </tr>
 
             <?php
+            $i=0;
             $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
-
 j.cc_code in ('.$_GET['cc_code'].')'.$sec_com_connection.' 
-
 group by l.ledger_id
 order by l.ledger_id ');
             while($row=mysqli_fetch_array($result)){?>
@@ -316,15 +335,15 @@ order by l.ledger_id ');
         } else {
             $sec_com_connection=" and j.section_id='".$sectionid."' and j.company_id='".$companyid."'";
         }
-
+        $i=0;
         $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
+j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
 l.ledger_group_id=g.group_id and 
 g.com_id in ('.$_GET['com_id'].')'.$sec_com_connection.' 

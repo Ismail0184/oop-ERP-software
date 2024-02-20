@@ -1,7 +1,5 @@
 <?php
-
 require_once 'support_file.php';
-require_once ('../page/common/class.numbertoword.php');
 $jv_no=$_GET['id'];
 $bill_no=$_REQUEST['bill_no'];
 $bill_date=$_REQUEST['bill_date'];
@@ -13,92 +11,42 @@ $address=find_a_field('project_info','proj_address',"1");
 $jv = find_all_field('secondary_journal','','tr_from = "Purchase" and tr_no='.$jv_no);
 $pr = find_all_field('purchase_receive','pr_no','pr_no='.$jv->tr_no);
 ?>
-
-
-
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
-
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-
 <title>.: Voucher :.</title>
-
 <link href="../page/css/voucher_print.css" type="text/css" rel="stylesheet"/>
-
-
-
 <link href="../page/css/pagination.css" rel="stylesheet" type="text/css" />
-
 <link href="../page/css/jquery-ui-1.8.2.custom.css" rel="stylesheet" type="text/css" />
-
 <link href="../page/css/jquery.autocomplete.css" rel="stylesheet" type="text/css" />
-
-
-
 <script type="text/javascript" src="../page/js/jquery-1.4.2.min.js"></script>
-
 <script type="text/javascript" src="../page/js/jquery-ui-1.8.2.custom.min.js"></script>
-
-
-
 <script type="text/javascript" src="../page/js/jquery.autocomplete.js"></script>
-
 <script type="text/javascript" src="../page/js/jquery.validate.js"></script>
-
 <script type="text/javascript" src="../page/js/paging.js"></script>
-
 <script type="text/javascript" src="../page/js/ddaccordion.js"></script>
-
 <script type="text/javascript" src="../page/js/js.js"></script>
-
 <script type="text/javascript" src="../page/js/jquery.ui.datepicker.js"></script>
-
 <script type="text/javascript">
-
 function hide()
-
 {
-
     document.getElementById("pr").style.display="none";
-
 }
-
 function DoNav(theUrl)
-
 {
-
 	var URL = 'unchecked_voucher_view_popup_purchase.php?'+theUrl;
-
 	popUp(URL);
-
 }
-
-
-
 function popUp(URL)
-
 {
-
 day = new Date();
-
 id = day.getTime();
-
 eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=800,height=800,left = 383,top = -16');");
-
 }
-
 </script>
-
     <? do_calander('#voucher_date');?><? do_calander('#bill_date');?>
-
 <style type="text/css">
-
-/* CSS Document */
 body 
 {
 	background-color: #ffffff;	
@@ -179,34 +127,15 @@ body
 	}
 
 .style1 {
-
 	color: #FFFFFF;
-
 	font-weight: bold;
-
 }
-
 .style3 {color: #FFFFFF; font-weight: bold; font-size: 12px; }
-
--->
-
 </style>
-
-
 </head>
-
 <body><form action="" method="post">
-
 <table width="820" border="0" cellspacing="0" cellpadding="0" align="center">
-
-  
-
-
-
-
-
   <tr>
-
 <?php if($jv->grn_inventory_type='Asset'){
 		$link_view='chalan_view_asset.php'; } else {
 		$link='chalan_view2.php'; }?>
@@ -217,78 +146,40 @@ body
 <div id="pr">
 <? if($jv->checked!='YES'){?>
 <h1 style="text-align:center; color:red">Unchecked</h1>
-
-
-
 <a target="_blank" href="<?=$link_view;?>?v_no=<?=$pr->pr_no?>"></a></div><? }else{?>
 <h1 style="text-align:center; color:red">Checked</h1>
 <? }?>
 </div></td>
-
         </tr>
-
-
-
-
- 
-
- 
 
   <tr>
-
     <td><table width="100%" border="0" cellpadding="0" cellspacing="0" bordercolor="#000000" class="tabledesign">
-
       <tr>
-
         <td align="center"><div align="center">SL</div></td>
-
         <td align="center">A/C Code </td>
-
         <td align="center">Particulars</td>
-
         <td>Debit</td>
-
         <td>Credit</td>
-
       </tr>
-
-
-
 	  <?
-
 $sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt FROM accounts_ledger a, secondary_journal b where b.tr_no='$jv_no' and a.ledger_id=b.ledger_id group by b.ledger_id desc");
 while($info=mysqli_fetch_object($sql2)){
-
 	  ?>
-
       <tr>
-
         <td align="left"><div align="center">
-
           <?=++$s;
-
 		  ?>
-
         </div></td>
-
         <td align="left"><?=$info->ledger_id?></td>
-
         <td align="left"><?=$info->ledger_name;?></td>
-
         <td align="right"><? echo number_format($info->dr_amt,2); $ttd = $ttd + $info->dr_amt;?></td>
-
         <td align="right"><? echo number_format($info->cr_amt,2); $ttc = $ttc + $info->cr_amt;?></td>
-
         </tr>
-
 <?php }?>
-
 <?
 $sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(cr_amt) as cr_amt FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and cr_amt>0 group by b.ledger_id desc");
 while($info=mysqli_fetch_object($sql2)){
-
 	  ?>
-
       <tr>
         <td align="left"><div align="center"><?=++$s;?></div></td>
         <td align="left"><?=$info->ledger_id?></td>
@@ -296,53 +187,23 @@ while($info=mysqli_fetch_object($sql2)){
         <td align="right"><? echo number_format($info->dr_amt,2); $ttd = $ttd + $info->dr_amt;?></td>
         <td align="right"><? echo number_format($info->cr_amt,2); $ttc = $ttc + $info->cr_amt;?></td>
         </tr>
-
 <?php }?>
-
-
-
       <tr>
-        <td colspan="3" align="right">Total Taka: </td>
+        <td colspan="3" align="right">Total Amount: </td>
         <td align="right"><?=number_format($ttd,2)?></td>
         <td align="right"><?=number_format($ttc,2)?></td>
         </tr>
-
-
-
     </table></td>
-
   </tr>
-
   <tr>
-
     <td>&nbsp;</td>
-
   </tr>
 
   <tr>
-
-    <td>Amount in Word :
-
-
-
-	 (<? echo convertNumberCustom($ttc)?>)	 </td>
-
-  </tr>
-
- 
- 
-  
-  
-
-  <tr>
-
     <td>&nbsp;</td>
-
   </tr>
-
-</table></form>
-
+</table>
+</form>
 </body>
-
 </html>
 

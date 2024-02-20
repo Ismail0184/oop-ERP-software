@@ -43,7 +43,7 @@ endif;
                         <a href="dashboard.php"><img src="<?=@$_SESSION['userpic'];?>" width="60" height="60" style=" margin-top: 10px;border: 1px solid <?=$_SESSION['logo_color']?>;
     border-radius: 25px; background-color:#069" title="Company Logo"></a>
                     <?php else: ?>
-                        <a href="dashboard.php"><img src="../assets/images/icon/title.png" width="50" height="50" style=" margin-top: 10px;" title="Company Logo"></a><?php endif; ?>
+                        <a href="dashboard.php"><img src="../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="50" height="50" style=" margin-top: 10px;" title="Company Logo"></a><?php endif; ?>
                 </div>
                 <div class="clearfix"></div>
                     <?php include ("pro.php");  ?>

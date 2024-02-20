@@ -654,6 +654,7 @@ function reload1(form)
                         </div>
                     </div>
 
+
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center</label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -663,6 +664,16 @@ function reload1(form)
                             </select>
                         </div>
                     </div>
+
+                <?php elseif ($report_id=='1002007'): ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date From <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="date" style="font-size: 11px; width: 49%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-01');?>" class="form-control col-md-7 col-xs-12" required name="f_date">
+                            <input type="date" style="font-size: 11px; width: 49%; margin-left:2%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"  required name="t_date">
+                        </div>
+                    </div>
+
 
                 <?php elseif ($report_id=='1005001'): ?>
                     <div class="form-group">

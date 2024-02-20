@@ -22,6 +22,15 @@ if($sectionid=='400000'){
 } else {
     $sec_com_connection=" and j.company_id='".$_SESSION['companyid']."' and j.section_id in ('400000','".$_SESSION['sectionid']."')";
 }
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -105,15 +114,15 @@ if($sectionid=='400000'){
         </tr></thead>
         <tbody>
         <?php
-        $cc_code =@$_REQUEST['cc_code'];
+        $cc_code = @$_REQUEST['cc_code'];
         $tr_from = @$_REQUEST['tr_from'];
         $emp_id = '';
         if($tr_from!=''){
             $emp_id.=" and a.tr_from='".$tr_from."'";}
         if($cc_code > 0)
-        {   $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '$f_date' AND '$t_date' and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code ";
+        {   $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '$f_date' AND '$t_date' and a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code ";
             $total=mysqli_fetch_row(mysqli_query($conn, $total_sql));
-            $c="select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate<'$f_date' and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code".$emp_id;
+            $c="select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate<'$f_date' and a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'  and a.ledger_id like '$ledger_id'".$sec_com_connection." AND a.cc_code=$cc_code".$emp_id;
             $p="select
 a.jvdate,
 b.ledger_name,
@@ -142,6 +151,7 @@ where
 a.cc_code=c.id and
 a.ledger_id=b.ledger_id and
 a.jvdate between '$f_date' AND '$t_date' and
+a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.ledger_id like '$ledger_id' and
 a.user_id=u.user_id".$sec_com_connection." and
 a.cc_code=".$cc_code."
@@ -181,6 +191,7 @@ where
 a.cc_code=c.id and
 a.ledger_id=b.ledger_id and
 a.jvdate between '$f_date' AND '$t_date' and
+a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.ledger_id like '$ledger_id' and
 a.user_id=u.user_id".$sec_com_connection."
 order by a.jvdate,a.id";
@@ -303,7 +314,7 @@ order by a.jvdate,a.id";
 
         if($PostTrFrom!=''){
             $emp_id.=" and a.tr_from='".$tr_from."'";}
-        $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.ledger_id like '".$_POST['ledger_id']."'";
+        $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and a.ledger_id like '".$_POST['ledger_id']."'";
         $total=mysqli_fetch_array(mysqli_query($conn, $total_sql));
 
         $c="select sum(a.dr_amt)-sum(a.cr_amt) from
@@ -337,7 +348,8 @@ where
 a.cc_code=c.id and
 a.ledger_id=b.ledger_id and
 a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and
-a.ledger_id like '".$_POST['ledger_id']."' and
+a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
+a.ledger_id like '".$_POST['ledger_id']."' and 
 a.user_id=u.user_id
 order by a.jvdate,a.id";
         if($total[0]>$total[1])
@@ -417,6 +429,7 @@ j.batch=bsp.batch and
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$_POST['t_date']."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 b.vendor_id='".$_POST['pc_code']."' and
 i.brand_id=b.brand_id and
 i.finish_goods_code not in ('2001') and bsp.status in ('PROCESSING')
@@ -536,6 +549,7 @@ where
 a.cc_code=c.id and
 a.ledger_id=b.ledger_id and
 a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and
+a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.ledger_id like '".$_POST['ledger_id']."' and
 a.user_id=u.user_id
 order by a.jvdate,a.id";?>
@@ -549,7 +563,6 @@ order by a.jvdate,a.id";?>
                 <td align="center" style="border: solid 1px #999; padding:2px"><?=$data[0];?></td>
                 <td align="center" style="border: solid 1px #999; padding:2px"><?=$data[7]?></td>
                 <td align="left" style="border: solid 1px #999; padding:2px; "><?=find_a_field('dealer_info','dealer_name_e','dealer_code='.$data[18]);?></td>
-
                 <td align="left" style="border: solid 1px #999; padding:2px"><?=$data[5];?><?=(($data[9]!='')?'-Cq#'.$data[9]:'');?><?=(($data[10]>943898400)?'-Cq-Date#'.date('d-m-Y',$data[10]):'');?></td>
                 <td align="center" style="border: solid 1px #999; padding:2px"><?=$data[4];?></td>
                 <td align="right" style="border: solid 1px #999; padding:2px"><?=number_format($data[2],2);?></td>
@@ -759,7 +772,8 @@ where
 p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
 i.item_id=p.item_id and 
 v.vendor_id='".$_POST['pc_code']."' and 
-m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
+m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+p.po_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
 order by m.po_no,v.vendor_id"?>
     <?=reportview($sql,'Purchase Report','99',0,'',0); ?>
 
@@ -781,7 +795,8 @@ where sdd.depot_id=w.warehouse_id and
       d.area_code=t.AREA_CODE and
       sdd.item_id=i.item_id and 
       sdd.item_id not in ('1096000100010312') and
-      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
+      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
+      sdd.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
       "?>
     <?=reportview($sql,'Sales Report','99',0,'',0); ?>
 
@@ -803,7 +818,8 @@ where sdd.depot_id=w.warehouse_id and
       d.area_code=t.AREA_CODE and
       sdd.item_id=i.item_id and 
       sdd.item_id not in ('1096000100010312') and
-      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
+      sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+      sdd.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' 
       "?>
     <?=reportview($sql,'Sales Return Report','99',0,'',0); ?>
 
@@ -822,6 +838,7 @@ where
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$_POST['t_date']."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 i.brand_id=b.brand_id and
 b.vendor_id='".$_POST['pc_code']."'
 group by j.item_id";?>
@@ -841,6 +858,7 @@ where
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE and
       j.jvdate<='".$_POST['t_date']."' and 
+      j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
       d.account_code=j.ledger_id group by d.account_code
       "?>
     <?=reportview($sql,'Customer Outstanding Report','99',0,'',0); ?>
@@ -918,6 +936,7 @@ personnel_basic_info p
 
 where
 d.dealer_category='".$_POST['pc_code']."' and 
+m.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.AREA_CODE=d.area_code
 and m.status not in ('COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and m.do_section not in ('Rice') and w.warehouse_id=m.depot_id and
 c.item_id not in ('1096000100010312') and
@@ -1145,12 +1164,12 @@ $query = mysqli_query($conn, $sql); ?>
     $sql="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
 d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
 
-(select sum(cr_amt)-sum(dr_amt) from journal  where ledger_id=d.account_code and jvdate<'$f_date') as opening,
-(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='receipt') as collection,
-(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn')) as salesReturn,
-(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info','Sales')) as OtherReceived,
-(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."') as shipment,
-(select SUM(dr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info') as OtherIssue
+(select sum(cr_amt)-sum(dr_amt) from journal  where ledger_id=d.account_code and jvdate<'$f_date' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as opening,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='receipt' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as collection,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as salesReturn,
+(select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info','Sales') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherReceived,
+(select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as shipment,
+(select SUM(dr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherIssue
 
                                             
 from dealer_info d,branch r,area t
@@ -1305,7 +1324,7 @@ users u,
 payment c
 
 where
-
+a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and
 a.tr_no=c.payment_no and
 a.sub_ledger_id=b.ledger_id and
 a.user_id=u.user_id and
@@ -1469,6 +1488,7 @@ where
 a.AREA_CODE=d.area_code
 and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and w.warehouse_id=m.depot_id and
 c.item_id not in ('1096000100010312') and
+m.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$pg_con.$dealer_code_CON.$dtype_con.$product_team_con.$do_type_con."
 group by c.do_no
 order by c.do_no";
@@ -1666,7 +1686,7 @@ order by c.do_no";
         }else {$ledger_con = 'b.ledger_group_id="'.$cash_and_bank_balance.'"';
             $ledger_conx = '1';}
 
-        $op_b1="select distinct(b.ledger_name), SUM(dr_amt)-SUM(cr_amt) from journal a, accounts_ledger b where ".$ledger_con." and a.ledger_id<>'$cash[0]' and a.ledger_id=b.ledger_id and jvdate < '$f_date'".$sec_com_connection." GROUP  BY ledger_name";
+        $op_b1="select distinct(b.ledger_name), SUM(dr_amt)-SUM(cr_amt) from journal a, accounts_ledger b where ".$ledger_con." and a.ledger_id<>'$cash[0]' and a.ledger_id=b.ledger_id and jvdate < '$f_date' ".$sec_com_connection." GROUP  BY ledger_name";
         $cl_c="select SUM(dr_amt)-SUM(cr_amt) from journal where 1 ".$sec_com_connection_wa." and ledger_id ='$cash[0]' and jvdate<'$t_date'";
         $cl_c=mysqli_fetch_row(mysqli_query($conn, $cl_c));
         $cl_b="select distinct(b.ledger_name), SUM(dr_amt)-SUM(cr_amt) from journal a, accounts_ledger b where ".$ledger_con."".$sec_com_connection." and a.ledger_id<>'$cash[0]' and a.ledger_id=b.ledger_id and jvdate < '$t_date' and 1 GROUP  BY ledger_name";
@@ -1861,7 +1881,7 @@ order by c.do_no";
                 <th style="border: solid 1px #999; padding:2px; %">T.ID</th>
                 <th style="border: solid 1px #999; padding:2px; ">Depot</th>
                 <th style="border: solid 1px #999; padding:2px; ">Code</th>
-                <th style="border: solid 1px #999; padding:2px; ">Dealder Name</th>
+                <th style="border: solid 1px #999; padding:2px; ">Dealer Name</th>
                 <th style="border: solid 1px #999; padding:2px">D.Type</th>
                 <th style="border: solid 1px #999; padding:2px; ">DO</th>
                 <th style="border: solid 1px #999; padding:2px;">DO Date</th>
@@ -1884,6 +1904,7 @@ order by c.do_no";
             if($_POST['do_no']>0) 					$do_no=$_POST['do_no'];
             if(isset($do_no))				{$do_no_con=' and sd.do_no='.$do_no;}
             $datecon=' and sd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
+            $i = 0;
             $result='Select
 				sd.*,
 				d.dealer_custom_code,
@@ -1909,6 +1930,7 @@ order by c.do_no";
 				sd.depot_id=w.warehouse_id and
 				sd.dealer_code=d.dealer_code and
 				d.region=b.BRANCH_ID and
+				sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
 				d.area_code=a.AREA_CODE  '.$datecon.$item_con.$do_no_con.'
 				order by sd.id DESC';
             $query2 = mysqli_query($conn, $result);
@@ -2038,12 +2060,14 @@ order by c.do_no";
                 journal_item ji
 
 				where
-				    ib.brand_id=i.brand_id and 
+				    
+				ib.brand_id=i.brand_id and 
                 sd.do_no=ji.do_no and
                 sd.item_id=ji.item_id and
 				i.item_id not in ("1096000100010312") and
 				i.item_id=sd.item_id and
 				sd.depot_id=w.warehouse_id and
+				sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
 				sd.dealer_code=d.dealer_code '.$datecon.$do_type_conn.' group by sd.do_no,ji.batch,ji.item_id,ji.id
 				order by sd.do_no,ji.id asc');
             while($data=mysqli_fetch_object($result)){$i=$i+1; ?>
@@ -2134,6 +2158,7 @@ order by c.do_no";
             </tr></thead>
             <tbody>
             <?php
+            $g =0;
             $datecon=' and llm.lc_create_date between  "'.$f_date.'" and "'.$t_date.'"';
             $result='Select
 				llm.id,
@@ -2154,7 +2179,8 @@ order by c.do_no";
 				where
 				llm.id=lld.lc_id and
 				llm.pi_id=lpm.id and
-				llm.party_id=b.party_id
+				llm.party_id=b.party_id and 
+				llm.lc_create_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'"
 				  '.$datecon.'
 group by llm.id
 				order by llm.id DESC';
@@ -2662,7 +2688,7 @@ group by lld.item_id
             $total_cr=0;
             $cc_code = (int) $_REQUEST['cc_code'];
             if($cc_code > 0)
-            { $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id from accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate <= '$t_date' and 1 AND b.cc_code=$cc_code ".$sec_com_connectionT."  group by c.group_id";} else {
+            { $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id from accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate <= '$t_date' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'  and 1 AND b.cc_code=$cc_code ".$sec_com_connectionT."  group by c.group_id";} else {
                 $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id
 		from accounts_ledger a,
 		journal b,
@@ -2670,6 +2696,7 @@ group by lld.item_id
 		where
 		a.ledger_id=b.ledger_id and
 		a.ledger_group_id=c.group_id and
+		b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 		b.jvdate <= '$t_date'".$sec_com_connectionT."
 		group by c.group_id";
             }
@@ -2684,9 +2711,9 @@ group by lld.item_id
                 <?php
                 $cc_code = (int) $_REQUEST['cc_code'];
                 if($cc_code > 0)
-                { $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate<= '$t_date' and a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code ".$sec_com_connectionT."  group by ledger_name order by a.ledger_id";
+                { $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate<= '$t_date' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code ".$sec_com_connectionT."  group by ledger_name order by a.ledger_id";
                 }else {
-                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate<= '$t_date' and a.ledger_group_id='$g[3]' and 1 ".$sec_com_connectionT."  group by ledger_name order by a.ledger_id";
+                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate<= '$t_date' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  a.ledger_group_id='$g[3]' and 1 ".$sec_com_connectionT."  group by ledger_name order by a.ledger_id";
                 }
 
                 $pi=0;
@@ -2763,11 +2790,11 @@ group by lld.item_id
             $cc_code = (int) $_REQUEST['cc_code'];
             if($cc_code > 0)
             {
-                $p = "select c.group_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate <= '".$_POST['t_date']."' AND cc_code=$cc_code ".$sec_com_connection." group by c.group_name order by c.group_id";
+                $p = "select c.group_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate <= '".$_POST['t_date']."' AND j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  cc_code=$cc_code ".$sec_com_connection." group by c.group_name order by c.group_id";
             }
             else
             {
-                $p = "select c.group_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate <= '".$_POST['t_date']."'".$sec_com_connection." group by c.group_name order by c.group_id";
+                $p = "select c.group_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate <= '".$_POST['t_date']."' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'".$sec_com_connection." group by c.group_name order by c.group_id";
             }
             //echo $p;
             $pi=0;
@@ -2837,11 +2864,11 @@ group by lld.item_id
             $cc_code = (int) $_REQUEST['cc_code'];
             if($cc_code > 0)
             {
-                $g="select c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."'".$grp_con."".$sec_com_connection."  AND j.cc_code=$cc_code group by  c.group_id";
+                $g="select c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'".$grp_con."".$sec_com_connection."  AND j.cc_code=$cc_code group by  c.group_id";
             }
             else
             {
-                $g="select c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' ".$grp_con."".$sec_com_connection."  group by  c.group_id";
+                $g="select c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal j,ledger_group c where a.ledger_id=j.ledger_id and a.ledger_group_id=c.group_id and j.jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'".$grp_con."".$sec_com_connection."  group by  c.group_id";
             }
             $gsql=mysqli_query($conn, $g);
             while($g=mysqli_fetch_row($gsql))
@@ -2856,11 +2883,11 @@ group by lld.item_id
                 $cc_code = (int) $_REQUEST['cc_code'];
                 if($cc_code > 0)
                 {
-                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal j where a.ledger_id=j.ledger_id and j.jv_date BETWEEN '$f_date' AND '$t_date' and a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code and a.group_for=".$_SESSION['usergroup']."".$sec_com_connection." group by ledger_id order by a.ledger_id";
+                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal j where a.ledger_id=j.ledger_id and j.jv_date BETWEEN '$f_date' AND '$t_date' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code and a.group_for=".$_SESSION['usergroup']."".$sec_com_connection." group by ledger_id order by a.ledger_id";
                 }
                 else
                 {
-                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal j where a.ledger_id=j.ledger_id and j.jvdate BETWEEN '$f_date' AND '$t_date' and a.ledger_group_id='$g[3]' and a.group_for=".$_SESSION['usergroup']."".$sec_com_connection." group by ledger_id order by a.ledger_id";
+                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal j where a.ledger_id=j.ledger_id and j.jvdate BETWEEN '$f_date' AND '$t_date' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  a.ledger_group_id='$g[3]' and a.group_for=".$_SESSION['usergroup']."".$sec_com_connection." group by ledger_id order by a.ledger_id";
 
                 }
 
@@ -2870,7 +2897,7 @@ group by lld.item_id
                 $sql=mysqli_query($conn, $p);
                 while($p=mysqli_fetch_row($sql))
                 {
-                    $query="select SUM(j.dr_amt),SUM(j.cr_amt) from journal j where j.jvdate < '$f_date' and ledger_id='$p[3]'".$sec_com_connection."";
+                    $query="select SUM(j.dr_amt),SUM(j.cr_amt) from journal j where j.jvdate < '$f_date' and j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  ledger_id='$p[3]'".$sec_com_connection."";
                     $ssql=mysqli_query($conn, $query);
                     $open=mysqli_fetch_row($ssql);
                     $opening = $open[0]-$open[1];
@@ -2957,9 +2984,9 @@ group by lld.item_id
             $cc_code = (int) $_POST['cc_code'];
             if($cc_code > 0)
             {
-                $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate BETWEEN '".$f_date."' AND '".$t_date."'".$sec_com_connectionT." AND b.cc_code=$cc_code group by c.group_id";
+                $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate BETWEEN '".$f_date."' AND '".$t_date."' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'".$sec_com_connectionT." AND b.cc_code=$cc_code group by c.group_id";
             } else {
-                $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate BETWEEN '".$f_date."' AND '".$t_date."'".$sec_com_connectionT." group by c.group_id";
+                $g="select DISTINCT c.group_name,SUM(dr_amt),SUM(cr_amt),c.group_id FROM accounts_ledger a, journal b,ledger_group c where a.ledger_id=b.ledger_id and a.ledger_group_id=c.group_id and b.jvdate BETWEEN '".$f_date."' AND '".$t_date."' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'".$sec_com_connectionT." group by c.group_id";
             }
             $gsql=mysqli_query($conn, $g);
             while($g=mysqli_fetch_array($gsql))
@@ -2974,15 +3001,15 @@ group by lld.item_id
                 $cc_code = (int) $_REQUEST['cc_code'];
                 if($cc_code > 0)
                 {
-                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate BETWEEN '$f_date' AND '$t_date' and a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code".$sec_com_connectionT." group by ledger_name order by a.ledger_id";
+                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt) from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate BETWEEN '$f_date' AND '$t_date' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  a.ledger_group_id='$g[3]' and 1 AND b.cc_code=$cc_code".$sec_com_connectionT." group by ledger_name order by a.ledger_id";
                 } else {
-                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate BETWEEN '$f_date' AND '$t_date' and a.ledger_group_id='$g[3]'".$sec_com_connectionT." group by ledger_name order by a.ledger_id";
+                    $p="select DISTINCT a.ledger_name,SUM(dr_amt),SUM(cr_amt),a.ledger_id from accounts_ledger a, journal b where a.ledger_id=b.ledger_id and b.jvdate BETWEEN '$f_date' AND '$t_date' and b.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  a.ledger_group_id='$g[3]'".$sec_com_connectionT." group by ledger_name order by a.ledger_id";
                 }
                 $pi=0;
                 $sql=mysqli_query($conn, $p);
                 while($p=mysqli_fetch_row($sql))
                 {
-                    $query="select SUM(dr_amt),SUM(cr_amt) from journal where jvdate < '$f_date' and ledger_id='$p[3]'".$sec_com_connection_wa."";
+                    $query="select SUM(dr_amt),SUM(cr_amt) from journal where jvdate < '$f_date' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  ledger_id='$p[3]'".$sec_com_connection_wa."";
                     $ssql=mysqli_query($conn, $query);
                     $open=mysqli_fetch_array($ssql);
                     $opening = $open[0]-$open[1];
@@ -3186,14 +3213,14 @@ group by lld.item_id
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="padding-left:20px; text-align: left;font-size: 11px"><? $headname="Sales"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$fdate,$tdate,$sec_com_connection); $salesNormal = $amount; $total = $amount; $total1 = $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $salespreNormal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $salesNormal = $amount; $total = $amount; $total1 = $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_cr($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $salespreNormal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=1&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td  style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px;font-size: 11px">Less: <? $headname="Sales Return"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_dr($conn, $com_id,$fdate,$tdate,$sec_com_connection); $salesreturn = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=2&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_dr($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $salesreturnPRE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=2&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_dr($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $salesreturn = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=2&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '1,35'; $amount = sum_com_sub_PL_dr($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $salesreturnPRE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=2&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="border: solid 1px #999; font-size:11px">
@@ -3206,14 +3233,14 @@ group by lld.item_id
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Less: <?$headname="VAT"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 3; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totalvat = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 3; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totalvatpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 3; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalvat = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 3; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalvatpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Less: <?$headname="Supplementary Duty (SD)"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 2; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totalSD = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 2; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totalSDpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 2; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalSD = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = 2; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalSDpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
@@ -3226,15 +3253,15 @@ group by lld.item_id
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><? $headname="Cost of Goods Sales  (COGS)"; echo $headname; ?></td>
                 <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px">
-                    <? $com_id = '4,36'; $amount_cogs = sum_com($conn,$com_id,$fdate,$tdate,$sec_com_connection);$cc_code = 18;
-                    $amount_cc_code = sum_cc_code($conn,$cc_code,$fdate,$tdate,$sec_com_connection);
+                    <? $com_id = '4,36'; $amount_cogs = sum_com($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval);$cc_code = 18;
+                    $amount_cc_code = sum_cc_code($conn,$cc_code,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval);
                     $amount=$amount_cogs+$amount_cc_code;
                     $FactoryCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount;
                     echo '<a href="pl_group_details.php?rno=3&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
 
                 <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px">
-                    <? $com_id = '4,36'; $amount_cogs_Previous = sum_com($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $cc_code = 18;
-                    $amount_cc_code_Previous = sum_cc_code($conn,$cc_code,$comparisonF,$comparisonT,$sec_com_connection);
+                    <? $com_id = '4,36'; $amount_cogs_Previous = sum_com($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $cc_code = 18;
+                    $amount_cc_code_Previous = sum_cc_code($conn,$cc_code,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval);
                     $amount = $amount_cogs_Previous+$amount_cc_code_Previous; $FactoryPrevious = $amount;
                     $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=3&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
@@ -3261,26 +3288,26 @@ group by lld.item_id
             <tr style="border: solid 1px #999;text-align: left; background:#FFF0F5; font-weight:bold; color:#000; font-size:14px"><td colspan="3" style="color:#000; text-align: left">Operating Expenses</td></tr>
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Administrative Expense"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '19,20,23,35,36,37,38,17,39'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection); $adminExpCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=4&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '19,20,23,35,36,37,38,17,39'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection); $adminExpPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=4&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '19,20,23,35,36,37,38,17,39'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $adminExpCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=4&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '19,20,23,35,36,37,38,17,39'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $adminExpPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=4&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
             <tr style="font-size:11px"><td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Selling and Distribution Expenses"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '21,34,40,41'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection); $SandDErowCurrentAmounttotal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=5&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '21,34,40,41'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection); $SandDErowCurrentAmounttotalPre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=5&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '21,34,40,41'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $SandDErowCurrentAmounttotal = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=5&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '21,34,40,41'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $SandDErowCurrentAmounttotalPre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=5&headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><? $headname="Marketing Expenses"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '22'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection); $marketingExpCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=6&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '22'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection); $marketingExpPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=6&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '22'; $amount = sum_cc_code($conn, $cc_code,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $marketingExpCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=6&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $cc_code = '22'; $amount = sum_cc_code($conn, $cc_code,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $marketingExpPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=6&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Sales Promotional Expenses"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '7'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totalspx = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=7&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '7'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totalspxs = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=7&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '7'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalspx = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=7&headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '7'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalspxs = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?rno=7&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code='.$cc_code.'&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
@@ -3312,21 +3339,21 @@ group by lld.item_id
             <tr style="background:#FFF0F5; font-weight:bold; color:#000; font-size:14px"><td colspan="3" style="border: solid 1px #999;text-align: left;  font-weight:bold;  font-size:14px">Other Expenses</td></tr>
             <tr style="font-size:11px">
                 <td  style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Financial Expenses"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '8'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totalfinancialcost = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '8'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totalfinancialcostpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '8'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalfinancialcost = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '8'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalfinancialcostpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Extra Ordinary Loss"; echo $headname; ?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '9'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totaleol = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '9'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totaleolpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '9'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totaleol = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '9'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totaleolpre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Non-Operating Expenses (Royalty) </td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '10'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totalroyality = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '10'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totalroyalitypre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '10'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalroyality = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '10'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totalroyalitypre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
@@ -3349,8 +3376,8 @@ group by lld.item_id
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Other Income </td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '11'; $amount = sum_com_liabilities($conn, $com_id,$fdate,$tdate,$sec_com_connection); $totherincome = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '11'; $amount = sum_com_liabilities($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $totherincomepre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '11'; $amount = sum_com_liabilities($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totherincome = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '11'; $amount = sum_com_liabilities($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $totherincomepre = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
@@ -3367,8 +3394,8 @@ group by lld.item_id
 
             <tr style="font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Provision for Income Tax </td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '13'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $incomeTaxCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '13'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $incomeTaxPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '13'; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $incomeTaxCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td align="right" style="border: solid 1px #999;text-align: right; padding-right:5px;font-size: 11px"><? $com_id = '13'; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $incomeTaxPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="pl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
 
@@ -3424,13 +3451,13 @@ group by lld.item_id
 
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Property Plant Equipment"; echo $headname; ?></td>
-                <td  style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalPPE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td  style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalPPEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td  style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPPE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td  style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPPEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px">Less: <?$headname="Accumulated Depreciation"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><strong><? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></strong></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><strong><? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></strong></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><strong><? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></strong></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><strong><? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></strong></td>
             </tr>
 
             <tr style="font-weight:bold; font-size: 12px">
@@ -3455,43 +3482,43 @@ group by lld.item_id
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Inventory"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalInventoryCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalInventoryPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalInventoryCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalInventoryPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Accounts Receivable"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalARCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalARPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalARCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalARPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Advance, Deposit & Prepayment"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalADPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalADPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Long Term Investment"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalLTICurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalLTIPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLTICurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLTIPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Deferred Expenses"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Advance Income Tax"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 21; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalAITCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 21; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalAITPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 21; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAITCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 21; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAITPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Cash & Cash Equivalents"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000100000000','1002000101000000',$sec_com_connection); $TotalCCECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000100000000','1002000101000000',$sec_com_connection); $TotalCCEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000100000000','1002000101000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalCCECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000100000000','1002000101000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalCCEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Bank Balance"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000200000000','1002000901000000',$sec_com_connection); $TotalBBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000200000000','1002000901000000',$sec_com_connection); $TotalBBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000200000000','1002000901000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000200000000','1002000901000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-weight:bold; font-size: 13px;">
                 <td style="text-align:right;"><strong>Total Current Assets</strong></td>
@@ -3539,18 +3566,18 @@ group by lld.item_id
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Share Capital"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 25; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSCCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 25; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSCPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 25; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSCCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 25; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSCPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="padding-left:20px; text-align: left"><?$headname="Reserves & Surplus"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 26; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalRNSCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 26; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalRNSPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 26; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalRNSCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 26; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalRNSPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px;padding-left:20px; text-align: left;"><?$headname="Profit / Loss"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$fdate,$tdate,$sec_com_connection); $patCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&income=3000&show=Show&expenses=4000" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$comparisonF,$comparisonT,$sec_com_connection); $patPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $patCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&income=3000&show=Show&expenses=4000" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $patPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; padding:2px; text-align: right;"><td></td>
                 <td style="border: solid 1px #999; padding:2px; text-align: right;font-size: 12px">
@@ -3561,13 +3588,13 @@ group by lld.item_id
             <tr style="font-weight:bold; color:#000; font-size:13px;"><td colspan="3" style="border: solid 1px #999; padding:2px; text-align: left;"><strong>LONG TERM LOAN:</strong></td></tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Bank Loan(HPSM)"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalBLHPSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalBLHPSMPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBLHPSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBLHPSMPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Unsecured Loan"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalUNLCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalUNLPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalUNLCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalUNLPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-weight:bold;"><td></td>
                 <td style="border: solid 1px #999; padding:2px; text-align: right; font-size: 12px"><?php $totalLTOCurrent=$TotalBLHPSMCurrent+$TotalUNLCurrent; echo number_format($totalLTOCurrent,2)?></td>
@@ -3576,38 +3603,38 @@ group by lld.item_id
             <tr style="font-weight:bold; color:#000; font-size:13px;"><td colspan="3" style="border: solid 1px #999; padding:2px; text-align: left;"><strong>CURRENT LIABILITIES:</strong></td></tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Short Term Loan"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 29; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSTLOANSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 29; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSTLOANPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 29; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSTLOANSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 29; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSTLOANPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Provision for expenses"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 32; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalPFECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 32; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalPFEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 32; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPFECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 32; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPFEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Accounts Payable"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 28; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalAPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 28; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalAPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 28; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 28; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Statutory Payables"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 30; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 30; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 30; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 30; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Intercompany Payable"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 18; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalIPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 18; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalIPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 18; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalIPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 18; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalIPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Share Money Deposit"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px">
                 <td style="border: solid 1px #999; padding:2px; text-align: left; padding-left:20px"><?$headname="Liability for Employee Benefits"; echo $headname; ?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 31; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalLEBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 31; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalLEBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 31; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLEBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right;"><? $com_id = 31; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLEBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-weight:bold; font-size: 12px; text-align: right"><td style="text-align: right">Total Current Liabilities</td>
                 <td style="border: solid 1px #999; padding:2px; text-align: right; text-decoration: double"><?php $totalCLIABILITIESCurrent=$TotalSTLOANSMCurrent+$TotalPFECurrent+$TotalAPCurrent+$TotalSPCurrent+$TotalIPCurrent+$TotalSMDCurrent+$TotalLEBCurrent; echo number_format($totalCLIABILITIESCurrent,2);?></td>
@@ -3673,14 +3700,13 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px">A.</td>
                 <td style="padding:2px; text-align: left; padding-left:20px"><?$headname="Net Profit After Tax"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$fdate,$tdate,$sec_com_connection); $patCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&income=3000&show=Show&expenses=4000" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$comparisonF,$comparisonT,$sec_com_connection); $patPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $patCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&income=3000&show=Show&expenses=4000" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $amount = sum_com_P_L($conn,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $patPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
-
-            <? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
 
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px">B.</td>
@@ -3691,14 +3717,14 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">i)</td>
                 <td style="padding:2px; text-align: left; padding-left:40px"><?$headname="Depreciation of Fixed Assets for"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 15; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 15; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $ADSearchRowPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">ii)</td>
                 <td style="padding:2px; text-align: left; padding-left:40px"><?$headname="Adjustment of Deferred Expenses"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 22; $amount = sum_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalDEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px">C.</td>
@@ -3710,35 +3736,35 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">(a)</td>
                 <td style="padding:2px; text-align: left; padding-left:40px"><?$headname="(increase) /Decrease in Inventory"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalInventoryCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalInventoryPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalInventoryCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 16; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalInventoryPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">(b)</td>
                 <td style="padding:2px; text-align: left; padding-left:40px"><?$headname="(Increase) /Decrease in Adv., Dep. & Pre-Payments"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalADPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalADPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 19; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalADPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">(c)</td>
                 <td style="padding:2px; text-align: left; padding-left:40px"><?$headname="(Increase) /Decrease in Sundry Debtors"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalARCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalARPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalARCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 17; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalARPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
-            <? $com_id = 29; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSTLOANSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 29; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSTLOANPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount;?>
-            <? $com_id = 32; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalPFECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 32; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalPFEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 28; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalAPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 28; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalAPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 30; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 30; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 18; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalIPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 18; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalIPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 34; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 34; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 31; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalLEBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 31; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalLEBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 29; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSTLOANSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 29; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSTLOANPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount;?>
+            <? $com_id = 32; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPFECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 32; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPFEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 28; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 28; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalAPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 30; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 30; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 18; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalIPCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 18; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalIPPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 34; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 34; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 31; $amount = sum_cash_flow_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLEBCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 31; $amount = sum_cash_flow_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLEBPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
 
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:40px">(d)</td>
@@ -3791,14 +3817,14 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
                 <td style="padding:2px; text-align: left; padding-left:20px"><?$headname="Purchase / Sales of Fixed Assets"; echo $headname; ?></td>
-                <td  style="padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalPPE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td  style="padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalPPEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td  style="padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPPE = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td  style="padding:2px; text-align: right;"><? $com_id = 14; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalPPEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
                 <td style="padding:2px; text-align: left; padding-left:20px"><?$headname="Other Investment"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection); $TotalLTICurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalLTIPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_cash_flow_com($conn, $com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLTICurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 23; $amount = sum_cash_flow_com($conn, $com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalLTIPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <?php
             $Two_TotalCurrent = $TotalPPE + $TotalLTICurrent;
@@ -3819,10 +3845,10 @@ group by lld.item_id
             </tr>
             <tr style="font-weight:bold; color:#000; font-size:13px;"><td>3</td><td colspan="4" style="padding:2px; text-align: left;">CASH FLOW FROM FINANCING ACTIVITIES :</td></tr>
 
-            <? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalBLHPSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalBLHPSMPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalUNLCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
-            <? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalUNLPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBLHPSMCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 27; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalBLHPSMPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalUNLCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
+            <? $com_id = 33; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalUNLPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; ?>
 
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
@@ -3836,8 +3862,8 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
                 <td style="padding:2px; text-align: left; padding-left:20px"><?$headname="Share Deposit A/c"; echo $headname; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDCurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 34; $amount = sum_com_liabilities($conn,$com_id,$comparisonF,$comparisonT,$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalSMDPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
 
             <?php
@@ -3867,8 +3893,8 @@ group by lld.item_id
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
                 <td style="padding:2px; text-align: left; padding-left:20px"><?$headname="Net cash & equivalents - Opening"; echo '<strong>'.$headname.'</strong>'; ?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000100000000','1002000101000000',$sec_com_connection); $TotalCCECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
-                <td style="padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000100000000','1002000101000000',$sec_com_connection); $TotalCCEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$fdate,$tdate,'1002000100000000','1002000101000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalCCECurrent = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$fdate.'&tdate='.$tdate.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
+                <td style="padding:2px; text-align: right;"><? $com_id = 24; $amount = sum_com_sub($conn, $com_id,$comparisonF,$comparisonT,'1002000100000000','1002000101000000',$sec_com_connection,$lockedStartInterval,$lockedEndInterval); $TotalCCEPrevious = $amount; $total = $total + $amount; $total1 = $total1 + $amount; echo '<a href="bl_group_details.php?headname='.$headname.'&fdate='.$comparisonF.'&tdate='.$comparisonT.'&cc_code=&show=Show&com_id='.$com_id.'" style="text-decoration:none" target="_new">'.number_format($amount,2).'</a>';?></td>
             </tr>
             <tr style="font-size:11px">
                 <td style="padding:2px; text-align: center; padding-left:20px"></td>
@@ -4108,7 +4134,7 @@ group by lld.item_id
 
 				where c.user_id=a.entry_by and s.sub_group_id=i.sub_group_id and
 				a.warehouse_id=w.warehouse_id and
-
+                a.ji_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 		    a.item_id=i.item_id '.$datecon.$warehouse_con.$item_con.$status_con.' order by a.ji_date,a.id asc');
             $i = 0;$intotal=0;$outtotal=0;
             while($data=mysqli_fetch_object($result)){
@@ -4260,6 +4286,7 @@ where
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$t_date."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 g.group_id not in ('500000000')
@@ -4310,7 +4337,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
             </thead>
 
             <tbody>
-            <?php
+            <?php $ismail = 0;
             $fgresult="Select  j.item_id, i.item_id,i.item_name,i.finish_goods_code as custom_Code,i.unit_name,i.pack_size,i.serial, s.sub_group_id, s.group_id, g.group_id,s.sub_group_name,g.group_name,
 SUM(j.item_in-j.item_ex) as presentstock,i.d_price as rate
 from
@@ -4322,6 +4349,7 @@ where
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$t_date."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 g.group_id in ('500000000')
@@ -4377,7 +4405,7 @@ group by j.item_id order by g.group_id DESC,i.finish_goods_code";
             </thead>
 
             <tbody>
-            <?php
+            <?php $ismail=0;
             $fgresult="Select  j.item_id, i.item_id,i.item_name,i.finish_goods_code,i.unit_name,i.pack_size,i.serial, s.sub_group_id, s.group_id, g.group_id,s.sub_group_name,g.group_name,
 SUM(j.item_in-j.item_ex) as presentstock
 from
@@ -4389,6 +4417,7 @@ where
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$t_date."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 i.sub_group_id=s.sub_group_id and
 s.group_id=g.group_id and
 g.group_id in ('".$_POST['group_id']."')
@@ -4419,6 +4448,7 @@ group by j.item_id order by g.group_id DESC,i.serial";
 vendor v,
 journal j
 where
+j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and
 v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportview($sql,'Accounts Payable Status','98',0,'',0); ?>
 
     <?php elseif ($_POST['report_id']=='1006001'):
@@ -4426,7 +4456,9 @@ v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_id"; echo reportv
 vendor v,
 journal j
 where
-v.ledger_id=j.ledger_id group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98',0,'',0); ?>
+v.ledger_id=j.ledger_id and
+j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+group by v.ledger_id order by v.vendor_name"; echo reportview($sql,'Outstanding Balance','98',0,'',0); ?>
 
 
     <?php elseif ($_POST['report_id']=='1011001'):

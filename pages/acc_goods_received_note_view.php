@@ -4,6 +4,16 @@ $title='GRN Checked';
 $page='purchase_sec_print_view.php';
 $unique='jv_no';
 
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
+
 if(isset($_POST['viewreport'])){
 	$sql = "SELECT DISTINCT 
                   j.jv_no,
@@ -33,7 +43,8 @@ if(isset($_POST['viewreport'])){
 				  j.tr_no = r.pr_no AND
 				  j.tr_from = 'Purchase' AND 
 				  j.user_id = u.user_id AND
-				  j.jv_date between '" . strtotime($_POST['f_date']) . "' AND  '" . strtotime($_POST['t_date']) . "' AND 
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and   
+				  j.jvdate between '".$_POST['f_date']. "' AND  '".$_POST['t_date'] . "' AND 
                   v.vendor_id=r.vendor_id AND
 				  j.ledger_id = l.ledger_id group by j.jv_no order by j.tr_no desc";
                         } else {
@@ -65,6 +76,7 @@ if(isset($_POST['viewreport'])){
 				  j.tr_from = 'Purchase' AND 
 				  j.user_id = u.user_id AND
 				  j.checked ='PENDING' AND 
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and   
                   v.vendor_id=r.vendor_id AND
 				  j.ledger_id = l.ledger_id group by j.jv_no order by j.tr_no desc";
                            

@@ -12,13 +12,14 @@ $page="po_create_item.php";
 $crud = new crud($table_master);
 $$unique = @$_SESSION['initiate_po_no'];
 
+$companyid = @$_SESSION['companyid'];
 $sectionid = @$_SESSION['sectionid'];
 if($sectionid=='400000'){
     $sec_com_connection=' and 1';
     $sec_com_connection_wa=' and 1';
 } else {
-    $sec_com_connection=" and j.company_id='".$_SESSION['companyid']."' and j.section_id in ('400000','".$_SESSION['sectionid']."')";
-    $sec_com_connection_wa=" and company_id='".$_SESSION['companyid']."' and section_id in ('400000','".$_SESSION['sectionid']."')";
+    $sec_com_connection=" and j.company_id='".$companyid."' and j.section_id in ('400000','".$sectionid."')";
+    $sec_com_connection_wa=" and company_id='".$companyid."' and section_id in ('400000','".$sectionid."')";
 }
 
 
@@ -334,7 +335,7 @@ if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work 
                             <select class="select2_single form-control" style="width: 80%;" required name="warehouse_id" id="warehouse_id">
                                 <option></option>
                                 <?php if(isset($_SESSION['initiate_po_no'])>0): ?>
-                                    <option value="<?=$warehouse_id?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$warehouse_id)?></option>
+                                    <option value="<?=$warehouse_id?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$warehouse_id.' '.$sec_com_connection_wa.' ')?></option>
                                 <?php else: ?>
                                     <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$warehouse_id);?>
                                 <?php endif; ?>
@@ -424,7 +425,7 @@ if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work 
                         <th style="text-align:center">:</th>
                         <td>
                             <select class="select2_single form-control" style="width: 80%;" tabindex="-1" required="required" name="checkby" id="checkby">
-                                <option value="88" selected><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID="88"');?></option>
+                                <option></option>
                                 <?=advance_foreign_relation($sql_checked_by,$checkby);?>
                             </select>
                         </td>

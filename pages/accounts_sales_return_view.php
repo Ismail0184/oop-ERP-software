@@ -130,7 +130,17 @@ if(isset($$unique))
     { $$key=$value;}}
 $dealer_info=find_all_field("dealer_info","","dealer_code=".$dealer_code."");
 $config_group_class=find_all_field("config_group_class","","1");
-$srm=find_all_field('sale_return_master','','do_no='.$_GET['do_no'].'')
+$srm=find_all_field('sale_return_master','','do_no='.$_GET['do_no'].'');
+
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
 ?>
 
 
@@ -364,7 +374,10 @@ dealer_info d
   p.entry_by=u.user_id and
  w.warehouse_id=p.depot_id and
  d.dealer_code=p.dealer_code and
- p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by p.".$unique." DESC ";
+ p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+ p.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+ 
+ order by p.".$unique." DESC ";
 } else {
 $res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,concat(u.fname,' - ',p.entry_at) as entry_by,p.status
 from

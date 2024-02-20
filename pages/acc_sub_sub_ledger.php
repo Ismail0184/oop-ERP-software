@@ -10,7 +10,13 @@ $now=time();
 $separator	= @$_SESSION['separator'];
 $crud      =new crud($table);
 $unique_GET = @$_GET[$unique];
-
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and z.company_id='".$companyid."' and z.section_id in ('400000','".$sectionid."')";
+}
 
 if(isset($_REQUEST['name'])||isset($_REQUEST['id']))
 {
@@ -80,12 +86,12 @@ $sub_sub_ledger = @$sub_sub_ledger;
 $sub_ledger_id = @$sub_ledger_id;
 $status = @$status;
 $POST_under = @$_POST['under'];
-$res='select  z.sub_sub_ledger_id,z.sub_sub_ledger_id,z.sub_sub_ledger,concat(z.sub_ledger_id, " : " ,a.sub_ledger) as sub_ledger,(select COUNT(ledger_id) from journal where ledger_id=z.sub_sub_ledger_id) as has_transactions,
+$res='select  z.sub_sub_ledger_id,z.sub_sub_ledger_id,z.sub_sub_ledger,concat(z.sub_ledger_id, " : " ,a.sub_ledger) as sub_ledger,
         IF(z.status=1, "Active",IF(z.status="SUSPENDED", "SUSPENDED","Inactive")) as status
                               FROM '.$table.' z,sub_ledger a, accounts_ledger b,ledger_group c where 
                              a.ledger_id=b.ledger_id and 
                              b.ledger_group_id=c.group_id and 
-                             z.sub_ledger_id=a.sub_ledger_id';
+                             z.sub_ledger_id=a.sub_ledger_id'.$sec_com_connection.'';
 $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
     if(isset($_POST['deletedata'.$row->$unique]))

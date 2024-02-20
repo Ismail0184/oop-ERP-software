@@ -11,11 +11,21 @@ $thisday=date('d');
 $thisyear=$year1;
 $thismonth=$month;
 
+
+
 function check_plant_permission($userid){
+ $companyid=@$_SESSION['companyid'];
+ $sectionid = @$_SESSION['sectionid'];
+ if($sectionid=='400000'){
+  $sec_com_connection=' and 1';
+ } else {
+  $sec_com_connection=" and w.company_id='".$companyid."' and w.section_id in ('400000','".$sectionid."')";
+ }
+
 $sql_plant="SELECT w.warehouse_id,concat(w.warehouse_id,' : ',w.warehouse_name),upp.* FROM
 user_permission_matrix_warehouse upp,
 warehouse w  WHERE  upp.warehouse_id=w.warehouse_id and
-upp.user_id=".$userid." and upp.status>0
+upp.user_id=".$userid." and upp.status>0 ".$sec_com_connection."
 order by w.warehouse_id";
 return $sql_plant;
 }
@@ -961,7 +971,7 @@ function add_to_journal_bank($jvdate,$proj_id, $jv, $date, $ledger_id, $narratio
  $query_journal=mysqli_query($conn, $journal);
 }
 
-function sec_journal_journal($sec_jv_no,$jv_no,$tr_froms,$c_no,$c_date,$create_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$jvdate)
+function sec_journal_journal($sec_jv_no,$jv_no,$tr_froms,$c_no,$c_date,$voucher_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$jvdate)
 {global $conn;
  $sql = 'select * from secondary_journal where jv_no = "'.$sec_jv_no.'" and tr_from = "'.$tr_froms.'"';
  $query = mysqli_query($conn, $sql);
@@ -995,7 +1005,7 @@ function sec_journal_journal($sec_jv_no,$jv_no,$tr_froms,$c_no,$c_date,$create_d
 	`year`,
 	`cheq_date`,`cheq_no`,jvdate
 	)VALUES
-('$data->proj_id', '$data->jv_no', '$data->jv_date', '$data->ledger_id', '$data->narration', '$data->dr_amt', '$data->cr_amt', '$data->tr_from', '$data->tr_no', '$data->tr_id','$data->sub_ledger','".$_SESSION['userid']."','".date('Y-m-d H:i:s')."', '$data->group_for', ".$data->cc_code.",'$ip','$_SESSION[sectionid]','$_SESSION[companyid]','$create_date','$now','$day','$thisday','$thismonth','$thisyear','$c_date','$c_no','$jvdate')";
+('$data->proj_id', '$data->jv_no', '$voucher_date', '$data->ledger_id', '$data->narration', '$data->dr_amt', '$data->cr_amt', '$data->tr_from', '$data->tr_no', '$data->tr_id','$data->sub_ledger','".$_SESSION['userid']."','".date('Y-m-d H:i:s')."', '$data->group_for', ".$data->cc_code.",'$ip','$_SESSION[sectionid]','$_SESSION[companyid]','$create_date','$now','$day','$thisday','$thismonth','$thisyear','$c_date','$c_no','$jvdate')";
   $query_journal=mysqli_query($conn, $journal);
  }
 }

@@ -48,6 +48,7 @@ if(prevent_multi_submit()){
 			$_POST['rcv_Date']=$_POST['rec_date'];
 			$_POST['status']='UNCHECKED';
 			$_POST['mfg']=$_POST['mfg'.$id];
+			$_POST['m_id']=$m_id;
 			$_POST['lot_number']=$_SESSION['POunique_id'];
 			$_POST['total_cost']=$_POST['transport_bill']+$_POST['labor_bill']+$_POST['others_bill'];
 			$crud      =new crud($table_details);
@@ -229,9 +230,8 @@ function reload(form)
 	var val=form.m_id.options[form.m_id.options.selectedIndex].value;
 	self.location='<?=$page;?>?po_no=<?=$_GET['po_no']?>&m_id=' + val ;
 }
-
-
 </script>
+
 <style>
 td {
   padding: 3px;
@@ -375,14 +375,13 @@ td {
 
 <table width="98%"  border="0" align="center"  style="font-size: 11px; background-color: blanchedalmond; padding:20px">
  <tr>
-    
-    
     <th>MAN</th>
     <th style="width:1%"> : </th>
-    <td><select style=" height:23px; width:90%" name="m_id" id="m_id" onchange="javascript:reload(this.form)">
-                <option></option>
-                <? foreign_relation('MAN_details','distinct m_id','concat(m_id,":", MAN_ID)',''.$m_id.'','po_no='.$$unique.' and MAN_RCV_STATUS!="Done" and  status="VERIFIED"');?>
-               </select>
+    <td>
+        <select style=" height:23px; width:90%" name="m_id" id="m_id" onchange="javascript:reload(this.form)">
+            <option></option>
+            <?=foreign_relation('MAN_details','distinct m_id','concat(m_id,":", MAN_ID)',''.$m_id.'','po_no='.$$unique.' and MAN_RCV_STATUS!="Done" and  status="VERIFIED"');?>
+        </select>
         <input type="hidden" name="rec_no" id="rec_no" value="<?=$MAN_master_MAN_ID;?>">
         <input type="hidden" name="MAN_ID" id="MAN_ID" value="<?=$MAN_master_MAN_ID;?>">
     </td>

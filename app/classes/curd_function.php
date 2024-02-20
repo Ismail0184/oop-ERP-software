@@ -1061,7 +1061,7 @@ class htmldiv extends crud {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>'.$_SESSION['company_name'].' | '.$title.'</title>
-    <link rel="icon" href="../assets/images/icon/title.png" type="image/icon type">
+    <link rel="icon" href="../assets/images/icon/'.$_SESSION['sectionid'].'.png" type="image/icon type">
     <!-- Select2 -->
     <link href="../assets/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
     <!-- Bootstrap -->
@@ -1431,7 +1431,7 @@ function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
             <div class="x_content" style="overflow:scroll; height:'.$css.';">
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 10px">';
     $str .='<thead><tr style="background-color: bisque"><th>#</th>';
-
+    $ism =0;
     if ($result = mysqli_query($conn , $sql)) {
         $cols = mysqli_num_fields($result);
         $fieldinfo = mysqli_fetch_fields($result);
@@ -1441,6 +1441,7 @@ function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
         }
         $str .='</tr></thead><tbody>';
         $c=0;
+        $sl=0;
         if (mysqli_num_rows($result)>0){
             while($row = mysqli_fetch_array($result)) {
                 $onclick='';

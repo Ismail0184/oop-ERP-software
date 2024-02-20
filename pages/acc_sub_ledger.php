@@ -11,6 +11,14 @@ $unique_ledger="ledger_id";
 $crud      =new crud($table);
 $unique_GET=@$_GET['sub_ledger_id'];
 
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and a.company_id='".$companyid."' and a.section_id in ('400000','".$sectionid."')";
+}
+
 if(isset($_REQUEST['name'])||isset($_REQUEST['id']))
 
 {   $id=@$_REQUEST['id'];
@@ -82,7 +90,7 @@ $POST_status = @$_POST['status'];
 $res='select a.sub_ledger_id,a.sub_ledger_id,a.sub_ledger, (select ledger_name from accounts_ledger where ledger_id=a.ledger_id) as ledger_name, c.group_name,
 IF(a.status=1, "Active",IF(a.status="SUSPENDED", "SUSPENDED","Inactive")) as status
 FROM sub_ledger a,accounts_ledger b,ledger_group c where
-a.sub_ledger_id=b.ledger_id and b.ledger_group_id=c.group_id';
+a.sub_ledger_id=b.ledger_id and b.ledger_group_id=c.group_id'.$sec_com_connection.'';
 $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
     if(isset($_POST['deletedata'.$row->$unique]))

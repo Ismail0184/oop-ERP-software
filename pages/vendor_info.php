@@ -9,6 +9,13 @@ $page="vendor_info.php";
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and company_id='".$companyid."' and section_id in ('400000','".$sectionid."')";
+}
 
 if(prevent_multi_submit()){
 if(isset($_POST[$unique_field]))
@@ -118,7 +125,7 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-$res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as accounts_ledger, if(contact_person_name > "",concat(contact_person_name," , ",contact_person_designation),"")  as POC,contact_person_mobile as phone,email,status from '.$table.' order by '.$unique;
+$res='select '.$unique.','.$unique.' as Code,'.$unique_field.',ledger_id as accounts_ledger, if(contact_person_name > "",concat(contact_person_name," , ",contact_person_designation),"")  as POC,contact_person_mobile as phone,email,status from '.$table.' where 1 '.$sec_com_connection.' order by '.$unique;
 $ledger_id = @$ledger_id;
 $vendor_name = @$vendor_name;
 $vendor_company = @$vendor_company;

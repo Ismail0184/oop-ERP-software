@@ -6,7 +6,7 @@ if($_POST['vendor_id']>0) $vendor_id=$_POST['vendor_id'];
 if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET;}
 if(!empty($_POST['order_by']) && !empty($_POST['sort'])) $order_by_GET=$_POST['order_by'];
-if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST[sort].'';}
+if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['sort'].'';}
 ?>
 
 <!DOCTYPE html>
@@ -370,7 +370,8 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST[sor
         </tbody>
       </table>
 
-<?php elseif ($_POST['report_id']=='4003001'):$vendor_name=getSVALUE('vendor','vendor_name','where vendor_id='.$_REQUEST['vendor_id']);
+<?php elseif ($_POST['report_id']=='4003001'):
+$vendor_name=getSVALUE('vendor','vendor_name','where vendor_id='.$_REQUEST['vendor_id']);
 $title='Material Recived Status';?>
     <script type="text/javascript">
         function DoNavPOPUP(lk)
@@ -387,10 +388,10 @@ $title='Material Recived Status';?>
 <title><?=$vendor_name;?> | <?=$title;?></title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
         <p align="center" style="margin-top:-18px; font-size: 15px"><?=$title;?></p>
-        <?php if($_POST[vendor_id]){ ?>
-        <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Vendor Name:</strong> <?=$vendor_name;?>)</p>
+        <?php if($_POST['vendor_id']){ ?>
+        <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Vendor Name:</strong> <?=$vendor_name;?></p>
         <?php } ?>
-        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST[f_date]?> <strong>to</strong> <?=$_POST[t_date]?></p>
+        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> <strong>to</strong> <?=$_POST['t_date']?></p>
         <table align="center" id="customers"  style="width:100%; border: solid 1px #999; font-size:11px; border-collapse:collapse; ">
             <thead>
             <p style="width:95%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -419,13 +420,13 @@ $title='Material Recived Status';?>
         if($_POST['vendor_id']>0) 			 $vendor_id=$_POST['vendor_id'];
         if(isset($vendor_id))				{$vendor_id_CON=' and m.vendor_code='.$vendor_id;}
         $query=mysqli_query($conn, "SELECT m.status as vstatus,m.*, i.*,v.vendor_name as vendor,
-		(select COUNT(id) from purchase_receive where MAN_ID=m.MAN_ID and item_id=m.item_id) as man_create,
+		(select COUNT(id) from purchase_receive where m_id=m.m_id and item_id=m.item_id) as grn_create,
 		(select distinct status from purchase_receive where MAN_ID=m.MAN_ID and item_id=m.item_id) as GRN_verification,
 		(select SUM(amount) from purchase_receive where MAN_ID=m.MAN_ID) as grn_amount
 		from MAN_details m,item_info i, vendor v
 		where
 		m.item_id=i.item_id and
-		v.vendor_id=m.vendor_code and m.man_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'
+		v.vendor_id=m.vendor_code and m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'
 		".$vendor_id_CON." group by m.m_id,m.item_id");
 		while($data=mysqli_fetch_object($query)){
 		    $pr_no=find_a_field('purchase_receive','pr_no','item_id="'.$data->item_id.'" and m_id='.$data->m_id.'');
@@ -440,7 +441,7 @@ $title='Material Recived Status';?>
             <td align="center" style="border: solid 1px #999; padding:2px"><?=$data->unit_name;?></td>
             <td align="center" style="border: solid 1px #999; padding:2px"><?=$data->qty;?></td>
             <td align="center" style="border: solid 1px #999; padding:2px"><?php if($data->vstatus=='VERIFIED') echo $data->vstatus; else echo '';?></td>
-            <td align="center" style="border: solid 1px #999; padding:2px"><?php if($data->man_create>0) echo 'Done'; else echo 'Not Yet';?></td>
+            <td align="center" style="border: solid 1px #999; padding:2px"><?php if($data->grn_create>0) echo 'Done'; else echo 'Not Yet';?></td>
             <td align="center" style="border: solid 1px #999; padding:2px; cursor:pointer; text-decoration:underline; color:blue" onclick="DoNavPOPUP('<?=$pr_no;?>', 'TEST!?', 600, 700)"><?=$pr_no;?></td>
             <td align="center" style="border: solid 1px #999; padding:2px"><?php if($data->GRN_verification=='CHECKED') echo 'Done'; else echo '';?></td>
 

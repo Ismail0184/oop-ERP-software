@@ -14,6 +14,14 @@ $title="Primary DO List";
  $text_field_id='old_do_no';
  $target_url = 'uncheck_do_one.php';
  $page = 'unchecked_do_list.php';
+
+ $companyid=@$_SESSION['companyid'];
+ $sectionid = @$_SESSION['sectionid'];
+ if($sectionid=='400000'){
+     $sec_com_connection=' and 1';
+ } else {
+     $sec_com_connection=" and m.company_id='".$_SESSION['companyid']."' and m.section_id in ('400000','".$_SESSION['sectionid']."')";
+ }
  ?>
 
  <?php require_once 'header_content.php'; ?>
@@ -51,7 +59,8 @@ m.dealer_code=d.dealer_code and
 m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
 m.entry_by=u.user_id and
-m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' 
+m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' ".$sec_com_connection."
+
 group by m.do_no order by m.do_no desc"; } else {
 $res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
 concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
@@ -69,7 +78,7 @@ m.dealer_code=d.dealer_code and
 m.do_no=dt.do_no  and
 m.depot_id=w.warehouse_id and
 m.entry_by=u.user_id and
-m.status in ('PROCESSING','RETURNED','MANUAL')    
+m.status in ('PROCESSING','RETURNED','MANUAL') ".$sec_com_connection."    
 group by m.do_no order by m.do_no desc";
 }
     ?>

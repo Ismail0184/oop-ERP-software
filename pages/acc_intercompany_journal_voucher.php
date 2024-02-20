@@ -198,6 +198,8 @@ cost_center c
     $edit_value_pc_code = @$edit_value->pc_code;
     $edit_value_narration = @$edit_value->narration;
     $edit_value_dr_amt = @$edit_value->dr_amt;
+    $API_client_id = @$_SESSION['API_client_id'];
+    $find_API_journal_voucher=find_all_field('dev_API_received','','API_name="API_journal_voucher" and status=1 and client_id='.$API_client_id);
 
     if (isset($_POST['confirmsave'])) {
         $up_master=mysqli_query($conn, "UPDATE ".$table_journal_info." SET entry_status='UNCHECKED' where ".$journal_info_unique."=".$_SESSION['initiate_journal_note_inter_company']."");
@@ -208,7 +210,7 @@ cost_center c
         $external_dr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=3 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
         $external_cr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=2 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
         $external_cr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=4 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
-        $targeturl='http://icpbd-erp.com/51816/cmu_mod/page/API_journal_voucher.php?create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&receiptdate='.$external_dr_voucher_data->j_date.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
+        $targeturl=$find_API_journal_voucher->API_endpoint.'?jv_ref='.$_SESSION['initiate_journal_note_inter_company'].'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&j_date='.$external_dr_voucher_data->j_date.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
@@ -278,10 +280,14 @@ $account_ledger="SELECT ledger_id, concat(ledger_id, ' : ', ledger_name) as ledg
 $dealer_info="Select a.ledger_id,a.ledger_name from accounts_ledger a,dealer_info d where a.ledger_id=d.account_code and d.canceled in ('Yes')";
 
 $delete_commend = @$_GET['delete_commend'];
-$API_client_id = @$_SESSION['API_client_id'];
+
 
 if($delete_commend==1) {
     $delete_external_receipt=mysqli_query($conn, "delete from ".$table_journal_info." where journal_info_date='1845854380'");
+    $narra = find_a_field('journal_info','narration','journal_info_no='.$_GET['jv_ref']);
+    $update_narration = $narra.', Ref. JV No # '.$_GET['sjn'];
+    $update = mysqli_query($conn, "UPDATE journal_info SET narration='".$update_narration."' where journal_info_no=".$_GET['jv_ref']);
+    $update = mysqli_query($conn, "UPDATE journal SET narration='".$update_narration."' where tr_no=".$_GET['jv_ref']);
     header("Location: ".$page."");
 }
 $find_API_all_active_ledger=find_all_field('dev_API_received','','API_name="API_all_active_ledger" and status=1 and client_id='.$API_client_id);
@@ -321,7 +327,7 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                         <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
                         <th style="width:15%;">Transaction No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
                         <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?php if($initiate_journal_note_inter_company>0){ echo $initiate_journal_note_inter_company;} else { echo
-                            automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,1); } ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
+                            automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,3); } ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
                     </tr>
                     <tr>
                         <th style="">Person From</th><th>:</th>
