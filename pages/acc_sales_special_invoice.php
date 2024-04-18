@@ -9,6 +9,16 @@ $page="acc_sales_special_invoice.php";
 $crud      =new crud($table_master);
 $$unique = @$_GET[$unique];
 
+$date_checking = find_a_field('dev_software_data_locked','id','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
+
 if(prevent_multi_submit()) {
   if (isset($_POST['returned'])) {
       $_POST['returned_by']=$_SESSION['userid'];
@@ -38,10 +48,15 @@ $ress="SELECT d.id,i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_
 
   if(isset($_POST['viewreport'])){
     $res="SELECT m.do_no,m.do_no,m.do_date,m.remarks,d.dealer_name_e as dealer_name,w.warehouse_name,concat(u.fname,'<br>','at: ',m.entry_at) as entry_by,m.status from ".$table_master." m, dealer_info d,users u, warehouse w
-    where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and do_section='Special_invoice' and m.depot_id=w.warehouse_id and m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'";
+    where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and do_section='Special_invoice' and m.depot_id=w.warehouse_id and m.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
+    m.section_id=".$_SESSION['sectionid']." and m.company_id=".$_SESSION['companyid']." and 
+    m.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'";
   } else {
       $res="SELECT m.do_no,m.do_no,m.do_date,m.remarks,d.dealer_name_e as dealer_name,w.warehouse_name,concat(u.fname,'<br>','at: ',m.entry_at) as entry_by,m.status from ".$table_master." m, dealer_info d,users u,warehouse w
-      where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and m.status='UNCHECKED' and do_section='Special_invoice' and m.depot_id=w.warehouse_id";}
+      where m.entry_by=u.user_id and m.dealer_code=d.dealer_code and m.status='UNCHECKED' and do_section='Special_invoice' and m.depot_id=w.warehouse_id and
+      m.section_id=".$_SESSION['sectionid']." and m.company_id=".$_SESSION['companyid']." and 
+        m.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+      ";}
 ?>
 
 

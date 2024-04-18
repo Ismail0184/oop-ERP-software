@@ -29,12 +29,12 @@ if(prevent_multi_submit()){
 
         if($_FILES['dChallanPDF']['tmp_name']!=''){
             $file_temp = $_FILES['dChallanPDF']['tmp_name'];
-            $folder = "dc_documents/";
+            $folder = "../assets/images/dc_documents/";
             move_uploaded_file($file_temp, $folder.$_SESSION['m_id'].'_'.'dc'.".pdf");}
 
         if($_FILES['VatChallanPDF']['tmp_name']!=''){
             $file_temp = $_FILES['VatChallanPDF']['tmp_name'];
-            $folder = "vc_documents/";
+            $folder = "../assets/images/vc_documents/";
             move_uploaded_file($file_temp, $folder.$_SESSION['m_id'].'_'.'vc'.".pdf");}
         $type=1;
         unset($_POST);
@@ -49,13 +49,14 @@ if(prevent_multi_submit()){
 
         if($_FILES['dChallanPDF']['tmp_name']!=''){
             $file_temp = $_FILES['dChallanPDF']['tmp_name'];
-            $folder = "../../po_documents/dChallanPDF/";
+            $folder = "../assets/images/dc_documents/";
             move_uploaded_file($file_temp, $folder.$_SESSION['m_id'].'_'.'dc'.".pdf");}
 
         if($_FILES['VatChallanPDF']['tmp_name']!=''){
             $file_temp = $_FILES['VatChallanPDF']['tmp_name'];
-            $folder = "../../po_documents/VatChallanPDF/";
+            $folder = "../assets/images/vc_documents/";
             move_uploaded_file($file_temp, $folder.$_SESSION['m_id'].'_'.'vc'.".pdf");}
+
         $type=1;
         unset($_POST);
     }
@@ -65,8 +66,6 @@ if(prevent_multi_submit()){
     if(isset($_POST['add']))
     {  if($_POST['qty']>0) {        
         $_POST['status']="UNCHECKED";
-        //$_POST['mfg_year']=date('Y' , strtotime($m));
-        //$_POST['mfg_month']=date('m' , strtotime($m));
         $_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
         $crud = new crud($table_details);
@@ -116,9 +115,9 @@ if(isset($_POST['cancel']))
     $crud = new crud($table);
     $condition=$unique."=".$_SESSION['m_id'];
     $crud->delete($condition);
-    $dc_delete = 'dc_documents/'."'.$unique.'".'_'.'dc'.'.pdf';
+    $dc_delete = '../assets/images/dc_documents/'.$m_id.'_'.'dc'.'.pdf';
     unlink($dc_delete);
-    $vc_delete = 'vc_documents/'."'.$unique.'".'_'.'vc'.'.pdf';
+    $vc_delete = '../assets/images/vc_documents/'.$m_id.'_'.'vc'.'.pdf';
     unlink($vc_delete);
     unset($_SESSION['m_id']);
     unset($_SESSION['initiate_man_documents']);
@@ -236,7 +235,7 @@ function reload(form)
                         <td style="width: 20%">
                         <input type="text" id="delivary_challan" style="width: 40%; float: left" value="<?=$delivary_challan;?>" name="delivary_challan" placeholder="don't use ( /,&,',*)" class="form-control col-md-7 col-xs-12" required >
                         <?php if($initiate_man_documents){ ?>
-                        <a href="dc_documents/<?=$_SESSION['m_id'].'_'.'dc'.'.pdf';?>" target="_new" style="text-decoration:underline; color:blue">Challan Document View</a>
+                        <a href="../assets/images/dc_documents/<?=$_SESSION['m_id'].'_'.'dc'.'.pdf';?>" target="_new" style="text-decoration:underline; color:blue">Challan Document View</a>
                         <?php } else { ?>
                         <input type="file" style="width: 38%; float: left; margin-left: 2%" placeholder="Delivery Challan" id="nam_date"   name="dChallanPDF"  class="form-control col-md-7 col-xs-12" >
                         <?php } ?>
@@ -251,7 +250,7 @@ function reload(form)
                         <td>
                         <input type="text" id="VAT_challan" style="width: 40%" placeholder="don't use ( /,&,',*)"  value="<?=$VAT_challan;?>" name="VAT_challan" class="form-control col-md-7 col-xs-12"  >
                         <?php if($initiate_man_documents){ ?>
-                        <a href="vc_documents/<?=$m_id.'_'.'vc'.'.pdf';?>" target="_new" style="text-decoration:underline; color:blue">VAT Challan View</a>
+                        <a href="../assets/images/vc_documents/<?=$m_id.'_'.'vc'.'.pdf';?>" target="_new" style="text-decoration:underline; color:blue">VAT Challan View</a>
                         <?php } else { ?>
                         <input type="file" id="nam_date"  style="width: 38%; float: left; margin-left: 2%"  name="VatChallanPDF"  class="form-control col-md-7 col-xs-12" >
                         <?php } ?>

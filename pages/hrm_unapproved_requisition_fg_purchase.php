@@ -287,6 +287,6 @@ mail($to,$subject,$txt,$headers);
 <?php } ?>
 
 
-                
-        
-<?php require_once 'footer_content.php' ?>
+
+
+ <?=$html->footer_content();?>

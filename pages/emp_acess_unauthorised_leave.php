@@ -273,4 +273,4 @@ $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as Date,
 
 
 
-<?php require_once 'footer_content.php' ?>
+<?=$html->footer_content();?>

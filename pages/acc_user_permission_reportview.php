@@ -17,13 +17,13 @@ if(prevent_multi_submit()) {
     extract($_POST);
     $report_id = @mysqli_real_escape_string($conn, $report_id);
     $status = @mysqli_real_escape_string($conn, $status);
-    $report_in_database=find_a_field('user_permissions_reportview','COUNT(report_id)','report_id='.$report_id.' and user_id="'.$_SESSION['user_permission_reportview_accounts'].'"');
+    $report_in_database=find_a_field('user_permission_matrix_reportview','COUNT(report_id)','report_id='.$report_id.' and user_id="'.$_SESSION['user_permission_reportview_accounts'].'"');
     if($report_id>0){
     if($report_in_database>0) {
-        $sql = mysqli_query($conn, "UPDATE user_permissions_reportview SET status='$status' WHERE report_id='".$report_id."' and user_id='" . $_SESSION['user_permission_reportview_accounts'] . "'");
+        $sql = mysqli_query($conn, "UPDATE user_permission_matrix_reportview SET status='$status' WHERE report_id='".$report_id."' and user_id='" . $_SESSION['user_permission_reportview_accounts'] . "'");
     } else {
         $get_optgroup_label_id=find_a_field('module_reportview_report','optgroup_label_id','report_id='.$report_id.'');
-        $sql = mysqli_query($conn, "INSERT INTO user_permissions_reportview (report_id,optgroup_label_id,module_id,user_id,entry_by,entry_at,status,section_id,company_id) VALUES ('$report_id','$get_optgroup_label_id','1','".$_SESSION['user_permission_reportview_accounts']."','".$_SESSION['userid']."','$now','1','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')");
+        $sql = mysqli_query($conn, "INSERT INTO user_permission_matrix_reportview (report_id,optgroup_label_id,module_id,user_id,entry_by,entry_at,status,section_id,company_id) VALUES ('$report_id','$get_optgroup_label_id','1','".$_SESSION['user_permission_reportview_accounts']."','".$_SESSION['userid']."','$now','1','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')");
     }}}
 $user_permission_reportview_accounts = @$_SESSION['user_permission_reportview_accounts']
 ?>

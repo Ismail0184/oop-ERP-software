@@ -160,6 +160,8 @@ function reload2(form)
                 <table style="width:100%; font-size: 11px">
                     <tr>
                         <th style="width:10%;">Territory <span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
+                        <input name="section_id" id="section_id" value="<?=$sectionid?>" type="hidden" />
+                        <input name="company_id" id="company_id" value="<?=$companyid?>" type="hidden" />
                         <input name="<?=$unique?>" id="<?=$unique?>" value="<?=$$unique?>" type="hidden" />
                         <input name="dealer_code" type="hidden" id="dealer_code" tabindex="1" value="<?=$dealer_code?>" readonly>
                         <td style="width: 21.5%">

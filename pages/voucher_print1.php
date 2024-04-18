@@ -240,11 +240,11 @@ $data2=mysqli_query($conn, $sql2);
 			  $dr_amt=$dr_amt+$info->dr_amt;
               $bankGET = @$info->bank;
 			  if($bankGET==''&&$info->cheq_no!='')
-			  $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; dt= '.date("d.m.Y",$info->cheq_date);
+			  $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date;
 			  elseif($info->cheq_no=='')
 			  $narration=$info->narration;
 			  else
-			  $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; dt= '.date("d.m.Y",$info->cheq_date).'; Bank # '.$info->bank;?>
+			  $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date.'; Bank # '.$info->bank;?>
 
       <tr>
         <td align="left"><?=$info->ledger_name?> : <?=$info->ledger_id?></td>
@@ -329,7 +329,7 @@ $data2=mysqli_query($conn, $sql2);
         <td><div align="center">Prepared by</div></td>
           <td><div align="center">Received by</div></td>
         <td><div align="center">Checked by </div></td>
-        <td><div align="center">HO A/C</div></td>
+        <td><div align="center">Accounts</div></td>
           <td><div align="center">HOO</div></td>
           <?php if($cr_amt>999999): ?>
         <td><div align="center">COO</div></td>

@@ -475,6 +475,92 @@ ORDER BY zm.sl, zs.sl");
         return $str;
         mysqli_close($conn);
     }
+    public function report_templates_with_status_with_filtering($sql,$title,$status){
+        global $conn;
+        $str = '';
+        if($sql==NULL) return NULL;
+        $str.='
+		<div class="col-md-12 col-sm-12 col-xs-12">
+		<div class="x_panel">
+        <div class="x_title">
+            <h2>'.$title.'</h2> <span class="text-right h5" style="float: right" data-toggle="collapse" data-target="#experience2">Filter <i class="fa fa-filter"></i></span>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+        
+		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
+        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle">#</th>';
+        if ($result = mysqli_query($conn , $sql)) {
+            $cols = mysqli_num_fields($result);
+            $fieldinfo = mysqli_fetch_fields($result);
+            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+                $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+            }
+            $str .='</tr></thead>';
+            $str .='<!--tfoot><tr>';
+            for($i=1;$i<$cols;$i++)
+            { $str .='<td></td>'; }
+            $str .='</tr></tfoot-->';
+            $c=0;
+            if (mysqli_num_rows($result)>0){
+                $sl = 0;
+                while($row = mysqli_fetch_array($result)) {
+                    $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle">'.($sl=$sl+1).'</td>';
+                    for($i=1;$i<$cols;$i++) {
+                        $b=$row[$i];
+                        if($b=='YES'):
+                            $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
+                        elseif ($b=='PENDINGS'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';
+                        elseif ($b=='PREMATURE'):
+                            $sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
+                        elseif($b=='PROCESSING'):
+                            $sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
+                        elseif($b=='ROCOMMENDED'):
+                            $sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
+                        elseif($b=='COMPLETED' || $b=='VERIFIED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVEDS'):
+                            $sp='<span class="label label-success" style="font-size:10px">Approved</span>';
+                        elseif($b=='SETTLED'):
+                            $sp='<span class="label label-success" style="font-size:10px">SETTLED</span>';
+                        elseif($b=='RETURNED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='CANCELED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='REJECTED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                        elseif($b=='BOUNCED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
+                        elseif($b=='CHECKED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
+                        elseif($b=='RECORDED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">RECORDED</span>';
+                        elseif($b=='UNRECORDED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNRECORDED</span>';
+                        elseif($b=='UNCHECKED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
+                        elseif($b=='MANUAL'):
+                            $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                        elseif($b=='NO'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp.'</td>';
+                    }
+                    $str .='</tr></thead>';
+                }}
+            mysqli_free_result($result);
+        }
+        $str .='</table></div></div></div>';
+        return $str;
+        mysqli_close($conn);
+    }
     public function report_templates_with_status_add_new($sql,$title,$c_class,$action,$create){
         global $conn;
         $str = '';
@@ -1372,7 +1458,7 @@ class htmldiv extends crud {
 
 
 
-function recentvoucherview($sql,$link,$v_type,$css){
+function recentvoucherview($sql,$link,$v_type,$css,$viewmoreURL){
     global $conn;
     $str = '';
     if($sql==NULL) return NULL;
@@ -1412,7 +1498,11 @@ function recentvoucherview($sql,$link,$v_type,$css){
         }
         mysqli_free_result($result);
     }
-    $str .='</tbody></table></div></div></div>';
+    $str .='</tbody></table>';
+    if($sl>0){
+        $str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';
+    }
+    $str .='</div></div></div>';
     return $str;
     mysqli_close($conn);
 }
@@ -1487,7 +1577,8 @@ function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
     }
     $str .='</tbody></table>';
     if($sl>0){
-        $str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';}
+        $str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';
+    }
     $str .='</div></div></div>';
     return $str;
     mysqli_close($conn);

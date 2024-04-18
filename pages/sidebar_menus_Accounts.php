@@ -1,22 +1,22 @@
 <?php
 require_once ('support_file.php');
-$candv = find_a_field('requisition_sample_gift_master', 'COUNT(oi_no)', 'status="Processing"');
-$APAPPROVED = find_a_field('purchase_master_asset', 'COUNT(or_no)', 'status="APPROVED"');
-$bankvoucher = find_a_field('secondary_journal_bank', 'COUNT(distinct jv_no)', 'status=""');
-$stocktransfertoCMU = find_a_field('production_issue_master', 'COUNT(distinct custom_pi_no)', 'verifi_status="CHECKED" and status="ISSUE"');
-$salaryUN = find_a_field('purchase_return_master', 'COUNT(distinct id)', 'status="ROCOMMENDED"');
-$grnverifi = find_a_field('secondary_journal', 'COUNT(distinct tr_no)', 'checked="PENDING" and tr_from="Purchase"');
-$accounts_conversion_charge = find_a_field('production_issue_master', 'COUNT(distinct pi_no)', 'verifi_status="processing" and status="SEND" and warehouse_from not in ("5","12","17","9")');
-$veriri1cc = find_a_field('cycle_counting_master', 'COUNT(pr_no)', 'status="checked"');
-$cctchecked = find_a_field('code_to_code_transfer', 'COUNT(ctct_id)', 'status="CHECKED"');
-$stationary_purchased_checked_AC= find_a_field('warehouse_other_receive','count(or_no)','status="CHECKED"');
-$accounts_sales_return_view= find_a_field('sale_return_master','count(do_no)','status="CHECKED"');
-$accounts_inventory_return_view= find_a_field('purchase_return_master','count(id)','status="PROCESSING" and mushak_challan_status not in ("UNRECORDED")');
-$acc_inventory_cycle_counting_check= find_a_field('acc_cycle_counting_master','count(cc_no)','status="CHECKED"');
-$E_C_travel_expenses= find_a_field('travel_application_claim_master','count(trvClaim_id)','status="APPROVED" and accounts_viewed=""');
-$external_receipt_voucher= find_a_field('receipt','count(id)','entry_status="UNCHECKED" and cr_amt>0 and received_from="External"');
-$mushak_challan= find_a_field('sale_do_master','count(do_no)','mushak_challan_status="UNRECORDED" and status="COMPLETED"');
-$special_invoice= find_a_field('sale_do_master','count(do_no)','status="UNCHECKED" and do_section="Special_invoice"');
+$candv = find_a_field('requisition_sample_gift_master', 'COUNT(oi_no)', 'status="Processing" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$APAPPROVED = find_a_field('purchase_master_asset', 'COUNT(or_no)', 'status="APPROVED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$bankvoucher = find_a_field('secondary_journal_bank', 'COUNT(distinct jv_no)', 'status="" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$stocktransfertoCMU = find_a_field('production_issue_master', 'COUNT(distinct custom_pi_no)', 'verifi_status="CHECKED" and status="ISSUE" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$salaryUN = find_a_field('purchase_return_master', 'COUNT(distinct id)', 'status="ROCOMMENDED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$grnverifi = find_a_field('secondary_journal', 'COUNT(distinct tr_no)', 'checked="PENDING" and tr_from="Purchase" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$accounts_conversion_charge = find_a_field('production_issue_master', 'COUNT(distinct pi_no)', 'verifi_status="processing" and status="SEND" and warehouse_from not in ("5","12","17","9") and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$veriri1cc = find_a_field('cycle_counting_master', 'COUNT(pr_no)', 'status="checked" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$cctchecked = find_a_field('code_to_code_transfer', 'COUNT(ctct_id)', 'status="CHECKED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$stationary_purchased_checked_AC= find_a_field('warehouse_other_receive','count(or_no)','status="CHECKED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$accounts_sales_return_view= find_a_field('sale_return_master','count(do_no)','status="CHECKED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$accounts_inventory_return_view= find_a_field('purchase_return_master','count(id)','status="PROCESSING" and mushak_challan_status not in ("UNRECORDED") and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$acc_inventory_cycle_counting_check= find_a_field('acc_cycle_counting_master','count(cc_no)','status="CHECKED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$E_C_travel_expenses= find_a_field('travel_application_claim_master','count(trvClaim_id)','status="APPROVED" and accounts_viewed="" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$external_receipt_voucher= find_a_field('receipt','count(id)','entry_status="UNCHECKED" and cr_amt>0 and received_from="External" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$mushak_challan= find_a_field('sale_do_master','count(do_no)','mushak_challan_status="UNRECORDED" and status="COMPLETED" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
+$special_invoice= find_a_field('sale_do_master','count(do_no)','status="UNCHECKED" and do_section="Special_invoice" and section_id='.$_SESSION['sectionid'].' and company_id='.$_SESSION['companyid'].'');
 $dailyProduction = 0;
 $accounts_expenses_claim=$E_C_travel_expenses;
 $SD_VAT_TAX=$mushak_challan;
@@ -53,7 +53,6 @@ $module_id = @$_SESSION['module_id'];
 				where
 				pmm.main_menu_id=dmm.main_menu_id and
 				pmm.user_id='".$_SESSION["userid"]."' and
-				pmm.company_id='".$_SESSION['companyid']."'  and
 				dmm.module_id='".$module_id."' and
 				dmm.status=1 and pmm.status=1
 				order by dmm.sl";
@@ -70,7 +69,6 @@ $module_id = @$_SESSION['module_id'];
 				where
 				pmm.main_menu_id=dmm.main_menu_id and
 				pmm.user_id='" . $_SESSION["userid"] . "' and
-				pmm.company_id='" . $_SESSION['companyid'] . "'  and
 				dmm.module_id='".$module_id."' and
 				dmm.status=1 and pmm.status=1
 				order by dmm.sl";
@@ -100,7 +98,6 @@ $module_id = @$_SESSION['module_id'];
 				where
 				dsm.sub_menu_id=psm.sub_menu_id and
 				psm.user_id='".$_SESSION["userid"]."' and
-				psm.company_id='".$_SESSION['companyid']."' and
 				psm.main_menu_id='".$mainrow->main_menu_id."' and
 				dsm.module_id='".$module_id."' and
 				dsm.status=1 and psm.status=1
@@ -117,7 +114,6 @@ $module_id = @$_SESSION['module_id'];
 				where
 				dsm.sub_menu_id=psm.sub_menu_id and
 				psm.user_id='".$_SESSION["userid"]."' and
-				psm.company_id='".$_SESSION['companyid']."' and
 				psm.main_menu_id='".$mainrow->main_menu_id."' and
 				dsm.module_id='".$module_id."' and
 				dsm.status=1 and psm.status=1

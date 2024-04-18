@@ -106,7 +106,7 @@ where d.id=b.order_no and j.sr_no='".$chalan_no."' and  j.item_id=d.item_id and 
                                         <td>
                                             <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                 <tr>
-                                                    <td width="17%"><p><strong><img src="../assets/images/icon/title.png" width="99%" /></strong></p></td>
+                                                    <td width="17%"><p><strong><img src="../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="99%" /></strong></p></td>
                                                     <td width="83%" align="left" valign="top"><h2 style="margin-left:33%;margin-top:2%;text-transform:uppercase"><u><strong>Invoice</strong></u></h2></td>
                                                 </tr>
                                                 <tr>

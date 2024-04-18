@@ -375,7 +375,8 @@ dealer_info d
  w.warehouse_id=p.depot_id and
  d.dealer_code=p.dealer_code and
  p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
- p.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+ p.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
+ p.section_id=".$_SESSION['sectionid']." and p.company_id=".$_SESSION['companyid']."
  
  order by p.".$unique." DESC ";
 } else {
@@ -390,7 +391,11 @@ dealer_info d
   p.entry_by=u.user_id and
  w.warehouse_id=p.depot_id and
  d.dealer_code=p.dealer_code and
- p.status in ('CHECKED') order by p.".$unique." DESC ";
+ p.status in ('CHECKED') 
+ p.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
+ p.section_id=".$_SESSION['sectionid']." and p.company_id=".$_SESSION['companyid']."
+ 
+ order by p.".$unique." DESC ";
 }
 echo $crud->report_templates_with_status($res,$title);?>
 <?php endif;?>

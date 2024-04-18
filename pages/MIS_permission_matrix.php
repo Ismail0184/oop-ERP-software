@@ -4,6 +4,7 @@ $now=date("Y-m-d H:i:s");
 $unique='id';
 $table="user_permissions_module";
 $page='MIS_permission_matrix_dashboard.php';
+$page_company='MIS_permission_matrix_company.php';
 $page_module='MIS_permission_matrix_module.php';
 $page_dashboard='MIS_permission_matrix_dashboard.php';
 $page_main_menu='MIS_permission_matrix_main_menu.php';
@@ -64,100 +65,153 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
                   <div class="x_content">
                     <div id="wizard" class="form_wizard wizard_horizontal">
                       <ul class="wizard_steps">
-                        <li>
-                          <a href="#step-1">
-                            <span class="step_no">1</span>
-                            <span class="step_descr">Module<br />
-                                              <small>Permission</small>
-                                          </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="#step-2">
-                            <span class="step_no">2</span>
-                            <span class="step_descr">Dashboard<br />
-                                              <small>Module wise dashboard</small>
-                                          </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="#step-3">
-                            <span class="step_no">3</span>
-                            <span class="step_descr">Main Menu<br />
-                                              <small>Module wise main menu</small>
-                                          </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="#step-4">
-                            <span class="step_no">4</span>
-                            <span class="step_descr">Sub menu<br />
-                                              <small>Sub menu according to master menu</small>
-                                          </span>
-                          </a>
-                        </li>
+
+                          <li>
+                              <a href="#step-0">
+                                  <span class="step_no">0</span>
+                                  <span class="step_descr">Company<br />
+                                      <small>Sister Concern Permission</small>
+                                  </span>
+                              </a>
+                          </li>
+
+                          <li>
+                              <a href="#step-1">
+                                  <span class="step_no">1</span>
+                                  <span class="step_descr">Module<br />
+                                      <small>Permission</small>
+                                  </span>
+                              </a>
+                          </li>
+
+                          <li>
+                              <a href="#step-2">
+                                  <span class="step_no">2</span>
+                                  <span class="step_descr">Dashboard<br />
+                                      <small>Module wise dashboard</small>
+                                  </span>
+                              </a>
+                          </li>
+
+                          <li>
+                            <a href="#step-3">
+                                <span class="step_no">3</span>
+                                <span class="step_descr">Main Menu<br />
+                                    <small>Module wise main menu</small>
+                                </span>
+                            </a>
+                          </li>
+
+                          <li>
+                              <a href="#step-4">
+                                  <span class="step_no">4</span>
+                                  <span class="step_descr">Sub menu<br />
+                                      <small>Sub menu according to master menu</small>
+                                  </span>
+                              </a>
+                          </li>
                         
+                          <li>
+                              <a href="#step-5">
+                                  <span class="step_no">5</span>
+                                  <span class="step_descr">Reports<br />
+                                      <small>Reports by module</small>
+                                  </span>
+                              </a>
+                          </li>
 
-                        <li>
-                          <a href="#step-5">
-                            <span class="step_no">5</span>
-                            <span class="step_descr">Reports<br />
-                                              <small>Reports by module</small>
-                                          </span>
-                          </a>
-                        </li>
-
-                        <li>
-                          <a href="#step-6">
-                            <span class="step_no">6</span>
-                            <span class="step_descr">Warehouse<br />
-                                              <small>Warehouse / Plant / Depot / CMU</small>
-                                          </span>
-                          </a>
-                        </li>
+                          <li>
+                              <a href="#step-6">
+                                  <span class="step_no">6</span>
+                                  <span class="step_descr">Warehouse<br />
+                                      <small>Warehouse / Plant / Depot / CMU</small>
+                                  </span>
+                              </a>
+                          </li>
                       </ul>
-                      
-                      
-                      <div id="step-1">
-                      <h2 class="StepTitle">Step 1 Module Permission</h2>
-                          
-                <table id="customers" class="table table-striped table-bordered" style="width:100%; font-size: 11px">
-                    <tr>
-                        <th style="width: 2%">Action</th>
-                        <th>Module Name</th>
-                        <th>Module Short Name</th>
-                    </tr>
-                    <?php $sql=mysqli_query($conn, "SELECT m.module_id,m.modulename,m.module_short_name,dpm.module_id,
+
+
+                        <div id="step-0">
+                            <h2 class="StepTitle">Step 1 Company Permission</h2>
+                            <table id="customers" class="table table-striped table-bordered" style="width:100%; font-size: 11px">
+                                <tr>
+                                    <th style="width: 2%">Action</th>
+                                    <th>Company ID</th>
+                                    <th>Company Name</th>
+                                </tr>
+                                <?php $sql=mysqli_query($conn, "SELECT c.section_id,c.company_id,c.section_name,c.company_name,dpc.company_id,
+                   (select p.status from user_permissions_company p where p.section_id=c.section_id and p.company_id=c.company_id and p.user_id='".$MIS_permission_matrix."') as status
+                   FROM company c, dev_permission_company dpc  WHERE c.section_id=dpc.section_id and c.company_id=dpc.company_id and dpc.status>0 and dpc.user_id=".$_SESSION['userid']." ORDER BY c.section_id");
+                                while($data=mysqli_fetch_object($sql)):?>
+                                    <tr>
+                                        <td style="text-align: center"><input type="checkbox" data="<?=$data->section_id?>" class="status_checks_company btn <?php echo ($data->status)? 'btn-success' : 'btn-danger'?>"  <?php echo ($data->status=='1')? 'checked' : ''?>></td>
+                                        <td><?=$data->section_id?> : <?=$data->section_name; ?></td>
+                                        <td><?=$data->company_name?></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </table>
+                <script type="text/javascript">
+                    $(document).on('click','.status_checks_company',function(){
+                        var status = ($(this).hasClass("btn-success")) ? '0' : '1';
+                        var msg = (status=='0')? 'Deactivate' : 'Activate';
+                        //if(confirm("Are you sure to "+ msg)){
+                            var current_element = $(this);
+                            url = "<?=$page_company;?>";
+                            $.ajax({
+                                type:"POST",
+                                url: url,
+                                data: {section_id:$(current_element).attr('data'),status:status},
+                                success: function(data)
+                                { location.reload();
+                                }
+                            });
+                        //}
+                    });
+                </script>
+
+
+                                  </div>
+
+                        <div id="step-1">
+                            <h2 class="StepTitle">Step 1 Module Permission</h2>
+
+                            <table id="customers" class="table table-striped table-bordered" style="width:100%; font-size: 11px">
+                                <tr>
+                                    <th style="width: 2%">Action</th>
+                                    <th>Module Name</th>
+                                    <th>Module Short Name</th>
+                                </tr>
+                                <?php $sql=mysqli_query($conn, "SELECT m.module_id,m.modulename,m.module_short_name,dpm.module_id,
        (select p.status from user_permissions_module p where p.module_id=m.module_id and p.user_id='".$MIS_permission_matrix."') as status
        FROM module_department m, dev_permission_module dpm  WHERE m.module_id=dpm.module_id and dpm.status>0 and dpm.user_id=".$_SESSION['userid']." ORDER BY m.module_id");
-                    while($data=mysqli_fetch_object($sql)):?>
-                        <tr>
-                            <td style="text-align: center"><input type="checkbox" data="<?=$data->module_id?>" class="status_checks_module btn <?php echo ($data->status)? 'btn-success' : 'btn-danger'?>"  <?php echo ($data->status=='1')? 'checked' : ''?>></td>
-                            <td><?=$data->module_id?> : <?=$data->modulename; ?></td>
-                            <td><?=$data->module_short_name?></td>
-                        </tr>
-                    <?php endwhile; ?>
-                </table>
-    <script type="text/javascript">
-        $(document).on('click','.status_checks_module',function(){
-            var status = ($(this).hasClass("btn-success")) ? '0' : '1';
-            var msg = (status=='0')? 'Deactivate' : 'Activate';
-            //if(confirm("Are you sure to "+ msg)){
-                var current_element = $(this);
-                url = "<?=$page_module;?>";
-                $.ajax({
-                    type:"POST",
-                    url: url,
-                    data: {module_id:$(current_element).attr('data'),status:status},
-                    success: function(data)
-                    { location.reload();
-                    }
-                });
-            //}
-        });
-    </script>
+                                while($data=mysqli_fetch_object($sql)):?>
+                                    <tr>
+                                        <td style="text-align: center"><input type="checkbox" data="<?=$data->module_id?>" class="status_checks_module btn <?php echo ($data->status)? 'btn-success' : 'btn-danger'?>"  <?php echo ($data->status=='1')? 'checked' : ''?>></td>
+                                        <td><?=$data->module_id?> : <?=$data->modulename; ?></td>
+                                        <td><?=$data->module_short_name?></td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            </table>
+                            <script type="text/javascript">
+                                $(document).on('click','.status_checks_module',function(){
+                                    var status = ($(this).hasClass("btn-success")) ? '0' : '1';
+                                    var msg = (status=='0')? 'Deactivate' : 'Activate';
+                                    //if(confirm("Are you sure to "+ msg)){
+                                    var current_element = $(this);
+                                    url = "<?=$page_module;?>";
+                                    $.ajax({
+                                        type:"POST",
+                                        url: url,
+                                        data: {module_id:$(current_element).attr('data'),status:status},
+                                        success: function(data)
+                                        { location.reload();
+                                        }
+                                    });
+                                    //}
+                                });
+                            </script>
 
-                      </div>
+                        </div>
 
 
                       <div id="step-2">

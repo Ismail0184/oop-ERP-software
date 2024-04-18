@@ -44,7 +44,7 @@ if(isset($_POST[$unique]))
         $_POST['ip'] = $ip;
         $d = $_POST['voucher_date'];
         $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-        if(isset($_POST['Cheque_Date'])>0){
+        if(!empty($_POST['Cheque_Date'])){
             $ckd = $_POST['Cheque_Date'];
             $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
         } else {
@@ -63,7 +63,7 @@ if(isset($_POST[$unique]))
     if (isset($_POST['modify'])) {
         $d = $_POST['voucher_date'];
         $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-        if($_POST['Cheque_Date']>0){
+        if(!empty($_POST['Cheque_Date'])){
             $ckd = $_POST['Cheque_Date'];
             $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
         } else {
@@ -85,7 +85,7 @@ if(isset($_POST[$unique]))
             $type = 'Credit';
         }
         $date = $_POST['receipt_date'];
-        if(isset($_POST['Cheque_Date'])) {
+        if(!empty($_POST['Cheque_Date'])){
             $c_date = $_POST['Cheque_Date'];
         } else {
             $c_date='';
@@ -97,7 +97,6 @@ if(isset($_POST[$unique]))
         $timess = $dateTime->format("d-m-y  h:i A");
         $POST_dr_amt = @$_POST['dr_amt'];
         $POST_cr_amt = @$_POST['cr_amt'];
-        $c_date = 0;
         $cur_bal = 0;
         $manual_payment_no = 0;
         $cc_code = @$_POST['cc_code'];

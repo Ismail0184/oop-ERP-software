@@ -43,9 +43,9 @@ if(prevent_multi_submit()) {
             $_POST['ip'] = $ip;
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if($_POST['Cheque_Date']>0){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $ckd;
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -62,9 +62,9 @@ if(prevent_multi_submit()) {
         if (isset($_POST['modify'])) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if($_POST['Cheque_Date']>0){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $ckd;
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -85,7 +85,7 @@ if(prevent_multi_submit()) {
             }
             $date = $_POST['receipt_date'];
             $_POST_Cheque_Date = @$_POST['Cheque_Date'];
-            if($_POST_Cheque_Date) {
+            if(!empty($_POST_Cheque_Date)){
                 $c_date = $_POST_Cheque_Date;
             } else {
                 $c_date='';
@@ -98,7 +98,6 @@ if(prevent_multi_submit()) {
 
             $POST_dr_amt = @$_POST['dr_amt'];
             $POST_cr_amt = @$_POST['cr_amt'];
-            $c_date = 0;
             $cur_bal = 0;
             $manual_payment_no = 0;
             $cc_code = @$_POST['cc_code'];
@@ -311,7 +310,7 @@ journal_info j,
 
                 </form></div></div></div>
 
-<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','journal_info','166px');?>
+<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','journal_info','166px','');?>
 <?php if($initiate_journal_note):  ?>
     <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="payment_no" id="payment_no" value="<?=$initiate_journal_note;?>">

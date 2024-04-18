@@ -4,7 +4,7 @@ $title='GRN Checked';
 $page='purchase_sec_print_view.php';
 $unique='jv_no';
 
-$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+$date_checking = find_a_field('dev_software_data_locked','id','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
 if($date_checking>0) {
     $lockedStartInterval = @$date_checking->start_date;
     $lockedEndInterval = @$date_checking->end_date;
@@ -14,7 +14,13 @@ if($date_checking>0) {
     $lockedEndInterval = '';
 }
 
-if(isset($_POST['viewreport'])){
+if(isset($_POST['viewReport'])){
+    if(($_POST['checked']==''))
+    {
+        $statusConn .= " AND j.checked = '".$_POST['checked']."'";
+    } else {
+        $statusConn .= " and 1 ";
+    }
 	$sql = "SELECT DISTINCT 
                   j.jv_no,
 				  r.po_no as PO,
@@ -43,10 +49,11 @@ if(isset($_POST['viewreport'])){
 				  j.tr_no = r.pr_no AND
 				  j.tr_from = 'Purchase' AND 
 				  j.user_id = u.user_id AND
-				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and   
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  
+				  j.section_id=".$_SESSION['sectionid']." and j.company_id=".$_SESSION['companyid']." and 
 				  j.jvdate between '".$_POST['f_date']. "' AND  '".$_POST['t_date'] . "' AND 
                   v.vendor_id=r.vendor_id AND
-				  j.ledger_id = l.ledger_id group by j.jv_no order by j.tr_no desc";
+				  j.ledger_id = l.ledger_id".$statusConn." group by j.jv_no order by j.tr_no desc";
                         } else {
                             $sql = "SELECT DISTINCT 
                   j.jv_no,
@@ -76,7 +83,8 @@ if(isset($_POST['viewreport'])){
 				  j.tr_from = 'Purchase' AND 
 				  j.user_id = u.user_id AND
 				  j.checked ='PENDING' AND 
-				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and   
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and  
+				  j.section_id=".$_SESSION['sectionid']." and j.company_id=".$_SESSION['companyid']." and 
                   v.vendor_id=r.vendor_id AND
 				  j.ledger_id = l.ledger_id group by j.jv_no order by j.tr_no desc";
                            
@@ -96,26 +104,27 @@ if(isset($_POST['viewreport'])){
 <?php require_once 'body_content.php'; ?>
 
 
-
-
-
-    <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
-        <table align="center" style="width: 50%;">
-            <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
-                <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
-                <td style="width:10px; text-align:center"> -</td>
-                <td>
-                    <select name="checked" id="checked" class="form-control col-md-7 col-xs-12" style="width:auto; font-size:11px; height:25px">
-                        <option value=""> Status</option>
-                        <option value="PENDING" <?=(@$_POST['checked']=='PENDING')?'Selected':'';?>>PENDING</option>
-                        <option value="YES" <?=(@$_POST['checked']=='YES')?'Selected':'';?>>YES</option>
-                    </select>
-                </td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Goods / Services Received</button></td>
-            </tr></table>
-                
-<?=$crud->report_templates_with_status($sql,'');?>
+<div class="col-md-12 col-xs-12">
+    <div class="<?php if(isset($_POST['viewReport'])){ ?> row <?php } else { echo 'row collapse';} ?>" id="experience2">
+        <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+            <table align="center" style="width: 50%;">
+                <tr><td><input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <td style="width:10px; text-align:center"> -</td>
+                    <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                    <td style="width:10px; text-align:center"> -</td>
+                    <td>
+                        <select name="checked" id="checked" class="form-control col-md-7 col-xs-12" style="width:auto; font-size:11px; height:25px">
+                            <option value=""> Status</option>
+                            <option value="PENDING" <?=(@$_POST['checked']=='PENDING')?'Selected':'';?>>PENDING</option>
+                            <option value="YES" <?=(@$_POST['checked']=='YES')?'Selected':'';?>>YES</option>
+                        </select>
+                    </td>
+                    <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Goods / Services Received</button></td>
+                </tr></table>
+        </form>
+    </div>
+</div>
+<?=$crud->report_templates_with_status_with_filtering($sql,'Pending GRN','');?>
 <?php 
 $srn=find_a_field('purchase_receive_master','COUNT(custom_grn_no)','grn_inventory_type in ("Service") and status in ("CHECKED")');
 if($srn>0): ?>
@@ -154,7 +163,9 @@ vendor v
  where
   prm.entry_by=u.user_id and 
  v.vendor_id=prm.vendor_id and 
- prm.status in ('CHECKED') and prm.grn_inventory_type in ('Service') group by prm.custom_grn_no
+ prm.status in ('CHECKED') and prm.grn_inventory_type in ('Service') 
+ prm.section_id=".$_SESSION['sectionid']." and prm.company_id=".$_SESSION['companyid']."
+ group by prm.custom_grn_no
   order by prm.custom_grn_no DESC ";
                             $pquery=mysqli_query($conn, $resultss);
                         while ($rows=mysqli_fetch_array($pquery)){
@@ -171,8 +182,11 @@ vendor v
                                 <td onclick="DoNavPOPUPs('<?=$rows['entry_by'].$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)" style="cursor: pointer"><?=$rows['fname'];?></td>
                                 <td style="text-align:left;cursor: pointer" onclick="DoNavPOPUP('<?=$rows['entry_by'].$rows['custom_grn_no'];?>', 'TEST!?', 600, 700)"><?=$rows['entry_at'];?></td>
                             </tr>
-                        <?php } ?></tbody></table>
-
-                </div></div></div></form> 
+                        <?php } ?></tbody>
+                    </table>
+                </div>
+            </div>
+</div>
+    </form>
 <?php  endif;?>
 <?=$html->footer_content();?>

@@ -235,6 +235,6 @@ $p_details=find_all_field("personnel_basic_info","","PBI_ID=".$datas->PBI_ID."")
 <?php } ?>
 
 
-                
-        
-<?php require_once 'footer_content.php' ?>
+
+
+ <?=$html->footer_content();?>

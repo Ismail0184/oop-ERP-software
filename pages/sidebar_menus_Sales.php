@@ -1,9 +1,18 @@
 <?php
 require_once ('support_file.php');
+$companyid = @$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+    $sec_com_connection_wa=' and 1';
+} else {
+    $sec_com_connection=" and d.company_id='".$companyid."' and d.section_id in ('400000','".$sectionid."')";
+    $sec_com_connection_wa=" and company_id='".$companyid."' and section_id in ('400000','".$sectionid."')";
+}
 $so_target=find_a_field('ims_monthly_target_master','count(id)','status="UNCHECKED"');
 $stock_transfer=find_a_field('ims_transfer_from_super_DB_master','count(do_no)','status="UNCHECKED"');
 
-$creditLimitRequested = find_a_field('dealer_credit_limit_request','count(id)','status="PENDINGS"');
+$creditLimitRequested = find_a_field('dealer_credit_limit_request','count(id)','status="PENDINGS"'.$sec_com_connection_wa.'');
 $sales_IMS_Management=$so_target+$stock_transfer;
 ?>
 

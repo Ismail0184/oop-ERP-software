@@ -16,7 +16,7 @@ $current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]
 $required_status="CHECKED";
 $page="hrm_unapproved_work_order.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 
 if(prevent_multi_submit()){
     if(isset($_POST['Return']))
@@ -134,12 +134,15 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
      <!-------------------list view ------------------------->
  <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >    
      <table align="center" style="width: 50%;">
-            <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
-                <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Recommended Work Order</button></td>
-            </tr></table>
+         <tr>
+             <td>
+                 <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
+             </td>
+             <td style="width:10px; text-align:center"> -</td>
+             <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+             <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Recommended Work Order</button></td>
+            </tr>
+     </table>
      
      <div class="col-md-12 col-sm-12 col-xs-12">
          <div class="x_panel">
@@ -176,40 +179,41 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                        <td onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)"><?=$req->current_status;?></td>
                    </tr>
                  <?php endwhile; ?>
-                                </tbody>
-                                </table>                            
-                                
-         
-                
-             </div></div></div></form>
-     <!-------------------End of  List View --------------------->
+                      </tbody>
+             </table>
+             </div>
+         </div>
+     </div>
+ </form>
  <?php } ?>
-<?php if(isset($_GET[$unique])){ ?>
-                    <!-- input section-->
-                    <div class="col-md-12 col-sm-12 col-xs-12">
-                        <div class="x_panel">
-                            <div class="x_content">
-                                <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
-                                    <? require_once 'support_html.php';?>
-                  <table class="table table-striped table-bordered" style="width:100%;font-size:11px">
-                   <thead>
-                    <tr style="background-color: bisque">
-                     <th style="width: 2%">#</th>
-                        <th>PO</th>
-                        <th>Final Destination</th>
-                     <th style="">Item Code</th>
-                     <th style="">Description of the Goods</th>
-                     <th style="text-align: center">UOM</th>
-                     <th style="text-align: center">Pre. Rate</th>
-                     <th style="text-align: center">Rate</th>
-                     <th style="text-align: center">Qty</th>
-                     <th style="text-align: center">Amount</th>
-                     </tr>
-                     </thead>
-                      <tbody>
-                      <?php
-                      $res=mysqli_query($conn, 'Select td.*,i.*,w.warehouse_name,
- (select rate from '.$table_details.' where '.$unique.'!='.$_GET[$unique].' and item_id=i.item_id order by id DESC limit 1) as pre_rate
+
+
+ <?php if(isset($_GET[$unique])){ ?>
+     <div class="col-md-12 col-sm-12 col-xs-12">
+         <div class="x_panel">
+             <div class="x_content">
+                 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
+                     <? require_once 'support_html.php';?>
+                     <table class="table table-striped table-bordered" style="width:100%;font-size:11px">
+                         <thead>
+                         <tr style="background-color: bisque">
+                             <th style="width: 2%">#</th>
+                             <th>PO</th>
+                             <th>Final Destination</th>
+                             <th style="">Item Code</th>
+                             <th style="">Description of the Goods</th>
+                             <th style="text-align: center">UOM</th>
+                             <th style="text-align: center">Pre. Rate</th>
+                             <th style="text-align: center">Rate</th>
+                             <th style="text-align: center">Qty</th>
+                             <th style="text-align: center">Amount</th>
+                         </tr>
+                         </thead>
+
+                         <tbody>
+                         <?php
+                         $res=mysqli_query($conn, 'Select td.*,i.*,w.warehouse_name,
+(select rate from '.$table_details.' where '.$unique.'!='.$_GET[$unique].' and item_id=i.item_id order by id DESC limit 1) as pre_rate
  from '.$table_details.' td,
 				 item_info i,warehouse w
 				  where td.item_id=i.item_id and
@@ -217,30 +221,33 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
 				  td.'.$unique.'='.$_GET[$unique].'');
 				   while($req_data=mysqli_fetch_object($res)){
 				   ?>
-                   <tr>
-                                <td><?=$i=$i+1;?></td>
-                                <td><?=$req_data->po_no;?></td>
-                                <td><?=$req_data->warehouse_name;?></td>
-                                <td><?=$req_data->finish_goods_code;?></td>
-                                <td><?=$req_data->item_name;?> # <?=$req_data->item_details;?></td>
-                                <td style="text-align:center"><?=$req_data->unit_name;?></td>
-                                <td style="text-align:center"><?=$req_data->pre_rate;?></td>
-                                <td style="text-align:center"><?=number_format($req_data->rate,2);?></td>
-                                <td style="text-align:center"><?=number_format($req_data->qty,2);?></td>
-                                <td style="text-align: right"><?=number_format($req_data->amount,2);?></td>
-                                </tr>
-                                <?php $total=$total+$req_data->amount;  } ?>
-                      <tr style="font-weight: bold">
-                          <td colspan="9" align="right">TOTAL:</td>
-                          <td align="right"><strong><?=number_format(($total),2);?>
-                              </strong></td>
-                      </tr>
-                      <? if($cash_discount>0){?>
-                          <tr style="font-weight: bold">
-                              <td colspan="9" align="right">Discount:</td>
-                              <td align="right"><strong>
-                                      <? if($cash_discount>0) echo number_format($cash_discount,2); else echo '0.00';?>
-                                  </strong></td>
+                       <tr>
+                           <td><?=$i=$i+1;?></td>
+                           <td><?=$req_data->po_no;?></td>
+                           <td><?=$req_data->warehouse_name;?></td>
+                           <td><?=$req_data->finish_goods_code;?></td>
+                           <td><?=$req_data->item_name;?> # <?=$req_data->item_details;?></td>
+                           <td style="text-align:center"><?=$req_data->unit_name;?></td>
+                           <td style="text-align:center"><?=$req_data->pre_rate;?></td>
+                           <td style="text-align:center"><?=number_format($req_data->rate,2);?></td>
+                           <td style="text-align:center"><?=number_format($req_data->qty,2);?></td>
+                           <td style="text-align: right"><?=number_format($req_data->amount,2);?></td>
+                       </tr>
+                       <?php $total=$total+$req_data->amount;  } ?>
+
+                         <tr style="font-weight: bold">
+                             <td colspan="9" align="right">TOTAL:</td>
+                             <td align="right"><strong><?=number_format(($total),2);?>
+                                 </strong>
+                             </td>
+                         </tr>
+
+                         <? if($cash_discount>0){?>
+                             <tr style="font-weight: bold">
+                                 <td colspan="9" align="right">Discount:</td>
+                                 <td align="right"><strong>
+                                         <? if($cash_discount>0) echo number_format($cash_discount,2); else echo '0.00';?>
+                                     </strong></td>
                           </tr>
                       <? }?>
 
@@ -282,24 +289,22 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                       <td align="right"><strong> <? echo number_format(($subtotal+$tax_totals+$transport_bill+$labor_bill),2);?> </strong>
                       </td>
                       </tr>
-                      </tbody></table>
+                      </tbody>
+                  </table>
 
 <?php if($current_status!=$required_status){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This Work Order has been recommended!!</i></h5>';} else { ?>
                                      <table style="width:100%;font-size:12px">                                    
                                           <td><input type="text" id="return_comments"  name="return_comments" class="form-control col-md-7 col-xs-12"  style="width:166px;font-size: 11px; height:32px;" placeholder="return comments........" ><button type="submit" name="Return" id="Return" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Return?");' style="font-size: 12px; margin-left:5px">Return the Work Order</button></td>
-                                             
-                                                          
-                                            
                                             <td style="text-align: right; float: right">
-                                            <button type="submit" onclick='return window.confirm("Are you confirm to Recommended the Work Order?");' name="Recommended" id="Recommended" class="btn btn-primary" style="font-size: 12px">Recommended & Forward</button></td></tr></table>           
-                                            <?php } ?>                               
-                                                                                                                                   
-                                    
-
-
+                                            <button type="submit" onclick='return window.confirm("Are you confirm to Recommended the Work Order?");' name="Recommended" id="Recommended" class="btn btn-primary" style="font-size: 12px">Recommended & Forward</button>
+                                            </td>
+                                         </tr>
+                                     </table>
+<?php } ?>
                                 </form>
                                 </div>
                                 </div>
                                 </div>
 <?php } ?>
- <?=$html->footer_content();mysqli_close($conn);?>
+ <?=$html->footer_content();
+ mysqli_close($conn);?>

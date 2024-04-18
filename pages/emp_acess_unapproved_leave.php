@@ -117,9 +117,9 @@ $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as Date,
 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >    
      <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Approved Leave</button></td>
             </tr></table>           
             
@@ -254,8 +254,4 @@ $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as Date,
 
 
 </form>
-
-
-
-
-<?php require_once 'footer_content.php' ?>
+<?=$html->footer_content();?>

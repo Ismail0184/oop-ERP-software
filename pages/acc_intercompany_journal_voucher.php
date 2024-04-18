@@ -31,8 +31,7 @@ if(prevent_multi_submit()) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
             if($_POST['Cheque_Date']>0){
-                $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $_POST['Cheque_Date'];
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -70,7 +69,7 @@ if(prevent_multi_submit()) {
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
             if($_POST['Cheque_Date']>0){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $ckd;
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -114,32 +113,32 @@ if(prevent_multi_submit()) {
             $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
             $timess = $dateTime->format("d-m-y  h:i A");
             $manual_payment_no = 0;
-
+            $cr_amt1 = @$_POST['cr_amt1'];
             if ((($_POST['dr_amt1'] && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], $_POST['dr_amt1'],
                     0, 'Debit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['ledger_id_2']);
+                        , $thisday, $thismonth, $thisyear, $_POST['crLedger_id_2']);
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['crLedger_id_2'], 0,
                         $_POST['cr_amt2'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
+                        , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
             }
 
-            if ((($_POST['cr_amt1'] && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
+            if ((($cr_amt1 && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
 
-                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['crLedger_id_2'], 0,
-                    $_POST['cr_amt2'], 'Debit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                    , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
+                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], 0,
+                    $_POST['cr_amt1'], 'Debit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    , $thisday, $thismonth, $thisyear, $_POST['drLedger_id_2']);
 
-                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], $_POST['dr_amt1'],
-                    $_POST['cr_amt2'], 'Credit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                    , $thisday, $thismonth, $thisyear, $_POST['ledger_id_2']);
+                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['drLedger_id_2'], $_POST['dr_amt2'],
+                    0, 'Credit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
             }
 
             if (($_POST['ex_amount']> 0) && (($_POST['Ex_debit_ledger'] && $_POST['Ex_credit_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
-                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['ex_narration'], $_POST['Ex_debit_ledger'], $_POST['ex_amount'],
+                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_debit_ledger'], $_POST['ex_amount'],
                         0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                         , $thisday, $thismonth, $thisyear, $_POST['Ex_credit_ledger']);
-                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['ex_narration'], $_POST['Ex_credit_ledger'], 0,
+                add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_credit_ledger'], 0,
                         $_POST['ex_amount'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                         , $thisday, $thismonth, $thisyear, $_POST['Ex_debit_ledger']);
             }
@@ -163,7 +162,7 @@ j.cheq_date,
 j.bank,
 j.cc_code,
 j.sub_ledger_id,
-a.*,c.center_name as cname 
+a.*,c.center_name as cname,j.day_name 
 from 
 ".$table_journal_info." j,
 accounts_ledger a,
@@ -178,7 +177,7 @@ cost_center c
     while($uncheckrow=mysqli_fetch_array($re_query)){
         $ids=$uncheckrow['jid'];
         if (isset($_POST['confirmsave']) && ($uncheckrow['journal_info_no']>0)) {
-            add_to_journal_new($uncheckrow['j_date'], $proj_id, $jv, $uncheckrow['journal_info_date'], $uncheckrow['ledger_id'], $uncheckrow['narration'], $uncheckrow['dr_amt'], $uncheckrow['cr_amt'], 'Journal_info', $uncheckrow['journal_info_no'], $uncheckrow['jid'], $uncheckrow['cc_code'], $uncheckrow['sub_ledger_id'], $_SESSION['usergroup'], $uncheckrow['cheq_no'], $uncheckrow['cheq_date'], $create_date, $ip, $now, $uncheckrow['day_name'], $thisday, $thismonth, $thisyear,'','','');
+            add_to_journal_new($uncheckrow['j_date'], $proj_id, $jv,0, $uncheckrow['ledger_id'], $uncheckrow['narration'], $uncheckrow['dr_amt'], $uncheckrow['cr_amt'], 'Journal_info', $uncheckrow['journal_info_no'], $uncheckrow['jid'], $uncheckrow['cc_code'], $uncheckrow['sub_ledger_id'], $_SESSION['usergroup'], $uncheckrow['cheq_no'], $uncheckrow['cheq_date'], $create_date, $ip, $now, $uncheckrow['day_name'], $thisday, $thismonth, $thisyear,'','','');
         }
 
         if(isset($_POST['deletedata'.$ids]))
@@ -214,6 +213,7 @@ cost_center c
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
+        unset($_SESSION['API_client_id']);
         header("Location: ".$targeturl."");
     }
 
@@ -231,6 +231,8 @@ cost_center c
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
+        unset($_SESSION['API_client_id']);
+        header("Location: ".$page."");
     }
 
     $COUNT_details_data=find_a_field(''.$table_journal_info.'','Count(id)',''.$journal_info_unique.'='.$initiate_journal_note_inter_company.' and journal_info_date not in ("1845854380")');
@@ -423,21 +425,17 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                         <?=advance_foreign_relation($account_ledger,'');?>
                     </select>
                 </td>
-
                 <td style="width:15%;vertical-align: middle">
                     <textarea style="width:100%; font-size: 11px; text-align:center"  name="internal_narration"  class="form-control col-md-7 col-xs-12" autocomplete="off" ></textarea>
                 </td>
-
                 <td style="width:10%; vertical-align: middle;">
                     <input type="number"  style="width:99%; font-size: 11px; text-align:center"  value="<?=$edit_value_dr_amt;?>"  <?php if($drAmt>0){ ?>name="cr_amt2" <?php } elseif($crAmt>0) { ?> name="dr_amt2" <?php } ?> class="form-control col-md-7 col-xs-12" required placeholder="<?php if($drAmt>0){ ?>credit amount<?php } elseif($crAmt>0) { ?>debit amount<?php } ?>" autocomplete="off" step="any" min="1" />
                 </td>
-
                 <td rowspan="3" style="width:5%; vertical-align: middle ">
                     <?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?=$_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
                     <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?>
                 </td>
             </tr>
-
             <tr class="danger">
                 <th style="vertical-align: middle; text-align: center">External Journal<br>(vai API)</th>
                 <td rowspan="2" style="vertical-align: middle;">
@@ -447,12 +445,12 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                             <?php
                             $characters = json_decode(file_get_contents($find_API_intercompany_ledger->API_endpoint)); // decode the JSON feed
                             foreach ($characters as $character) :;?>
-                                <option value="<?=$character->ledger_id;?>" <?php if($find_API_intercompany_ledger->client_id=$character->client_id) echo 'selected'; ?>><?=$character->ledger_name;?></option>
+                                <option value="<?=$character->ledger_id;?>"><?=$character->ledger_name;?></option>
                             <?php endforeach;  ?>
                         <?php } else { ?>
                             <?php $characters = json_decode(file_get_contents($find_API_all_active_ledger->API_endpoint)); // decode the JSON feed
                             foreach ($characters as $character) :;?>
-                                <option value="<?=$character->ledger_id;?>" <?php if ($crAmt>0){ if($find_API_intercompany_ledger->client_id=$character->client_id) echo 'selected'; } ?>><?=$character->ledger_name;?></option>
+                                <option value="<?=$character->ledger_id;?>"><?=$character->ledger_name;?></option>
                             <?php endforeach;  ?>
                         <?php } ?>
                     </select>
@@ -463,23 +461,22 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                         <?php if($crAmt > 0) { ?>
                             <?php $characters = json_decode(file_get_contents($find_API_all_active_ledger->API_endpoint)); // decode the JSON feed
                             foreach ($characters as $character) :;?>
-                                <option value="<?=$character->ledger_id;?>" <?php if ($crAmt>0){ if($find_API_intercompany_ledger->client_id=$character->client_id) echo 'selected'; } ?>><?=$character->ledger_name;?></option>
+                                <option value="<?=$character->ledger_id;?>"><?=$character->ledger_name;?></option>
                             <?php endforeach;  ?>
                         <?php } else { ?>
                             <?php
                             $characters = json_decode(file_get_contents($find_API_intercompany_ledger->API_endpoint)); // decode the JSON feed
                             foreach ($characters as $character) :;?>
-                                <option value="<?=$character->ledger_id;?>" <?php if($find_API_intercompany_ledger->client_id=$character->client_id) echo 'selected'; ?>><?=$character->ledger_name;?></option>
+                                <option value="<?=$character->ledger_id;?>"><?=$character->ledger_name;?></option>
                             <?php endforeach;  ?>
                         <?php } ?>
                     </select>
                 </td>
-
                 <td style="width:15%;vertical-align: middle">
-                    <textarea  style="width:100%; font-size: 11px; text-align:center"  name="ex_narration"  class="form-control col-md-7 col-xs-12" autocomplete="off" ><?=($edit_value_narration!='')? $edit_value_narration : 'External Journal Entry from ICP Distribution Software, Ref: '.$initiate_journal_note_inter_company.',';?></textarea>
+                    <textarea  style="width:100%; font-size: 11px; text-align:center"  name="ex_narration"  class="form-control col-md-7 col-xs-12" autocomplete="off" ><?=($edit_value_narration!='')? $edit_value_narration : 'External Journal Entry from '.$_SESSION['company_name'].' Software, Ref: '.$initiate_journal_note_inter_company.',';?></textarea>
                 </td>
                 <td style="width:10%; vertical-align: middle;" class="bg-danger">
-                    <input type="number"  style="width:99%; font-size: 11px; text-align:center"  value="<?=$edit_value_dr_amt;?>"  name="ex_amount" class="form-control col-md-7 col-xs-12" autocomplete="off" placeholder="amount" step="any" min="1" />
+                    <input type="number"  required style="width:99%; font-size: 11px; text-align:center"  value="<?=$edit_value_dr_amt;?>"  name="ex_amount" class="form-control col-md-7 col-xs-12" autocomplete="off" placeholder="amount" step="any" min="1" />
                 </td>
             </tr>
             </tbody>
@@ -496,9 +493,6 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                 form.dr_amt.focus();
             }</script>
     </form>
-
-
-
     <?=voucher_delete_edit($rs,$unique,$_SESSION['initiate_journal_note_inter_company'],$COUNT_details_data,$page);?><br><br>
 <?php endif; mysqli_close($conn); ?>
 <?=$html->footer_content();?> 

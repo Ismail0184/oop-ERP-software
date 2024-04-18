@@ -56,7 +56,7 @@ function hide()
                   <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
                       <tr>
                         <td width="17%">
-                        <img src="../../assets/images/icon/title.png" width="98%" />
+                        <img src="../../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="98%" />
                         <td width="58%"><table  width="80%" border="0" align="center" cellpadding="3" cellspacing="0">
                             <tr>
                               <td style="text-align:center; color:#000; font-size:14px; font-weight:bold;">

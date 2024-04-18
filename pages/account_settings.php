@@ -1,6 +1,7 @@
 <?php
 
  require_once 'support_file.php';
+ $page = 'account_settings.php';
  $title='Change Password';
  $table='users';
  $enat=date('Y-m-d h:s:i');

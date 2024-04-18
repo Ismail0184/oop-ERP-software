@@ -3,7 +3,7 @@
  $title='Change Default Branch';
  $table='users';
  $unique='user_id';
-
+ $page = 'account_settings_change_default_branch.php';
 if(isset($_POST['update'])){
     unset($_SESSION['sectionid']);
     unset($_SESSION['company_name']);
@@ -54,7 +54,7 @@ if(isset($_POST['update'])){
     <div class="col-md-6 col-sm-6 col-xs-12">
         <select class="select2_single form-control" style="width:100%; font-size: 12px" tabindex="-1" required="required" name="section_id" >
             <option></option>
-            <?=foreign_relation('company', 'section_id', 'CONCAT(section_id," : ", com_short_name)','', 'status=1','order by id'); ?>
+            <?=foreign_relation('company', 'section_id', 'CONCAT(section_id," : ", com_short_name)','', 'status=1 and section_id in (select section_id from user_permissions_company where user_id='.$_SESSION['userid'].')','order by id'); ?>
         </select>
     </div>
 </div>

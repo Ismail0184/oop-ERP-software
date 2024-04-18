@@ -225,7 +225,7 @@ $str 	.= '<div class="left" style="width:100%">';
 ?>
 
 
-<? if($_REQUEST['report_id']==7001001) { ?>
+<? if($_POST['report_id']==7001001) { ?>
   <style>
       #customers {
           font-family: "Gill Sans", sans-serif;

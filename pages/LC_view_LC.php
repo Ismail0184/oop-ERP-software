@@ -10,8 +10,17 @@ $details_unique = 'lc_id';
 $page='LC_view_LC.php';
 
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
+
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking->id>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else {
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
 
 if(prevent_multi_submit()){
 
@@ -19,7 +28,7 @@ if(prevent_multi_submit()){
         $_POST['status'] = 'MANUAL';
         $crud->update($table);
         $_SESSION['initiate_create_LC'] = $_GET[$unique];
-        $_SESSION[under_PI]=getSVALUE("lc_lc_master", "pi_id", " where lc_no=".$_GET[id]."");
+        $_SESSION['under_PI']=getSVALUE("lc_lc_master", "pi_id", " where lc_no=".$_GET['id']."");
         $type = 1;
         echo "<script>self.opener.location = 'LC_create_LC.php'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
@@ -170,17 +179,17 @@ item_info i
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date"  >
+                    <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date"  >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 12px;" name="viewreport"  class="btn btn-primary">View Available LC</button></td>
 
 
             </tr></table>
 
 <?php		
-                        if(isset($_POST[viewreport])){
-                            $con.= ' and a.lc_issue_date BETWEEN  "'.$_POST[f_date].'" and "'.$_POST[t_date]. '"';
+                        if(isset($_POST['viewreport'])){
+                            $con.= ' and a.lc_issue_date BETWEEN  "'.$_POST['f_date'].'" and "'.$_POST['t_date']. '"';
                             $res='SELECT 
 a.id,
 a.id as LC_ID, 
@@ -196,8 +205,15 @@ FROM lc_lc_master a,
 lc_foreigner_branch c,
 lc_buyer lb,
 currency cu
-WHERE lb.party_id=a.party_id and cu.id=a.currency '.$con. ' order by a.lc_issue_date DESC'; } else {
-$res="SELECT 
+WHERE lb.party_id=a.party_id and cu.id=a.currency and
+a.section_id='.$_SESSION['sectionid'].' and a.company_id='.$_SESSION['companyid'].' and 
+a.pi_issue_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'"
+
+'.$con. ' 
+
+order by a.lc_issue_date DESC';
+                        } else {
+$res='SELECT 
 a.id,
 a.id as LC_ID, 
 a.lc_no as LC_No, 
@@ -212,7 +228,10 @@ FROM lc_lc_master a,
 lc_foreigner_branch c,
 lc_buyer lb,
 currency cu
-WHERE lb.party_id=a.party_id and cu.id=a.currency  order by a.lc_issue_date DESC";							
+WHERE lb.party_id=a.party_id and cu.id=a.currency  and
+a.section_id='.$_SESSION['sectionid'].' and a.company_id='.$_SESSION['companyid'].' and 
+a.pi_issue_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'"
+order by a.lc_issue_date DESC';
 						} ?>
 <?=$crud->report_templates_with_status($res,$title);?>
 <?php endif;?>

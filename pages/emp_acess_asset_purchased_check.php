@@ -339,7 +339,4 @@ mail($to,$subject,$txt,$headers);
                                 </div>
 <?php } ?>
 
-
-                
-        
-<?php require_once 'footer_content.php' ?>
+ <?=$html->footer_content();?>

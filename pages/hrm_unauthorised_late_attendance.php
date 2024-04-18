@@ -208,4 +208,4 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
 
 
 
-<?php require_once 'footer_content.php' ?>
+<?=$html->footer_content();?>

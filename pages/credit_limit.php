@@ -10,6 +10,16 @@ $page="acc_dealer_credit_limit.php";
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 
+$companyid = @$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+    $sec_com_connection_wa=' and 1';
+} else {
+    $sec_com_connection=" and d.company_id='".$companyid."' and d.section_id in ('400000','".$sectionid."')";
+    $sec_com_connection_wa=" and company_id='".$companyid."' and section_id in ('400000','".$sectionid."')";
+}
+
 $res="Select 
 dr.dealer_code,
 concat(d.dealer_code,' : ' ,d.account_code) as account_code,
@@ -33,7 +43,7 @@ users u
  d.canceled in ('Yes') and 
  d.dealer_code = dr.dealer_code and
  dr.entry_by = u.user_id and 
- dr.status in ('PENDINGS')
+ dr.status in ('PENDINGS')".$sec_com_connection."
  group by d.account_code
  order by d.account_code";
 ?>

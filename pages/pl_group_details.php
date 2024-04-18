@@ -68,7 +68,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
 j.ledger_id=l.ledger_id and 
@@ -120,7 +120,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -170,7 +170,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -201,7 +201,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
-
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -238,6 +238,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -255,6 +256,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -286,6 +288,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and    
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 
@@ -342,6 +345,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and    
 j.jvdate between "'.$_GET['fdate'].'" and "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and
 j.ledger_id=l.ledger_id and 

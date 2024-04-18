@@ -17,7 +17,7 @@ $targeturl="<meta http-equiv='refresh' content='0;$page'>";
     <SCRIPT language=JavaScript>
         function reload(form)
         {var val=form.price_type.options[form.price_type.options.selectedIndex].value;
-            self.location='sample_gift_list.php?oi_no=<?php echo $_GET[oi_no]; ?>&price_type=' + val ;}
+            self.location='sample_gift_list.php?oi_no=<?php echo $_GET['oi_no']; ?>&price_type=' + val ;}
     </script>
 </head>
 <?php require_once 'body_content.php'; ?>
@@ -25,7 +25,7 @@ $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 
 
-<?php if($_GET[oi_no]){ ?>
+<?php if($_GET['oi_no']){ ?>
 <div class="col-md-6 col-sm-12 col-xs-12">
     <div class="x_panel">
         <div class="x_content">

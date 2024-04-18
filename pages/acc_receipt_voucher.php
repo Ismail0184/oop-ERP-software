@@ -47,9 +47,9 @@ if(prevent_multi_submit()) {
             $_POST['ip'] = $ip;
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if($_POST['Cheque_Date']>0){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $ckd;
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -66,9 +66,9 @@ if(prevent_multi_submit()) {
         if (isset($_POST['modify'])) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if($_POST['Cheque_Date']>0){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
-                $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
+                $_POST['Cheque_Date'] = $ckd;
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -89,7 +89,7 @@ if(prevent_multi_submit()) {
             $date=date('Y-m-d');
             $POST_dr_amt = @$_POST['dr_amt'];
             $POST_cr_amt = @$_POST['cr_amt'];
-            $c_date = 0;
+            $c_date = $_POST['Cheque_Date'];
             $cur_bal = 0;
             $manual_payment_no = 0;
             $cc_code = @$_POST['cc_code'];
@@ -325,7 +325,7 @@ cost_center c
             </div>
         </div>
     </div>
-<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','receipt','213px');?>
+<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','receipt','213px','acc_vouchers_view.php?journal_type=Receipt');?>
 <?php if($initiate_credit_note):  ?>
     <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="receipt_no" id="receipt_no" value="<?=$initiate_credit_note;?>">
@@ -334,9 +334,8 @@ cost_center c
         <input type="hidden" name="amount" id="amount" value="<?=$amount;?>">
         <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
         <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
-        <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
         <input type="hidden" name="party_ledger" id="party_ledger" value="<?=$party_ledger;?>">
-        <?php if($Cheque_Date>0){ ?>
+        <?php if(!empty($Cheque_Date)){ ?>
             <input type="hidden" name="Cheque_Date" id="Cheque_Date" value="<?=$Cheque_Date;?>">
         <?php } ?>
         <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">

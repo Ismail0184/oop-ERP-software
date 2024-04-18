@@ -14,7 +14,7 @@ top: -4px; font-size:15px;font-weight:bold; color:white"><?=strtoupper($_SESSION
                 </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
                         <li><a href="profile.php"> Profile</a></li>
-                        <li><a href="account_settings.php"> Change Password</a></li>
+                        <li><a href="account_settings.php"> Account Settings</a></li>
                         <li><a href="logout.php"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                     </ul>
                 </li>
@@ -55,7 +55,7 @@ top: -4px; font-size:15px;font-weight:bold; color:white"><?=strtoupper($_SESSION
                     </a>
                     <ul id="menu1" class="dropdown-menu list-unstyled " role="menu">
                         <li><a href="dashboard.php?language=English">English</a></li>
-                        <li><a href="dashboard.php?language=Bangla"">Bangla</a></li>
+                        <li><a href="dashboard.php?language=Bangla">Bangla</a></li>
                     </ul>
                 </li>
             </ul>

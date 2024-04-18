@@ -12,6 +12,17 @@ $dealer_master = find_all_field('dealer_info','account_code','dealer_code='.$Get
 $dealer_master_account_code = @$dealer_master->account_code;
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $now=$dateTime->format("Y-m-d, h:i:s A");
+
+$companyid = @$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+    $sec_com_connection_wa=' and 1';
+} else {
+    $sec_com_connection=" and d.company_id='".$companyid."' and d.section_id in ('400000','".$sectionid."')";
+    $sec_com_connection_wa=" and company_id='".$companyid."' and section_id in ('400000','".$sectionid."')";
+}
+
 if(prevent_multi_submit()){
     if(isset($_POST['add']))
     {   
@@ -79,6 +90,7 @@ if(isset($_POST['viewReport']))
     $dateConn=' and r.requested_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
     $res="Select 
 r.id,    
+r.requested_date as date,
 concat(d.dealer_code,' : ',d.dealer_name_e) as dealer_name,
 r.remarks,
 r.approved_remarks as 'approved/rejected note',
@@ -96,12 +108,13 @@ users u
      r.entry_by = u.user_id and 
  d.account_code=a.ledger_id and
  d.canceled in ('Yes') and
- r.dealer_code=d.dealer_code".$dateConn." 
+ r.dealer_code=d.dealer_code".$dateConn.$sec_com_connection." 
  order by r.id desc";
 } else {
     $dateConn='';
     $res="Select 
-r.id,    
+r.id,
+r.requested_date as date,
 concat(d.dealer_code,' : ',d.dealer_name_e) as dealer_name,
 r.remarks,
 r.approved_remarks as 'approved/rejected note',
@@ -119,7 +132,7 @@ users u
      r.entry_by = u.user_id and 
  d.account_code=a.ledger_id and
  d.canceled in ('Yes') and
- r.dealer_code=d.dealer_code 
+ r.dealer_code=d.dealer_code ".$sec_com_connection."
  order by r.id desc limit 50";
 }
 
@@ -183,7 +196,7 @@ self.location='<?=$page;?>?<?php if($$unique>0){?>id=<?=$$unique?>&<?php } ?>dea
                         <td style="">
                             <select class="select2_single form-control" style="width:90%; font-size: 11px" tabindex="-1" required="required"  name="dealer_code" id="dealer_code" onchange="javascript:reload(this.form)">
                                 <option></option>
-                                <?=foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', ($GetDealerCode>0)? $GetDealerCode : $dealer_code, 'canceled="YES"'); ?>
+                                <?=foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', ($GetDealerCode>0)? $GetDealerCode : $dealer_code, 'canceled="YES"'.$sec_com_connection_wa.''); ?>
                             </select>
                         </td>
                         <td style="width:10%"><input type="text" name="current_balance" value="<?=$current_balance;?>" class="form-control col-md-7 col-xs-12" readonly style="width: 90%; font-size: 11px;"></td>

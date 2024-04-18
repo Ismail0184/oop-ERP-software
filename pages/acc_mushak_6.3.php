@@ -192,6 +192,8 @@ $result=mysqli_query($conn, $query);
 </div>
 <?php } ?>
 <form method="post" action="">
+  <input type="hidden" name="section_id" value="<?=$_SESSION['sectionid']?>">
+  <input type="hidden" name="company_id" value="<?=$_SESSION['companyid']?>">
   <input type="hidden" name="warehouse_id" value="<?=$do_master->depot_id?>">
   <input type="hidden" name="dealer_code" value="<?=$do_master->dealer_code?>">
   <input type="hidden" name="responsible_person" value="<?=$warehouse_master_VAT_responsible_person?>">

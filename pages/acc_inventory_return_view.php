@@ -19,6 +19,16 @@ $masterDATA=find_all_field('purchase_return_master','','id='.$$unique );
 $lc_lc_received_batch_split = "lc_lc_received_batch_split";
 $condition="create_date='".date('Y-m-d')."'";
 
+$date_checking = find_a_field('dev_software_data_locked','id','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
+
 $res_details='select
 d.id,m.ref_no,i.item_id,m.warehouse_id,i.item_name,i.unit_name,i.finish_goods_code,d.qty,d.qc_qty,d.po_no,d.id as did,d.rate,d.amount,d.batch,m.return_date,
 (SELECT SUM(item_in-item_ex) from journal_item WHERE item_id=i.item_id and batch=d.batch and warehouse_id=d.warehouse_id) as batch_stock_get,
@@ -119,12 +129,17 @@ warehouse w,
 users u,
 vendor v
  where
-  p.entry_by=u.user_id and
- w.warehouse_id=p.warehouse_id and
- v.vendor_id=p.vendor_id and
- p.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' group by p.id order by p.".$unique." DESC ";
+p.entry_by=u.user_id and
+w.warehouse_id=p.warehouse_id and
+v.vendor_id=p.vendor_id and
+p.return_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and
+p.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and
+p.section_id=".$_SESSION['sectionid']." and p.company_id=".$_SESSION['companyid']."
+group by p.id order by p.".$unique." DESC ";
+
 else :
-$sql="Select p.id,p.id,p.ref_no as Referance,p.remarks,p.return_date,w.warehouse_name,v.vendor_name,
+
+    $sql="Select p.id,p.id,p.ref_no as Referance,p.remarks,p.return_date,w.warehouse_name,v.vendor_name,
 concat(u.fname,', At: ',p.entry_at) as prepared_by,
 concat((SELECT fname from users where user_id=p.checked_by_qc),', At: ',checked_by_qc_at) as QC_By,
 concat((SELECT fname from users where user_id=p.checked_by_pro),', At: ',checked_by_pro_at) as Checked_By,
@@ -137,7 +152,11 @@ vendor v
  where
   p.entry_by=u.user_id and
  w.warehouse_id=p.warehouse_id and
- v.vendor_id=p.vendor_id and p.status='PROCESSING' and mushak_challan_status not in ('UNRECORDED') group by p.id order by p.".$unique." DESC "; endif;  ?>
+ p.return_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and
+ v.vendor_id=p.vendor_id and p.status='PROCESSING' and mushak_challan_status not in ('UNRECORDED') and
+ p.section_id=".$_SESSION['sectionid']." and p.company_id=".$_SESSION['companyid']."
+ 
+ group by p.id order by p.".$unique." DESC "; endif;  ?>
 
 <?php require_once 'header_content.php'; ?>
     <script type="text/javascript">

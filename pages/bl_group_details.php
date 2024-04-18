@@ -69,6 +69,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and
 j.group_for='.$_SESSION['usergroup'].' and 
 j.jvdate <= "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
@@ -127,6 +128,7 @@ journal j,
 accounts_ledger l, 
 ledger_group g 
 where 
+j.visible_status=1 and
 j.jvdate <= "'.$_GET['tdate'].'" and 
 j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
 j.ledger_id=l.ledger_id and 

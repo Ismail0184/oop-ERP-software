@@ -20,15 +20,19 @@ $time_now = date('Y-m-d H:s:i');
 $voucher_date = strtotime($_POST['voucher_date']);
 $cc_code = @$_POST['cc_code'];
 
-$jvold = find_all_field('secondary_journal','','tr_from = "Purchase" and jv_no='.$jv_no);
+$jvold = find_all_field('secondary_journal','','visible_status=1 and tr_from = "Purchase" and jv_no='.$jv_no);
 $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 	$ssql='update purchase_receive set bill_no="'.$bill_no.'", bill_date="'.$bill_date.'" where pr_no="'.$prold->pr_no.'"';
 	mysqli_query($conn, $ssql);
-	$narration = $jvold->narration.'(Bill#'.$bill_no.'/Dt:'.$bill_date.')';
 
-	$ssql='update secondary_journal set narration="'.$narration.'",jvdate="'.$voucher_date.'", cc_code="'.
-	$cc_code.'", checked_at="'.$time_now.'", checked_by="'.$_SESSION['userid'].'", checked="YES" , 	final_jv_no="'.$jv.'" where tr_from = "Purchase" and jv_no="'.$jv_no.'"';
-	mysqli_query($conn, $ssql);
+    $res = mysqli_query($conn, "select * from secondary_journal where visible_status=1 and tr_from = 'Purchase' and jv_no='".$jv_no."'");
+    while($data=mysqli_fetch_object($res)) {
+        $narration = $data->narration.'(Bill#'.$bill_no.'/Dt:'.$bill_date.')';
+
+        $ssql = 'update secondary_journal set narration="' . $narration . '",jvdate="' . $voucher_date . '", cc_code="' .
+            $cc_code . '", checked_at="' . $time_now . '", checked_by="' . $_SESSION['userid'] . '", checked="YES" , 	final_jv_no="' . $jv . '" where tr_from = "Purchase" and jv_no="' . $jv_no . '" and id='.$data->id.'';
+        mysqli_query($conn, $ssql);
+    }
 
 	$jv=next_journal_voucher_id();
 	if(prevent_multi_submit()) {
@@ -44,7 +48,7 @@ if(@$_POST['check']=='RE-CHECK'){
 $time_now = date('Y-m-d H:s:i');
 $voucher_date = strtotime($_POST['voucher_date']);
 $cc_code = $_POST['cc_code'];
-$jvold = find_a_field('secondary_journal','tr_id','tr_from = "Purchase" and jv_no='.$jv_no);
+$jvold = find_a_field('secondary_journal','tr_id','visible_status=1 and tr_from = "Purchase" and jv_no='.$jv_no);
 $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 	$ssql='update purchase_receive set bill_no="'.$bill_no.'", bill_date="'.$bill_date.'" where pr_no="'.$prold->pr_no.'"';
 	mysqli_query($conn, $ssql);
@@ -61,7 +65,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 
 
 $address=find_a_field('project_info','proj_address',"1");
-$jv = find_all_field('secondary_journal','','tr_from = "Purchase" and jv_no='.$jv_no);
+$jv = find_all_field('secondary_journal','','visible_status=1 and tr_from = "Purchase" and jv_no='.$jv_no);
 $jv_jv_on = @$jv->jv_on;
 $pr = find_all_field('purchase_receive','pr_no','pr_no='.$jv->tr_no);
 ?>
@@ -269,7 +273,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
         <td class="tabledesign_text">Voucher Date :
 
-          <?=date('d-m-Y',$jv->jvdate);?></td>
+          <?=$jv->jvdate;?></td>
 
         <td class="tabledesign_text">Bill No :
 
@@ -355,7 +359,7 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,lo
 
 	  <?
 $s = 0;$ttd=0;$ttc=0;
-$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and dr_amt>0 group by b.ledger_id desc");
+$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.visible_status=1 and b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and dr_amt>0 group by b.id desc");
 while($info=mysqli_fetch_object($sql2)){?>
 
       <tr>
@@ -371,9 +375,9 @@ while($info=mysqli_fetch_object($sql2)){?>
 <?php }?>
 
 <?
-$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and cr_amt>0 group by b.ledger_id desc");
+$sql2=mysqli_query($conn, "SELECT a.ledger_id,a.ledger_name,sum(dr_amt) as dr_amt,sum(cr_amt) as cr_amt,b.narration FROM accounts_ledger a, secondary_journal b where b.visible_status=1 and b.jv_no='$jv_no' and a.ledger_id=b.ledger_id and jv_no=$jv_no and cr_amt>0 group by b.id desc");
 while($info=mysqli_fetch_object($sql2)){
-$s=0; ?>
+ ?>
       <tr>
         <td align="left"><div align="center"><?=++$s;?></div></td>
         <td align="left"><?=$info->ledger_id?></td>

@@ -10,6 +10,15 @@ $page='LC_view_PI.php';
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking->id>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else {
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
+
 if(prevent_multi_submit()) {
 
     if (isset($_POST['reprocess'])) {
@@ -60,6 +69,35 @@ lc_pi_master m
  m.currency=cu.id and 
  d.pi_id='".$GetID."' group by d.id,d.fg_rate order by d.fg_id");
 $GetPiID =  @$_GET['pi_id'];
+
+if(isset($_POST['viewreport'])){
+    $con.= " and a.pi_issue_date BETWEEN  '".$_POST['f_data']."' and '".$_POST['t_date']. "'";
+    $res=mysqli_query($conn, "select a.id,a.id as ID,a.pi_no,a.pi_issue_date,a.entry_at,c.buyer_name as Party_Name,u.fname,cu.code,a.status, (select sum(amount) from lc_pi_fg_details where pi_id=a.id ) as amount
+							 from 
+							 lc_pi_master a,
+							 lc_buyer c, 
+							 users u,
+							 currency cu
+                            where 
+                            a.party_id = c.party_id and 
+                            a.entry_by = u.user_id and 
+                            a.currency=cu.id and 
+    a.section_id=".$_SESSION['sectionid']." and a.company_id=".$_SESSION['companyid']." and 
+    a.pi_issue_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+                             ".$con); } else {
+    $res=mysqli_query($conn, "select a.id,a.id as ID,a.pi_no,a.pi_issue_date,a.entry_at,c.buyer_name as Party_Name,u.fname,cu.code,a.status, (select sum(amount) from lc_pi_fg_details where pi_id=a.id ) as amount
+							 from 
+							 lc_pi_master a,
+							 lc_buyer c, 
+							 users u,
+							 currency cu
+                            where 
+                            a.party_id = c.party_id and 
+                            a.entry_by = u.user_id and 
+                            a.currency=cu.id and
+                            a.section_id=".$_SESSION['sectionid']." and a.company_id=".$_SESSION['companyid']." and 
+    a.pi_issue_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'");
+}
 ?>
 
 
@@ -159,30 +197,6 @@ $GetPiID =  @$_GET['pi_id'];
                         <tbody>
 
                         <?php
-                        if(isset($_POST['viewreport'])){
-                            $con.= ' and a.pi_issue_date BETWEEN  "'.$_POST['f_data'].'" and "'.$_POST['t_date']. '"';
-                            $res=mysqli_query($conn, 'select a.id,a.id as ID,a.pi_no,a.pi_issue_date,a.entry_at,c.buyer_name as Party_Name,u.fname,cu.code,a.status, (select sum(amount) from lc_pi_fg_details where pi_id=a.id ) as amount
-							 from 
-							 lc_pi_master a,
-							 lc_buyer c, 
-							 users u,
-							 currency cu
-                            where 
-                            a.party_id = c.party_id and 
-                            a.entry_by = u.user_id and 
-                            a.currency=cu.id
-                             '.$con); } else {
-                            $res=mysqli_query($conn, 'select a.id,a.id as ID,a.pi_no,a.pi_issue_date,a.entry_at,c.buyer_name as Party_Name,u.fname,cu.code,a.status, (select sum(amount) from lc_pi_fg_details where pi_id=a.id ) as amount
-							 from 
-							 lc_pi_master a,
-							 lc_buyer c, 
-							 users u,
-							 currency cu
-                            where 
-                            a.party_id = c.party_id and 
-                            a.entry_by = u.user_id and 
-                            a.currency=cu.id');
-                        }
                         $i = 0;
                         $totalamt = 0;
                             while($data=mysqli_fetch_object($res)){?>

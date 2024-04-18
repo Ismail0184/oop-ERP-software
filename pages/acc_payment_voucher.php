@@ -72,7 +72,7 @@ if(prevent_multi_submit()) {
         if (isset($_POST['modify'])) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if($_POST['Cheque_Date']>0){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
                 $_POST['Cheque_Date'] = date('Y-m-d', strtotime($ckd));
             } else {
@@ -96,7 +96,7 @@ if(prevent_multi_submit()) {
                 $cc_code = '0';
             }
             $date = @$_POST['voucher_date'];
-            if(isset($_POST['Cheque_Date'])) {
+            if(!empty($_POST['Cheque_Date'])){
                 $c_date = $_POST['Cheque_Date'];
             } else {
                 $c_date='';
@@ -108,7 +108,6 @@ if(prevent_multi_submit()) {
             $timess = $dateTime->format("d-m-y  h:i A");
             $POST_dr_amt = @$_POST['dr_amt'];
             $POST_cr_amt = @$_POST['cr_amt'];
-            $c_date = 0;
             $cur_bal = 0;
             $manual_payment_no = 0;
             $subledger_id = @$_POST['subledger_id'];
@@ -339,7 +338,7 @@ where
     </div>
 
 
-<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','payment','171px');?>
+<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','payment','171px','');?>
 <?php if($initiate_debit_note):  ?>
     <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="<?=$unique?>" id="<?=$unique?>" value="<?=$initiate_debit_note;?>">
@@ -349,7 +348,7 @@ where
         <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
         <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
         <input type="hidden" name="cash_bank_ledger" id="cash_bank_ledger" value="<?=$cash_bank_ledger;?>">
-        <?php if($Cheque_Date>0){ ?>
+        <?php if(!empty($Cheque_Date)){ ?>
             <input type="hidden" name="Cheque_Date" id="Cheque_Date" value="<?=$Cheque_Date;?>">
         <?php } ?>
         <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">

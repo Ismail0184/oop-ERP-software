@@ -109,12 +109,14 @@ if (!empty($_POST['vou_no'])){
                             <input type="date" id="tdate" style="font-size: 11px; width:49%; float:right" value="<?=($tdate!='')? $tdate : date('Y-m-d') ?>" name="tdate"  class="form-control col-md-7 col-xs-12">
                         </td>
                         <td style="width: 1%"></td>
+
                         <td>
-                            <select class="select2_single form-control" style="width:90%; font-size: 12px" tabindex="-1"  id="tr_from" name="tr_from" >
+                            <select class="select2_single form-control" style="width:90%; font-size: 12px" tabindex="-1" name="tr_from" >
                                 <option></option>
-                                <?=foreign_relation('journal', 'distinct tr_from', 'tr_from',  $tr_from, '1','1'); ?>
+                                <?=foreign_relation('journal', 'distinct tr_from', 'tr_from',  $_POST['tr_from'], '1','1'); ?>
                             </select>
                         </td>
+
                         <td style="width: 1%"></td>
                         <td>
                             <input type="text" id="vou_no" style="font-size: 12px"  value="<?=$vou_no?>" name="vou_no"  class="form-control col-md-7 col-xs-12">

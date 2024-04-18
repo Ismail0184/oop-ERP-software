@@ -13,6 +13,18 @@ $page='acc_inventory_cycle_counting_check.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
 $$unique = $_GET[$unique];
+
+$date_checking = find_a_field('dev_software_data_locked','id','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
+
+
 $todaysss=date('Y-m-d H:i:s');
 $jv=next_journal_voucher_id();
 $masterDATA=find_all_field(''.$table.'','',''.$unique.'='.$_GET[$unique] );
@@ -139,12 +151,15 @@ if(isset($_POST['checked'])){
 
 
 if (isset($_POST['viewreport'])) {
-    $sql='SELECT m.cc_no,m.cc_no,m.cc_date as date,m.remarks,w.warehouse_name,concat(uam.fname,"<br>","at: ",m.entry_at) as entry_by,IF(m.checked_by_qc>0,concat((SELECT fname from users where user_id=m.checked_by_qc),"<br>","at: ",m.checked_by_qc_at), "PENDING " ) AS QC_check_Status,
-    IF(m.checked_by_acc>0,concat((SELECT fname from users where user_id=m.checked_by_acc),"<br>","at: ",m.checked_by_qc_at), "PENDING " ) AS Accounts_check_status,m.status
-    from '.$table.' m, warehouse w,users uam
+    $sql="SELECT m.cc_no,m.cc_no,m.cc_date as date,m.remarks,w.warehouse_name,concat(uam.fname,'<br>','at: ',m.entry_at) as entry_by,IF(m.checked_by_qc>0,concat((SELECT fname from users where user_id=m.checked_by_qc),'<br>','at: ',m.checked_by_qc_at), 'PENDING ' ) AS QC_check_Status,
+    IF(m.checked_by_acc>0,concat((SELECT fname from users where user_id=m.checked_by_acc),'<br>','at: ',m.checked_by_qc_at), 'PENDING ' ) AS Accounts_check_status,m.status
+    from ".$table." m, warehouse w,users uam
     where
     m.warehouse_id=w.warehouse_id and
-    m.entry_by=uam.user_id and m.warehouse_id='.$_POST['warehouse_id'].' order by m.cc_no';
+    m.entry_by=uam.user_id and m.warehouse_id=".$_POST['warehouse_id']." and
+    m.section_id=".$_SESSION['sectionid']." and m.company_id=".$_SESSION['companyid']." and 
+    m.cc_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+    order by m.cc_no";
   } else {
     $sql='SELECT m.cc_no,m.cc_no,m.cc_date as date,m.remarks,w.warehouse_name,concat(uam.fname,"<br>","at: ",m.entry_at) as entry_by,IF(m.checked_by_qc>0,concat((SELECT fname from users where user_id=m.checked_by_qc),"<br>","at: ",m.checked_by_qc_at), "PENDING " ) AS QC_check_Status,m.status
     from '.$table.' m, warehouse w,users uam

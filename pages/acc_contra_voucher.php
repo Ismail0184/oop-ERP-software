@@ -19,7 +19,7 @@ if(prevent_multi_submit()) {
             $_POST['section_id'] = $_SESSION['sectionid'];
             $_POST['company_id'] = $_SESSION['companyid'];
             $_POST['ip'] = $ip;
-            if(isset($_POST['Cheque_Date'])){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
                 $_POST['Cheque_Date'] =@$_POST['Cheque_Date'];
             } else {
@@ -38,7 +38,7 @@ if(prevent_multi_submit()) {
         if (isset($_POST['modify'])) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
-            if(isset($_POST['Cheque_Date'])){
+            if(!empty($_POST['Cheque_Date'])){
                 $ckd = $_POST['Cheque_Date'];
                 $_POST['Cheque_Date'] = @$_POST['Cheque_Date'];
             } else {
@@ -273,7 +273,7 @@ from
 
 
 
-<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','Contra','166px');?>
+<?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','Contra','166px','');?>
 <?php if($initiate_contra_note):  ?>
     <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="payment_no" id="payment_no" value="<?=$initiate_contra_note;?>">

@@ -1,6 +1,5 @@
 <?php require_once 'support_file.php';?>
 <?php $title="Users";
-
 $now=time();
 $unique='user_id';
 $unique_field='fname';

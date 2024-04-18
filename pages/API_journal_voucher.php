@@ -8,9 +8,9 @@ $sectionid_substr = @(substr($_SESSION['sectionid'],4));
 function automatic_voucher_number_generate($table,$parameter,$condition,$voucher_type){
     global $conn;
     $date=date('Y-m-d');
-    $keyword=$_SESSION['userid'].$voucher_type;
+    $keyword=$_GET['entry_by'].$voucher_type;
     list( $year1, $month, $day) = preg_split("/[\/\.\-]+/", $date);
-    $sql="Select ".$parameter." from ".$table." where create_date='".date('Y-m-d')."' and entry_by=".$_SESSION['userid']." and section_id=".$_SESSION['sectionid']." and company_id=".$_SESSION['companyid']." and ".$condition." and ".$parameter." like '".$keyword."%' ORDER BY ".$parameter." DESC LIMIT 1";
+    $sql="Select ".$parameter." from ".$table." where create_date='".date('Y-m-d')."' and entry_by=".$_GET['entry_by']." and section_id=".$_GET['sectionid']." and company_id=".$_GET['companyid']." and ".$condition." and ".$parameter." like '".$keyword."%' ORDER BY ".$parameter." DESC LIMIT 1";
     $result=mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) == 0){
         $output=$keyword.substr($year1,2,3).$month.$day."001";
@@ -43,7 +43,6 @@ if (($_GET['ledger_id_dr_2']> 0) && (($_GET['dr_amt_2'] && $_GET['ledger_id_cr_2
 
     $Sql_Query_Create_Order_dr_2 = mysqli_query($conn, "insert into ".$table_journal_info." (journal_info_no,j_date,narration,ledger_id,dr_amt,cr_amt,entry_by,create_date,ip,section_id,company_id,received_from,entry_status) values 
 ('$journal_no','".$_GET['j_date']."','".$_GET['narration']."','".$_GET['ledger_id_dr_2']."','".$_GET['dr_amt_2']."','0','".$_GET['entry_by']."','$create_date','$ip','".$_GET['sectionid']."','".$_GET['companyid']."','External','UNCHECKED')");
-
     $Sql_Query_Create_Order_cr_2 = mysqli_query($conn, "insert into ".$table_journal_info." (journal_info_no,j_date,narration,ledger_id,dr_amt,cr_amt,entry_by,create_date,ip,section_id,company_id,received_from,entry_status) values 
 ('$journal_no','".$_GET['j_date']."','".$_GET['narration']."','".$_GET['ledger_id_cr_2']."','','".$_GET['cr_amt_2']."','".$_GET['entry_by']."','$create_date','$ip','".$_GET['sectionid']."','".$_GET['companyid']."','External','UNCHECKED')");
 }

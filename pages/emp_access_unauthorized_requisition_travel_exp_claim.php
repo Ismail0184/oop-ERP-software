@@ -219,7 +219,7 @@ where td.'.$unique.'='.$_GET[$unique].'';
 
 
 <?php 
-if(isset($_POST[viewreport])):
+if(isset($_POST['viewreport'])):
 $res='select r.'.$unique.',r.'.$unique.' as Req_No,r.'.$unique_field.' as application_date,r.travel_purpose,
 concat((SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM   
            personnel_basic_info p2,

@@ -58,7 +58,7 @@ if(prevent_multi_submit()){
             $crud->insert();   // inventory received
         }
 	    	
-        if(isset($_GET[custom_grn_no])){
+        if(isset($_GET['custom_grn_no'])){
         $up_master=mysqli_query($conn,"UPDATE purchase_receive_master SET status='CHECKED',checked_by='".$_SESSION['userid']."',checked_at='".$todayss."' where custom_grn_no=".$_GET['custom_grn_no']."");
 		$up_master=mysqli_query($conn,"UPDATE grn_service_receive SET status='CHECKED',qc_by='".$_SESSION['userid']."',QC_at='".$todayss."' where custom_grn_no=".$_GET['custom_grn_no']."");
         $up_details=mysqli_query($conn,"UPDATE ".$table_secondary_journal." SET checked='PENDING',QC_by='$_SESSION[userid]',QC_at='$todayss' where ".$sj_unique."=".$$unique." and tr_from in ('Purchase')");
@@ -75,12 +75,12 @@ if(prevent_multi_submit()){
     if(isset($_POST['record_batch_split']))
     {
         $condition="create_date='".date('Y-m-d')."'";
-        $_POST['warehouse_id'] = $_POST['warehouse_id'];
-        $_POST['po_no'] = $_POST['po_no'];
-        $_POST['pr_no'] = $_GET['pr_no'];
-        $_POST['lc_id'] = $_POST['po_no'];
-        $_POST['item_id'] = $_GET['item_id'];
-        $_POST['line_id'] = $_GET['line_id'];
+        $_POST['warehouse_id'] = @$_POST['warehouse_id'];
+        $_POST['po_no'] = @$_POST['po_no'];
+        $_POST['pr_no'] = @$_GET['pr_no'];
+        $_POST['lc_id'] = @$_POST['po_no'];
+        $_POST['item_id'] = @$_GET['item_id'];
+        $_POST['line_id'] = @$_GET['line_id'];
         $_POST['source'] = 'PO';
         $_POST['status'] = 'PROCESSING';
         $_POST['create_date'] = date('Y-m-d');

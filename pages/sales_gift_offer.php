@@ -10,6 +10,14 @@ $$unique = @$_GET[$unique];
 $GetUnique = @$_GET[$unique];
 $title='Trade Scheme';
 
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+    $sec_com_connection_wa=' and 1';
+} else {
+    $sec_com_connection=" and ts.company_id='".$_SESSION['companyid']."' and ts.section_id in ('400000','".$_SESSION['sectionid']."')";
+    $sec_com_connection_wa=" and company_id='".$_SESSION['companyid']."' and section_id in ('400000','".$_SESSION['sectionid']."')";
+}
+
 if(prevent_multi_submit()){
 if(isset($_POST[$unique_field]))
 
@@ -79,7 +87,7 @@ $sql = "SELECT typeshorname, typedetails from distributor_type
                         where 1 order by typedetails";
 $sql_item = "SELECT item_id, concat(item_id,' : ',finish_goods_code,' : ', item_name) from item_info
                         where product_nature in ('Salable','Both') order by finish_goods_code";
-$res="SELECT ts.id,ts.offer_name,concat(ts.start_date,' to ',ts.end_date) as 'Duration',concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name) as Buy_item,ts.item_qty as Buy_qty,(select item_name from item_info where item_id=ts.gift_id) as Get_item_name,ts.gift_qty,ts.gift_type from ".$table." ts, item_info i where ts.item_id=i.item_id order by ts.id desc";
+$res="SELECT ts.id,ts.offer_name,concat(ts.start_date,' to ',ts.end_date) as 'Duration',concat(i.item_id,' : ',i.finish_goods_code,' : ',i.item_name) as Buy_item,ts.item_qty as Buy_qty,(select item_name from item_info where item_id=ts.gift_id) as Get_item_name,ts.gift_qty,ts.gift_type from ".$table." ts, item_info i where ts.item_id=i.item_id ".$sec_com_connection." order by ts.id desc";
 ?>
 
 

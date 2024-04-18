@@ -16,14 +16,14 @@ if(prevent_multi_submit()){
 
     if(isset($_POST['initiate']))
     {
-        $_POST['section_id'] = $_SESSION['sectionid'];
-        $_POST['company_id'] = $_SESSION['companyid'];
-        $_POST['entry_by'] = $_SESSION['userid'];
+        $_POST['section_id'] = @$_SESSION['sectionid'];
+        $_POST['company_id'] = @$_SESSION['companyid'];
+        $_POST['entry_by'] = @$_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
-        $_SESSION['initiate_sr_documents']=$_POST['sr_no'];
-        $_SESSION['sales_return_id'] =$_POST[$unique];
-        $_POST['warehouse_to']=$_POST['warehouse_from'];
-        $_SESSION['production_warehouse'] =$_POST['warehouse_to'];
+        $_SESSION['initiate_sr_documents']=@$_POST['sr_no'];
+        $_SESSION['sales_return_id'] =@$_POST[$unique];
+        $_POST['warehouse_to']=@$_POST['warehouse_from'];
+        $_SESSION['production_warehouse'] =@$_POST['warehouse_to'];
         $_POST['create_date']=$create_date;
         $crud->insert();
         $type=1;
@@ -87,7 +87,7 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
         unset($_POST);
     }
 
-    $COUNT_details_data=find_a_field(''.$table_deatils.'','Count(id)',''.$unique.'='.$sales_return_id.'');
+
     if(isset($_POST['confirmsave']))
     {
         $up_master="UPDATE ".$table." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
@@ -99,6 +99,7 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
         unset($_POST);
     } // if insert posting
 }
+$COUNT_details_data=find_a_field(''.$table_deatils.'','Count(id)',''.$unique.'='.$sales_return_id.'');
 $sales_return_id = @$_SESSION['sales_return_id'];
 $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
 $results="Select srd.*,i.* from sale_return_details srd, item_info i  where
@@ -119,6 +120,7 @@ $do_date = @$do_date;
 $dealer_code = @$dealer_code;
 $depot_id = @$depot_id;
 $remarks = @$remarks;
+$pr_date = @$pr_date;$warehouse_to = @$warehouse_to;$GETItemId = @$_GET['item_id'];$GETBatch = @$_GET['batch'];$custom_pr_no = @$custom_pr_no;$pr_date=@$pr_date;$lot=@$lot;
 $batch_get=find_all_field('lc_lc_received_batch_split','','item_id="'.$GetItemId.'" and batch="'.$GetBatch.'" and warehouse_id="'.$depot_id.'"');?>
 
 <?php require_once 'header_content.php'; ?>
@@ -249,18 +251,18 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
                 <td style="width:20%" align="center">
                     <select class="select2_single form-control" required name="item_id" id="item_id" style="width:99%;font-size: 11px" onchange="javascript:reload(this.form)">
                         <option></option>
-                        <?=advance_foreign_relation(find_all_item($product_nature="'Salable','Both'"),$_GET['item_id']);?>
+                        <?=advance_foreign_relation(find_all_item($product_nature="'Salable','Both'"),$GETItemId);?>
                     </select>
                 </td>
                 <td style="width:8%" align="center">
                        <select class="select2_single form-control" style="width: 99%" tabindex="-1" onchange="javascript:reload_batch(this.form)"  required="required" name="batch" id="batch" onchange="javascript:reload_batch(this.form)">
                        <option></option>
-                       <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GET['batch'], 'warehouse_id = "'.$depot_id.'" and item_id='.$_GET['item_id']);?>
+                       <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GETBatch, 'warehouse_id = "'.$depot_id.'" and item_id='.$GETItemId);?>
                        </select>
                 </td>
                 <td style="width:8%" align="center">
-                        <input align="center" type="date" id="expiry_date" style="width:100%; height:37px;   text-align:center;font-size:11px" value="<?=($_GET['batch']>0)? $batch_get->mfg : $expiry_date ?>" readonly  required   name="expiry_date"  class="form-control col-md-7 col-xs-12" >
-                        <input type="hidden"  value="<?=($_GET['batch']>0)? $batch_get->rate : $edit_value; ?>" readonly  required   name="cogs_rate"  class="form-control col-md-7 col-xs-12" >
+                        <input align="center" type="date" id="expiry_date" style="width:100%; height:37px;   text-align:center;font-size:11px" value="<?=($GETBatch>0)? $batch_get->mfg : $expiry_date ?>" readonly  required   name="expiry_date"  class="form-control col-md-7 col-xs-12" >
+                        <input type="hidden"  value="<?=($GETBatch>0)? $batch_get->rate : 0; ?>" readonly  required   name="cogs_rate"  class="form-control col-md-7 col-xs-12" >
                 </td>
                 <td style="width:11%" align="center">
                     <input type="text" id="total_unit" style="width:100%; height:37px; font-weight:bold; text-align:center"  required="required"  name="total_unit" class="form-control col-md-7 col-xs-12" class='total_unit' autocomplete="off" >
@@ -280,7 +282,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
                 <td style="width:10%" align="center">
                     <input type="text" id="total_amt" style="width:100%; height:37px; font-weight:bold; text-align:center" readonly  name="total_amt" class="form-control col-md-7 col-xs-12" autocomplete="off" class='total_amt' ></td>
                 <td align="center" style="width:5%">
-                <?php if($_GET['batch']>0): ?><button type="submit" class="btn btn-primary" style="font-size: 12px;" name="add" id="add">Add</button><?php else: echo '<strong style="color:red">Select Batch</strong>'; endif; ?></td></tr>
+                <?php if($GETBatch>0): ?><button type="submit" class="btn btn-primary" style="font-size: 12px;" name="add" id="add">Add</button><?php else: echo '<strong style="color:red">Select Batch</strong>'; endif; ?></td></tr>
             </tbody>
         </table>
     </form>
@@ -316,11 +318,10 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
         <?php
         $query=mysqli_query($conn, $results); $i = 0;
         while($row=mysqli_fetch_array($query)){
-            $i=$i+1;
             $ids=$row['id'];
             ?>
             <tr>
-                <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
+                <td style="width:3%; vertical-align:middle"><?=$i=$i+1?></td>
                 <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
                 <td style="vertical-align:middle; width: 25%"><?=$row['item_name'];?></td>
                 <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
