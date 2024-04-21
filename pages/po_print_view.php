@@ -295,27 +295,29 @@ $disc=$info->disc;
 		  if($cehckstatus=='PROCESSING' || $cehckstatus=='COMPLETED'){
 		   ?>
           <tr>
-            <td colspan="4" align="left" style="font-size:10px" ><table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <td colspan="7" align="left" style="font-size:10px" >
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td width="25%" valign="top"><p>Thanking You,<br />
                     </p>
                     <p style="text-align:center"><br />
                       <br />
-                      <?
-				$calculate = $total+$data->transport_bill+$tax_total+$data->labor_bill-$data->cash_discount ;?></p></td><br /><br />
+                      <? $calculate = $total+$data->transport_bill+$tax_total+$data->labor_bill-$data->cash_discount ;?></p></td><br /><br />
                    <td width='25%' valign='top'><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$data->checkby);?><br />(<em style="font-size:8px; font-weight:bold"><?php
 				   
 				   $PBI_DESIGNATION_checked=find_a_field('personnel_basic_info','PBI_DESIGNATION','PBI_ID='.$data->checkby);
-				  if($PBI_DESIGNATION_checked=='65' || $PBI_DESIGNATION_checked=='66') {echo  $checkdes=find_a_field('designation','DESG_SHORT_NAME','DESG_ID='.$PBI_DESIGNATION_checked);} else { echo $checkdes=find_a_field('designation','DESG_DESC','DESG_ID='.$PBI_DESIGNATION_checked);}?>, <?=$DEP=find_a_field('designation','DEP_NAME','DESG_ID='.$PBI_DESIGNATION_checked);?>)</em><br />
+				  if($PBI_DESIGNATION_checked=='65' || $PBI_DESIGNATION_checked=='66') {echo  $checkdes=find_a_field('designation','DESG_SHORT_NAME','DESG_ID='.$PBI_DESIGNATION_checked);} else { echo $checkdes=find_a_field('designation','DESG_SHORT_NAME','DESG_ID='.$PBI_DESIGNATION_checked);}?>, <?=$DEP=find_a_field('designation','DEP_NAME','DESG_ID='.$PBI_DESIGNATION_checked);?>)</em><br />
                     -----------------------------<br />
                     <strong>Checked By</strong> </td>
                     
                     
                     
-                  <td width='25%' valign='top'><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$data->recommended);?><br />(<em style="font-size:8px; font-weight:bold"><?php
+                  <td width='25%' valign='top'>
+                      <?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$data->recommended);?><br />
+                      (<em style="font-size:8px; font-weight:bold"><?php
 				   
 				   $PBI_DESIGNATION_recommended=find_a_field('personnel_basic_info','PBI_DESIGNATION','PBI_ID='.$data->recommended);
-				  echo  $recommended=find_a_field('designation','DESG_DESC','DESG_ID='.$PBI_DESIGNATION_recommended);?>)</em><br />
+				  echo  $recommended=find_a_field('designation','DESG_SHORT_NAME','DESG_ID='.$PBI_DESIGNATION_recommended);?>)</em><br />
                    
                     ----------------------------<br />                   
                     
