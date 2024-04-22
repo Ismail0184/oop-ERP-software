@@ -338,7 +338,7 @@ $disc=$info->disc;
               </table></td>
           </tr>
           <tr>
-            <td colspan="4" align="left" valign="top" style="font-size:10px"><ul>
+            <td colspan="7" align="left" valign="top" style="font-size:10px"><ul>
                 <li>Supplied goods will be same as approved sample, otherwise the goods must be replaced &amp; you will bare all expenses.</li>
                 <li>Supply Should be as per Company Specification.</li>
                 <li>The Copy of Work Order must be shown at the factory premises during the delivery.</li>

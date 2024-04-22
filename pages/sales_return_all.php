@@ -249,7 +249,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
             <tbody>
             <tr>
                 <td style="width:20%" align="center">
-                    <select class="select2_single form-control" required name="item_id" id="item_id" style="width:99%;font-size: 11px" onchange="javascript:reload(this.form)">
+                    <select class="select2_single form-control" required name="item_id" id="item_id" style="width:300px;font-size: 11px" onchange="javascript:reload(this.form)">
                         <option></option>
                         <?=advance_foreign_relation(find_all_item($product_nature="'Salable','Both'"),$GETItemId);?>
                     </select>
@@ -257,7 +257,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
                 <td style="width:8%" align="center">
                        <select class="select2_single form-control" style="width: 99%" tabindex="-1" onchange="javascript:reload_batch(this.form)"  required="required" name="batch" id="batch" onchange="javascript:reload_batch(this.form)">
                        <option></option>
-                       <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $_GETBatch, 'warehouse_id = "'.$depot_id.'" and item_id='.$GETItemId);?>
+                       <?=foreign_relation('lc_lc_received_batch_split', 'batch', 'CONCAT(batch," : ", batch_no)', $GETBatch, 'warehouse_id = "'.$depot_id.'" and item_id='.$GETItemId);?>
                        </select>
                 </td>
                 <td style="width:8%" align="center">
