@@ -92,9 +92,11 @@ item_info i
             $warehouse_to_ledger=find_all_field('warehouse','','warehouse_id='.$pi_master->warehouse_to);
             $narration='FG Transfer to '.$warehouse_to_ledger->warehouse_name.', STONO #'.$$unique.', Remarks # '.$pi_master->remarks;
         $transaction_date=$pi_master->pi_date;
+        if($total_transfer_in_amount>0) {
             add_to_journal_new($transaction_date, $proj_id, $jv, 0, $transitLedger, $narration, $total_transfer_in_amount, 0, 'ProductionTransfer', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
             add_to_journal_new($transaction_date, $proj_id, $jv, 0, $warehouse_ledger, $narration, 0, $total_transfer_in_amount, 'ProductionTransfer', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
-        $up_master="UPDATE ".$table." SET verifi_status='CHECKED',verifi_by='".$_SESSION['userid']."',verify_at='$todayss',checked_by='".$_SESSION['userid']."',checked_at='$now' where ".$unique."=".$$unique."";
+        }
+             $up_master="UPDATE ".$table." SET verifi_status='CHECKED',verifi_by='".$_SESSION['userid']."',verify_at='$todayss',checked_by='".$_SESSION['userid']."',checked_at='$now' where ".$unique."=".$$unique."";
         $update_table_master=mysqli_query($conn, $up_master);
         $up_details="UPDATE ".$table_details." SET verifi_status='CHECKED',status='CHECKED',verifi_by='".$_SESSION['userid']."',verify_at='$todayss' where ".$unique."=".$unique."";
         $update_table_details=mysqli_query($conn, $up_details);

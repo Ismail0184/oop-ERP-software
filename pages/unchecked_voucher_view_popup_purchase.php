@@ -23,7 +23,7 @@ $c_date=$_POST['c_date'];
 $narration=$_POST['narration_'.$datas[0]];
 $dr_amt=$_POST['dr_amt_'.$datas[0]];
 $cr_amt=$_POST['cr_amt_'.$datas[0]];
-$sqldate2 = "UPDATE secondary_journal SET jv_date='$vdate',cheq_no='$cheq_no',cheq_date='$cheq_date',ledger_id='".$ledger."',narration='$narration',dr_amt='$dr_amt',cr_amt='$cr_amt' WHERE id = ".$datas[0];
+$sqldate2 = "UPDATE secondary_journal SET jvdate='".$_POST['vdate']."',cheq_no='$cheq_no',cheq_date='$cheq_date',ledger_id='".$ledger."',narration='$narration',dr_amt='$dr_amt',cr_amt='$cr_amt' WHERE id = ".$datas[0];
 if(isset($sqldate1))@mysqli_query($conn, $sqldate1);
 @mysqli_query($conn, $sqldate2);
 echo '<script type="text/javascript">window.opener.location.reload(true);window.close();</script>';
@@ -37,7 +37,7 @@ VALUES ('" . $jv_no . "','" . $masterDate->jvdate . "','" . $_POST['add_ledger']
 }
 if(isset($_REQUEST['view']) && $_REQUEST['view']=='Show')
 {
-	$sql1="select narration,cheq_no,cheq_date,' ',jv_date from secondary_journal where jv_no='$jv_no' limit 1";
+	$sql1="select narration,cheq_no,cheq_date,' ',jvdate from secondary_journal where jv_no='$jv_no' limit 1";
 	$data1=mysqli_fetch_row(mysqli_query($conn, $sql1));
 	$sql1."<br>";
 ?>
@@ -54,7 +54,7 @@ if(isset($_REQUEST['view']) && $_REQUEST['view']=='Show')
                         <td style="vertical-align: middle"><?=$jv_no;?>&nbsp;</td>
                         <th style="vertical-align: middle">Voucher Date</th>
                         <th style="width: 1%; vertical-align: middle">:</th>
-                        <td style="vertical-align: middle"><input name="vdate" id="vdate" type="text" style="font-size: 11px" value="<?=date("d-m-Y",$data1[4]);?>" class="form-control" /></td>
+                        <td style="vertical-align: middle"><input name="vdate" id="vdate" type="date" style="font-size: 11px" value="<?=$data1[4];?>" class="form-control" /></td>
 
                     </tr>
                 </table>
@@ -135,8 +135,10 @@ if(isset($_REQUEST['view']) && $_REQUEST['view']=='Show')
                     </tr>
                 </table>
 
-    <a href="javascript:window.open('','_self').close();" style="font-size: 12px; float: left" class="btn btn-danger"> <i class="fa fa-close"></i> Close</a></td>
+    <a href="javascript:window.open('','_self').close();" style="font-size: 12px; float: left" class="btn btn-danger"> <i class="fa fa-close"></i> Close</a>
+    <?php //if (number_format($d_total,2)==number_format($c_total,2)){ ?>
     <button type="submit" class="btn btn-primary" name="narr" style="font-size: 12px; float: right" onmouseover="this.style.cursor='pointer';">Update  <i class="fa fa-edit"></i></button>
+        <?php //} else { echo '<h5 style="font-weight: bold; color: red; text-align: right">This voucher is invalid!!</h5>';} ?>
 
 
 <?php } ?>

@@ -17,7 +17,7 @@ if(@$_POST['check']=='CHECK')
 {
 
 $time_now = date('Y-m-d H:s:i');
-$voucher_date = strtotime($_POST['voucher_date']);
+$voucher_date = @$_POST['voucher_date'];
 $cc_code = @$_POST['cc_code'];
 
 $jvold = find_all_field('secondary_journal','','visible_status=1 and tr_from = "Purchase" and jv_no='.$jv_no);
@@ -46,7 +46,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 
 if(@$_POST['check']=='RE-CHECK'){
 $time_now = date('Y-m-d H:s:i');
-$voucher_date = strtotime($_POST['voucher_date']);
+$voucher_date = @$_POST['voucher_date'];
 $cc_code = $_POST['cc_code'];
 $jvold = find_a_field('secondary_journal','tr_id','visible_status=1 and tr_from = "Purchase" and jv_no='.$jv_no);
 $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
