@@ -10,6 +10,7 @@ $vtype 		= @$_REQUEST['v_type'];
 $fdate=@$_REQUEST["fdate"];
 $tdate=@$_REQUEST["tdate"];
 $vou_no=@$_REQUEST['vou_no'];
+$jv_no=@$_REQUEST['jv_no'];
 $tr_from = @$_POST['tr_from'];
 $date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
 if($date_checking>0) {
@@ -20,6 +21,8 @@ if($date_checking>0) {
     $lockedStartInterval = '';
     $lockedEndInterval = '';
 }
+
+
 if(isset($_REQUEST['show']))
 {
 
@@ -30,8 +33,8 @@ if(isset($_REQUEST['show']))
 if (!empty($_POST['vou_no'])){
     $sql = "SELECT DISTINCT 
 				  j.jv_no,
-				  j.jv_no as Transaction_no,
-                  j.tr_no as voucher_no,                
+				  j.jv_no as voucher_no,
+                  j.tr_no as Transaction_no,                
 				  j.jvdate as date,
 				  j.dr_amt,
 				  j.cr_amt,				  
@@ -48,9 +51,30 @@ if (!empty($_POST['vou_no'])){
 				  j.user_id=u.user_id and
 				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND 
 				  j.ledger_id = l.ledger_id group BY j.tr_no ";
-} else {
+} elseif (!empty($_POST['jv_no'])) {
+    $sql = "SELECT DISTINCT 
+				  j.jv_no,
+				  j.jv_no as voucher_no,
+                  j.tr_no as Transaction_no,                
+				  j.jvdate as date,
+				  j.dr_amt,
+				  j.cr_amt,				  
+				  l.ledger_name,
+				  j.tr_from as Voucher_type,
+                  u.fname as entry_by,
+                  j.entry_at,j.status
+				FROM
+				  users u,
+				  journal j,
+				  accounts_ledger l
+				WHERE
+				  j.jv_no='".$_POST['jv_no']."' and 
+				  j.user_id=u.user_id and
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND 
+				  j.ledger_id = l.ledger_id group BY j.jv_no ";
 
-    if($_POST['tr_from']!=''){$tr_from .= " AND j.tr_from = '".$_POST['tr_from']."'";}
+}else {
+
     $sql = "SELECT DISTINCT 
 				  j.jv_no,
 				  j.jv_no as Transaction_no,
@@ -68,9 +92,10 @@ if (!empty($_POST['vou_no'])){
 				  accounts_ledger l
 				WHERE
 				  j.jvdate BETWEEN '" . $_POST['fdate'] . "' AND '" . $_POST['tdate'] . "' and  
-				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND
-				  j.user_id=u.user_id ".$tr_from." 
-				  AND j.ledger_id = l.ledger_id group BY j.tr_no ";}}
+				  j.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'AND 
+				  j.ledger_id = l.ledger_id and 
+				  j.user_id=u.user_id 
+				   group BY j.jv_no ";}}
 ?>
 
 <?php require_once 'header_content.php'; ?>
@@ -97,9 +122,9 @@ if (!empty($_POST['vou_no'])){
                     <tr>
                         <th style="text-align: center">Date Interval <span class="required text-danger">*</span></th>
                         <th></th>
-                        <th>Voucher Type</th>
-                        <th></th>
                         <th>Voucher No</th>
+                        <th></th>
+                        <th>Transaction No</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -111,10 +136,7 @@ if (!empty($_POST['vou_no'])){
                         <td style="width: 1%"></td>
 
                         <td>
-                            <select class="select2_single form-control" style="width:90%; font-size: 12px" tabindex="-1" name="tr_from" >
-                                <option></option>
-                                <?=foreign_relation('journal', 'distinct tr_from', 'tr_from',  $_POST['tr_from'], '1','1'); ?>
-                            </select>
+                            <input type="text" id="jv_no" style="font-size: 12px"  value="<?=$jv_no?>" name="jv_no"  class="form-control col-md-7 col-xs-12">
                         </td>
 
                         <td style="width: 1%"></td>

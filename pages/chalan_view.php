@@ -212,7 +212,7 @@ else{?>
                   <th  align="center">Expiry Date</th-->
               </tr>
 
-              <? $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(dist_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
+              <? $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(total_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
         i.item_id=c.item_id and i.finish_goods_code != 2001 and c.chalan_no='.$chalan_no.' group by c.item_id order by c.id asc';
               $queryc=mysqli_query($conn, $sqlc);
               $kk = 0;

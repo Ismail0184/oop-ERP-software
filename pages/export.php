@@ -30,7 +30,7 @@ if($_GET['report_id']=='1012001') {
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
 } elseif ($_GET['report_id']=='1012004'){
     $fileName = "Customer Outstanding Report.xls";
-    $fields = array('DB Code','Ledger Id','Dealer Name', 'Dealer Type', 'Territory', 'Region','Balance');
+    $fields = array('DB Code','Ledger Id','Dealer Name', 'Dealer Type', 'Territory', 'Region','Current Credit Limit','Balance');
 } elseif ($_GET['report_id']=='1012005'){
     $fileName = "Invoice List.xls";
     $fields = array('Chalan No', 'Chalan Date', 'Do No', 'Do Date', 'Do Type','Dealer Code','Dealer Name','Territory','Depot','Invoice Amount','Discount','Commission');
@@ -156,7 +156,8 @@ group by j.item_id");
      }
  } elseif ($_GET['report_id']=='1012004') {
      $query = $db->query("SELECT d.dealer_code,d.dealer_custom_code as DBCode,d.account_code,
-d.dealer_name_e as DealerName,d.dealer_type as type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,                                        
+d.dealer_name_e as DealerName,d.dealer_type as type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,
+d.credit_limit as CurrentCreditLimit,
 IF(SUM(j.dr_amt-j.cr_amt)>'0',CONCAT(' (Dr) ', SUM(j.dr_amt-j.cr_amt)),CONCAT('(Cr) ',SUBSTR(SUM(j.dr_amt-j.cr_amt),2))) as balance                                               
 from dealer_info d,branch r,area t,journal j
 where 
@@ -168,7 +169,7 @@ where
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
-             $lineData = array($row['DBCode'], $row['account_code'],$row['DealerName'], $row['type'], $row['Territory'], $row['region'],$row['balance']);
+             $lineData = array($row['DBCode'], $row['account_code'],$row['DealerName'], $row['type'], $row['Territory'], $row['region'],$row['CurrentCreditLimit'],$row['balance']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

@@ -104,6 +104,7 @@ $VAT_item_group = @$VAT_item_group;
 $H_S_code = @$H_S_code;
 $serial = @$serial;
 $showInInvoice = @$showInInvoice;
+$productCategory = @$productCategory;
 
 $res="select i.".$unique.",i.".$unique." as code,i.finish_goods_code as FG_Code,i.".$unique_field.",sg.sub_group_name,g.group_name,i.unit_name,ib.brand_name,
 s.section_name as branch,
@@ -118,7 +119,7 @@ sg.group_id=g.group_id and
 ib.id=i.brand_id and 
 i.section_id=s.section_id".$sec_com_connection."
 
-order by i.serial";
+order by i.item_id";
 
 $query=mysqli_query($conn, $res);
 while($row=mysqli_fetch_object($query)){
@@ -236,28 +237,17 @@ $sql_brand_category="Select category_name,category_name from brand_category";
                                         </div>
                                     </div>
 
-                                    <!--div class="form-group">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Type:<span class="required text-danger">*</span></label>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Product Category <span class="required text-danger">*</span></label>
                                         <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                                            <select style="width: 100%" class="select2_single form-control" name="exim_status" id="exim_status">
-                                                <option></option>
-                                                <option value="Local" <?php if($exim_status=='Local') echo 'selected' ?>>Local</option>
-                                                <option value="Export" <?php if($exim_status=='Export') echo 'selected' ?>>Export</option>
-                                                <option value="Import" <?php if($exim_status=='Import') echo 'selected' ?>>Import</option>
-                                            </select></div>
-                                    </div-->
-
-
-                                    <!---div class="form-group">
-                                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Product Category<span class="required text-danger">*</span></label>
-                                        <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                                            <select style="width: 100%" class="select2_single form-control" name="brand_category" id="brand_category">                              <option></option>
-                                                <?=advance_foreign_relation($sql_brand_category,$brand_category);?>
-                                                </select>
-                                                </div>
-                                    </div-->
-
-
+                                            <select style="width: 100%" class="select2_single form-control" name="productCategory">
+                                                <option value=""></option>
+                                                <option <?php if($productCategory=='diesel') { echo 'selected';} ?> value="diesel">Diesel</option>
+                                                <option <?php if($productCategory=='non-diesel') { echo 'selected';} ?> value="non-diesel">Non-Diesel</option>
+                                                <option <?php if($productCategory=='lubricant') { echo 'selected';} ?> value="lubricant">Lubricant</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Brand<span class="required text-danger">*</span></label>
@@ -265,21 +255,22 @@ $sql_brand_category="Select category_name,category_name from brand_category";
                                             <select style="width: 100%" class="select2_single form-control" name="brand_id" id="brand_id">
                                                 <option value="<?=$brand_id?>" selected="selected"><?=$brand_id?></option>
                                                 <?=advance_foreign_relation($sql_brand,$brand_id);?>
-                                                </select>
+                                            </select>
                                         </div>
                                     </div>
 
                                     <div class="form-group">
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Unit Name<span class="required text-danger">*</span></label>
                                         <div class="col-md-6 col-sm-6 col-xs-12" style="width: 60%">
-                                        <select style="width: 49%; font-size:11px" class="select2_single form-control" name="unit_name" id="unit_name">
-                                        <option value="0">--purchase unit--</option>
-                                        <?=advance_foreign_relation($sql_unit,$unit_name);?>
-                                        </select>
-                                        <select style="width: 49%; font-size:11px" class="select2_single form-control" name="pack_unit" id="pack_unit">
-                                        <option value="0">--sales unit--</option>
-                                        <?=advance_foreign_relation($sql_unit,$pack_unit);?>
-                                        </select>
+                                            <select style="width: 49%; font-size:11px" class="select2_single form-control" name="unit_name" id="unit_name">
+                                                <option value="0">--purchase unit--</option>
+                                                <?=advance_foreign_relation($sql_unit,$unit_name);?>
+                                            </select>
+
+                                            <select style="width: 49%; font-size:11px" class="select2_single form-control" name="pack_unit" id="pack_unit">
+                                                <option value="0">--sales unit--</option>
+                                                <?=advance_foreign_relation($sql_unit,$pack_unit);?>
+                                            </select>
                                         </div>
                                     </div>
 

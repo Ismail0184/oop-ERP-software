@@ -479,7 +479,8 @@ $sql=mysqli_query($conn, $query);
     <tbody>
     <?php $ismail = 0;
     $totalValues =0;
-    while($data=mysqli_fetch_object($sql)){ ?>
+    $totalStock = 0;
+    while($data=mysqli_fetch_object($sql)){ if ($data->Available_stock_balance>0){ ?>
         <tr><td style="border: solid 1px #999; text-align:center"><?=$ismail=$ismail+1;?></td>
             <td style="border: solid 1px #999; text-align:left"><?=$data->finish_goods_code;?></td>
             <td style="border: solid 1px #999; text-align:left"><?=$data->item_name;?></td>
@@ -494,11 +495,14 @@ $sql=mysqli_query($conn, $query);
         </tr>
     <?php
         $totalValues = $totalValues+$totalValue;
-    } ?>
+        $totalStock = $totalStock+$pstock;
+    }} ?>
     </tbody>
     <tfoot>
     <tr>
-        <th colspan="10" style="border: solid 1px #999; text-align:right">Total value of stock</th>
+        <th colspan="8" style="border: solid 1px #999; text-align:right">Total value of stock</th>
+        <th style="border: solid 1px #999; text-align:center"><?=number_format($totalStock,2)?></th>
+        <th></th>
         <th style="text-align: right; border: solid 1px #999; text-align:center"><?=number_format($totalValues,2)?></th>
     </tr>
     </tfoot>
@@ -843,23 +847,37 @@ where sdd.depot_id=w.warehouse_id and
 
 
 <?php elseif ($_POST['report_id']=='1012003'):
-        $sql="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,
-REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
 
+    if($_POST['pc_code']=='14'){
+    $sql="Select i.item_id,i.finish_goods_code,i.item_name,i.productCategory as category,i.unit_name,i.pack_size,i.m_price as 'MRP Price',
+REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
 from
 item_info i,
 journal_item j,
 item_brand b
-
 where
-
 j.item_id=i.item_id and
 j.warehouse_id='".$_POST['warehouse_id']."' and
 j.ji_date <= '".$_POST['t_date']."' and
 j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 i.brand_id=b.brand_id and
 b.vendor_id='".$_POST['pc_code']."'
-group by j.item_id";?>
+group by j.item_id"; } else {
+        $sql="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,
+REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
+from
+item_info i,
+journal_item j,
+item_brand b
+where
+j.item_id=i.item_id and
+j.warehouse_id='".$_POST['warehouse_id']."' and
+j.ji_date <= '".$_POST['t_date']."' and
+j.ji_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
+i.brand_id=b.brand_id and
+b.vendor_id='".$_POST['pc_code']."'
+group by j.item_id";
+    }?>
 <?=reportview($sql,'Present Stock',100,0,'',0)?>
 
 
@@ -1188,7 +1206,7 @@ d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANC
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as salesReturn,
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info','Sales') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherReceived,
 (select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as shipment,
-(select SUM(dr_amt) from journal where visible_status=1 and ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='Journal_info' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherIssue
+(select SUM(dr_amt) from journal where visible_status=1 and ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info', 'Payment') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherIssue
 
                                             
 from dealer_info d,branch r,area t
@@ -1884,7 +1902,8 @@ order by c.do_no";
         </table>
 
 
-    <?php elseif ($_POST['report_id']=='1010002'):?>
+    <?php elseif ($_POST['report_id']=='1010002'): ?>
+
         <title>Sales Report</title>
         <h2 align="center"><?=$_SESSION['company_name']?></h2>
         <h4 align="center" style="margin-top:-10px">Sales Summery</h4>
@@ -1905,7 +1924,8 @@ order by c.do_no";
                 <th style="border: solid 1px #999; padding:2px">D.Type</th>
                 <th style="border: solid 1px #999; padding:2px; ">DO</th>
                 <th style="border: solid 1px #999; padding:2px;">DO Date</th>
-                <th style="border: solid 1px #999; padding:2px">DO.Type</th>
+                <th style="border: solid 1px #999; padding:2px">DO Type</th>
+                <th style="border: solid 1px #999; padding:2px">DO Remarks</th>
                 <th style="border: solid 1px #999; padding:2px">Territory</th>
                 <th style="border: solid 1px #999; padding:2px">Region</th>
                 <th style="border: solid 1px #999; padding:2px">FG Code</th>
@@ -1925,7 +1945,8 @@ order by c.do_no";
             if(isset($do_no))				{$do_no_con=' and sd.do_no='.$do_no;}
             $datecon=' and sd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
             $i = 0;
-            $result='Select
+            if ($_POST['do_type'] == 'all') {
+                $result = 'Select
 				sd.*,
 				d.dealer_custom_code,
 				d.dealer_name_e,
@@ -1950,9 +1971,145 @@ order by c.do_no";
 				sd.depot_id=w.warehouse_id and
 				sd.dealer_code=d.dealer_code and
 				d.region=b.BRANCH_ID and
-				sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
-				d.area_code=a.AREA_CODE  '.$datecon.$item_con.$do_no_con.'
+				sd.do_date NOT BETWEEN "' . $lockedStartInterval . '" and "' . $lockedEndInterval . '" and 
+				d.area_code=a.AREA_CODE  ' . $datecon . $item_con . $do_no_con . '
 				order by sd.id DESC';
+            } elseif ($_POST['do_type'] == 'sales') {
+                $result = 'Select
+				sd.*,
+				d.dealer_custom_code,
+				d.dealer_name_e,
+				d.dealer_type,
+				w.warehouse_name,
+				a.AREA_NAME,
+				b.BRANCH_NAME,
+				i.item_id as itemid,
+				i.finish_goods_code as FGCODE,
+				i.item_name as FGdescription,
+				i.pack_unit as UOM,
+				i.pack_size as psize
+				from
+				sale_do_details sd,
+				dealer_info d,
+				area a,
+				branch b,
+				warehouse w,
+				item_info i
+				where
+				    sd.do_type in ("sales") and
+				i.item_id=sd.item_id and
+				sd.depot_id=w.warehouse_id and
+				sd.dealer_code=d.dealer_code and
+				d.region=b.BRANCH_ID and
+				sd.do_date NOT BETWEEN "' . $lockedStartInterval . '" and "' . $lockedEndInterval . '" and 
+				d.area_code=a.AREA_CODE  ' . $datecon . $item_con . $do_no_con . '
+				order by sd.id DESC';
+            } elseif ($_POST['do_type'] == 'free') {
+                $result = 'Select
+				sd.*,
+				d.dealer_custom_code,
+				d.dealer_name_e,
+				d.dealer_type,
+				w.warehouse_name,
+				a.AREA_NAME,
+				b.BRANCH_NAME,
+				i.item_id as itemid,
+				i.finish_goods_code as FGCODE,
+				i.item_name as FGdescription,
+				i.pack_unit as UOM,
+				i.pack_size as psize,
+				m.remarks
+				
+				from
+				sale_do_details sd,
+				dealer_info d,
+				area a,
+				branch b,
+				warehouse w,
+				item_info i,
+				sale_do_master m
+				
+				where
+				    m.do_no=sd.do_no and
+				    sd.do_type in ("free") and
+				i.item_id=sd.item_id and
+				sd.depot_id=w.warehouse_id and
+				sd.dealer_code=d.dealer_code and
+				d.region=b.BRANCH_ID and
+				sd.do_date NOT BETWEEN "' . $lockedStartInterval . '" and "' . $lockedEndInterval . '" and 
+				d.area_code=a.AREA_CODE  ' . $datecon . $item_con . $do_no_con . '
+				order by sd.id DESC';
+            } elseif ($_POST['do_type'] == 'sample') {
+                $result = 'Select
+				sd.*,
+				d.dealer_custom_code,
+				d.dealer_name_e,
+				d.dealer_type,
+				w.warehouse_name,
+				a.AREA_NAME,
+				b.BRANCH_NAME,
+				i.item_id as itemid,
+				i.finish_goods_code as FGCODE,
+				i.item_name as FGdescription,
+				i.pack_unit as UOM,
+				i.pack_size as psize,
+				m.remarks
+				
+				from
+				sale_do_details sd,
+				dealer_info d,
+				area a,
+				branch b,
+				warehouse w,
+				item_info i,
+				sale_do_master m
+				
+				where
+				    m.do_no=sd.do_no and
+				    sd.do_type in ("sample") and
+				i.item_id=sd.item_id and
+				sd.depot_id=w.warehouse_id and
+				sd.dealer_code=d.dealer_code and
+				d.region=b.BRANCH_ID and
+				sd.do_date NOT BETWEEN "' . $lockedStartInterval . '" and "' . $lockedEndInterval . '" and 
+				d.area_code=a.AREA_CODE  ' . $datecon . $item_con . $do_no_con . '
+				order by sd.id DESC';
+            } elseif ($_POST['do_type'] == 'gift') {
+                $result = 'Select
+				sd.*,
+				d.dealer_custom_code,
+				d.dealer_name_e,
+				d.dealer_type,
+				w.warehouse_name,
+				a.AREA_NAME,
+				b.BRANCH_NAME,
+				i.item_id as itemid,
+				i.finish_goods_code as FGCODE,
+				i.item_name as FGdescription,
+				i.pack_unit as UOM,
+				i.pack_size as psize,
+				m.remarks
+				
+				from
+				sale_do_details sd,
+				dealer_info d,
+				area a,
+				branch b,
+				warehouse w,
+				item_info i,
+				sale_do_master m
+				
+				where
+				    m.do_no=sd.do_no and
+				    sd.do_type in ("gift") and
+				i.item_id=sd.item_id and
+				sd.depot_id=w.warehouse_id and
+				sd.dealer_code=d.dealer_code and
+				d.region=b.BRANCH_ID and
+				sd.do_date NOT BETWEEN "' . $lockedStartInterval . '" and "' . $lockedEndInterval . '" and 
+				d.area_code=a.AREA_CODE  ' . $datecon . $item_con . $do_no_con . '
+				order by sd.id DESC';
+            }
             $query2 = mysqli_query($conn, $result);
             while($data=mysqli_fetch_object($query2)){?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
@@ -1965,6 +2122,7 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_no; ?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_date; ?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_type; ?></td>
+                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->remarks; ?></td>
                     <td style="border: solid 1px #999; padding:5px"><?=$data->AREA_NAME;?></td>
                     <td style="border: solid 1px #999; text-align:left; padding:2px"><?=$data->BRANCH_NAME;?></td>
                     <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->FGCODE;?></td>
@@ -2004,6 +2162,7 @@ order by c.do_no";
             </tr>
             </tbody>
         </table>
+
 
 
 

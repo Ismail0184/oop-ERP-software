@@ -36,7 +36,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold->tr_id);
 
 	$jv=next_journal_voucher_id();
 	if(prevent_multi_submit()) {
-	sec_journal_journal($jv_no,$jv,'Purchase',0,0,$voucher_date,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
+	sec_journal_journal($jv_no,$jv,'Purchase',0,0,$_POST['voucher_date'],$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
     unset($_POST);
 	}
 }
@@ -59,7 +59,7 @@ $prold = find_all_field('purchase_receive','pr_no','id='.$jvold);
 	$sssql = 'delete from journal where group_for="'.$_SESSION['usergroup'].'" and tr_from ="Purchase" and tr_no="'.$prold->pr_no.'"';
 	mysqli_query($conn, $sssql);
 	$jv=next_journal_voucher_id();
-    sec_journal_journal($jv_no,$jv,'Purchase',0,0,0,$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
+    sec_journal_journal($jv_no,$jv,'Purchase',0,0,$_POST['voucher_date'],$ip,$now,$day,$thisday,$thismonth,$thisyear,$tdates);
 
 }
 

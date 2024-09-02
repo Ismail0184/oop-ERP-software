@@ -211,8 +211,8 @@ if(is_file($attachment)){?>
       </tr>
             <?php  else:  ?>
                 <tr>
-                    <td class="tabledesign_text"> Voucher No  : <?=$vo_no?></td>
-                    <td class="tabledesign_text">Voucher Date : <?=$vo_date?></td>
+                    <td class="tabledesign_text"> Voucher No  : <?php if ($_GET['v_type']=='Loan'): ?><?=$_GET['vo_no']?> <?php else: ?> <?=$vo_no?>  <?php endif;?></td>
+                    <td class="tabledesign_text">Voucher Date : <?php if ($_GET['v_type']=='Loan'): ?><?=$_GET['v_date']?> <?php else: ?> <?=$vo_date?>  <?php endif;?></td>
                 </tr>
             <?php endif; ?>
 

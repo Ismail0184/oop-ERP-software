@@ -136,8 +136,8 @@ item_info i
 
         } // end of sales invoice
         if($_POST['do_type']=='sample' || $_POST['do_type']=='display' || $_POST['do_type']=='gift' || $_POST['do_type']=='free'){
-            if (($_POST['ledger_1'] > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_1']) > 0)) {
-                $sample_amount=find_a_field('journal_item','SUM(total_amt)',''.$unique.'='.$_SESSION['wpc_DO']);
+            if (($_POST['ledger_1'] > 0) && (($_POST['ledger_4']) > 0)) {
+                $sample_amount=find_a_field('journal_item','SUM(total_amt)','do_no='.$_SESSION['wpc_DO']);
                 add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['other_sales_invoice_ledger'], $_POST['narration_1'], $sample_amount, 0, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, $_POST['cc_code'], 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'');
                 add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $sample_amount, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, $_POST['pc_code'], $_SESSION['wpc_DO'],'');
             }} // end of other invoice
@@ -149,7 +149,7 @@ item_info i
         unset($_POST);
         unset($_SESSION['wpc_DO']);
         //echo "<script>self.opener.location = '$page'; self.blur(); </script>";
-        echo "<script>window.close(); </script>";
+        //echo "<script>window.close(); </script>";
     }}
 $unique_GET = @$_SESSION['wpc_DO'];
 // data query..................................
@@ -246,15 +246,15 @@ if (isset($_POST['viewreport'])) {
                 <div class="x_content">
                     <table style="width:100%; font-size: 11px; display: none">
                         <tr>
-                            <th style="">DO No</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" name="do_no" readonly value="<?=$_SESSION['wpc_DO'];?>"></td>
-                            <th style="width: 15%">DO Date</th><th style="text-align: center; width: 2%">:</th><td><input type="date" style="width: 80%" name="do_date" readonly value="<?=$do_master->do_date;?>"></td>
-                            <th style="">D. Challan No</th><th style="text-align: center; width: 2%">:</th><td><input style="width: 80%" name="chalan_no" id="chalan_no" readonly type="text" value="<?=$find_chalan_no?>"></td>
+                            <th style="">DO No</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" name="do_no"  value="<?=$_SESSION['wpc_DO'];?>"></td>
+                            <th style="width: 15%">DO Date</th><th style="text-align: center; width: 2%">:</th><td><input type="date" style="width: 80%" name="do_date"  value="<?=$do_master->do_date;?>"></td>
+                            <th style="">D. Challan No</th><th style="text-align: center; width: 2%">:</th><td><input style="width: 80%" name="chalan_no" id="chalan_no"  type="text" value="<?=$find_chalan_no?>"></td>
                         </tr>
                         <tr><td style="height: 5px"></td></tr>
                         <tr>
-                            <th style="">Dealer Name</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" readonly value="<?=$dealer_master->dealer_name_e;?>"></td>
-                            <th style="width: 15%">Delivery Address</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" readonly value="<?=$dealer_master->address_e;?>"></td>
-                            <th style="">Remarks</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%" readonly value="<?=$do_master->remarks;?>"></td>
+                            <th style="">Dealer Name</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%"  value="<?=$dealer_master->dealer_name_e;?>"></td>
+                            <th style="width: 15%">Delivery Address</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%"  value="<?=$dealer_master->address_e;?>"></td>
+                            <th style="">Remarks</th><th style="text-align: center; width: 2%">:</th><td><input type="text" style="width: 80%"  value="<?=$do_master->remarks;?>"></td>
                         </tr>
                     </table>
                 </div></div></div>
@@ -351,8 +351,8 @@ if (isset($_POST['viewreport'])) {
                     </select>
                 </td>
                 <td rowspan="2" style="text-align: center; vertical-align: middle"><textarea name="narration_1" id="narration_1" class="form-control col-md-7 col-xs-12" style="width:100%; height:92px; font-size: 11px; text-align:center"><?=$narration?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?></textarea></td>
-                <td align="center" style="vertical-align: middle"><input type="text" name="dr_amount_1" readonly value="<?=$total_sales_amount+$cash_discounts;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                <td align="center" style="vertical-align: middle"><input type="text" name="cr_amount_1" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td align="center" style="vertical-align: middle"><input type="text" name="dr_amount_1"  value="<?=$total_sales_amount+$cash_discounts;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td align="center" style="vertical-align: middle"><input type="text" name="cr_amount_1"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
             </tr>
             <tr>
                 <th style="text-align: center; vertical-align: middle">Sales Ledger</th>
@@ -360,8 +360,8 @@ if (isset($_POST['viewreport'])) {
                     <select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_2" id="ledger_2">
                         <?=foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $sales_ledger, 'ledger_id='.$sales_ledger); ?>
                     </select></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_2" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_2" readonly value="<?=$total_sales_amount+$cash_discounts;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_2"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_2"  value="<?=$total_sales_amount+$cash_discounts;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
             </tr>
             <tr>
                 <th rowspan="2" style="text-align: center; vertical-align: middle">2</th>
@@ -372,16 +372,16 @@ if (isset($_POST['viewreport'])) {
                         <option  value="<?=$COGS_sales;?>"><?=$COGS_sales; ?>-<?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$COGS_sales.''); ?></option>
                     </select></td>
                 <td rowspan="2" style="text-align: center; vertical-align: middle"><textarea name="narration_3" id="narration_3" class="form-control col-md-7 col-xs-12" style="width:100%; height:92px; font-size: 11px; text-align:center"><?=$narration;?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?></textarea></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_3" readonly value="<?=$COGS_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_3" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_3"  value="<?=$COGS_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_3"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
             </tr>
             <tr>
                 <th style="text-align: center; vertical-align: middle">Warehouse / Inventory</th>
                 <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_4" id="ledger_4">
                         <option  value="<?=$inventory_ledger;?>"><?=$inventory_ledger?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$inventory_ledger.''); ?></option>
                     </select></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_4"  readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_4" readonly value="<?=$COGS_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_4"   value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_4"  value="<?=$COGS_amount;?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
             </tr>
             <?php if($do_master->commission>0):?>
                 <tr>
@@ -392,16 +392,16 @@ if (isset($_POST['viewreport'])) {
                             <option  value="4002000500000000">4002000500000000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4002000500000000"'); ?></option>
                         </select></td>
                     <td rowspan="2" style="text-align: center; vertical-align: middle"><textarea name="narration_5" id="narration_5"  class="form-control col-md-7 col-xs-12" style="width:100%; height:92px; font-size: 11px; text-align:center"><?=$do_master->commission.' % Super DB Commission, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?></textarea></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_5" readonly value="<?=$do_master->commission_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_5" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_5"  value="<?=$do_master->commission_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_5"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
                 <tr>
                     <th style="text-align: center; vertical-align: middle">Customer Ledger</th>
                     <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_6" id="ledger_6">
                             <option  value="<?=$dealer_master->account_code;?>"><?=$dealer_master->account_code; ?>-<?=$customer_name?></option>
                         </select></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_6" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_6" readonly value="<?=$do_master->commission_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_6"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_6"  value="<?=$do_master->commission_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; ?>
             <?php if($free_own_product>0):?>
@@ -413,8 +413,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="<?=$config_group_class->free_own_product?>"><?=$config_group_class->free_own_product?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$config_group_class->free_own_product); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_7" value="<?='Free Own Products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_7" readonly value="<?=$free_own_product?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_7" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_7"  value="<?=$free_own_product?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_7"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; ?>
             <?php if($free_other_SKU>0):?>
@@ -424,8 +424,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="<?=$config_group_class->free_other_SKU?>"><?=$config_group_class->free_other_SKU?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$config_group_class->free_other_SKU); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_8" value="<?='Free Other SKU, '.$narration.''?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_8" readonly value="<?=$free_other_SKU?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_8" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_8"  value="<?=$free_other_SKU?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_8"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; ?>
             <?php if($free_other_product>0):?>
@@ -435,8 +435,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="<?=$config_group_class->free_other_product?>"><?=$config_group_class->free_other_product?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$config_group_class->free_other_product); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_9"  value="<?='Free Other Products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_9" readonly value="<?=$free_other_product?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_9" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_9"  value="<?=$free_other_product?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_9"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; $total_free_amt_last=$free_own_product+$free_other_SKU+$free_other_product; if($total_free_amt_last>0): ?>
                 <tr>
@@ -445,8 +445,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="<?=$inventory_ledger;?>"><?=$inventory_ledger?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$inventory_ledger.''); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_10"  value="<?='Free Products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_10" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_10" readonly value="<?=$total_free_amt_last?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_10"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_10"  value="<?=$total_free_amt_last?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; ?>
 
@@ -458,7 +458,7 @@ if (isset($_POST['viewreport'])) {
                         <option  value="4013000500010000">4013000500010000: <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500010000"'); ?></option>
                     </select></td>
                 <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_11"  value="<?='Cash discount offer on Style Forever products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_11" readonly value="<?=substr($cd_data_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_11"  value="<?=substr($cd_data_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 <td style="text-align: right; vertical-align: middle"></td>
             </tr>
             <tr>
@@ -466,7 +466,7 @@ if (isset($_POST['viewreport'])) {
                         <option  value="4013000500020000">4013000500020000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="4013000500020000"'); ?></option>
                     </select></td>
                 <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_12"  value="<?='Cash discount offer on Raymond products, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_12" readonly value="<?=substr($cd_data_RMND_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text"  name="dr_amount_12"  value="<?=substr($cd_data_RMND_total_amt,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 <td style="text-align: right; vertical-align: middle"></td>
             </tr>
 
@@ -477,7 +477,7 @@ if (isset($_POST['viewreport'])) {
                     </select></td>
                 <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_13"  value="<?='Received cash discount, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
                 <td style="text-align: right; vertical-align: middle"></td>
-                <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_13" readonly value="<?=substr($cash_discount,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                <td style="text-align: right; vertical-align: middle"><input type="text"  name="cr_amount_13"  value="<?=substr($cash_discount,1)?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
             </tr>
 
 
@@ -488,8 +488,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="1003001400000000">1003001400000000: <?=find_a_field('accounts_ledger','ledger_name','ledger_id="1003001400000000"'); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_14"  value="<?='Revenue from Sales, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_14" readonly value="<?=$revenue_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_14" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_14"  value="<?=$revenue_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_14"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
 
                 <tr>
@@ -498,8 +498,8 @@ if (isset($_POST['viewreport'])) {
                             <option  value="3002000700000000">3002000700000000 : <?=find_a_field('accounts_ledger','ledger_name','ledger_id="3002000700000000"'); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_15"  value="<?='Revenue from Sales, '.$narration.'';?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_15" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
-                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_15" readonly value="<?=$revenue_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_15"  value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_15"  value="<?=$revenue_amount?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif;?>
 

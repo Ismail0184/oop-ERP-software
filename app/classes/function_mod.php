@@ -1005,7 +1005,7 @@ function sec_journal_journal($sec_jv_no,$jv_no,$tr_froms,$c_no,$c_date,$voucher_
 	`year`,
 	`cheq_date`,`cheq_no`,jvdate
 	)VALUES
-('$data->proj_id', '$data->jv_no', '$voucher_date', '$data->ledger_id', '$data->narration', '$data->dr_amt', '$data->cr_amt', '$data->tr_from', '$data->tr_no', '$data->tr_id','$data->sub_ledger','".$_SESSION['userid']."','".date('Y-m-d H:i:s')."', '$data->group_for', ".$data->cc_code.",'$ip','$_SESSION[sectionid]','$_SESSION[companyid]','$create_date','$now','$day','$thisday','$thismonth','$thisyear','$c_date','$c_no','$jvdate')";
+('$data->proj_id', '$data->jv_no', '$voucher_date', '$data->ledger_id', '$data->narration', '$data->dr_amt', '$data->cr_amt', '$data->tr_from', '$data->tr_no', '$data->tr_id','$data->sub_ledger','".$_SESSION['userid']."','".date('Y-m-d H:i:s')."', '$data->group_for', ".$data->cc_code.",'$ip','$_SESSION[sectionid]','$_SESSION[companyid]','$create_date','$now','$day','$thisday','$thismonth','$thisyear','$c_date','$c_no','$voucher_date')";
   $query_journal=mysqli_query($conn, $journal);
  }
 }

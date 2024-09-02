@@ -387,6 +387,20 @@ function reload1(form)
                                           </div>
                                       </div>
 
+                                        <div class="form-group">
+                                          <label class="control-label col-md-3 col-sm-3 col-xs-12">Do Type</label>
+                                          <div class="col-md-6 col-sm-6 col-xs-12">
+                                              <select class="select2_single form-control" style="width: 100%" tabindex="-1" name="do_type" required>
+                                                  <option value="all">All</option>
+                                                  <option value="sales">Sales</option>
+                                                  <option value="free">Free</option>
+                                                  <option value="sample">Sample</option>
+                                                  <option value="gift">Gift</option>
+                                              </select>
+                                          </div>
+                                      </div>
+
+
                                       <div class="form-group">
                                           <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required text-danger">*</span></label>
                                           <div class="col-md-6 col-sm-6 col-xs-12">
@@ -724,7 +738,7 @@ function reload1(form)
 
                 <?php elseif ($report_id=='1012001'): ?>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -750,7 +764,7 @@ function reload1(form)
 
                 <?php elseif ($report_id=='1012002' || $report_id=='1012011'): ?>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -776,7 +790,7 @@ function reload1(form)
 
                 <?php elseif ($report_id=='1012003' || $report_id=='1012009'): ?>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -811,7 +825,7 @@ function reload1(form)
                 <?php elseif ($report_id=='1012004'): ?>
 
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -837,7 +851,7 @@ function reload1(form)
                 <?php elseif ($report_id=='1012005'): ?>
 
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -894,7 +908,7 @@ function reload1(form)
                 <?php elseif ($report_id=='1012006'): ?>
 
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>
@@ -957,7 +971,7 @@ function reload1(form)
 
                 <?php elseif ($report_id=='1012008'): ?>
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Profit Center <span class="required text-danger">*</span></label>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
                                 <?php if($_SESSION['userid']=='10056'){?>

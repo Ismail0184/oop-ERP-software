@@ -20,7 +20,7 @@ elseif($v_type=='payment'){$voucher_name='PAYMENT VOUCHER';$vtype='payment';$tr_
 elseif($v_type=='Purchase'){$voucher_name='Purchase VOUCHER';$vtype='secondary_journal';$tr_from='Purchase';$dtype='jvdate';$olddtype='jv_date';}
 elseif($v_type=='journal_info'){$voucher_name='JOURNAL VOUCHER';$vtype='journal_info';$tr_from='journal_info';$dtype='j_date';$olddtype='journal_info_date';}
 elseif($v_type=='Contra'){$voucher_name='CONTRA VOUCHER';$vtype='coutra';$tr_from='Contra';$dtype='coutradate';$olddtype='coutra_date';}
-else{$v_type=='Contra';$voucher_name='CONTRA VOUCHER';$vtype='coutra';$tr_from='Contra';$dtype='coutradate';$olddtype='coutra_date';}
+else{$v_type=='';$voucher_name='Others';$vtype='journal';$tr_from='';$dtype='coutradate';$olddtype='coutra_date';}
 
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $todaysss=$dateTime->format("d M Y,  h:i A");
@@ -192,7 +192,7 @@ $sql1."<br>";
                 $pi=0;
                 $d_total=0;
                 $c_total=0;
-                $sql2="select a.dr_amt,a.cr_amt,b.ledger_name,b.ledger_id,a.narration,a.id,a.cc_code from accounts_ledger b, journal a where a.ledger_id=b.ledger_id and a.tr_from = '$tr_from' and a.jv_no='$jv_no' and a.ledger_id>0";
+                $sql2="select a.dr_amt,a.cr_amt,b.ledger_name,b.ledger_id,a.narration,a.id,a.cc_code from accounts_ledger b, journal a where a.ledger_id=b.ledger_id  and a.jv_no='$jv_no' and a.ledger_id>0";
                 $data2=mysqli_query($conn, $sql2);
                 while($info=mysqli_fetch_row($data2)){ $pi++;
                     $entry[$pi] = $info[5];

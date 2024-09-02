@@ -6,7 +6,7 @@ if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
 else
     $url = "http://";
 $url.= $_SERVER['HTTP_HOST'];
-$url.= $_SERVER['REQUEST_URI'];
+$url.= $_SERVER['REQUEST_iURI'];
 
 $unique='voucherno';
 $unique_field='voucher_date';
@@ -94,16 +94,16 @@ if(prevent_multi_submit()) {
                         0, 'Debit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                         , $thisday, $thismonth, $thisyear, $_POST['ledger_id_2']);
                     add_to_receipt($_SESSION['initiate_credit_note'],0, $proj_id, $_POST['narration'], $_POST['ledger_id_2'], 0,
-                            $_POST['amount_1'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                            , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
+                        $_POST['amount_1'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                        , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
                 }
                 if (($_POST['amount_1']> 0) && (($_POST['Ex_debit_ledger'] && $_POST['Ex_credit_ledger']) > 0) && ($_SESSION['initiate_credit_note']>0)) {
                     add_to_receipt($_SESSION['initiate_credit_note'], 1845854380, $proj_id, $_POST['narration'], $_POST['Ex_debit_ledger'], $_POST['amount_1'],
                         0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                         , $thisday, $thismonth, $thisyear, $_POST['Ex_credit_ledger']);
-                        add_to_receipt($_SESSION['initiate_credit_note'], 1845854380, $proj_id, $_POST['narration'], $_POST['Ex_credit_ledger'], 0,
-                            $_POST['amount_1'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                            , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
+                    add_to_receipt($_SESSION['initiate_credit_note'], 1845854380, $proj_id, $_POST['narration'], $_POST['Ex_credit_ledger'], 0,
+                        $_POST['amount_1'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                        , $thisday, $thismonth, $thisyear, $_POST['ledger_id_1']);
                 }
                 if (($_POST['amount_3']> 0) && (($_POST['Ex_debit_ledger'] && $_POST['Ex2_credit_ledger']) > 0) && ($_SESSION['initiate_credit_note']>0)) {
                     add_to_receipt($_SESSION['initiate_credit_note'], 1845854380, $proj_id, $_POST['narration'], $_POST['Ex_debit_ledger'], $_POST['amount_3'],
@@ -150,7 +150,7 @@ cost_center c
         $ids=$uncheckrow['jid'];
         if (isset($_POST['confirmsave']) && ($uncheckrow['receipt_no']>0)) {
             add_to_journal_new($uncheckrow['receiptdate'], $proj_id, $jv, $uncheckrow['receipt_date'], $uncheckrow['ledger_id'], $uncheckrow['narration'], $uncheckrow['dr_amt'], $uncheckrow['cr_amt'], 'Receipt', $uncheckrow['receipt_no'], $uncheckrow['jid'], $uncheckrow['cc_code'], $uncheckrow['sub_ledger_id'], $_SESSION['usergroup'], $uncheckrow['cheq_no'], $uncheckrow['cheq_date'], $create_date, $ip, $now, $uncheckrow['day_name'], $thisday, $thismonth, $thisyear,'','','');
-            }
+        }
 
         if(isset($_POST['deletedata'.$ids]))
         {  mysqli_query($conn, ("DELETE FROM ".$table_receipt." WHERE id=".$ids));
@@ -179,7 +179,7 @@ cost_center c
         $external_dr_voucher_data_2=find_all_field(''.$table_receipt.'','','receipt_date in ("1845854380") and cur_bal=3 and receipt_no='.$_SESSION['initiate_credit_note']);
         $external_cr_voucher_data=find_all_field(''.$table_receipt.'','','receipt_date in ("1845854380") and cur_bal=2 and receipt_no='.$_SESSION['initiate_credit_note']);
         $external_cr_voucher_data_2=find_all_field(''.$table_receipt.'','','receipt_date in ("1845854380") and cur_bal=4 and receipt_no='.$_SESSION['initiate_credit_note']);
-        $targeturl='http://icpbd-erp.com/51816/cmu_mod/page/API_receipt_voucher.php?create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&receiptdate='.$external_dr_voucher_data->receiptdate.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
+        $targeturl='http://icpd.icpbd-erp.com/pages/API_receipt_voucher.php?create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&receiptdate='.$external_dr_voucher_data->receiptdate.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
         unset($_SESSION['initiate_credit_note']);
         unset($_POST);
         unset($$unique);
@@ -241,11 +241,9 @@ $dealer_info="Select a.ledger_id,a.ledger_name from accounts_ledger a,dealer_inf
 
 $delete_commend = @$_GET['delete_commend'];
 $API_client_id = @$_SESSION['API_client_id'];
-
 if($delete_commend==1) {
     $delete_external_receipt=mysqli_query($conn, "delete from ".$table_receipt." where receipt_date='1845854380'");
-    header("Location: ".$page."");
-}
+    header("Location: ".$page."");}
 $find_API_bank_ledger=find_all_field('dev_API_received','','API_name="API_bank_ledger" and status=1 and client_id='.$API_client_id);
 $find_API_intercompany_ledger=find_all_field('dev_API_received','','API_name="API_intercompany_ledger" and status=1 and client_id='.$API_client_id);
 $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_customer_list" and status=1 and client_id='.$API_client_id);
@@ -264,7 +262,7 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
         var targetWin = window.open(pageURL, title, 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
     }
 </script>
-<?php require_once 'body_content_nva_sm.php'; ?>
+<?php require_once 'body_content_entry_mod.php'; ?>
 
 <div class="col-md-8 col-xs-12">
     <div class="x_panel">
@@ -443,6 +441,6 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
 
 
 
-<?=voucher_delete_edit($rs,$unique,$_SESSION['initiate_credit_note'],$COUNT_details_data,$page);?><br><br>
+    <?=voucher_delete_edit($rs,$unique,$_SESSION['initiate_credit_note'],$COUNT_details_data,$page);?><br><br>
 <?php endif; mysqli_close($conn); ?>
 <?=$html->footer_content();?> 

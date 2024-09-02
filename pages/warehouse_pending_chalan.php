@@ -162,7 +162,7 @@ item_info i
 
         } // end of sales invoice
         if($_POST['do_type']=='sample' || $_POST['do_type']=='display' || $_POST['do_type']=='gift' || $_POST['do_type']=='free'){
-            if (($PostLedger1 > 0) && (($_POST['ledger_4'] && $_POST['dr_amount_1']) > 0)) {
+            if (($PostLedger1 > 0) && (($_POST['ledger_4']) > 0)) {
                 $sample_amount=find_a_field('journal_item','SUM(total_amt)',''.$unique.'='.$_SESSION['wpc_DO']);
                 add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['other_sales_invoice_ledger'], $_POST['narration_1'], $sample_amount, 0, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, $_POST['cc_code'], 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');
                 add_to_journal_new($_POST['do_date'], $proj_id, $jv, $date, $_POST['ledger_4'], $_POST['narration_3'], 0, $sample_amount, $_POST['do_type'].' issue', $_POST['chalan_no'], $unique_GET, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear, 0, $_SESSION['wpc_DO'],'');

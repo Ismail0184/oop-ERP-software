@@ -172,7 +172,7 @@ font-size: 14px
                       <td width="5%" align="center" valign="middle"><?=$row['unit_name'];?></td>
                       <td width="5%" align="center" valign="middle"><?=($row['t_price']>0)? $row['t_price'] : '-';?></td>
                       <td width="8%" align="center" valign="middle"><?=($row['unit_price']>0)? number_format($row['unit_price'],2) : '-';?></td>
-                      <td width="8%" align="center" valign="middle"><?=$row['dist_unit'];?></td>
+                      <td width="8%" align="center" valign="middle"><?=$row['total_unit'];?></td>
                       <td width="8%" align="right" valign="middle">
                           <?  if($row['unit_price']>0){ echo $sales_cash_discount = find_a_field('sale_do_details','total_amt*-1','do_no='.$do_no.' and item_id=1096000100010312 and gift_on_item='.$row['item_id']); $tot_sales_cash_discount+=$sales_cash_discount;} ?>
                       </td>
@@ -190,7 +190,7 @@ font-size: 14px
                   }
                   $comcal=($row['total_amt']/100)*$dealeromission;
                   $comissionGETS=$comissionGETS+$comcal;
-									$total_qty=$total_qty+$row['dist_unit'];
+									$total_qty=$total_qty+$row['total_unit'];
               }?>
               <tr style="border-bottom:#FFFFFF">
                   <td colspan="5" align="left" valign="middle"><strong>Total</strong>&nbsp;</td>
