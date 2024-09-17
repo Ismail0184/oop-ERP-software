@@ -97,8 +97,8 @@ if(prevent_multi_submit()) {
             if (($POST_dr_amt && $POST_cr_amt) > 0) {
                 echo "<script>alert('Yor are trying to input an invalid transaction!!')</script>";
             } else {
-
-                if ((($POST_dr_amt || $POST_cr_amt) > 0) && ($_SESSION['initiate_credit_note']>0)) {
+                $initiate_debit_note = @$_SESSION['initiate_credit_note'];
+                if ((($POST_dr_amt || $POST_cr_amt) > 0) && ($initiate_debit_note>0)) {
                     add_to_receipt($_SESSION['initiate_credit_note'], $date, $proj_id, $_POST['narration'], $_POST['ledger_id'], $_POST['dr_amt'],
                         $POST_cr_amt,'Debit', $cur_bal, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no,$cc_code,$subledger_id,'MANUAL', $ip, $_POST['receipt_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                         , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
@@ -395,4 +395,4 @@ cost_center c
     </form>
     <?=voucher_delete_edit($rs,$unique,$initiate_credit_note,$COUNT_details_data,$page);?><br><br>
 <?php endif; mysqli_close($conn); ?>
-<?=$html->footer_content();?> 
+<?=$html->footer_content();?>

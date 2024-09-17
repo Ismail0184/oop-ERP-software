@@ -233,7 +233,7 @@ order by a.jvdate,a.id";
             $hVoucher = @$_POST['jv_no'];
             if (isset($_POST['voucher_hide_'.$ids]))
             {
-                $hide = mysqli_query($conn, "update journal set visible_status='0' where jv_no='".$hVoucher."'");
+                //$hide = mysqli_query($conn, "update journal set visible_status='0' where jv_no='".$hVoucher."'");
             } ?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
                 <td align="center" style="border: solid 1px #999; padding:2px">
@@ -824,8 +824,7 @@ where sdd.depot_id=w.warehouse_id and
 
 
 
-<?php elseif ($_POST['report_id']=='1012011'):?>
-    <?php
+<?php elseif ($_POST['report_id']=='1012011'):
 
     $sql="SELECT sdd.id,sdd.id as 'T.ID',w.warehouse_name as Depot,d.dealer_custom_code as 'DB Code',
 d.dealer_name_e as 'Dealer Name',d.dealer_type,sdd.do_no,sdd.do_date,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
@@ -843,7 +842,43 @@ where sdd.depot_id=w.warehouse_id and
       sdd.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
       sdd.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' 
       "?>
+
     <?=reportview($sql,'Sales Return Report','99',0,'',0); ?>
+
+
+<?php elseif ($_POST['report_id']=='1012012'):
+
+    $sql="SELECT c.id,c.receipt_no as 'Collection Id',c.receiptdate as 'Collection Date',d.dealer_custom_code as 'Coustomer Code',d.account_code as 'Ledger ID',d.dealer_name_e as 'Customer Name',r.BRANCH_NAME as 'Customer Group',t.AREA_NAME as 'Territory',d.address_e as 'address',d.mobile_no as 
+'Phone No',c.bank,c.narration as 'Particulars',FORMAT(c.cr_amt,2) as 'Amount'
+
+from receipt c,
+     dealer_info d,
+     branch r,
+     area t
+where c.ledger_id=d.account_code and
+      d.dealer_category='".$_POST['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      c.receiptdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+      c.receiptdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' order by c.receipt_no desc";
+
+    $totalCollectionS = "SELECT SUM(c.cr_amt) as amount
+from receipt c,
+     dealer_info d,
+     branch r,
+     area t
+where c.ledger_id=d.account_code and
+      d.dealer_category='".$_POST['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      c.receiptdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+      c.receiptdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+      ";
+    $result = mysqli_fetch_object(mysqli_query($conn, $totalCollectionS));
+    $totalCollection = $result->amount;
+    ?>
+
+    <?=reportview($sql,'Collection Register','99',$totalCollection,'12',0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012003'):
@@ -1196,11 +1231,9 @@ $query = mysqli_query($conn, $sql); ?>
 
 
 
-<?php elseif ($_POST['report_id']=='1012006'):?>
-    <?php
+<?php elseif ($_POST['report_id']=='1012006'):
     $sql="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
 d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
-
 (select sum(cr_amt)-sum(dr_amt) from journal  where visible_status=1 and ledger_id=d.account_code and jvdate<'$f_date' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as opening,
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='receipt' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as collection,
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as salesReturn,
@@ -1208,14 +1241,12 @@ d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANC
 (select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as shipment,
 (select SUM(dr_amt) from journal where visible_status=1 and ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info', 'Payment') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherIssue
 
-                                            
 from dealer_info d,branch r,area t
 where 
       d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE  
-        group by d.account_code order by d.dealer_code
-      ";
+group by d.account_code order by d.dealer_code";
     $result = mysqli_query($conn, $sql);
     ?>
 
@@ -1958,15 +1989,19 @@ order by c.do_no";
 				i.finish_goods_code as FGCODE,
 				i.item_name as FGdescription,
 				i.pack_unit as UOM,
-				i.pack_size as psize
+				i.pack_size as psize,
+				m.remarks
 				from
 				sale_do_details sd,
 				dealer_info d,
 				area a,
 				branch b,
 				warehouse w,
-				item_info i
+				item_info i,
+				sale_do_master m
+				
 				where
+				m.do_no=sd.do_no and
 				i.item_id=sd.item_id and
 				sd.depot_id=w.warehouse_id and
 				sd.dealer_code=d.dealer_code and
@@ -1987,16 +2022,20 @@ order by c.do_no";
 				i.finish_goods_code as FGCODE,
 				i.item_name as FGdescription,
 				i.pack_unit as UOM,
-				i.pack_size as psize
+				i.pack_size as psize,
+				m.remarks
 				from
 				sale_do_details sd,
 				dealer_info d,
 				area a,
 				branch b,
 				warehouse w,
-				item_info i
+				item_info i,
+				sale_do_master m
+				
 				where
-				    sd.do_type in ("sales") and
+				m.do_no=sd.do_no and
+				sd.do_type in ("sales") and
 				i.item_id=sd.item_id and
 				sd.depot_id=w.warehouse_id and
 				sd.dealer_code=d.dealer_code and

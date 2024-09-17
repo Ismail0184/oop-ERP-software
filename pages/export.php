@@ -40,9 +40,14 @@ if($_GET['report_id']=='1012001') {
 } elseif ($_GET['report_id']=='1012007'){
     $fileName = "Stock Report.xls";
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
+
 } elseif ($_GET['report_id']=='1012008'){
     $fileName = "Customer Details.xls";
     $fields = array('Dealer Code', 'Dealer Custom Code', 'Customer Name', 'Town', 'Territory','Region','Propritor Name','Contact Person','Contact Number','Address','National Id','TIN / BIN');
+
+} elseif ($_GET['report_id']=='1012012'){
+    $fileName = "Collection Register.xls";
+    $fields = array('Collection Id', 'Collection Date','Customer Code','Ledger ID', 'Customer Name', 'Customer Group','Territory','Address','Phone No','Bank','Particulars','Amount');
 }
 
 else {
@@ -263,6 +268,32 @@ d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and
          while ($row = $query->fetch_assoc()) {
              $lineData = array($row['dealer_code'], $row['dealer_custom_code'], $row['customer_name'], $row['town'], $row['territory'],
                  $row['region'], $row['propritor_name'],$row['contact_person'], $row['contact_number'],$row['address'], $row['national_id'] ,$row['TINBIN']);
+             array_walk($lineData, 'filterData');
+             $excelData .= implode("\t", array_values($lineData)) . "\n";
+         }
+     }
+     else {
+         $excelData .= 'No records found...' . "\n";
+     }
+ }
+
+ elseif ($_GET['report_id']=='1012012') {
+     $query = $db->query("SELECT c.id,c.receipt_no,c.receiptdate,d.account_code,d.dealer_custom_code,d.dealer_name_e,r.BRANCH_NAME,t.AREA_NAME,d.address_e,d.mobile_no,c.bank,c.narration,c.cr_amt
+
+from receipt c,
+     dealer_info d,
+     branch r,
+     area t
+where c.ledger_id=d.account_code and
+      d.dealer_category='".$_GET['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      c.receiptdate between '".$_GET['f_date']."' and '".$_GET['t_date']."' order by c.receipt_no desc");
+     if ($query->num_rows > 0) {
+
+         while ($row = $query->fetch_assoc()) {
+             $lineData = array($row['receipt_no'], $row['receiptdate'], $row['dealer_custom_code'], $row['account_code'], $row['dealer_name_e'],
+                 $row['BRANCH_NAME'], $row['AREA_NAME'],$row['address_e'], $row['mobile_no'],$row['bank'], $row['narration'] ,$row['cr_amt']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

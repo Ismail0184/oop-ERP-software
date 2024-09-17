@@ -4,10 +4,10 @@ if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by i.'.$order_by_GET;} else {$order_by = '';}
 if(!empty($_POST['order_by']) && !empty($_POST['sort'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by i.'.$order_by_GET.' '.$_POST['sort'].'';} else {$order_by='';}
-$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');
+$warehouse_id = @$_POST['warehouse_id'];
+$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$warehouse_id.'"');
 $PostFDate = @$_POST['f_date'];
 $PostTDate = @$_POST['t_date'];
-
 if(isset($_REQUEST['submit'])&&isset($_REQUEST['report_id'])>0)
 {
 $to_date=date('Y-m-d' , strtotime($PostFDate));

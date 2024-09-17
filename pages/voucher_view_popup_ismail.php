@@ -20,15 +20,15 @@ $cost_center=@$_POST["cost_center"];
 $cheq_no = @$_POST["cheq_no"];
 $cheq_date = @strtotime($_POST["cheq_date"]);
 $dd =@$_POST["vdate"];
-$date=@date('d-m-y' , strtotime($dd));
-$j=0;
-for($i=0;$i<strlen($date);$i++)
-{
-    if(is_numeric($date[$i]))
-    { $time[$j]=$time[$j].$date[$i];
-    } else {
-        $j++; } }
-$date=mktime(0,0,0,$time[1],$time[0],$time[2]);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -104,8 +104,8 @@ if(isset($_POST['narr']))
         $ledger_old=$_POST['ledger_'.$datas[0]];
         $ledger_new = explode('#>',$ledger_old);
         $ledger = $ledger_new[1];
-        $c_no=$_POST['c_no'];
-        $c_date=$_POST['c_date'];
+        $c_no=@$_POST['c_no'];
+        $c_date=@$_POST['c_date'];
         $vdateji = date('Y-m-d' , strtotime($_REQUEST['vdate']));
         $narration=$_POST['narration_'.$datas[0]];
         $CC=$_POST['cc_'.$datas[0]];

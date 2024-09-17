@@ -100,6 +100,7 @@ if(prevent_multi_submit()){
                             $_POST['pkt_unit'] = 0;
                         }
                         $_POST['t_price'] = '0.00';
+                        $ordered_qty = find_a_field('sale_do_details','sum(total_unit)','item_id="'.$_REQUEST['item_id'].'" and depot_id="'.$_POST['depot_id'].'" and status in ("UNCHECKED","PROCESSING","MANUAL")');
                         $inStockCtn = ($in_stock_pcs-$ordered_qty)/$gift_item->pack_size; $inStockCtn=(int)$inStockCtn;
                         $_POST['inStock_ctn']=$inStockCtn;
                         $_POST['inStock_pcs']=($in_stock_pcs-$ordered_qty)-($inStockCtn*$gift_item->pack_size);
