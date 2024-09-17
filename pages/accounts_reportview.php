@@ -1231,9 +1231,11 @@ $query = mysqli_query($conn, $sql); ?>
 
 
 
-<?php elseif ($_POST['report_id']=='1012006'):
-    $sql="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
+<?php elseif ($_POST['report_id']=='1012006'):?>
+    <?php
+    $sqls="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
 d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
+
 (select sum(cr_amt)-sum(dr_amt) from journal  where visible_status=1 and ledger_id=d.account_code and jvdate<'$f_date' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as opening,
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from='receipt' and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as collection,
 (select SUM(cr_amt) from journal where ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('SalesReturn') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as salesReturn,
@@ -1241,12 +1243,61 @@ d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANC
 (select SUM(total_amt) from sale_do_details where dealer_code=d.dealer_code and item_id not in ('1096000100010312') and do_type in ('sales') and do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as shipment,
 (select SUM(dr_amt) from journal where visible_status=1 and ledger_id=d.account_code and jvdate between '".$_POST['f_date']."' and '".$_POST['t_date']."' and tr_from in ('Journal_info', 'Payment') and jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."') as OtherIssue
 
+                                            
 from dealer_info d,branch r,area t
 where 
       d.dealer_category='".$_POST['pc_code']."' and 
       d.region=r.BRANCH_ID and 
       d.area_code=t.AREA_CODE  
-group by d.account_code order by d.dealer_code";
+        group by d.account_code order by d.dealer_code
+      ";
+
+$sql = "
+WITH journal_data AS (
+    SELECT 
+        ledger_id, 
+        SUM(CASE WHEN jvdate < '$f_date' THEN cr_amt - dr_amt ELSE 0 END) AS opening_balance,
+        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from = 'receipt' THEN cr_amt ELSE 0 END) AS collection,
+        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from = 'SalesReturn' THEN cr_amt ELSE 0 END) AS salesReturn,
+        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from IN ('Journal_info', 'Sales') THEN cr_amt ELSE 0 END) AS OtherReceived,
+        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from IN ('Journal_info', 'Payment') THEN dr_amt ELSE 0 END) AS OtherIssue
+    FROM journal
+    WHERE visible_status = 1
+    AND jvdate NOT BETWEEN '".$lockedStartInterval."' AND '".$lockedEndInterval."'
+    GROUP BY ledger_id
+),
+shipment_data AS (
+    SELECT 
+        dealer_code, 
+        SUM(total_amt) AS shipment
+    FROM sale_do_details 
+    WHERE item_id NOT IN ('1096000100010312') 
+    AND do_type = 'sales' 
+    AND do_date BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' 
+    AND do_date NOT BETWEEN '".$lockedStartInterval."' AND '".$lockedEndInterval."'
+    GROUP BY dealer_code
+)
+SELECT 
+    d.dealer_code,
+    d.dealer_custom_code,
+    d.dealer_name_e AS dealer_name,
+    d.account_code,
+    t.AREA_NAME AS 'Territory',
+    r.BRANCH_NAME AS region,
+    j.opening_balance AS opening,
+    j.collection,
+    j.salesReturn,
+    j.OtherReceived,
+    s.shipment,
+    j.OtherIssue
+FROM dealer_info d
+JOIN branch r ON d.region = r.BRANCH_ID
+JOIN area t ON d.area_code = t.AREA_CODE
+LEFT JOIN journal_data j ON d.account_code = j.ledger_id
+LEFT JOIN shipment_data s ON d.dealer_code = s.dealer_code
+WHERE d.dealer_category = '".$_POST['pc_code']."'
+GROUP BY d.account_code
+ORDER BY d.dealer_code";
     $result = mysqli_query($conn, $sql);
     ?>
 
@@ -1517,11 +1568,11 @@ order by a.jvdate,a.id";}
         <?php
         $datecon=' and m.do_date between  "'.$f_date.'" and "'.$t_date.'"';
         if($_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
-        if(isset($warehouse_id))				{$warehouse_id_CON=' and m.depot_id='.$warehouse_id;}
+        if(isset($warehouse_id))				{$warehouse_id_CON=' and m.depot_id='.$warehouse_id;} else { $warehouse_id_CON=''; }
         if($_POST['dealer_code']>0) 			 $dealer_code=$_POST['dealer_code'];
-        if(isset($dealer_code))				{$dealer_code_CON=' and m.dealer_code='.$dealer_code;}
+        if(isset($dealer_code))				{$dealer_code_CON=' and m.dealer_code='.$dealer_code;} else { $dealer_code_CON=''; }
         if($_POST['do_type']>0) 			 $do_type=$_POST['do_type'];
-        if(isset($do_type))				{$do_type_con=' and m.do_type='.$do_type_con;}
+        if(isset($do_type))				{$do_type_con=' and m.do_type='.$do_type;} else { $do_type_con=''; }
         $sql="select
 distinct c.chalan_no,
 
@@ -1558,7 +1609,7 @@ a.AREA_CODE=d.area_code
 and m.status in ('CHECKED','COMPLETED') and m.do_no=c.do_no and  m.dealer_code=d.dealer_code and w.warehouse_id=m.depot_id and
 c.item_id not in ('1096000100010312') and
 m.do_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
-a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$pg_con.$dealer_code_CON.$dtype_con.$product_team_con.$do_type_con."
+a.PBI_ID=p.PBI_ID".$warehouse_id_CON.$datecon.$dealer_code_CON.$do_type_con."
 group by c.do_no
 order by c.do_no";
         $query = mysqli_query($conn, $sql); ?>
@@ -1591,6 +1642,7 @@ order by c.do_no";
             $totalsaleafterdiscount     =0;
             $totalsaleafterdiscounts    =0;
             $totalcomissionamount       =0;
+            $actualsalestotalamts       =0;
             while($data=mysqli_fetch_object($query)){$s++; ?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal;">
                     <td style="border: solid 1px #999; text-align:center"><?=$s?></td>
@@ -1969,11 +2021,11 @@ order by c.do_no";
                 <th style="border: solid 1px #999; padding:2px">Item For</th>
             </tr></thead>
             <tbody>
-            <?php
+            <?php $PostDoNo = @$_POST['do_no'];
             if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
-            if(isset($item_id))				{$item_con=' and sd.item_id='.$item_id;}
-            if($_POST['do_no']>0) 					$do_no=$_POST['do_no'];
-            if(isset($do_no))				{$do_no_con=' and sd.do_no='.$do_no;}
+            if(isset($item_id))				{$item_con=' and sd.item_id='.$item_id;} else { $item_con=''; }
+            if($PostDoNo>0) 					$do_no=$_POST['do_no'];
+            if(isset($do_no))				{$do_no_con=' and sd.do_no='.$do_no;} else { $do_no_con=''; }
             $datecon=' and sd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
             $i = 0;
             if ($_POST['do_type'] == 'all') {
@@ -2174,7 +2226,7 @@ order by c.do_no";
                     <td style="border: solid 1px #999; text-align:right;  padding:2px"><?php if($data->total_amt=="0.00") {echo 'Free';} else echo 'Sales';;?></td>
                 </tr>
                 <?php
-                $total_sales_amount=$total_sales_amount+$data->total_amt;
+                $total_sales_amount=@$total_sales_amount+$data->total_amt;
             }
             $toatl_sales_reguler=find_a_field('sale_do_details','SUM(total_amt)','do_type in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type not in ("export") ');
             $toatl_sales=find_a_field('sale_do_details','SUM(total_amt)','do_type not in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type in ("export")')
@@ -2186,7 +2238,7 @@ order by c.do_no";
             </tr>
             <tr style="border: solid 1px #999; font-size:12px; font-weight:normal">
                 <th style="border: solid 1px #999; padding:2px; text-align: right" colspan="17">Total Sales in Amount  = </th>
-                <th style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($toatl_sales_reguler+$toatl_sales_export,2);?></th>
+                <th style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($toatl_sales_reguler,2);?></th>
                 <th style="border: solid 1px #999; padding:2px; "></th>
             </tr>
             <tr style="border: solid 1px #999; font-size:11px; font-weight:normal">

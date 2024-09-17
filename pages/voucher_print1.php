@@ -158,7 +158,7 @@ function hide()
                 <td align="center" class="title"><?=$_SESSION['company_name'];?></td>
               </tr>
               <tr>
-                <td align="center"><?=$address?></td>
+                <td align="center"><?=$_SESSION['company_address'];?></td>
               </tr>
               <tr>
                 <td align="center"><table  class="debit_box" border="0" cellspacing="0" cellpadding="0">
