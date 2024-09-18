@@ -1232,7 +1232,7 @@ $query = mysqli_query($conn, $sql); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012006'):?>
-    <?php
+    <?php $title = 'Collection and Shipment Report';
     $sqls="SELECT d.dealer_code as dealer_code,d.dealer_custom_code,
 d.dealer_name_e as dealer_name,d.account_code,t.AREA_NAME as 'Territory',r.BRANCH_NAME as region,
 
@@ -1300,7 +1300,7 @@ GROUP BY d.account_code
 ORDER BY d.dealer_code";
     $result = mysqli_query($conn, $sql);
     ?>
-
+    <title><?=$title;?></title>
     <table align="center" id="customers"  style="width:95%; border: solid 1px #999; border-collapse:collapse;">
         <thead>
         <h2 align="center" style="margin-top: -5px"><?=$_SESSION['company_name'];?></h2>
