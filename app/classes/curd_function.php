@@ -1460,7 +1460,7 @@ class htmldiv extends crud {
 
 function recentvoucherview($sql,$link,$v_type,$css,$viewmoreURL){
     global $conn;
-    $str = '';
+    $str = ''; $sl = 0;
     if($sql==NULL) return NULL;
     $str.='
 		<div class="col-md-4 col-xs-12">

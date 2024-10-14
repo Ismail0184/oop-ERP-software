@@ -6,17 +6,18 @@ $dto=date('Y-m-d');
 
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $todayss=$dateTime->format("d/m/Y  h:i A");
-
+$$unique = $_GET[$unique];
 $now=time();
 $unique='po_no';
 $unique_field='po_details';
 $table="purchase_master";
 $table_details="purchase_invoice";
-$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+
+$current_status=find_a_field("".$table."","status","".$unique."=".$$unique."");
 $required_status="recommended";
 $page="hrm_unauthorized_work_order.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
 if(prevent_multi_submit()){
@@ -59,7 +60,7 @@ if(isset($$unique))
 $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");	
 
 
-if(isset($_POST[Approved])){
+if(isset($_POST['Approved'])){
 mysqli_query($conn, "Update ".$table." SET status='PROCESSING',authorized_date='$todayss' where ".$unique."=".$_GET[$unique]."");
 $maild=find_a_field('users','email','user_id='.$master->entry_by);
 $CC_checkby=find_a_field('users','email','user_id='.$master->checkby);

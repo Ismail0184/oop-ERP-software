@@ -222,10 +222,11 @@ if(isset($product_group))
 $str 	.= '<h2>Product Group : '.$product_group.'</h2>';
 $str 	.= '</div>';
 $str 	.= '<div class="left" style="width:100%">';
+$report_id = @$_POST['report_id'];
 ?>
 
 
-<? if($_POST['report_id']==7001001) { ?>
+<? if($report_id==7001001) { ?>
   <style>
       #customers {
           font-family: "Gill Sans", sans-serif;
@@ -364,7 +365,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
 </table>
 
 
-<?php } elseif ($_POST['report_id']=='7004001'){?>
+<?php } elseif ($report_id=='7004001'){?>
    <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
         $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -400,7 +401,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
 
 
 
-<?php } elseif ($_POST['report_id']=='7004002'){?>
+<?php } elseif ($report_id=='7004002'){?>
    <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
         $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -435,7 +436,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
         ?>
            <?=reportview($sql,'Order vs Stock',100,'','','')?>
 
-<?php } elseif ($_POST['report_id']=='7004003'){?>
+<?php } elseif ($report_id=='7004003'){?>
    <title><?=$warehouse_name= getSVALUE('warehouse','warehouse_name','WHERE warehouse_id="'.$_POST['warehouse_id'].'"');?> : Transaction Statement</title>
         <?php
         $datecon=' and sdd.do_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -472,7 +473,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
            <?=reportview($sql,'Order vs Challan vs Stock',100,'','','')?>
 
 
-         <?php } elseif ($_POST['report_id']=='7004004'){?>
+         <?php } elseif ($report_id=='7004004'){?>
             <title>STO vs Stock Exit</title>
                  <?php
                  $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -560,7 +561,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                      </tbody>
                  </table>
 
-               <?php } elseif ($_POST['report_id']=='7004005'){?>
+               <?php } elseif ($report_id=='7004005'){?>
                   <title>STO vs Stock Received</title>
                        <?php
                        $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -648,7 +649,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                            </tbody>
                        </table>
 
-                     <?php } elseif ($_POST['report_id']=='7004006'){?>
+                     <?php } elseif ($report_id=='7004006'){?>
                         <title>STO vs Stock Exit vs Stock Received</title>
                              <?php
                              $datecon=' and sdd.pi_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
@@ -746,7 +747,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                              </table>
 
 
-<?php } elseif ($_POST['report_id']=='7003001'){
+<?php } elseif ($report_id=='7003001'){
 
     $PostStatus = @$_POST['status'];
     $PostWarehouse_id = @$_POST['warehouse_id'];
@@ -886,7 +887,7 @@ where
     </div>
     </div>
     </div>
-<?php } elseif ($_POST['report_id']=='7003002'){
+<?php } elseif ($report_id=='7003002'){
         $sql="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
 REPLACE(FORMAT(SUM(j.item_in-j.item_ex), 0), ',', '') as Available_stock_balance
 from
@@ -909,7 +910,7 @@ group by j.item_id ".$order_by."";?>
 <?=reportview($sql,'Present Stock',100,'','','')?>
 
 
-<?php } elseif ($_POST['report_id']=='7003003'){ $query="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
+<?php } elseif ($report_id=='7003003'){ $query="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
 SUM(j.item_in-j.item_ex) as Available_stock_balance,bsp.batch_no,j.batch,bsp.status as batch_status,bsp.mfg,bsp.create_date
 from
 item_info i,
@@ -975,7 +976,7 @@ $sql=mysqli_query($conn, $query);
       </tbody>
     </table>
 
-<?php } elseif ($_POST['report_id']=='7003004'){ $query="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
+<?php } elseif ($report_id=='7003004'){ $query="Select i.item_id,i.finish_goods_code,i.item_name,i.unit_name,i.pack_size,s.sub_group_name,g.group_name,
 SUM(j.item_in-j.item_ex) as Available_stock_balance,j.batch,j.expiry_date
 from
 item_info i,

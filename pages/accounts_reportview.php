@@ -1487,42 +1487,34 @@ order by a.jvdate,a.id";}
     #customers tr:hover {background-color: #FFCCFF;}
     td{}
 </style>
-<title><?=$ledger_name;?> | Imbalance Voucher</title>
+<title>Imbalance Voucher</title>
 <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
 <p align="center" style="margin-top:-18px; font-size: 15px">Imbalance Voucher</p>
-<p align="center" style="margin-top:-10px; font-size: 12px; font-weight: bold">Ledger Name: <?=$_REQUEST['ledger_id'];?> - <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_REQUEST['ledger_id']);?></p>
-<?php if($_POST['cc_code']){ ?>
-    <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Cost Center:</strong> <?=find_a_field('cost_center','center_name','id='.$_REQUEST['cc_code']);?> (<?=$_REQUEST['cc_code'];?>)</p>
-<?php } ?>
-<?php if($_POST['tr_from']){ ?>
-    <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Transaction Type:</strong> <?=$_REQUEST['tr_from'];?></p>
-<?php } ?>
-
 
 <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> <strong>to</strong> <?=$_POST['t_date']?></p>
 <table align="center" id="customers"  style="width:95%; border: solid 1px #999; border-collapse:collapse; ">
     <thead>
     <p style="width:95%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
         echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
-    <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
+    <tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: darkgrey">
         <th style="border: solid 1px #999; padding:2px">SL</th>
         <th style="border: solid 1px #999; padding:2px; width:10%">Voucher Date</th>
         <th style="border: solid 1px #999; padding:2px; width:10%">Voucher No</th>
         <th style="border: solid 1px #999; padding:2px; width:10%">Transaction No</th>
-        <th style="border: solid 1px #999; padding:2px; width:10%">T Tryp</th>
+        <th style="border: solid 1px #999; padding:2px; width:10%">T Type</th>
         <th style="border: solid 1px #999; padding:2px">Dr Amt</th>
         <th style="border: solid 1px #999; padding:2px">Cr Amt</th>
         <th style="border: solid 1px #999; padding:2px;">Balance</th>
     </tr></thead>
     <tbody>
     <?php
+    $i = 0;
     $result=mysqli_query($conn, "Select tr_no,tr_from,jvdate,jv_no,SUM(dr_amt) as dr_amt,SUM(cr_amt) as cr_amt from journal where visible_status=1 and jvdate between '$f_date' AND '$t_date' and dr_amt!=cr_amt group by jv_no,jvdate order by jv_no");
     while($data=mysqli_fetch_object($result)){
         $Difference=$data->dr_amt-$data->cr_amt;
         if($Difference>0 || $Difference<0) {
             ?>
-
-            <tr style="border:solid 1px #999;font-size:10px;font-weight:normal;<?php if($Difference>0 || $Difference<0) { echo 'background-color:red'; };?>">
+            <tr style="border:solid 1px #999;font-size:10px;font-weight:normal">
                 <td style="border: solid 1px #999; text-align:center"><?=$i=$i+1;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->jvdate;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->jv_no;?></td>
@@ -1530,7 +1522,7 @@ order by a.jvdate,a.id";}
                 <td style="border: solid 1px #999; text-align:center"><?=$data->tr_from;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->dr_amt;?></td>
                 <td style="border: solid 1px #999; text-align:center"><?=$data->cr_amt;?></td>
-                <td style="border: solid 1px #999; text-align:center"><?=number_format($data->dr_amt-$data->cr_amt,2);?></td>
+                <td style="border: solid 1px #999; text-align:center; <?php if($Difference>0 || $Difference<0) { echo 'background-color:red; color:white; font-weight:bold'; };?>"><?=number_format($data->dr_amt-$data->cr_amt,2);?></td>
             </tr>
 
 
@@ -3705,7 +3697,7 @@ group by lld.item_id
             #customers tr:hover {background-color: #ddd;}
             td{text-align: center; }
         </style>
-        <title><?=$_SESSION['company_name'];?> | Financial Statement<</title>
+        <title><?=$_SESSION['company_name'];?> | Financial Statement</title>
         <h2 align="center"><?=$_SESSION['company_name'];?></h2>
         <h4 align="center" style="margin-top:-13px">Financial Statement</h4>
         <table align="center" id="customers" style="width:70%; border: solid 1px #999; border-collapse:collapse; ">

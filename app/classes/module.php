@@ -3,7 +3,7 @@
 require_once 'base.php';
 function sum_com($conn, $com,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval)
 {   global $conn;
-    $sql = mysqli_query($conn,'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and  j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
+    $sql = mysqli_query($conn,'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and  j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
 	$a = mysqli_fetch_array($sql,  MYSQLI_ASSOC);
 	$amount = $a['amt'];
 	return $amount;
@@ -11,7 +11,7 @@ function sum_com($conn, $com,$fdate,$tdate,$sec_com_connection,$lockedStartInter
 
 function sum_cash_flow_com($conn, $com,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval)
 {   global $conn;
-	$sql = mysqli_query($conn,'select sum(j.cr_amt-j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
+	$sql = mysqli_query($conn,'select sum(j.cr_amt-j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
 	$a = mysqli_fetch_array($sql,  MYSQLI_ASSOC);
 	$amount = $a['amt'];
 	return $amount;
@@ -33,7 +33,7 @@ function sum_com_sub($conn, $com,$fdate,$tdate,$subgroup,$last_subgroup,$sec_com
 	} else {
 		$sub_group_conn='';
 	}
-	$sql = mysqli_query($conn, 'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection.$sub_group_conn);
+	$sql = mysqli_query($conn, 'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection.$sub_group_conn);
 	$a = mysqli_fetch_array($sql,  MYSQLI_ASSOC);
 	$amount = $a['amt'];
 	return $amount;
@@ -58,11 +58,11 @@ function sum_cash_flow_liabilities($conn,$com,$fdate,$tdate,$sec_com_connection,
 
 function sum_com_P_L($conn,$fdate,$tdate,$sec_com_connection,$lockedStartInterval,$lockedEndInterval)
 {   global $conn;
-$sql_income = mysqli_query($conn, 'select sum(j.cr_amt-j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.group_class in ("3000")'.$sec_com_connection);
+$sql_income = mysqli_query($conn, 'select sum(j.cr_amt-j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.group_class in ("3000")'.$sec_com_connection);
 	$a_income = mysqli_fetch_array($sql_income,  MYSQLI_ASSOC);
 	$amount_income = $a_income['amt'];
 
-	$sql_expenses = mysqli_query($conn, 'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.group_class in ("4000")'.$sec_com_connection);
+	$sql_expenses = mysqli_query($conn, 'select sum(j.dr_amt-j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.group_class in ("4000")'.$sec_com_connection);
 	$a_expenses = mysqli_fetch_array($sql_expenses,  MYSQLI_ASSOC);
 	$amount_expenses = $a_expenses['amt'];
 	return $amount_income-$amount_expenses;
@@ -72,7 +72,7 @@ function sum_com_sub_PL_cr($conn, $com,$fdate,$tdate,$sec_com_connection,$locked
 {   global $conn;
     $sectionid=$_SESSION['sectionid'];
 	$companyid=$_SESSION['companyid'];
-	$sql = mysqli_query($conn, 'select sum(j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and  j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
+	$sql = mysqli_query($conn, 'select sum(j.cr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and  j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
 	$a = mysqli_fetch_array($sql,  MYSQLI_ASSOC);
 	$amount = $a['amt'];
 	return $amount;
@@ -81,7 +81,7 @@ function sum_com_sub_PL_dr($conn, $com,$fdate,$tdate,$sec_com_connection,$locked
 {   global $conn;
     $sectionid=$_SESSION['sectionid'];
 	$companyid=$_SESSION['companyid'];
-	$sql = mysqli_query($conn, 'select sum(j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1 and j.group_for='.$_SESSION['usergroup'].' and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
+	$sql = mysqli_query($conn, 'select sum(j.dr_amt) as amt from journal j,accounts_ledger l, ledger_group g where j.visible_status=1  and j.jvdate between "'.$fdate.'" and "'.$tdate.'" and j.jvdate NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and j.ledger_id=l.ledger_id and l.ledger_group_id=g.group_id and g.com_id in ('.$com.')'.$sec_com_connection);
 	$a = mysqli_fetch_array($sql,  MYSQLI_ASSOC);
 	$amount = $a['amt'];
 	return $amount;

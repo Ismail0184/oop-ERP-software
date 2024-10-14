@@ -31,7 +31,7 @@ if(prevent_multi_submit()) {
             $d = $_POST['voucher_date'];
             $_POST['voucher_date'] = date('Y-m-d', strtotime($d));
             if($_POST['Cheque_Date']>0){
-                $_POST['Cheque_Date'] = $_POST['Cheque_Date'];
+                $_POST['Cheque_Date'] = @$_POST['Cheque_Date'];
             } else {
                 $_POST['Cheque_Date']='';
             }
@@ -200,16 +200,17 @@ cost_center c
     $API_client_id = @$_SESSION['API_client_id'];
     $find_API_journal_voucher=find_all_field('dev_API_received','','API_name="API_journal_voucher" and status=1 and client_id='.$API_client_id);
     $find_API_journal_voucher_API_endpoint = @$find_API_journal_voucher->API_endpoint;
+    $initiate_journal_note_inter_company = @$_SESSION['initiate_journal_note_inter_company'];
     if (isset($_POST['confirmsave'])) {
         $up_master=mysqli_query($conn, "UPDATE ".$table_journal_info." SET entry_status='UNCHECKED' where ".$journal_info_unique."=".$_SESSION['initiate_journal_note_inter_company']."");
         $up_master=mysqli_query($conn, "UPDATE journal SET status='UNCHECKED' where jv_no=".$jv);
         $up_master=mysqli_query($conn, "UPDATE ".$table_journal_master." SET entry_status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_journal_note_inter_company']."");
         $up_query=mysqli_query($conn, $up_master);
-        $external_dr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=1 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
-        $external_dr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=3 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
-        $external_cr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=2 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
-        $external_cr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=4 and journal_info_no='.$_SESSION['initiate_journal_note_inter_company']);
-        $targeturl=$find_API_journal_voucher_API_endpoint.'?jv_ref='.$_SESSION['initiate_journal_note_inter_company'].'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&j_date='.$external_dr_voucher_data->j_date.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
+        $external_dr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=1 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_dr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=3 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_cr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=2 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_cr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=4 and journal_info_no='.$initiate_journal_note_inter_company);
+        $targeturl=$find_API_journal_voucher_API_endpoint.'?jv_ref='.$initiate_journal_note_inter_company.'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&j_date='.$external_dr_voucher_data->j_date.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
@@ -244,7 +245,8 @@ cost_center c
     { $$key=$value;}
     $inputted_amount=find_a_field('journal_info','SUM(dr_amt)','journal_info_no="'.$initiate_journal_note_inter_company.'"');
 }
-
+$drAmt = @$drAmt;
+$crAmt = @$crAmt;
 $voucher_date = @$voucher_date;
 $date = date('Y-m-d');
 $paid_to = @$paid_to;
@@ -292,6 +294,7 @@ if($delete_commend==1) {
     $update = mysqli_query($conn, "UPDATE journal SET narration='".$update_narration."' where tr_no=".$_GET['jv_ref']);
     header("Location: ".$page."");
 }
+$API_client_id = @$_SESSION['API_client_id'];
 $find_API_all_active_ledger=find_all_field('dev_API_received','','API_name="API_all_active_ledger" and status=1 and client_id='.$API_client_id);
 $find_API_intercompany_ledger=find_all_field('dev_API_received','','API_name="API_intercompany_ledger" and status=1 and client_id='.$API_client_id);
 $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_customer_list" and status=1 and client_id='.$API_client_id);

@@ -1,6 +1,6 @@
 <?php
 require_once 'support_file.php';
-$cname = $_GET['headname'];
+$cname = @$_GET['headname'];
 
 $sectionid=$_SESSION['sectionid'];
 $companyid=$_SESSION['companyid'];
@@ -18,7 +18,7 @@ if($date_checking>0) {
 {
     $lockedStartInterval = '';
     $lockedEndInterval = '';
-}
+} $GETrno = @$_GET['rno'];
 ?>
 <title><?=$cname;?></title>
 <style>
@@ -50,7 +50,7 @@ if($date_checking>0) {
 <h2 align="center"><?=$_SESSION['company_name'];?></h2>
 <h4 style="text-align: center; margin-top: -10px"><?=$cname;?></h4>
 <h5 style="text-align: center; margin-top: -10px">Date Interval : <?=$_GET['fdate'];?> to <?=$_GET['tdate'];?></h5>
-<?php if($_GET['rno']=='1') { ?>
+<?php if($GETrno=='1') { ?>
     <table align="center" id="customers" style="width:70%; border: solid 1px #999; border-collapse:collapse; ">
         <tr style="border: solid 1px #999;font-weight:bold; font-size:12px" >
             <th style="border: solid 1px #999; padding:2px; width: 1%">SL</th>
@@ -61,7 +61,7 @@ if($date_checking>0) {
             <th style="border: solid 1px #999; padding:2px; width: 15%">Balance Amount</th>
         </tr>
         <?php
-        $i=0;
+        $i=0; $total_dr_amt=0;$total_cr_amt=0;
        $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -101,7 +101,7 @@ order by l.ledger_id ');
         </tbody></table>
 
 
-    <?php } elseif($_GET['rno']=='2') { ?>
+    <?php } elseif($GETrno=='2') { ?>
         <table align="center" id="customers" style="width:70%; border: solid 1px #999; border-collapse:collapse; ">
             <tr style="border: solid 1px #999;font-weight:bold; font-size:12px" >
                 <th style="border: solid 1px #999; padding:2px; width: 1%">SL</th>
@@ -152,7 +152,7 @@ order by l.ledger_id ');
             </tr>
             </tbody></table>
 
-<?php } elseif($_GET['rno']=='3') { ?>
+<?php } elseif($GETrno=='3') { ?>
     <table align="center" id="customers" style="width:70%; border: solid 1px #999; border-collapse:collapse; ">
         <tr style="border: solid 1px #999;font-weight:bold; font-size:12px" >
             <th style="border: solid 1px #999; padding:2px; width: 1%">SL</th>
@@ -163,7 +163,7 @@ order by l.ledger_id ');
             <th style="border: solid 1px #999; padding:2px; width: 15%">Balance Amount</th>
         </tr>
         <?php
-        $i = 0;
+        $i = 0; $total_dr_amt=0;$total_cr_amt=0;
        $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -231,7 +231,7 @@ order by l.ledger_id ');
             <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($total_dr_amt-$total_cr_amt,2);?></td>
         </tr>
         </tbody></table>
-        <?php } elseif($_GET['rno']=='4') { 
+        <?php } elseif($GETrno=='4') {
 		$result = 'select l.ledger_id,concat(l.ledger_id," - ",l.ledger_name) as ledger_name,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,SUM(j.dr_amt)-SUM(j.cr_amt) as balance
 from 
 journal j,
@@ -249,7 +249,7 @@ order by l.ledger_id';
 		echo bl_pl_support_data_view($result,'','70')?>
         
         
- <?php } elseif($_GET['rno']=='5') { 
+ <?php } elseif($GETrno=='5') {
 		$result = 'select l.ledger_id,concat(l.ledger_id," - ",l.ledger_name) as ledger_name,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,SUM(j.dr_amt)-SUM(j.cr_amt) as balance
 from 
 journal j,
@@ -269,7 +269,7 @@ order by l.ledger_id';
     
         
             
-<?php } elseif($_GET['rno']=='6') { ?>
+<?php } elseif($GETrno=='6') { ?>
         <table align="center" id="customers" style="width:70%; border: solid 1px #999; border-collapse:collapse; ">
             <tr style="border: solid 1px #999;font-weight:bold; font-size:12px" >
                 <th style="border: solid 1px #999; padding:2px; width: 1%">SL</th>
@@ -281,7 +281,7 @@ order by l.ledger_id';
             </tr>
 
             <?php
-            $i=0;
+            $i=0; $total_dr_amt=0;$total_cr_amt=0;
             $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,
@@ -338,7 +338,7 @@ order by l.ledger_id ');
         } else {
             $sec_com_connection=" and j.section_id='".$sectionid."' and j.company_id='".$companyid."'";
         }
-        $i=0;
+        $i=0; $total_dr_amt=0; $total_cr_amt=0;
         $result = mysqli_query($conn,'select l.*,SUM(j.dr_amt) as dr_amt,SUM(j.cr_amt) as cr_amt,j.ledger_id
 from 
 journal j,

@@ -100,10 +100,10 @@ if(prevent_multi_submit()){
                             $_POST['pkt_unit'] = 0;
                         }
                         $_POST['t_price'] = '0.00';
-                        $inStockCtn = ($in_stock_pcs-$ordered_qty)/$gift_item->pack_size; $inStockCtn=(int)$inStockCtn;
+                        $inStockCtn = ($in_stock_pcs)/$gift_item->pack_size; $inStockCtn=(int)$inStockCtn;
                         $_POST['inStock_ctn']=$inStockCtn;
-                        $_POST['inStock_pcs']=($in_stock_pcs-$ordered_qty)-($inStockCtn*$gift_item->pack_size);
-                        $_POST['inStock_Totalpcs']=$in_stock_pcs-$ordered_qty;
+                        $_POST['inStock_pcs']=($in_stock_pcs)-($inStockCtn*$gift_item->pack_size);
+                        $_POST['inStock_Totalpcs']=$in_stock_pcs;
                         if($_POST['unit_price']==0&&$_POST['total_unit']==0){
                             echo '';
                         }else
