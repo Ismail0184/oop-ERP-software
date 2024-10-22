@@ -4,16 +4,25 @@
  $page = 'account_settings.php';
  $title='Change Password';
  $table='users';
- $enat=date('Y-m-d h:s:i');
+ $getOldPassword = find_a_field('users','password','user_id='.$_SESSION['userid']);
+ $enat=date('Y-m-d h:i:s');
  if(isset($_POST['changePASS'])){
   $valid = true;
- 	if ($_SESSION["PASSCODE"]!==$_POST['old_password'])
+ 	if ($getOldPassword!==$_POST['old_password'])
   {echo "<script> alert('Invalid Old Password!!') </script>";
          $valid = false;}
 if ($valid){
  unset($_SESSION['PASSCODE']);
- $insert=mysqli_query($conn, "UPDATE  users SET password='".$_POST['new_password']."' where user_id='".$_SESSION['userid']."' ");
+ $passHash = password_hash("".$_POST['new_password']."", PASSWORD_DEFAULT);
+
+ $previousPasswordInactive = mysqli_query($conn, "UPDATE users_password_logs SET status='inactive' WHERE user_id='".$_SESSION['userid']."'");
+ $insertPasswordLogs = mysqli_query($conn, "INSERT INTO users_password_logs (user_id,password,password_encryption,status,ip_address,created_at,section_id,company_id) 
+VALUES ('".$_SESSION['userid']."','".$_POST['new_password']."','".$passHash."','active','".$ip."','".$enat."','".$_SESSION['sectionid']."','".$_SESSION['companyid']."')");
+ $insert=mysqli_query($conn, "UPDATE  users SET password='".$_POST['new_password']."',passwords='".$passHash."' where user_id='".$_SESSION['userid']."' ");
   $_SESSION["PASSCODE"]	=$_POST['new_password'];
+    session_destroy();
+    unset($_POST);
+    header('Location: ../pages/');
 }}?>
 
 <?php require_once 'header_content.php'; ?>
@@ -23,7 +32,7 @@ if ($valid){
                   <div class="x_title">
                     <h2><?=$title;?></h2>
                     <a style="float: right" class="btn btn-sm btn-default"  href="account_settings_warehouse.php">
-                        <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Change Default Warehoues</span>
+                        <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Change Default Warehouse</span>
                     </a>
                       <a style="float: right" class="btn btn-sm btn-default"  href="account_settings_change_default_branch.php">
                           <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000; font-size: 11px">Change Default Branch</span>
@@ -46,7 +55,7 @@ if ($valid){
 </div>
 <div class="form-group" style="margin-left:40%">
                <div class="col-md-6 col-sm-6 col-xs-12">
-               <button type="submit" name="changePASS" onclick='return window.confirm("Are you confirm?");' class="btn btn-success">Change Password</button>
+               <button type="submit" name="changePASS" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary">Change Password</button>
                </div></div>
              </form>
          </div>

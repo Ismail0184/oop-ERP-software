@@ -205,17 +205,18 @@ endif;
                         <th style="width: 15%">Type of Leave <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td style="width: 35%">
-                            <select class="select2_single form-control" name="type" id="type" required style="width:91%" onchange="javascript:reload(this.form)">
+                            <select class="select2_single form-control" name="type" id="type" onchange="enableInitiateButton(); getTypeBalance()" required style="width:91%">
                                 <option></option>
-                                <?=foreign_relation('hrm_leave_type','id','leave_type_name',$type)?>
+                                <?=foreign_relation('hrm_leave_type','id','leave_type_name',0)?>
                             </select>
                             <input type="hidden" id="<?=$unique?>" style="width:100%"     name="<?=$unique?>" value="<?=$$unique?>" class="form-control col-md-7 col-xs-12" >
                         </td>
                         <th style="width: 15%">Policy & Taken</th>
                         <th style="width:2%">:</th>
                         <td style="width: 33%">
-                            <input type="text" id="policy" name="policy" style="width:45%; font-size:11px" value="<?=$policy;?>, Days" readonly class="form-control col-md-7 col-xs-12" >
-                            <input type="text" id="alrady_taken" name="alrady_taken" style="width:45%; font-size:11px; float:right" value="<?=$alrady_taken;?>" readonly class="form-control col-md-7 col-xs-12" >
+                            <input type="text" id="leavePolicy" name="policy" style="width:33%; background-color: salmon; font-size:11px" value="<?=$policy;?>" readonly class="form-control col-md-7 col-xs-12" >
+                            <input type="text" id="alreadyLeaveTaken" name="alrady_taken" style="width:35%; font-size:11px; background-color: red; margin-left: 1%; color: white" value="<?=$alrady_taken;?>" readonly class="form-control col-md-7 col-xs-12" >
+                            <input type="text" id="leaveBalance" name="" style="width:29%; font-size:11px; float:right; margin-left: 1%; background-color: #1b654a; color: white" value="<?=$alrady_taken;?>" readonly class="form-control col-md-7 col-xs-12" >
                         </td>
                     </tr>
                     <tr><td style="height:5px"></td></tr>
@@ -228,7 +229,7 @@ endif;
                     </tr>
                     <tr><td style="height:5px"></td></tr>
                     <tr>
-                        <th>R.P During Leave <span class="required text-danger">*</span></th>
+                        <th>Responsible Person <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td>
                             <select class="select2_single form-control" style="width:91%;" tabindex="-1" required="required" name="leave_responsibility_name" id="leave_responsibility_name">
@@ -236,7 +237,7 @@ endif;
                                 <?=advance_foreign_relation(find_active_user_HO($leave_responsibility_name));?>
                             </select></td>
                         <th>Mobile</th>
-                        <th style="width:2%">:</th><td style="width: 20%"><input name="leave_mobile_number" type="text" id="leave_mobile_number" value="<?=$leave_mobile_number?>" style="font-size:11px; width:100%" placeholder="Mobile no. During Leave" class="form-control col-md-7 col-xs-12" required/></td>
+                        <th style="width:2%">:</th><td style="width: 20%"><input name="leave_mobile_number" type="text" id="leave_mobile_number" value="<?=$leave_mobile_number?>" style="font-size:11px; width:100%" placeholder="Mobile no. During Leave" class="form-control col-md-7 col-xs-12"/></td>
                     </tr>
                     <tr><td style="height:5px"></td></tr>
                     <tr>
@@ -258,29 +259,22 @@ endif;
                     </tr>
                     <tr><td style="height:5px"></td></tr>
                     <tr>
-                        <th>Duration <br>(from & to)</th>
+                        <th>Duration <br>(from & to) <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td colspan="4">
                             <input type="date" id="s_date" style="width:38.5%; font-size:11px" required="required" name="s_date" value="<?=$s_date?>" onchange="cal()" class="form-control col-md-7 col-xs-12" >
                             <input type="date" id="e_date" style="width:36.5%; margin-left: 4%; font-size:11px"  required   name="e_date" value="<?=$e_date?>" onchange="cal()" class="form-control col-md-7 col-xs-12" >
-                            <input type="text" id="applied" readonly name="applied" style="width:20%; font-size:11px;float:right" placeholder="days" class="form-control col-md-7 col-xs-12" >
+                            <input type="text" id="applied" readonly name="applied" style="width:20%; font-size:11px;float:right" placeholder="total applied days" class="form-control col-md-7 col-xs-12" >
                         </td>
                     </tr>
                 </table>
                 <hr/>
-                <?php
-                if($GetType>0){
-                    if($alrady_taken >= $policy){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>You cannot apply for leave more than the company policy !!!!</i></h6>';}
-                    if (($GetType==5) && ($_SESSION['gander']==1)) {
-                        echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>Maternity leave is available for women only!!</i></h6>';
-                    } else { ?>
 
-                        <div class="form-group" style="margin-left:40%">
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="record" id="record" style="font-size:12px" onclick='return window.confirm("Are you confirm?");'  class="btn btn-primary">Submit the Application <i class="fa fa-forward"></i></button>
-                            </div>
-                        </div>
-                    <?php }} else {} ?>
+                <div class="form-group" style="margin-left:40%">
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <button type="submit" name="record" id="initiateButton" style="font-size:12px" onclick='return window.confirm("Are you confirm?");'  class="btn btn-primary">Submit the Application <i class="fa fa-forward"></i></button>
+                    </div>
+                </div>
                 <?php if(isset($_GET[$unique])){ ?>
                     <?php if($current_status!=$required_status){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This leave has been approved!!</i></h6>';} else { ?>
                         <input  name="delete" type="submit" style="font-size:12px; float:left; margin-left:10%" class="btn btn-danger" id="delete" value="Delete"/>
@@ -294,3 +288,79 @@ endif;
     <?=recentdataview($sql2,'voucher_view_popup_ismail.php','hrm_leave_info','282px','Recent Leave Applications','hrm_requisition_leave_report.php','4');?>
 <?php endif; ?>
 <?=$html->footer_content();?>
+
+
+<script>
+    function enableInitiateButton() {
+        var inputDate = document.getElementById("type").value;
+        var submitButton = document.getElementById("initiateButton");
+        var startDate = document.getElementById("s_date");
+        var endDate = document.getElementById("e_date");
+        var appliedField = document.getElementById("applied");
+        var applied = parseInt(appliedField.value); // Number of applied leave days
+        var leaveBalance = parseInt(document.getElementById("leaveBalance").value); // User's leave balance
+
+        // Check if s_date or e_date is empty and show an alert
+        if (startDate.value.trim() === "" || endDate.value.trim() === "") {
+            submitButton.disabled = true;
+            return; // Exit the function if dates are empty
+        }
+
+        // Check if applied leave days are greater than the leave balance and show an alert
+        if (applied > leaveBalance) {
+            alert("Applied leave days cannot be more than the leave balance.");
+
+            // Clear the start date, end date, and applied fields
+            startDate.value = ""; // Clear start date
+            endDate.value = "";   // Clear end date
+            appliedField.value = ""; // Clear the applied field
+
+            submitButton.disabled = true;
+            return; // Exit the function if applied > leaveBalance
+        }
+
+        // Check if all fields are filled and valid, enable the button if so
+        if (inputDate.trim() !== "" && applied <= leaveBalance && applied > 0) {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }
+
+    // Initial call when the page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        enableInitiateButton();
+    });
+
+    // Add event listeners to trigger the function when any of the inputs change
+    document.getElementById("type").addEventListener("input", enableInitiateButton);
+    document.getElementById("s_date").addEventListener("change", enableInitiateButton);  // Use 'change' for date inputs
+    document.getElementById("e_date").addEventListener("change", enableInitiateButton);  // Use 'change' for date inputs
+    document.getElementById("applied").addEventListener("input", enableInitiateButton);
+    document.getElementById("leaveBalance").addEventListener("input", enableInitiateButton);
+
+
+
+    function getTypeBalance() {
+        const selectedCategory = document.getElementById("type").value;
+        const userId = <?=$_SESSION['userid']?>; // You can set this dynamically if needed
+
+        $.ajax({
+            url: `http://icpd.icpbd-erp.com/api/erp/get_Leave_Type_Balance.php`,
+            method: 'GET',
+            data: {
+                type: selectedCategory,  // Leave type from the dropdown
+                user_id: userId          // User ID
+            },
+            success: function(response) {
+                // Assuming the response is a JSON object with a balance field
+                document.getElementById("alreadyLeaveTaken").value = parseFloat(response.totalLeaveTaken).toFixed(0);
+                document.getElementById("leavePolicy").value = response.leavePolicy;
+                document.getElementById("leaveBalance").value = response.leaveBalance;
+            },
+            error: function(error) {
+                console.error("Error fetching leave type balance:", error);
+            }
+        });
+    }
+</script>

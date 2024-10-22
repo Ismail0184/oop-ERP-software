@@ -17,7 +17,7 @@ $sectionid = @$_GET['sectionid'];
 $moduleGET = @$_GET['module'];
 $languageGET = @$_GET['language'];
 $module_id = @$_SESSION['module_id'];
-
+$passwordHashCheck = find_a_field('users','passwords','user_id='.$_SESSION['userid']);
  // if session is not set this will redirect to login page
  if( !isset($_SESSION['login_email']) ) {
   header("Location: index.php");

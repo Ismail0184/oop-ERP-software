@@ -22,12 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $data = json_decode(file_get_contents("php://input"));
 
     // Check if username and password are provided
-    if (isset($data->username) && isset($data->password)) {
-        $username = $data->username;
+    if (isset($data->mobile) && isset($data->password)) {
+        $username = $data->mobile;
         $password = $data->password;
 
         // Prepare the SQL query
-        $stmt = $conn->prepare("SELECT user_id as id, password FROM users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT user_id, passwords as password FROM users WHERE mobile = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo json_encode([
                     "status" => "success",
                     "message" => "Login successful",
-                    "user_id" => $user['id']
+                    "user_id" => $user['user_id']
                 ]);
             } else {
                 // Invalid password

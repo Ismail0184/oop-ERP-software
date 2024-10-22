@@ -64,7 +64,8 @@ if(isset($_POST['btn-login']))
 			$stmt->execute(array(":username"=>$user_email));
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
 			$count = $stmt->rowCount();
-if($row['password']==$user_password){
+            $stored_hashed_password = $row['passwords']; //
+            if (password_verify($user_password, $stored_hashed_password)) {
 $_SESSION['login_email'] = $row['username'];
 $_SESSION['companyid']= $row['company_id'];
 $_SESSION['sectionid']= $row['section_id'];
@@ -108,7 +109,7 @@ VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','decline',
 <!doctype html>
 <html lang="en">
 <head>
-        
+
         <meta charset="utf-8" />
         <title>Login | ERP Software</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -147,12 +148,12 @@ VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','decline',
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body pt-0"> 
+                            <div class="card-body pt-0">
                                 <div>
-                                    <a href="index.html">
+                                    <a href="index.php">
                                         <div class="avatar-md profile-user-wid mb-4">
                                             <span class="avatar-title rounded-circle bg-light">
-                                                <img src="../assets/login/images/logo.svg" alt="" class="rounded-circle" height="34">
+                                                <img src="../assets/images/icon/400001.png" alt="" class="rounded-circle" height="34">
                                             </span>
                                         </div>
                                     </a>
@@ -195,7 +196,7 @@ VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','decline',
                                             </ul>
                                         </div>
                                         <div class="mt-4 text-center">
-                                            <a href="auth-recoverpw.html" class="text-muted"><i class="mdi mdi-lock mr-1"></i> Forgot your password?</a>
+                                            <a href="forget-password.php" class="text-muted"><i class="mdi mdi-lock mr-1"></i> Forgot your password?</a>
                                         </div>
                                     </form>
                                 </div>
@@ -219,4 +220,7 @@ VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','decline',
         <script src="../assets/login/js/app.js"></script>
     </body>
 </html>
+
+
+
 

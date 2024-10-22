@@ -15,7 +15,6 @@ $html      = new htmldiv();
 $sectionid = $_REQUEST['sectionid'];
 $moduleGET = $_REQUEST['module'];
 
-
  // if session is not set this will redirect to login page
  if( !isset($_SESSION['login_email']) ) {
   header("Location: index.php");
