@@ -218,7 +218,7 @@ class crud{
         <div class="x_panel">
         <div class="x_content">
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
@@ -256,7 +256,7 @@ class crud{
                         <div class="x_panel">
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -331,7 +331,7 @@ ORDER BY zm.sl, zs.sl");
                         <div class="x_panel">
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -403,7 +403,7 @@ ORDER BY zm.sl, zs.sl");
                         <div class="x_panel">
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -489,7 +489,7 @@ ORDER BY zm.sl, zs.sl");
         <div class="x_content">
         
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -580,7 +580,7 @@ ORDER BY zm.sl, zs.sl");
                             </div>
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white;"><th style="vertical-align:middle;">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle;">#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -668,7 +668,7 @@ ORDER BY zm.sl, zs.sl");
                             <div class="x_content">
 		<form action="'.$page.'" enctype="multipart/form-data" method="post" name="addem" id="addem" style="font-size: 11px" >
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -720,7 +720,7 @@ ORDER BY zm.sl, zs.sl");
                             <div class="x_content">
 		<form action="'.$page.'" enctype="multipart/form-data" method="post" name="addem" id="addem" style="font-size: 11px" >
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle;height:50px">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle;height:50px">#</th>';
         if ($result = mysqli_query($conn , $sql)) :
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -821,7 +821,7 @@ ORDER BY zm.sl, zs.sl");
                             </div>
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
@@ -864,7 +864,7 @@ ORDER BY zm.sl, zs.sl");
                             </div>
                             <div class="x_content">
 		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
@@ -901,7 +901,7 @@ ORDER BY zm.sl, zs.sl");
         if($sql==NULL) return NULL;
         $str.='
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
         if ($result = mysqli_query($conn , $sql)) {
             $cols = mysqli_num_fields($result);
@@ -1471,7 +1471,7 @@ function recentvoucherview($sql,$link,$v_type,$css,$viewmoreURL){
             </div>
             <div class="x_content" style="overflow:scroll; height:'.$css.';">
 		<table class="table table-striped table-bordered" style="width:100%; font-size: 10px">';
-    $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+    $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
     if ($result = mysqli_query($conn , $sql)) {
         $cols = mysqli_num_fields($result);
@@ -1590,7 +1590,7 @@ function recentdataview_model($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwi
     if($sql==NULL) return NULL;
     $str.='
 		<table align="center" class="table table-striped table-bordered" style="width:'.$divwidth.'%; font-size: 11px">';
-    $str .='<thead><tr style="background-color: #3caae4; color:white"><th>#</th>';
+    $str .='<thead><tr class="bg-primary text-white"><th>#</th>';
 
     if ($result = mysqli_query($conn , $sql)) {
         $cols = mysqli_num_fields($result);
@@ -1747,7 +1747,7 @@ function voucher_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$page)
         $str.='
 		<input type="hidden" name="'.$unique.'" id="'.$unique.'"  value="'.$unique_GET.'">
 		<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: #3caae4; color:white"><th style="vertical-align:middle; text-align:center">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle; text-align:center">#</th>';
         if ($result = mysqli_query($conn , $sql)):
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);

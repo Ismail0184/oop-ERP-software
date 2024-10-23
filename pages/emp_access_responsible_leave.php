@@ -9,10 +9,10 @@ $$unique = @$_GET[$unique];
 $unique_field='PBI_IN_CHARGE';
 $table="hrm_leave_info";
 $table_details="warehouse_other_issue_detail";
-$current_status=find_a_field("".$table."","incharge_status","".$unique."=".$$unique."");
-$required_status="Pending";
-$authorused_status="Approve";
-$page="emp_acess_unapproved_leave.php";
+$current_status=find_a_field("".$table."","responsible_person_acceptance_status","".$unique."=".$$unique."");
+$required_status="PENDING";
+$authorused_status="ACCEPTED";
+$page="emp_access_responsible_leave.php";
 $crud      =new crud($table);
 $leaverequest=find_all_field(''.$table.'','',''.$unique.'='.$$unique);
 
@@ -38,17 +38,9 @@ if(prevent_multi_submit()){
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
     }
+} // prevent multi submit
 
-//for Delete..................................
-    if(isset($_POST['Deleted']))
-    {   $condition=$unique."=".$$unique;
-        $crud->delete($condition);
-        unset($$unique);
-        $type=1;
-        $msg='Successfully Deleted.';
-        echo "<script>self.opener.location = '$page'; self.blur(); </script>";
-        echo "<script>window.close(); </script>";
-    }}
+
 
 // data query..................................
 if(isset($$unique))
@@ -65,7 +57,7 @@ if(isset($$unique))
      p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,(select PBI_NAME from personnel_basic_info where PBI_ID=r.leave_responsibility_name) as Responsible_Person_During_Leave, r.incharge_status as status
      		  from '.$table.' r
      		  WHERE 
-     		  r.PBI_IN_CHARGE="'.$_SESSION['PBI_ID'].'"	and 
+     		  r.leave_responsibility_name="'.$_SESSION['PBI_ID'].'"	and 
      		  r.s_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and r.e_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and 
      		  r.half_or_full in ("Full")
      		  order by r.'.$unique.' DESC';
@@ -76,8 +68,8 @@ if(isset($$unique))
      p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,(select PBI_NAME from personnel_basic_info where PBI_ID=r.leave_responsibility_name) as Responsible_Person_During_Leave
      from '.$table.' r
      WHERE
-     r.PBI_IN_CHARGE="'.$_SESSION['PBI_ID'].'"	and 
-     r.incharge_status="'.$required_status.'" and
+     r.leave_responsibility_name="'.$_SESSION['PBI_ID'].'"	and 
+     r.responsible_person_acceptance_status="'.$required_status.'" and
      r.half_or_full in ("Full")
      order by r.'.$unique.' DESC';
  } ?>
@@ -87,17 +79,6 @@ if(isset($$unique))
     function DoNavPOPUP(lk)
     {
         myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=500,left = 250,top = -1");
-    }
-
-    function GetDays(){
-        var dropdt = new Date(document.getElementById("s_date").value);
-        var pickdt = new Date(document.getElementById("e_date").value);
-        return parseInt((pickdt - dropdt) / (24 * 3600 * 1000))+1;
-    }
-    function cal(){
-        if(document.getElementById("e_date")){
-            document.getElementById("applied").value=GetDays();
-        }
     }
 </script>
 
@@ -114,15 +95,13 @@ else :
                     <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Approved Leave</button></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Leave</button></td>
             </tr>
      </table>
 
 <?=$crud->report_templates_with_status($res,$link)?>
 </form>
 <?php } ?>
-
-
 
 
 
@@ -219,13 +198,12 @@ else :
             <table align="center" style="width:90%;font-size:12px;">
                 <tr>
                     <td>
-                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-eraser"></i> Cancel & Delete</button>
-                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">Check & Forward <i class="fa fa-check"></i></button>
+                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
+                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">Accept <i class="fa fa-check"></i></button>
                     </td>
                 </tr>
             </table>
         <?php } ?>
         <?php } ?>
     </form>
-
 <?=$html->footer_content();?>

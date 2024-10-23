@@ -6,7 +6,7 @@ $now=time();
 $unique='id';
 $unique_field='type';
 $table="hrm_leave_info";
-$page="emp_acess_apply_for_leave.php";
+$page="emp_access_apply_for_leave_preview.php";
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 $current_status=find_a_field("".$table."","dept_head_status","".$unique."=".$$unique."");
@@ -112,7 +112,7 @@ $PBI_IN_CHARGE = @$PBI_IN_CHARGE;
 $PBI_DEPT_HEAD = @$PBI_DEPT_HEAD;
 $s_date = @$s_date;
 $e_date = @$e_date;
-
+$total_days = @$total_days;
 $GetType = @$_GET['type'];
 $year=date('Y');
 $s_date_s="".$year."-01-01";
@@ -165,12 +165,8 @@ $sql2="select a.id,a.s_date as date,a.reason,a.leave_status from ".$table." a wh
 
 <?php require_once 'header_content.php'; ?>
 <SCRIPT language=JavaScript>
-    function reload(form)
-    {
-        var val=form.type.options[form.type.options.selectedIndex].value;
-        self.location='<?=$page;?>?type=' + val ;
-    }        function DoNavPOPUP(lk)
-    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=900,height=600,left = 250,top = -1");}
+    function DoNavPOPUP(lk)
+    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=600,left = 250,top = -1");}
     function GetDays(){
         var dropdt = new Date(document.getElementById("s_date").value);
         var pickdt = new Date(document.getElementById("e_date").value);
@@ -200,17 +196,22 @@ endif;
         <div class="x_content">
             <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
                 <? require_once 'support_html.php';?>
-                <table style="width:100%; font-size:11px;"  cellpadding="0" cellspacing="0">
+                <table style="width:100%; font-size:11px;">
                     <tr>
                         <th style="width: 15%">Type of Leave <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td style="width: 35%">
                             <select class="select2_single form-control" name="type" id="type" onchange="enableInitiateButton(); getTypeBalance()" required style="width:91%">
                                 <option></option>
-                                <?=foreign_relation('hrm_leave_type','id','leave_type_name',0)?>
+                                <?php if ($_SESSION['gander']=='1') { ?>
+                                <?=foreign_relation('hrm_leave_type','id','leave_type_name',''.$type.'','status=1 and applicable="both"');?>
+                                <?php } else { ?>
+                                    <?=foreign_relation('hrm_leave_type','id','leave_type_name',''.$type.'','status=1');?>
+                                <?php } ?>
                             </select>
                             <input type="hidden" id="<?=$unique?>" style="width:100%"     name="<?=$unique?>" value="<?=$$unique?>" class="form-control col-md-7 col-xs-12" >
                         </td>
+
                         <th style="width: 15%">Policy & Taken</th>
                         <th style="width:2%">:</th>
                         <td style="width: 33%">
@@ -264,7 +265,7 @@ endif;
                         <td colspan="4">
                             <input type="date" id="s_date" style="width:38.5%; font-size:11px" required="required" name="s_date" value="<?=$s_date?>" onchange="cal()" class="form-control col-md-7 col-xs-12" >
                             <input type="date" id="e_date" style="width:36.5%; margin-left: 4%; font-size:11px"  required   name="e_date" value="<?=$e_date?>" onchange="cal()" class="form-control col-md-7 col-xs-12" >
-                            <input type="text" id="applied" readonly name="applied" style="width:20%; font-size:11px;float:right" placeholder="total applied days" class="form-control col-md-7 col-xs-12" >
+                            <input type="text" id="applied" readonly name="applied" value="<?=$total_days;?>" style="width:20%; font-size:11px;float:right" placeholder="total applied days" class="form-control col-md-7 col-xs-12" >
                         </td>
                     </tr>
                 </table>

@@ -323,7 +323,7 @@ function reload2(form)
                         </td>
                         <th style="">Accounts Code</th><th>:</th>
                         <td>
-                        <?php if(@$_SESSION['userid']=='10019' || $_SESSION['userid']=='9764'): ?>
+                        <?php if(@$_SESSION['userid']=='10019' || $_SESSION['userid']=='9764' || $_SESSION['userid']=='10044'): ?>
                             <input type="text" id="account_code"  value="<?=$account_code?>" name="account_code" class="form-control col-md-7 col-xs-12" style="width: 90%" />
                         <?php endif; ?>
                         </td>

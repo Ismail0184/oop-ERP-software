@@ -259,7 +259,7 @@ $stock_out=find_a_field(''.$table_details.'','SUM(total_amt)','cc_type="-" and '
                                 $warehouse_ledger=find_a_field('warehouse','ledger_id_FG','warehouse_id='.$masterDATA->warehouse_id.'');?>
                                 <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_1">
                                     <option></option>
-                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $config_group_class->cogs_sales, 'ledger_id='.$config_group_class->cogs_sales.''); ?>
+                                    <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $config_group_class->cogs_sales, '1'); ?>
                                 </select>
                             </td>
                             <td rowspan="2" style="text-align: center; vertical-align:middle"><textarea name="narration_1" id="narration_1"  class="form-control col-md-7 col-xs-12" style="width:100%; height:102px; font-size: 11px; text-align:center">Inventory Cycle Counting (Shortage), CC No # <?=$$unique?> <?php if(!empty($masterDATA->remarks)) {?>, Remarks # <?=$masterDATA->remarks?><?php }?></textarea></td>
