@@ -245,9 +245,9 @@ endif;
                         <th>Recommender <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td>
-                            <select class="select2_single form-control" style="width:91%;" tabindex="-1" required="required" name="PBI_IN_CHARGE" id="PBI_IN_CHARGE">
+                            <select class="select2_single form-control" style="width:91%;" tabindex="-1" required="required" name="recommended_by">
                                 <option></option>
-                                <?=advance_foreign_relation(find_active_user_HO($PBI_IN_CHARGE));?>
+                                <?=advance_foreign_relation(find_active_user_HO($recommended_by));?>
                             </select></td>
                         <th>Authorizer <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>

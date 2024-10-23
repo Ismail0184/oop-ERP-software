@@ -1,32 +1,32 @@
 <?php
 require_once 'support_file.php';
-$title="Leave Application for Responsible Person";
+$title="Leave Application for Recommendation";
 $dfrom=date('Y-1-1');
 $dto=date('Y-m-d');
-$now = date("Y-m-d h:i:sa");
+
 $unique='id';
 $$unique = @$_GET[$unique];
 $unique_field='PBI_IN_CHARGE';
 $table="hrm_leave_info";
+$now = date("Y-m-d h:i:sa");
 
-
-$current_status=find_a_field("".$table."","responsible_person_acceptance_status","".$unique."=".$$unique."");
+$current_status=find_a_field("".$table."","recommended_status","".$unique."=".$$unique."");
 $required_status="PENDING";
 $authorused_status="ACCEPTED";
-$page="emp_access_responsible_leave.php";
+$page="emp_access_unapproved_leave.php";
 $crud      =new crud($table);
 $leaveRequest=find_all_field(''.$table.'','',''.$unique.'='.$$unique);
 
-if (empty($leaveRequest->responsible_person_viewed_at))
+if (empty($leaveRequest->recommended_viewed_at))
 {
-    mysqli_query($conn, "UPDATE ".$table." SET responsible_person_viewed_at='".$now."' WHERE ".$unique."=".$$unique);
+    mysqli_query($conn, "UPDATE ".$table." SET recommended_viewed_at='".$now."' WHERE ".$unique."=".$$unique);
 }
 
 
 if(isset($_POST['confirm']))
 {
-    $_POST['responsible_person_acceptance_status']="ACCEPTED";
-    $_POST['responsible_person_acceptance_at']=date("Y-m-d h:i:sa");
+    $_POST['recommended_status']="RECOMMENDED";
+    $_POST['recommended_at']=date("Y-m-d h:i:sa");
     $crud->update($unique);
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
     echo "<script>window.close(); </script>";
@@ -43,57 +43,57 @@ if(isset($$unique))
     { $$key=$value;}}
 
 
- if(isset($_POST['viewReport'])){
-	
-     $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
+if(isset($_POST['viewReport'])){
+
+    $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
      (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and
-     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason, r.responsible_person_acceptance_status as status
+     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason, r.recommended_status as status
      		  from '.$table.' r
      		  WHERE 
-     		  r.leave_responsibility_name="'.$_SESSION['PBI_ID'].'"	and 
+     		  r.recommended_by="'.$_SESSION['PBI_ID'].'"	and 
      		  r.s_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and r.e_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and 
      		  r.half_or_full in ("Full")
      		  order by r.'.$unique.' DESC';
- } else {
+} else {
 
-     $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
+    $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
      (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and 
-     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,r.responsible_person_acceptance_status as status
+     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,r.recommended_status as status
      from '.$table.' r
      WHERE
-     r.leave_responsibility_name="'.$_SESSION['PBI_ID'].'"	and 
-     r.responsible_person_acceptance_status="'.$required_status.'" and
+     r.recommended_by="'.$_SESSION['PBI_ID'].'"	and 
+     r.recommended_status="'.$required_status.'" and
      r.half_or_full in ("Full")
      order by r.'.$unique.' DESC';
- } ?>
+} ?>
 
 <?php require_once 'header_content.php'; ?>
-<script type="text/javascript">
-    function DoNavPOPUP(lk)
-    {
-        myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=500,left = 250,top = -1");
-    }
-</script>
+    <script type="text/javascript">
+        function DoNavPOPUP(lk)
+        {
+            myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=500,left = 250,top = -1");
+        }
+    </script>
 
 <?php if(isset($_GET[$unique])):
     require_once 'body_content_without_menu.php';
 else :
     require_once 'body_content.php'; endif;
-    ?>
+?>
 
 <?php if(!isset($_GET[$unique])){ ?>
-<form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >    
-     <table align="center" style="width: 50%;">
+    <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+        <table align="center" style="width: 50%;">
             <tr><td>
                     <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
                 <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Leave</button></td>
             </tr>
-     </table>
+        </table>
 
-<?=$crud->report_templates_with_status_employee_dashboard($res,$link)?>
-</form>
+        <?=$crud->report_templates_with_status_employee_dashboard($res,$link)?>
+    </form>
 <?php } ?>
 
 
@@ -181,16 +181,16 @@ else :
                 <td style="text-align: center; vertical-align: middle"><?php if($$unique>0){ echo $leaveRequest->s_date; } else { echo ''; } ?> - <?php if($$unique>0){ echo $leaveRequest->e_date; } else { echo ''; } ?></td>
                 <td style="text-align: center; vertical-align: middle"><?=number_format($leaveRequest->total_days);?></td>
                 <td style="text-align: center; vertical-align:middle"><?=$leaveRequest->reason;?></td>
-                <td style="text-align: center; vertical-align:middle"><input type="text" class="form-control col-md-7 col-xs-12" placeholder="Enter a note for the application, if necessary" required name="remarks_for_responsible_person" style="width: 99%; font-size: 11px"></td>
+                <td style="text-align: center; vertical-align:middle"><input type="text" class="form-control col-md-7 col-xs-12" placeholder="Enter a note for the application, if necessary" required name="remarks_while_recommended" style="width: 99%; font-size: 11px"></td>
             </tr>
             </tbody>
         </table>
-        <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This application has been Accepted!!</i></h6>';} else { ?>
+        <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This application has been Recommended!!</i></h6>';} else { ?>
             <table align="center" style="width:90%;font-size:12px;">
                 <tr>
                     <td>
                         <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
-                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">Accept <i class="fa fa-check"></i></button>
+                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">I Recommended <i class="fa fa-check"></i></button>
                     </td>
                 </tr>
             </table>

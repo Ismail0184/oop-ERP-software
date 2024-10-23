@@ -1,6 +1,6 @@
 <?php
 require_once 'support_file.php';
-$title="Leave Application Details";
+$title="Leave Application Status";
 $unique = 'id';
 $$unique = @$_GET['id'];
 $LeaveMasterData = find_all_field('hrm_leave_info','','id='.$$unique);
@@ -76,9 +76,9 @@ $LeaveMasterData = find_all_field('hrm_leave_info','','id='.$$unique);
                         <th style="width: 1%;  vertical-align: middle">:</th>
                         <td style="width: 24%; vertical-align: middle">
                             <?php if (!empty($LeaveMasterData->responsible_person_viewed_at)) { ?>
-                                <span class="label label-danger" style="font-size:10px">Pending</span>
-                            <?php } else { ?>
                                 <span class="label label-success" style="font-size:10px">Viewed</span>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
                             <?php } ?>
                         </td>
 
@@ -86,9 +86,9 @@ $LeaveMasterData = find_all_field('hrm_leave_info','','id='.$$unique);
                         <th style="width: 1%;  vertical-align: middle">:</th>
                         <td style="width: 24%; vertical-align: middle">
                             <?php if (!empty($LeaveMasterData->responsible_person_viewed_at)) { ?>
-                                <span class="label label-danger" style="font-size:10px">Pending</span>
-                            <?php } else { ?>
                                 <?=$LeaveMasterData->responsible_person_viewed_at;?>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
                             <?php } ?>
                         </td>
                     </tr>
@@ -119,6 +119,130 @@ $LeaveMasterData = find_all_field('hrm_leave_info','','id='.$$unique);
                         <th style="width: 10%; vertical-align: middle">Remarks</th>
                         <th style="width: 1%;  vertical-align: middle">:</th>
                         <td style="width: 24%; vertical-align: middle"><?=$LeaveMasterData->remarks_for_responsible_person;?></td>
+                    </tr>
+                </table>
+
+                <table align="center" class="table table-striped table-bordered" style="width:100%;font-size:11px; margin-top: 5px">
+                    <thead>
+                    <tr class="<?php if ($LeaveMasterData->recommended_status!=='RECOMMENDED') { ?> bg-danger <?php } else { ?>bg-success text-white <?php } ?>">
+                        <th colspan="9" style="text-align: center; font-size: 13px; font-weight: bold;">Recommended Person Acceptance Status
+                        </th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <th style="width: 10%; vertical-align: middle">Person</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$LeaveMasterData->recommended_by);?></td>
+
+                        <th style="width: 10%; vertical-align: middle">View Status</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (!empty($LeaveMasterData->recommended_viewed_at)) { ?>
+                                <span class="label label-success" style="font-size:10px">Viewed</span>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Viewed At</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (!empty($LeaveMasterData->recommended_viewed_at)) { ?>
+                                <?=$LeaveMasterData->recommended_viewed_at;?>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th style="width: 10%; vertical-align: middle">Acceptance Status</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (($LeaveMasterData->recommended_status)=='REJECTED') { ?>
+                                <span class="label label-danger" style="font-size:10px">Rejected</span>
+                            <?php } elseif (($LeaveMasterData->recommended_status)=='PENDING') { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } else { ?>
+                                <span class="label label-success" style="font-size:10px">RECOMMENDED</span>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Acceptance At</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (($LeaveMasterData->recommended_status)!=='RECOMMENDED') { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } else { ?>
+                                <?=$LeaveMasterData->recommended_at;?>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Remarks</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle"><?=$LeaveMasterData->remarks_while_recommended;?></td>
+                    </tr>
+                </table>
+
+                <table align="center" class="table table-striped table-bordered" style="width:100%;font-size:11px; margin-top: 5px">
+                    <thead>
+                    <tr class="<?php if ($LeaveMasterData->recommended_status!=='APPROVED') { ?> bg-danger <?php } else { ?>bg-success text-white <?php } ?>">
+                        <th colspan="9" style="text-align: center; font-size: 13px; font-weight: bold;">Authorized Person Acceptance Status
+                        </th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <th style="width: 10%; vertical-align: middle">Person</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle"><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$LeaveMasterData->approved_by);?></td>
+
+                        <th style="width: 10%; vertical-align: middle">View Status</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (!empty($LeaveMasterData->approved_viewed_at)) { ?>
+                                <span class="label label-success" style="font-size:10px">Viewed</span>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Viewed At</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (!empty($LeaveMasterData->approved_viewed_at)) { ?>
+                                <?=$LeaveMasterData->approved_viewed_at;?>
+                            <?php } else { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } ?>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th style="width: 10%; vertical-align: middle">Acceptance Status</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (($LeaveMasterData->approved_status)=='REJECTED') { ?>
+                                <span class="label label-danger" style="font-size:10px">Rejected</span>
+                            <?php } elseif (($LeaveMasterData->approved_status)=='PENDING') { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } else { ?>
+                                <span class="label label-success" style="font-size:10px">APPROVED</span>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Acceptance At</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle">
+                            <?php if (($LeaveMasterData->approved_status)!=='RECOMMENDED') { ?>
+                                <span class="label label-danger" style="font-size:10px">Pending</span>
+                            <?php } else { ?>
+                                <?=$LeaveMasterData->approveds_at;?>
+                            <?php } ?>
+                        </td>
+
+                        <th style="width: 10%; vertical-align: middle">Remarks</th>
+                        <th style="width: 1%;  vertical-align: middle">:</th>
+                        <td style="width: 24%; vertical-align: middle"><?=$LeaveMasterData->remarks_while_approved;?></td>
                     </tr>
                 </table>
             </form>

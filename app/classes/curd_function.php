@@ -475,6 +475,58 @@ ORDER BY zm.sl, zs.sl");
         return $str;
         mysqli_close($conn);
     }
+
+    public function report_templates_with_status_employee_dashboard($sql,$status){
+        global $conn;
+        $str = '';
+        if($sql==NULL) return NULL;
+        $str.='
+		<div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                            <div class="x_content">
+		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
+        if ($result = mysqli_query($conn , $sql)) {
+            $cols = mysqli_num_fields($result);
+            $fieldinfo = mysqli_fetch_fields($result);
+            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+                $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+            }
+            $str .='</tr></thead>';
+            $str .='<!--tfoot><tr>';
+            for($i=1;$i<$cols;$i++)
+            { $str .='<td></td>'; }
+            $str .='</tr></tfoot-->';
+            $c=0;
+            if (mysqli_num_rows($result)>0){
+                $sl = 0;
+                while($row = mysqli_fetch_array($result)) {
+                    $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle; text-align: center">'.($sl=$sl+1).'</td>';
+                    for($i=1;$i<$cols;$i++) {
+                        $b=$row[$i];
+                        if($b=='ACCEPTED'):
+                            $sp='<span class="label label-success" style="font-size:10px">ACCEPTED</span>';
+                        elseif($b=='RECOMMENDED'):
+                            $sp='<span class="label label-success" style="font-size:10px">RECOMMENDED</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-success" style="font-size:10px">APPROVED</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">PENDING</span>';
+                        elseif($b=='REJECTED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp.'</td>';
+                    }
+                    $str .='</tr></thead>';
+                }}
+            mysqli_free_result($result);
+        }
+        $str .='</table></div></div></div>';
+        return $str;
+        mysqli_close($conn);
+    }
     public function report_templates_with_status_with_filtering($sql,$title,$status){
         global $conn;
         $str = '';

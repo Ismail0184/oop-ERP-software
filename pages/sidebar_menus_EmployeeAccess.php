@@ -1,5 +1,8 @@
 <?php
 require_once ('support_file.php');
+$responsibleForLeave=find_a_field('hrm_leave_info','count(id)','responsible_person_acceptance_status="PENDING" and leave_responsibility_name='.$_SESSION['PBI_ID']);
+$totalResponsibleApplication = $responsibleForLeave;
+
 $sample_gift_recommended=find_a_field('requisition_sample_gift_master','count(oi_no)','status="PENDING" and recommended_by='.$_SESSION['PBI_ID']);
 $sample_gift_authorise=find_a_field('requisition_sample_gift_master','count(oi_no)','status="RECOMMENDED" and authorised_person='.$_SESSION['PBI_ID']);
 
@@ -20,9 +23,9 @@ $workorderrecommended = find_a_field('purchase_master','count(po_no)','status="C
 $workorderathu = find_a_field('purchase_master','count(po_no)','status="recommended" and po_type not in ("Asset") and authorise='.$_SESSION['PBI_ID']);
 
 
-$unApprovedLeave = find_a_field('hrm_leave_info','count(id)','incharge_status="Pending" and half_or_full in ("Full") and PBI_IN_CHARGE='.$_SESSION['PBI_ID']);
+$unApprovedLeave = find_a_field('hrm_leave_info','count(id)','recommended_status="PENDING" and half_or_full in ("Full") and recommended_by='.$_SESSION['PBI_ID']);
 
-$unAuthorisedLeave = find_a_field('hrm_leave_info','count(id)','incharge_status in ("Approve") and dept_head_status="Pending" and half_or_full in ("Full") and PBI_DEPT_HEAD='.$_SESSION['PBI_ID']);
+$unAuthorisedLeave = find_a_field('hrm_leave_info','count(id)','approved_status in ("PENDING") and half_or_full in ("Full") and approved_by='.$_SESSION['PBI_ID']);
 $unAuthorisedearlyLeave = find_a_field('hrm_leave_info','count(id)','dept_head_status="Pending" and half_or_full in ("Half") and PBI_DEPT_HEAD='.$_SESSION['PBI_ID']);
 $unAuthorisedLate = find_a_field('hrm_late_attendance','count(id)','status="Pending" and authorised_by='.$_SESSION['PBI_ID']);
 $unAuthorisedOD = find_a_field('hrm_od_attendance','count(id)','status="PENDING" and authorised_by='.$_SESSION['PBI_ID']);
@@ -62,9 +65,9 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
     <ul class="nav side-menu">
         <li><a href="dashboard.php"><i class="fa fa-home"></i>Home</a></li>
         <li>
-            <a href="#"><i class="fa fa-dropbox"></i>Responsible <span class="fa fa-chevron-down"></span></a>
+            <a href="#"><i class="fa fa-dropbox"></i>Responsible <?php if($totalResponsibleApplication>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$totalResponsibleApplication.' </span>]'?> <?php } else {echo'';} ?><span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-                <li><a href="emp_access_responsible_leave.php">Leave</a></li>
+                <li><a href="emp_access_responsible_leave.php">Leave <?php if($responsibleForLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:12px"> '.$responsibleForLeave.' </span>]'?> <?php } else {echo'';} ?></a></li>
                 <li><a href="emp_access_responsible_for_outdoor_duty.php">OutDoor Duty</a></li>
             </ul>
         </li>
@@ -78,9 +81,9 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
             </ul>
         </li>
                     
-        <li><a href="#"><i class="fa fa-check-square-o"></i>Approval <br><?php if($totApproval>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$totApproval.' </span>]'?> <?php } else {echo'';} ?><span class="fa fa-chevron-down"></span></a>
+        <li><a href="#"><i class="fa fa-check-square-o"></i>Recommendation <?php if($totApproval>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$totApproval.' </span>]'?> <?php } else {echo'';} ?><span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-                <li><a href="emp_acess_unapproved_leave.php">Leave <?php if($unApprovedLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
+                <li><a href="emp_access_unapproved_leave.php">Leave <?php if($unApprovedLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:12px"> '.$unApprovedLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_requisition_stationary.php">Stationary Requisition <?php if($unApprovedReq>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedReq.' </span>]'?> <?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_requisition_food_beverage.php">Food & Beverage <?php if($unApprovedReqFood>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedReqFood.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="user_unapproved_requisition_IOU.php">IOU Requisition<?php if($unApprovedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
@@ -96,7 +99,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
                     
         <li><a href="#"><i class="fa fa-check"></i>Authorization <?php if($totUnauthorised>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$totUnauthorised.' </span>]'?><?php } else {echo'';} ?><span class="fa fa-chevron-down"></span></a>
             <ul class="nav child_menu">
-                <li><a href="emp_acess_unauthorised_leave.php">Leave <?php if($unAuthorisedLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
+                <li><a href="emp_access_unauthorised_leave.php">Leave <?php if($unAuthorisedLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_early_leave.php">Early Leave <?php if($unAuthorisedearlyLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedearlyLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_outdoor_duty.php">Outdoor Duty <?php if($unAuthorisedOD>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedOD.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_late_attendance.php">Late Attendance <?php if($unAuthorisedLate>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedLate.' </span>]'?><?php } else {echo'';} ?></a></li>
