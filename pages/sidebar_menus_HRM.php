@@ -7,7 +7,7 @@ $notViewedVehicle = find_a_field('vehicle_application_master','count(vehApp_id)'
 $notViewedManpower = find_a_field('man_power_application','count(manPowerApp_id)','user_viwed="NO" and status="APPROVED" and PBI_ID ='.$_SESSION['PBI_ID']);
 $notViewedHandover = find_a_field('handover_application_master','count(handOver_id)','user_viwed="NO" and status="APPROVED" and PBI_ID ='.$_SESSION['PBI_ID']);
 $totNotViewed = $notViewedReq + $notViewedTravel + $notViewedVehicle + $notViewedManpower + $notViewedHandover;
-$attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','leave_status="Waiting" and half_or_full in ("Full")');
+$attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','status not in  ("DRAFTED","REJECTED","GRANTED") and granted_status="PENDING" and half_or_full in ("Full")');
                  $attendance_early_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','leave_status="Waiting" and half_or_full in ("Half")');
                  $attendance_late_attendance_pending=find_a_field('hrm_late_attendance','COUNT(id)','status not in ("APPROVED")');
                  $attendance_OD_attendance_pending=find_a_field('hrm_od_attendance','COUNT(id)','status not in ("GRANTED")');
@@ -99,7 +99,7 @@ $attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','leave_statu
                     $result="Select
 				psm.*,
 				dsm.sub_menu_id,
-				dsm.sub_menu_name_BN as sub_menu_name,
+				dsm.sub_menu_name as sub_menu_name,
 				dsm.sub_url
 				from
 				user_permission_matrix_sub_menu psm,

@@ -504,16 +504,18 @@ ORDER BY zm.sl, zs.sl");
                     $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle; text-align: center">'.($sl=$sl+1).'</td>';
                     for($i=1;$i<$cols;$i++) {
                         $b=$row[$i];
-                        if($b=='ACCEPTED'):
-                            $sp='<span class="label label-success" style="font-size:10px">ACCEPTED</span>';
-                        elseif($b=='RECOMMENDED'):
-                            $sp='<span class="label label-success" style="font-size:10px">RECOMMENDED</span>';
-                        elseif($b=='APPROVED'):
-                            $sp='<span class="label label-success" style="font-size:10px">APPROVED</span>';
+                        if($b=='DRAFTED'):
+                            $sp='<span class="label label-default" style="font-size:10px">Drafted</span>';
                         elseif ($b=='PENDING'):
-                            $sp='<span class="label label-warning" style="font-size:10px">PENDING</span>';
+                            $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';;
                         elseif($b=='REJECTED'):
-                            $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                            $sp='<span class="label label-danger" style="font-size:10px">Rejected</span>';
+                        elseif($b=='RECOMMENDED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">Recommended</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
+                        elseif($b=='GRANTED'):
+                            $sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
                         else :
                             $sp=$b;
                         endif;
@@ -1358,6 +1360,10 @@ class htmldiv extends crud {
             placeholder: "Select a Choose",
             allowClear: true
         });
+        $(".select2_double").select2({
+            placeholder: "Select a Choose",
+            allowClear: true
+        });
         $(".select2_group").select2({});
         $(".select2_multiple").select2({
             maximumSelectionLength: 4,
@@ -1559,6 +1565,69 @@ function recentvoucherview($sql,$link,$v_type,$css,$viewmoreURL){
     mysqli_close($conn);
 }
 
+function recentdataviewAttendance($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
+    global $conn;
+    $str = '';
+    if($sql==NULL) return NULL;
+    $str.='
+		<div class="col-md-'.$divwidth.' col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>'.$title.'</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content" style="overflow:scroll; height:'.$css.';">
+		<table class="table table-striped table-bordered" style="width:100%; font-size: 10px">';
+    $str .='<thead><tr style="background-color: bisque"><th>#</th>';
+    $ism =0;
+    if ($result = mysqli_query($conn , $sql)) {
+        $cols = mysqli_num_fields($result);
+        $fieldinfo = mysqli_fetch_fields($result);
+        foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+            $ism=$ism+1;
+            $str .='<th>'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+        }
+        $str .='</tr></thead><tbody>';
+        $c=0;
+        $sl=0;
+        if (mysqli_num_rows($result)>0){
+            while($row = mysqli_fetch_array($result)) {
+                $onclick='';
+                $str .="<tr onclick='DoNavPOPUP(".$row[0].")' style='cursor: pointer;'><td style='text-align: left; vertical-align:middle'>".($sl=$sl+1)."</td>";
+                for($i=1;$i<$cols;$i++) {
+                    $b=$row[$i];
+                    if($b=='DRAFTED'):
+                        $sp='<span class="label label-default" style="font-size:10px">Drafted</span>';
+                    elseif ($b=='PENDING'):
+                        $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';;
+                    elseif($b=='REJECTED'):
+                        $sp='<span class="label label-danger" style="font-size:10px">Rejected</span>';
+                    elseif($b=='RECOMMENDED'):
+                        $sp='<span class="label label-primary" style="font-size:10px">Recommended</span>';
+                    elseif($b=='APPROVED'):
+                        $sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
+                    elseif($b=='GRANTED'):
+                        $sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
+                    else :
+                        $sp=$b;
+                    endif;
+                    $str .='<td style="vertical-align:middle">'.$sp.'</td>';}
+                $str .='</tr>';
+            }}else {
+            $add=+1;
+            $str .='<tr><td colspan="'.$ism.$add.'" style="text-align: center">No data available in table</td></tr>';
+        }
+        mysqli_free_result($result);
+    }
+    $str .='</tbody></table>';
+    if($sl>0){
+        $str .='<h6 style="text-align:center"><a href="'.$viewmoreURL.'" target="_new" style="font-size:11px" class="btn btn-round btn-info">View more..</a></h6>';
+    }
+    $str .='</div></div></div>';
+    return $str;
+    mysqli_close($conn);
+}
+
 function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
     global $conn;
     $str = '';
@@ -1614,6 +1683,8 @@ function recentdataview($sql,$link,$v_type,$css,$title,$viewmoreURL,$divwidth){
                         $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
                     elseif($b=='MANUAL'):
                         $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                    elseif($b=='DRAFTED'):
+                        $sp='<span class="label label-default" style="font-size:10px">Drafted</span>';
                     elseif($b=='NO'):
                         $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
                     else :

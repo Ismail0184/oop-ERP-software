@@ -23,9 +23,9 @@ $workorderrecommended = find_a_field('purchase_master','count(po_no)','status="C
 $workorderathu = find_a_field('purchase_master','count(po_no)','status="recommended" and po_type not in ("Asset") and authorise='.$_SESSION['PBI_ID']);
 
 
-$unApprovedLeave = find_a_field('hrm_leave_info','count(id)','recommended_status="PENDING" and half_or_full in ("Full") and recommended_by='.$_SESSION['PBI_ID']);
+$unApprovedLeave = find_a_field('hrm_leave_info','count(id)','recommended_status="PENDING" and status="PENDING" and half_or_full in ("Full") and recommended_by='.$_SESSION['PBI_ID']);
 
-$unAuthorisedLeave = find_a_field('hrm_leave_info','count(id)','approved_status in ("PENDING") and half_or_full in ("Full") and approved_by='.$_SESSION['PBI_ID']);
+$unAuthorisedLeave = find_a_field('hrm_leave_info','count(id)','approved_status="PENDING" and status="RECOMMENDED" and half_or_full in ("Full") and approved_by='.$_SESSION['PBI_ID']);
 $unAuthorisedearlyLeave = find_a_field('hrm_leave_info','count(id)','dept_head_status="Pending" and half_or_full in ("Half") and PBI_DEPT_HEAD='.$_SESSION['PBI_ID']);
 $unAuthorisedLate = find_a_field('hrm_late_attendance','count(id)','status="Pending" and authorised_by='.$_SESSION['PBI_ID']);
 $unAuthorisedOD = find_a_field('hrm_od_attendance','count(id)','status="PENDING" and authorised_by='.$_SESSION['PBI_ID']);

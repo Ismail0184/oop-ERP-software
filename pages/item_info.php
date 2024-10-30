@@ -408,7 +408,7 @@ $sql_brand_category="Select category_name,category_name from brand_category";
 
 
 
-<hr/>
+
 <?php if($unique_GET>0):  ?>
                                     <div class="form-group" style="margin-left:40%">
                                         <div class="col-md-6 col-sm-6 col-xs-12">

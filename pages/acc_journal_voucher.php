@@ -17,6 +17,7 @@ $table_journal_info="journal_info";
 $journal_info_unique='journal_info_no';
 $page="acc_journal_voucher.php";
 $crud      =new crud($table_journal_master);
+$checkFileUploadMetaAccess = find_a_field('dev_usage_control_metas','meta_value','meta_key="file_upload_access_on_voucher_entry" and status="active" and section_id="'.$_SESSION['sectionid'].'" and company_id='.$_SESSION['companyid']);
 
 //Image Attachment Function
 function image_upload_on_id($path,$file,$id='')
@@ -117,7 +118,39 @@ if(prevent_multi_submit()) {
                     $path = '../assets/images/attachment/vouchers/journal/' . $_SESSION['initiate_journal_note'] . '.jpg';
                     move_uploaded_file($_FILES["attachment"]["tmp_name"], $path);
                 }
-            }}} // end post unique
+            }
+        } // post add
+
+        if(isset($_POST["Import"])){
+            $date = $_POST['receipt_date'];
+            $filename=$_FILES["file"]["tmp_name"];
+            if($_FILES["file"]["size"] > 0)
+            { $file = fopen($filename, "r");
+                while (($eData = fgetcsv($file, 10000, ",")) !== FALSE)
+                {
+                    $entry_at = date('Y-m-d H:i:s');
+                    $sql = "INSERT INTO ".$table_journal_info."
+   (`journal_info_no`,`j_date`,`proj_id`,`narration`,`ledger_id`,`dr_amt`,`cr_amt`,`type`,`cur_bal`,`received_from`,`cheq_no`,`cheq_date`,`bank`,`manual_journal_info_no`,`cc_code`,`sub_ledger_id`,`entry_status`,`ip`,`section_id`,`company_id`,`entry_by`)
+	         VALUES ('".$_SESSION['initiate_journal_note']."','".$date."','".$proj_id."','".$eData[1]."','".$eData[0]."','".$eData[2]."','$eData[3]','".$eData[4]."','0','0','0','0','','','$eData[5]','','MANUAL','".$ip."','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$_SESSION['userid']."')";
+                    $result = mysqli_query( $conn, $sql);
+                    if(! $result )
+                    {
+                        echo "<script type=\"text/javascript\">
+							alert(\"Invalid File:Please Upload CSV File.\");
+							window.location = ".$page."
+						</script>";
+                    }}
+                fclose($file);
+                echo "<script type=\"text/javascript\">
+						alert(\"CSV File has been successfully Imported.\");
+						window.location = ".$page."
+					</script>";
+            }
+
+            header("Location: ".$page."");
+        }
+
+    } // end post unique
 } // end prevent_multi_submit
 
 $initiate_journal_note = @$_SESSION['initiate_journal_note'];
@@ -312,57 +345,107 @@ journal_info j,
 
 <?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','journal_info','166px','');?>
 <?php if($initiate_journal_note):  ?>
-    <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
-        <input type="hidden" name="payment_no" id="payment_no" value="<?=$initiate_journal_note;?>">
-        <input type="hidden" name="receipt_date" id="receipt_date" value="<?=$voucher_date;?>">
-        <input type="hidden" name="<?=$unique?>" id="<?=$unique?>"  value="<?=$initiate_journal_note;?>">
-        <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
-        <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
-        <?php if($Cheque_Date>0){ ?>
-            <input type="hidden" name="Cheque_Date" id="Cheque_Date" value="<?=$Cheque_Date;?>">
-        <?php } ?>
-        <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
-        <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-            <tbody>
-            <tr style="background-color: #3caae4; color:white">
-                <th style="text-align: center">Accounts Ledger</th>
-                <th style="text-align: center">Cost Center</th>
-                <th style="text-align: center">Narration</th>
-                <th style="text-align: center">Attachment</th>
-                <th style="width:5%; text-align:center">Amount</th>
-                <th style="text-align:center">Action</th>
-            </tr>
-            <tbody>
-            <tr>
-                <td style="width: 25%; vertical-align: middle" align="center">
-                    <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="9" required="required"  name="ledger_id">
-                        <option></option>
-                        <?php foreign_relation("accounts_ledger", "ledger_id", "CONCAT(ledger_id,' : ', ledger_name)",  $edit_value_ledger_id, "show_in_transaction=1 and status=1".$sec_com_connection_wa.""); ?>
-                    </select></td>
-                <td align="center" style="width: 10%;vertical-align: middle">
-                    <select class="select2_single form-control" style="width:100%" tabindex="10"   name="cc_code" id="cc_code">
-                        <option></option>
-                        <?php foreign_relation("cost_center", "id", "CONCAT(id,' : ', center_name)", $edit_value_cc_code, "status=1".$sec_com_connection_wa.""); ?>
-                    </select></td>
-                <td style="width:15%;vertical-align: middle" align="center">
-                    <textarea id="narration" style="width:100%; height:37px; font-size: 11px; text-align:center" tabindex="11" name="narration" class="form-control col-md-7 col-xs-12" autocomplete="off"><?=($edit_value_narration!='')? $edit_value_narration : $journal_last_narration;?></textarea>
-                </td>
-                <td style="width:10%;vertical-align: middle" align="center">
-                    <input type="file" id="attachment" style="width:100%; height:37px; font-size: 11px; text-align:center" tabindex="12" name="attachment" class="form-control col-md-7 col-xs-12" autocomplete="off" ></td>
-                <td align="center" style="width:10%"><?php if (isset($_GET['id'])) { ?>
-                        <input type="number" id="dr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center"  value="<?=$edit_value->dr_amt;?>" <?php if($edit_value->dr_amt>0)  echo ''; else echo ''; ?>  name="dr_amt" placeholder="Debit" class="form-control col-md-7 col-xs-12" autocomplete="off"  <?php if($_REQUEST['id']>0):  echo ''; else: ?> step="any" min="1" <?php endif; ?> tabindex="13" />
-                        <input type="number" id="cr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center; margin-top: 5px"  value="<?=$edit_value->cr_amt;?>" <?php if($edit_value->cr_amt>0)  echo ''; else echo ''; ?>  name="cr_amt" placeholder="Credit" class="form-control col-md-7 col-xs-12" autocomplete="off" <?php if($_REQUEST['id']>0):  echo ''; else: ?> step="any" min="1" <?php endif; ?> tabindex="14" />
-                    <?php } else {  ?>
-                        <input type="number" id="dr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center"  name="dr_amt" placeholder="Debit" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" tabindex="13" />
-                        <input type="number" id="cr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center; margin-top: 5px" name="cr_amt" placeholder="Credit" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" tabindex="14" />
-                    <?php } ?></td>
 
-                <td align="center" style="width:5%; vertical-align: middle "><?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px" tabindex="15">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="16">Cancel</a>
-                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="15">Add</button> <?php endif; ?></td></tr>
-            </tbody>
-        </table>
+
+        <?php if ($checkFileUploadMetaAccess>0){ ?>
+        <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
+            <input type="hidden" name="payment_no" id="payment_no" value="<?=$initiate_journal_note;?>">
+            <input type="hidden" name="receipt_date" id="receipt_date" value="<?=$voucher_date;?>">
+            <input type="hidden" name="<?=$unique?>" id="<?=$unique?>"  value="<?=$initiate_journal_note;?>">
+            <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
+            <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
+            <?php if($Cheque_Date>0){ ?>
+                <input type="hidden" name="Cheque_Date" id="Cheque_Date" value="<?=$Cheque_Date;?>">
+            <?php } ?>
+            <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
+            <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
+                <tbody>
+                <tr style="background-color: #3caae4; color:white">
+                    <th style="text-align: center">Accounts Ledger</th>
+                    <th style="text-align: center">Cost Center</th>
+                    <th style="text-align: center">Narration</th>
+                    <th style="text-align: center">Attachment</th>
+                    <th style="width:5%; text-align:center">Amount</th>
+                    <th style="text-align:center">Action</th>
+                </tr>
+                <tbody>
+                <tr>
+                    <td align="center" colspan="5">
+                        <input style="font-size:11px" type="file" id="file" name="file" required class="form-control col-md-7 col-xs-12" >
+                    </td>
+                    <td align="center" style="width:5%; vertical-align:middle">
+                        <button type="submit" name="Import" onclick='return window.confirm("Are you confirm to Upload?");' class="btn btn-primary" style="font-size: 11px">Upload the File</button>
+                    </td>
+                </tr>
+                <tr><th colspan="6" style="text-align: center">or</th></tr>
+                </tbody>
+            </table>
+        </form>
+
+
+
+            <?php } ?>
+        <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
+            <input type="hidden" name="payment_no" id="payment_no" value="<?=$initiate_journal_note;?>">
+            <input type="hidden" name="receipt_date" id="receipt_date" value="<?=$voucher_date;?>">
+            <input type="hidden" name="<?=$unique?>" id="<?=$unique?>"  value="<?=$initiate_journal_note;?>">
+            <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
+            <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
+            <?php if($Cheque_Date>0){ ?>
+                <input type="hidden" name="Cheque_Date" id="Cheque_Date" value="<?=$Cheque_Date;?>">
+            <?php } ?>
+            <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
+            <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
+                <tbody>
+                <tr style="background-color: #3caae4; color:white">
+                    <th style="text-align: center">Accounts Ledger</th>
+                    <th style="text-align: center">Cost Center</th>
+                    <th style="text-align: center">Narration</th>
+                    <th style="text-align: center">Attachment</th>
+                    <th style="width:5%; text-align:center">Amount</th>
+                    <th style="text-align:center">Action</th>
+                </tr>
+                <tbody>
+                <tr>
+                    <td style="width: 25%; vertical-align: middle" align="center">
+                        <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="9" required="required"  name="ledger_id">
+                            <option></option>
+                            <?php foreign_relation("accounts_ledger", "ledger_id", "CONCAT(ledger_id,' : ', ledger_name)",  $edit_value_ledger_id, "show_in_transaction=1 and status=1".$sec_com_connection_wa.""); ?>
+                        </select>
+                    </td>
+                    <td align="center" style="width: 10%;vertical-align: middle">
+                        <select class="select2_single form-control" style="width:100%" tabindex="10"   name="cc_code" id="cc_code">
+                            <option></option>
+                            <?php foreign_relation("cost_center", "id", "CONCAT(id,' : ', center_name)", $edit_value_cc_code, "status=1".$sec_com_connection_wa.""); ?>
+                        </select>
+                    </td>
+                    <td style="width:15%;vertical-align: middle" align="center">
+                        <textarea id="narration" style="width:100%; height:37px; font-size: 11px; text-align:center" tabindex="11" name="narration" class="form-control col-md-7 col-xs-12" autocomplete="off"><?=($edit_value_narration!='')? $edit_value_narration : $journal_last_narration;?></textarea>
+                    </td>
+                    <td style="width:10%;vertical-align: middle" align="center">
+                        <input type="file" id="attachment" style="width:100%; height:37px; font-size: 11px; text-align:center" tabindex="12" name="attachment" class="form-control col-md-7 col-xs-12" autocomplete="off" ></td>
+                    <td align="center" style="width:10%">
+                        <?php if (isset($_GET['id'])) { ?>
+                            <input type="number" id="dr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center"  value="<?=$edit_value->dr_amt;?>" <?php if($edit_value->dr_amt>0)  echo ''; else echo ''; ?>  name="dr_amt" placeholder="Debit" class="form-control col-md-7 col-xs-12" autocomplete="off"  <?php if($_REQUEST['id']>0):  echo ''; else: ?> step="any" min="1" <?php endif; ?> tabindex="13" />
+                            <input type="number" id="cr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center; margin-top: 5px"  value="<?=$edit_value->cr_amt;?>" <?php if($edit_value->cr_amt>0)  echo ''; else echo ''; ?>  name="cr_amt" placeholder="Credit" class="form-control col-md-7 col-xs-12" autocomplete="off" <?php if($_REQUEST['id']>0):  echo ''; else: ?> step="any" min="1" <?php endif; ?> tabindex="14" />
+                        <?php } else {  ?>
+                            <input type="number" id="dr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center"  name="dr_amt" placeholder="Debit" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" tabindex="13" />
+                            <input type="number" id="cr_amt" style="width:98%; height:25px; font-size: 11px; text-align:center; margin-top: 5px" name="cr_amt" placeholder="Credit" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" tabindex="14" />
+                        <?php } ?>
+                    </td>
+                    <td align="center" style="width:5%; vertical-align: middle ">
+                        <?php if (isset($_GET['id'])) : ?>
+                            <button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px" tabindex="15">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="16">Cancel</a>
+                        <?php else: ?>
+                            <button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="15">Add</button>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         <input name="count" id="count" type="hidden" value="" />
-    </form>
+        </form>
+        </table>
 <?=voucher_delete_edit($rs,$unique,$_SESSION['initiate_journal_note'],$COUNT_details_data,$page);?><br><br>
 <?php endif;?>
 <?=$html->footer_content();mysqli_close($conn);?>

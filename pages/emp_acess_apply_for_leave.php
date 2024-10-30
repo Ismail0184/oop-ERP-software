@@ -27,12 +27,12 @@ if(prevent_multi_submit()){
             $date2=date_create($_POST['e_date']);
             $diff=date_diff($date1,$date2);
             $_POST['total_days']=		$diff->format("%R%a")+1;
+            $_POST['applied_days']=		$diff->format("%R%a")+1;
             $_POST['PBI_ID']=$_SESSION['PBI_ID'];
             $_POST['leave_status'] = "Waiting";
             $_POST['entry_at'] = date('Y-m-d H:i:s');
             $crud->insert();
             $type=1;
-            $msg='New Entry Successfully Inserted.';
 
 
             $PBI_DEPT_HEADemail=$_POST['PBI_DEPT_HEAD'];
@@ -158,7 +158,7 @@ if($GetType ){
 {$type=@$type;
 }
 
-$sql2="select a.id,a.s_date as date,a.reason,a.leave_status from ".$table." a where a.PBI_ID=".$_SESSION['PBI_ID']." order by a.".$unique." desc limit 7";
+$sql2="select a.id,a.s_date as date,a.reason,a.status from ".$table." a where a.PBI_ID=".$_SESSION['PBI_ID']." order by a.".$unique." desc limit 7";
 ?>
 
 
@@ -166,7 +166,7 @@ $sql2="select a.id,a.s_date as date,a.reason,a.leave_status from ".$table." a wh
 <?php require_once 'header_content.php'; ?>
 <SCRIPT language=JavaScript>
     function DoNavPOPUP(lk)
-    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=600,left = 250,top = -1");}
+    {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=950,height=800,left = 250,top = -1");}
     function GetDays(){
         var dropdt = new Date(document.getElementById("s_date").value);
         var pickdt = new Date(document.getElementById("e_date").value);
@@ -252,9 +252,9 @@ endif;
                         <th>Authorizer <span class="required text-danger">*</span></th>
                         <th style="width:2%">:</th>
                         <td>
-                            <select class="select2_single form-control" style="width:100%;" tabindex="-1" required="required" name="PBI_DEPT_HEAD" id="PBI_DEPT_HEAD">
+                            <select class="select2_single form-control" style="width:100%;" tabindex="-1" required="required" name="approved_by" id="PBI_DEPT_HEAD">
                                 <option></option>
-                                <?=advance_foreign_relation(find_active_user_HO($PBI_DEPT_HEAD));?>
+                                <?=advance_foreign_relation(find_active_user_HO($approved_by));?>
                             </select>
                         </td>
                     </tr>
@@ -286,7 +286,7 @@ endif;
     </div>
 </div>
 <?php if(!isset($_GET[$unique])):?>
-    <?=recentdataview($sql2,'voucher_view_popup_ismail.php','hrm_leave_info','282px','Recent Leave Applications','hrm_requisition_leave_report.php','4');?>
+    <?=recentdataviewAttendance($sql2,'voucher_view_popup_ismail.php','hrm_leave_info','282px','Recent Leave Applications','hrm_requisition_leave_report.php','4');?>
 <?php endif; ?>
 <?=$html->footer_content();?>
 

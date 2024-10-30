@@ -30,10 +30,13 @@ elseif($module_id ==13):
     $sidebar_menus = 'sidebar_menus_VMS.php';
 elseif($module_id ==14):
     $sidebar_menus = 'sidebar_menus_Developer.php';
+elseif($module_id ==15):
+    $sidebar_menus = 'sidebar_menus_MM.php';
 else:
     $sidebar_menus = 'sidebar_menu.php';
 endif;
 ?>
+
 <div class="container body">
     <div class="main_container">
         <div class="col-md-3 left_col menu_fixed">
@@ -46,7 +49,7 @@ endif;
                         <a href="dashboard.php"><img src="../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="50" height="50" style=" margin-top: 10px;" title="Company Logo"></a><?php endif; ?>
                 </div>
                 <div class="clearfix"></div>
-                    <?php include ("pro.php");  ?>
+                <?php include ("pro.php");  ?>
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <?php include("".$sidebar_menus.""); ?>
                 </div>

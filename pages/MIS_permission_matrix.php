@@ -183,7 +183,7 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
                                 </tr>
                                 <?php $sql=mysqli_query($conn, "SELECT m.module_id,m.modulename,m.module_short_name,dpm.module_id,
        (select p.status from user_permissions_module p where p.module_id=m.module_id and p.user_id='".$MIS_permission_matrix."') as status
-       FROM module_department m, dev_permission_module dpm  WHERE m.module_id=dpm.module_id and dpm.status>0 and dpm.user_id=".$_SESSION['userid']." ORDER BY m.module_id");
+       FROM dev_modules m, dev_permission_module dpm  WHERE m.module_id=dpm.module_id and dpm.status>0 and dpm.user_id=".$_SESSION['userid']." ORDER BY m.module_id");
                                 while($data=mysqli_fetch_object($sql)):?>
                                     <tr>
                                         <td style="text-align: center"><input type="checkbox" data="<?=$data->module_id?>" class="status_checks_module btn <?php echo ($data->status)? 'btn-success' : 'btn-danger'?>"  <?php echo ($data->status=='1')? 'checked' : ''?>></td>
@@ -224,7 +224,7 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
                     </tr>
                     <?php $sql=mysqli_query($conn, "SELECT m.module_id,m.modulename,m.module_short_name,upm.module_id,
        (select p.status from user_permissions_dashboard p where p.module_id=m.module_id and p.user_id='".$MIS_permission_matrix."') as status
-       FROM module_department m, user_permissions_module upm  WHERE m.module_id=upm.module_id and upm.status>0 and upm.user_id=".$MIS_permission_matrix." ORDER BY m.module_id");
+       FROM dev_modules m, user_permissions_module upm  WHERE m.module_id=upm.module_id and upm.status>0 and upm.user_id=".$MIS_permission_matrix." ORDER BY m.module_id");
                     while($data=mysqli_fetch_object($sql)):?>
                         <tr>
                             <td style="text-align: center"><input type="checkbox" data="<?=$data->module_id?>" class="status_checks btn <?php echo ($data->status)? 'btn-success' : 'btn-danger'?>"  <?php echo ($data->status=='1')? 'checked' : ''?>></td>
@@ -267,7 +267,7 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
                     </tr>
                     <?php $sql=mysqli_query($conn, "SELECT dmm.main_menu_id,dmm.main_menu_name,dmm.main_menu_details,dmm.url,dmm.faicon,md.module_short_name,dpm.module_id,dpm.status,
        (select pmm.status from user_permission_matrix_main_menu pmm where pmm.main_menu_id=dmm.main_menu_id and pmm.user_id='".$MIS_permission_matrix."') as status,md.status as master_menu_status
-       FROM dev_main_menu dmm, module_department md,user_permissions_module dpm  WHERE 
+       FROM dev_main_menu dmm, dev_modules md,user_permissions_module dpm  WHERE 
        dmm.module_id=md.module_id and 
        md.module_id=dpm.module_id and 
        dpm.status>0 and 
@@ -323,7 +323,7 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
                     dmm.main_menu_id,dmm.main_menu_name,dpm.status as mobule_permission_status,
                     md.module_short_name,
        (select psm.status from user_permission_matrix_sub_menu psm where psm.sub_menu_id=dsm.sub_menu_id and psm.user_id='".$MIS_permission_matrix."') as status,dsm.status as sub_menu_status
-       FROM dev_main_menu dmm, module_department md,dev_sub_menu dsm,user_permissions_module dpm  
+       FROM dev_main_menu dmm, dev_modules md,dev_sub_menu dsm,user_permissions_module dpm  
        
        WHERE 
        dpm.module_id=md.module_id and 
@@ -425,7 +425,7 @@ $MIS_permission_matrix = @$_SESSION['MIS_permission_matrix'];
        FROM 
        module_reportview_optgroup_label g, 
        module_reportview_report r,
-       module_department m,
+       dev_modules m,
        user_permissions_module dpm
        WHERE
        dpm.module_id=g.module_id and 

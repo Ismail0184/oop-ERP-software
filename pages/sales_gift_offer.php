@@ -222,9 +222,17 @@ $res="SELECT ts.id,ts.offer_name,concat(ts.start_date,' to ',ts.end_date) as 'Du
         <?php else : ?>
             <div class="form-group" style="margin-left:40%">
                 <div class="col-md-6 col-sm-6 col-xs-12">
-                    <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-primary">Add New TS</button></div></div> <?php endif; ?>
+                    <button type="submit" name="record" id="record"  style="font-size:12px" class="btn btn-primary">Add New TS</button>
+                </div>
+            </div>
+        <?php endif; ?>
     </form>
-    </div></div></div><?php if(!isset($GetUnique)): ?></div><?php endif; ?>
+    </div>
+    </div>
+    </div>
+        <?php if(!isset($GetUnique)): ?>
+    </div>
+    <?php endif; ?>
 <?php if(!isset($GetUnique)):?>
 <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1,'');?>
 <?php endif; ?>

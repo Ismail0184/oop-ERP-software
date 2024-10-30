@@ -43,7 +43,7 @@ if($_GET['report_id']=='1012001') {
 
 } elseif ($_GET['report_id']=='1012008'){
     $fileName = "Customer Details.xls";
-    $fields = array('Dealer Code', 'Dealer Custom Code', 'Customer Name', 'Town', 'Territory','Region','Propritor Name','Contact Person','Contact Number','Address','National Id','TIN / BIN');
+    $fields = array('Dealer Code', 'Dealer Custom Code','Ledger ID','Customer Name', 'Town', 'Territory','Region','Propritor Name','Contact Person','Contact Number','Address','National Id','TIN / BIN');
 
 } elseif ($_GET['report_id']=='1012012'){
     $fileName = "Collection Register.xls";
@@ -261,12 +261,11 @@ where
          $excelData .= 'No records found...' . "\n";
      }
  } elseif ($_GET['report_id']=='1012008') {
-     $query = $db->query("SELECT d.dealer_code,d.dealer_code as dealer_code,d.dealer_custom_code as dealer_custom_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person as contact_person,d.contact_number as contact_number,d.address_e as address,d.national_id as national_id,d.TIN_BIN as TINBIN  from dealer_info d, town t, area a, branch b WHERE
+     $query = $db->query("SELECT d.dealer_code,d.dealer_code as dealer_code,d.dealer_custom_code as dealer_custom_code,d.account_code,d.dealer_name_e as customer_name,t.town_name as town,a.AREA_NAME as territory,b.BRANCH_NAME as region,d.propritor_name_e as propritor_name,d.contact_person as contact_person,d.contact_number as contact_number,d.address_e as address,d.national_id as national_id,d.TIN_BIN as TINBIN  from dealer_info d, town t, area a, branch b WHERE
 d.town_code=t.town_code and a.AREA_CODE=d.area_code and b.BRANCH_ID=d.region and d.dealer_category in ('3')  order by d.dealer_code");
      if ($query->num_rows > 0) {
-         // Output each row of the data
          while ($row = $query->fetch_assoc()) {
-             $lineData = array($row['dealer_code'], $row['dealer_custom_code'], $row['customer_name'], $row['town'], $row['territory'],
+             $lineData = array($row['dealer_code'], $row['dealer_custom_code'], $row['account_code'], $row['customer_name'], $row['town'], $row['territory'],
                  $row['region'], $row['propritor_name'],$row['contact_person'], $row['contact_number'],$row['address'], $row['national_id'] ,$row['TINBIN']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";

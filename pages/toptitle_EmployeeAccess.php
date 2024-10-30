@@ -87,65 +87,15 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
 
 
     <div class="col-md-6 col-xs-12">
-        <div class="x_panel fixed_height_390" >
+        <div class="x_panel fixed_height_230" >
             <div class="x_title">
                 <h2 style="color: #FF6347"><i class="fa fa-calendar"></i> Attendance Status</h2>
                 <div class="clearfix"></div>
             </div>
-            <div class="x_content" style="overflow: auto;height: 320px">
-                <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+            <div class="x_content">
+                <table align="center" class="table table-striped table-bordered" style="width:100%;font-size:11px;">
                     <thead>
-                    <tr style="background-color: #F0F8FF">
-                        <th colspan="8" style="text-align: center; font-size: 15px; font-weight: bold">Individual Leave Status <?=date('Y')?></th>
-                    </tr>
-                    <tr>
-                        <th style="vertical-align: middle">Leave Status</th><?php
-                        $res=mysqli_query($conn, "select * from hrm_leave_type");
-                        while($leave_row=mysqli_fetch_object($res)){
-                            ?>
-                            <th style="text-align: center; vertical-align: middle"><?=$leave_row->leave_type_name;?></th>
-                        <?php } ?>
-                        <th style="text-align: center; vertical-align: middle">Total</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Company Leave Policy</td>
-                        <?php $res=mysqli_query($conn, "select * from hrm_leave_type");
-                        while($leave_row=mysqli_fetch_object($res)){ $totalpolicy=0; ?>
-                            <td style="text-align: center"><?=$leave_row->yearly_leave_days;?>, Days</td>
-                            <?php
-                            $totalpolicy=$totalpolicy+$leave_row->yearly_leave_days;
-                        } ?>
-                        <td style="text-align: center"><?php if($_SESSION['gander']=='1'){ echo ($totalpolicy-90); } else { echo $totalpolicy;};?>, Days</td>
-                    </tr>
-
-                    <tr>
-                        <td><a href="hrm_requisition_leave_report.php" target="new">Leave Already Taken</a></td>
-                        <?php $res=mysqli_query($conn, "select * from hrm_leave_type");
-                        while($leave_row=mysqli_fetch_object($res)){ $total_taken = 0; ?>
-                            <td style="text-align: center"><?php $leave_taken=find_a_field("hrm_leave_info","SUM(total_days)","type='".$leave_row->id."' and s_date between '$dfrom' and '$dto' and PBI_ID='".$_SESSION['PBI_ID']."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
-                            <?php
-                            $total_taken=$total_taken+$leave_taken;
-                        } ?>
-                        <td style="text-align: center"><?=$total_taken;?>, Days</td>
-                    </tr>
-
-                    <tr>
-                        <td>Available Leave</td>
-                        <?php
-                        $res=mysqli_query($conn, "select * from hrm_leave_type");
-                        while($leave_row=mysqli_fetch_object($res)){
-                            ?>
-                            <th style="text-align: center"><?=$leave_row->yearly_leave_days - find_a_field("hrm_leave_info","SUM(total_days)","type='".$leave_row->id."' and s_date between '$dfrom' and '$dto' and PBI_ID='".$_SESSION['PBI_ID']."'");?> , Days</th>
-                        <?php } ?>
-                        <td style="text-align: center"><?php if($_SESSION['gander']=='1'){ echo ($totalpolicy-90)-$total_taken; } else { echo $totalpolicy-$total_taken;};?>, Days</td>
-                    </tr>
-                    </tbody>
-                </table>
-                <table align="center" class="table table-striped table-bordered" style="width:90%;font-size:11px; display: none">
-                    <thead>
-                    <tr style="background-color: #F0F8FF">
+                    <tr class="bg-success">
                         <th colspan="10" style="text-align: center; font-size: 15px; font-weight: bold">Current Month Attendance Status</th>
                     </tr>
                     <th style="text-align: center">Total Day</th>
@@ -159,9 +109,6 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
                     <th style="text-align: center">Outdoor Duty</th>
                     <th style="text-align: center">Overtime</th>
                     </thead>
-
-
-
                     <tbody>
                     <tr>
                         <td style="text-align: center"><?=$days_in_month;?></td>
@@ -176,6 +123,71 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
                         <td style="text-align: center"></td>
                     </tr>
                     </tbody></table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-6 col-xs-12">
+        <div class="x_panel fixed_height_230" >
+            <div class="x_title">
+                <h2 style="color: #FF6347"><i class="fa fa-calendar"></i> Leave Status</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th colspan="8" style="text-align: center; font-size: 15px; font-weight: bold">Current Year <?=date('Y')?></th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2" style="width: 2%; vertical-align:middle">Leave</th>
+                        <?php $res=mysqli_query($conn, "select * from hrm_leave_type where status=1");
+                        while($leave_row=mysqli_fetch_object($res)){
+                            ?>
+                            <th style="text-align: center; vertical-align:middle"><?=$leave_row->leave_type_name;?></th>
+                        <?php } ?>
+                        <th style="text-align: center; vertical-align:middle">Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Policy</td>
+                        <?php $res=mysqli_query($conn, "select * from hrm_leave_type where status=1");
+                        $totalPolicy = 0;
+                        while($leave_row=mysqli_fetch_object($res)){ ?>
+                            <td style="text-align: center"><?=$leave_row->yearly_leave_days;?></td>
+                            <?php
+                            $totalPolicy=$totalPolicy+$leave_row->yearly_leave_days;
+                        } ?>
+                        <td style="text-align: center"><?=$totalPolicy;?></td>
+                    </tr>
+
+                    <tr>
+                        <td>Taken</td>
+                        <?php $res=mysqli_query($conn, "select * from hrm_leave_type where status=1");
+                        $total_taken = 0;
+                        while($leave_row=mysqli_fetch_object($res)){ ?>
+                            <td style="text-align: center"><?php $leave_taken=find_a_field("hrm_leave_info","SUM(total_days)","type='".$leave_row->id."' and s_date between '".$dfrom."' and '".$dto."' and PBI_ID='".$_SESSION['PBI_ID']."'"); if($leave_taken>0){ echo number_format($leave_taken);} else echo ''; ?></td>
+                            <?php
+                            $total_taken=$total_taken+$leave_taken;
+                        } ?>
+                        <td style="text-align: center"><?=$total_taken;?></td>
+                    </tr>
+                    </tbody>
+
+                    <tr>
+                        <th>Balance</th>
+                        <?php
+                        $res=mysqli_query($conn, "select * from hrm_leave_type where status=1");
+                        while($leave_row=mysqli_fetch_object($res)){
+                            $balance=$leave_row->yearly_leave_days - find_a_field("hrm_leave_info","SUM(total_days)","type='".$leave_row->id."' and s_date between '$dfrom' and '$dto' and PBI_ID='".$_SESSION['PBI_ID']."'");?>
+                            <th class="<?php if($balance==0){?> bg-danger <?php } ?>" style="text-align: center"><?=$balance?></th>
+                        <?php } ?>
+                        <th style="text-align: center"><?=$totalPolicy-$total_taken;?></th>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

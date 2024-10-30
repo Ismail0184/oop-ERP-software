@@ -53,7 +53,7 @@ if($moduleGET){
     unset($_SESSION['module_id']);
     unset($_SESSION['module_name']);
     $_SESSION['module_id']=$moduleGET;
-    $_SESSION['module_name']=find_a_field('module_department','module_short_name','module_id='.$_SESSION['module_id'].'');
+    $_SESSION['module_name']=find_a_field('dev_modules','module_short_name','module_id='.$_SESSION['module_id'].'');
     header('Location: dashboard.php');
 }
 if($languageGET){

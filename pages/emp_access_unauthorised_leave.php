@@ -12,7 +12,7 @@ $now = date("Y-m-d h:i:sa");
 
 $current_status=find_a_field("".$table."","approved_status","".$unique."=".$$unique."");
 $required_status="PENDING";
-$authorused_status="ACCEPTED";
+$authorused_status="APPROVED";
 $page="emp_access_unauthorised_leave.php";
 $crud      =new crud($table);
 $leaveRequest=find_all_field(''.$table.'','',''.$unique.'='.$$unique);
@@ -25,8 +25,19 @@ if (empty($leaveRequest->approved_viewed_at))
 
 if(isset($_POST['confirm']))
 {
+    $_POST['status']="APPROVED";
     $_POST['approved_status']="APPROVED";
-    $_POST['recommended_at']=date("Y-m-d h:i:sa");
+    $_POST['approved_at']=date("Y-m-d h:i:sa");
+    $crud->update($unique);
+    echo "<script>self.opener.location = '$page'; self.blur(); </script>";
+    echo "<script>window.close(); </script>";
+}
+
+if(isset($_POST['reject']))
+{
+    $_POST['status']="REJECTED";
+    $_POST['approved_status']="REJECTED";
+    $_POST['approved_at']=date("Y-m-d h:i:sa");
     $crud->update($unique);
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
     echo "<script>window.close(); </script>";
@@ -61,6 +72,7 @@ if(isset($_POST['viewReport'])){
      p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,r.approved_status as status
      from '.$table.' r
      WHERE
+     r.status = "RECOMMENDED" and
      r.recommended_by="'.$_SESSION['PBI_ID'].'"	and 
      r.approved_status="'.$required_status.'" and
      r.half_or_full in ("Full")
@@ -189,8 +201,8 @@ else :
             <table align="center" style="width:90%;font-size:12px;">
                 <tr>
                     <td>
-                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
-                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">I Approved <i class="fa fa-check"></i></button>
+                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to reject the Application?");' name="reject" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
+                        <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommend the Application?");' name="confirm" id="confirm" class="btn btn-success">I Approved <i class="fa fa-check"></i></button>
                     </td>
                 </tr>
             </table>

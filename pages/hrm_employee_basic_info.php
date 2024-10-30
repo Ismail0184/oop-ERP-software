@@ -293,70 +293,10 @@ if(isset($$unique))
                  </tr>
              </table>
          </div>
-     </div></div>
- <!-------------------End of  List View --------------------->
-
-
-
-
-
-
-
-
-
-
-
-
-     <!-- input section-->
-     <div class="col-md-8 col-sm-12 col-xs-12">
-         <div class="x_panel">
-             <div class="x_title">
-                 <h2>:: Documentation ::</h2>
-                 <ul class="nav navbar-right panel_toolbox">
-                 </ul>
-                 <div class="clearfix"></div>
-             </div>
-             <div class="x_content">
-
-
-                 <table style="width: 100%;">
-                     <tr>
-                         <td>Staff Picture :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="emp_pic" type="file" id="emp_pic" class="form-control col-md-7 col-xs-12" /></td>
-                     <td><a href="../../pic/staff/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/staff/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>CV :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="cv_pic" type="file" id="cv_pic" class="form-control col-md-7 col-xs-12" /></td>
-                     <td><a href="../../pic/cv/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/cv/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>Birth Certificate :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="birthCrtf_pic" type="file" id="birthCrtf_pic" class="form-control col-md-7 col-xs-12" /></td>
-                         <td><a href="../../pic/birth_crtf/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/birth_crtf/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>Passport :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="pass_pic" type="file" id="pass_pic" class="form-control col-md-7 col-xs-12" /></td>
-                     <td><a href="../../pic/nid/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/nid/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>National ID :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="nid_pic" type="file" id="nid_pic" class="form-control col-md-7 col-xs-12" /></td>
-                     <td><a href="../../pic/passport/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/passport/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>TIN :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="tin_pic" type="file" id="tin_pic" class="form-control col-md-7 col-xs-12" /></td>
-                     <td><a href="../../pic/sign/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/sign/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                     <tr>
-                         <td>Sign :</td><td><input style="width:80%; height: 35px;margin-top: 10px" name="sign_pic" type="file" id="sign_pic" class="form-control col-md-7 col-xs-12" /></td>
-                         <td><a href="../../pic/sign/<?php echo $_SESSION['employee_selected']?>.jpeg" target="_blank"><img src="../../pic/sign/<?php echo $_SESSION['employee_selected']?>.jpeg" width="80" height="60"/></a></td>
-                     </tr>
-                 </table>
-
-             </div>
-         </div>
      </div>
+ </div>
 
 
-
-     <!-------------------list view ------------------------->
      <div class="col-md-4 col-sm-12 col-xs-12">
          <div class="x_panel">
              <div class="x_title">
@@ -432,12 +372,6 @@ if(isset($$unique))
 
      <table style="width: 100%">
      <tr>
-         <td align="center" style="width: 50%">
-             <div class="col-md-6 col-sm-6 col-xs-12">
-                 <button type="submit" name="goback" id="goback" class="btn btn-primary">Go for Job Info Edit</button>
-             </div></div>
-         </td>
-
      <td style="width: 50%">
          <?php if($_GET[$unique]){  ?>
              <div class="form-group" style="margin-left:40%">
@@ -448,7 +382,7 @@ if(isset($$unique))
          <?php } else {?>
              <div class="form-group" style="margin-left:40%">
                  <div class="col-md-6 col-sm-6 col-xs-12">
-                     <button type="submit" name="record" id="record"  class="btn btn-success">Add New </button>
+                     <button type="submit" name="record" id="record"  class="btn btn-primary">Record New Employee </button>
                  </div></div>
          <?php } ?></td>
 
@@ -457,6 +391,6 @@ if(isset($$unique))
      </table>
  </form>
 
-                
-        
-<?php require_once 'footer_content.php' ?>
+
+
+ <?=$html->footer_content();?>

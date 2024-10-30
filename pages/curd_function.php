@@ -656,8 +656,8 @@ ORDER BY zm.sl, zs.sl");
 							$sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
 						elseif($b=='PROCESSING'):
 							$sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
-							elseif($b=='ROCOMMENDED'):
-							$sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
+							elseif($b=='RECOMMENDED'):
+							$sp='<span class="label label-info" style="font-size:10px">RECOMMENDED</span>';
 						elseif($b=='COMPLETED' || $b=='VERIFIED'):
 							$sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
 							elseif($b=='APPROVED'):
@@ -1210,6 +1210,10 @@ $str .= '</div>
 <script>
     $(document).ready(function() {
         $(".select2_single").select2({
+            placeholder: "Select a Choose",
+            allowClear: true
+        });
+        $(".select2_double").select2({
             placeholder: "Select a Choose",
             allowClear: true
         });

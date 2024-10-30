@@ -25,7 +25,18 @@ if (empty($leaveRequest->recommended_viewed_at))
 
 if(isset($_POST['confirm']))
 {
+    $_POST['status']="RECOMMENDED";
     $_POST['recommended_status']="RECOMMENDED";
+    $_POST['recommended_at']=date("Y-m-d h:i:sa");
+    $crud->update($unique);
+    echo "<script>self.opener.location = '$page'; self.blur(); </script>";
+    echo "<script>window.close(); </script>";
+}
+
+if(isset($_POST['reject']))
+{
+    $_POST['status']="REJECTED";
+    $_POST['recommended_status']="REJECTED";
     $_POST['recommended_at']=date("Y-m-d h:i:sa");
     $crud->update($unique);
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
@@ -49,7 +60,7 @@ if(isset($_POST['viewReport'])){
      (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and
      p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason, r.recommended_status as status
      		  from '.$table.' r
-     		  WHERE 
+     		  WHERE  
      		  r.recommended_by="'.$_SESSION['PBI_ID'].'"	and 
      		  r.s_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and r.e_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and 
      		  r.half_or_full in ("Full")
@@ -61,6 +72,7 @@ if(isset($_POST['viewReport'])){
      p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason,r.recommended_status as status
      from '.$table.' r
      WHERE
+     r.status = "PENDING" and
      r.recommended_by="'.$_SESSION['PBI_ID'].'"	and 
      r.recommended_status="'.$required_status.'" and
      r.half_or_full in ("Full")
@@ -185,11 +197,11 @@ else :
             </tr>
             </tbody>
         </table>
-        <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This application has been Recommended!!</i></h6>';} else { ?>
+        <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This application has been '.$current_status.'!!</i></h6>';} else { ?>
             <table align="center" style="width:90%;font-size:12px;">
                 <tr>
                     <td>
-                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
+                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="reject" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
                         <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">I Recommended <i class="fa fa-check"></i></button>
                     </td>
                 </tr>

@@ -17,7 +17,7 @@
                             <li><a href="developer_create_module.php">Create Module</a></li>
                             <li><a href="developer_module_create_main.php">Create Main Menu</a></li>
                             <li><a href="developer_module_create_sub.php">Create Sub Menu</a></li>
-                            <li><a href="developer_module_create_other_options.php">Create Other Options</a></li>
+                            <li><a href="developer_module_create_other_options.php">Create Meta Data</a></li>
                         </ul>
                     </li>
 
