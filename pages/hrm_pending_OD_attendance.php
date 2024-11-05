@@ -3,15 +3,8 @@ require_once 'support_file.php';
 $title="Pending OD Attendance List";
 $dfrom=date('Y-1-1');
 $dto=date('Y-m-d');
-
 $dfromM=date('Y-m-1');
 $dtoM=date('Y-m-d');
-
-$resultdets=mysqli_query($conn, "Select * from warehouse_other_issue where ".$unique."='".$_GET[$unique]."'") ;
-$getid=mysqli_fetch_array($resultdets);
-$dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-$todayss=$dateTime->format("d/m/Y  h:i A");
-
 $now=time();
 $unique='id';
 $unique_field='PBI_ID';
@@ -72,7 +65,7 @@ if(isset($_POST[viewreport])){
 							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
 							 p2.PBI_DEPARTMENT=d.DEPT_ID) as Req_By,
 							 r.late_reason as late_reason,
-							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by, authorised_at as Approved_at,r.status
+							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by,r.status
 				  from '.$table.' r
 				  WHERE 
 				    r.status not in ("GRANTED")
@@ -89,7 +82,7 @@ if(isset($_POST[viewreport])){
 							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
 							 p2.PBI_DEPARTMENT=d.DEPT_ID) as Req_By,
 							 r.late_reason as late_reason,
-							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by, authorised_at as Approved_at,r.status
+							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by,r.status
 				  from '.$table.' r
 				  WHERE 
 				    r.status not in ("GRANTED")
@@ -106,12 +99,12 @@ if(isset($_POST[viewreport])){
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Late Attendance</button></td>
             </tr></table>
-        <?=$crud->report_templates_with_data($res,$title);?>
+        <?=$crud->report_templates_with_status_employee_dashboard($res,$title);?>
 
     </form>
 <?php } ?>
@@ -178,34 +171,4 @@ if(isset($_POST[viewreport])){
 
 
 </form>
-
-
-
-
-<?php require_once 'footer_content.php' ?>
-<script>
-    $(document).ready(function() {
-        $('#s_date').daterangepicker({
-
-            singleDatePicker: true,
-            calender_style: "picker_4",
-
-        }, function(start, end, label) {
-            console.log(start.toISOString(), end.toISOString(), label);
-        });
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-        $('#e_date').daterangepicker({
-
-            singleDatePicker: true,
-            calender_style: "picker_4",
-
-        }, function(start, end, label) {
-            console.log(start.toISOString(), end.toISOString(), label);
-        });
-    });
-</script>
+<?=$html->footer_content();?>

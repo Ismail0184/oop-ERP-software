@@ -6,12 +6,6 @@ $dto=date('Y-m-d');
 
 $dfromM=date('Y-m-1');
 $dtoM=date('Y-m-d');
-
-$resultdets=mysql_query("Select * from warehouse_other_issue where ".$unique."='".$_GET[$unique]."'") ;
-$getid=mysql_fetch_array($resultdets);
-$dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-$todayss=$dateTime->format("d/m/Y  h:i A");
-
 $now=time();
 $unique='id';
 $unique_field='PBI_ID';
@@ -33,8 +27,8 @@ if(prevent_multi_submit()){
 //for modify..................................
     if(isset($_POST['confirm']))
     {
-        $sd=$_POST[attendance_date];
-        $_POST[attendance_date]=date('Y-m-d' , strtotime($sd));
+        $sd=$_POST['attendance_date'];
+        $_POST['attendance_date']=date('Y-m-d' , strtotime($sd));
         $_POST['status']="APPROVED";
         $_POST['dept_head_aprv_at']=date("Y-m-d h:i:sa");
         $crud->update($unique);
@@ -61,9 +55,9 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-if(isset($_POST[viewreport])){
-    $res='select r.'.$unique.',r.'.$unique.' as APP_id,r.attendance_date as Late_date,r.late_entry_at,
-				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM 
+if(isset($_POST['viewreport'])){
+    $res='select r.'.$unique.',r.'.$unique.' as AID,CONCAT(r.attendance_date, " ", r.late_entry_at) AS "Late date & time",
+				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME," - ", d.DEPT_DESC,")") FROM 
 							 
 							personnel_basic_info p2,
 							department d,
@@ -71,31 +65,43 @@ if(isset($_POST[viewreport])){
 							 where 
 							 p2.PBI_ID=r.PBI_ID and
 							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
-							 p2.PBI_DEPARTMENT=d.DEPT_ID) as Applied_by,
+							 p2.PBI_DEPARTMENT=d.DEPT_ID) as Applicant,
 							 r.late_reason as late_reason,
-							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by, authorised_at as Approved_at
+							 (SELECT CONCAT(p2.PBI_NAME) 
+        FROM personnel_basic_info p2
+        JOIN designation de ON p2.PBI_DESIGNATION = de.DESG_ID
+        JOIN department d ON p2.PBI_DEPARTMENT = d.DEPT_ID
+        WHERE p2.PBI_ID = r.authorised_by
+    ) AS "Approving Person",
+							 r.status
 				  from '.$table.' r
 				  WHERE 
-				    r.attendance_date between "'.$_POST[f_date].'" and "'.$_POST[t_date].'"
+				    r.attendance_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"
 				   order by r.'.$unique.' DESC';
 } else {
-    $res='select r.'.$unique.',r.'.$unique.' as APP_id,r.attendance_date as Late_date,r.late_entry_at,
-				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM 
-							 
-							personnel_basic_info p2,
-							department d,
-							designation de 
-							 where 
-							 p2.PBI_ID=r.PBI_ID and
-							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
-							 p2.PBI_DEPARTMENT=d.DEPT_ID) as Applied_by,
-							 r.late_reason as late_reason,
-							 (select PBI_NAME from personnel_basic_info where PBI_ID=r.authorised_by) as Approved_by, authorised_at as Approved_at,r.status
-				  from '.$table.' r
-				  WHERE 
-				    
-				    r.status not in ("APPROVED")
-				   order by r.'.$unique.' DESC';}?>
+    $res='SELECT 
+    r.'.$unique.',
+    r.'.$unique.' AS AID,
+    CONCAT(r.attendance_date, " ", r.late_entry_at) AS "Late date & time",
+    (
+        SELECT CONCAT(p2.PBI_NAME, " # ","(",de.DESG_SHORT_NAME," - ", d.DEPT_DESC,")") 
+        FROM personnel_basic_info p2
+        JOIN designation de ON p2.PBI_DESIGNATION = de.DESG_ID
+        JOIN department d ON p2.PBI_DEPARTMENT = d.DEPT_ID
+        WHERE p2.PBI_ID = r.PBI_ID
+    ) AS Applicant,
+    r.late_reason AS late_reason,
+    (SELECT CONCAT(p2.PBI_NAME) 
+        FROM personnel_basic_info p2
+        JOIN designation de ON p2.PBI_DESIGNATION = de.DESG_ID
+        JOIN department d ON p2.PBI_DEPARTMENT = d.DEPT_ID
+        WHERE p2.PBI_ID = r.authorised_by
+    ) AS "Approving Person",
+    r.status
+FROM '.$table.' r
+WHERE r.status NOT IN ("APPROVED","REJECTED")
+ORDER BY r.'.$unique.' DESC;
+';}?>
 
 
 
@@ -116,33 +122,28 @@ if(isset($_POST[viewreport])){
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Late Attendance</button></td>
             </tr></table>
-        <?=$crud->report_templates_with_data($res,$title);?>
-
+        <?=$crud->report_templates_with_status_employee_dashboard($res,$title);?>
     </form>
 <?php } ?>
+
+
+
 <?php if(isset($_GET[$unique])){ ?>
-
-
-<!-- input section-->
-
 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
     <? require_once 'support_html.php';?>
-
     <table align="center" class="table table-striped table-bordered" style="width:90%;font-size:11px; margin-top: -22px">
         <thead>
         <tr style="background-color: #4682B4">
             <th colspan="7" style="text-align: center; font-size: 15px; font-weight: bold; color: white">Late Attendance Request</th>
         </tr>
-
         </thead>
         <thead>
         <tr>
-
             <th style="text-align: center">Types</th>
             <th style="text-align: center">Date</th>
             <th style="text-align: center">Late At</th>
@@ -162,67 +163,32 @@ if(isset($_POST[viewreport])){
             <td style="text-align: center; vertical-align: middle"><?=$leaverequest->late_reason;?></td>
             <td style="text-align: center; vertical-align: middle"><?=find_a_field("personnel_basic_info","PBI_NAME","PBI_ID=".$leaverequest->authorised_by."");?></td>
         </tr>
-
         </tbody>
     </table>
 
 
     <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This late attendance application has not yet been approved ! Please wait until approval !!</i></h6>';} else { ?>
         <table align="center" style="width:90%;font-size:12px;">
-
             <tr>
                 <td style="width:20%">
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="submit" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger">Cancel & Deleted</button>
-                        </div></div></td>
-
-
-
-
+                        </div>
+                    </div>
+                </td>
 
                 <td style="width:40%; float:right">
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="submit" onclick='return window.confirm("Are you confirm ?");' name="confirm" id="confirm" class="btn btn-success">Confirm & GRANTED</button>
-                        </div></div>
-
+                        </div>
+                    </div>
                 </td>
-            </tr></table>
+            </tr>
+        </table>
     <?php } ?>
-
     <?php } ?>
-
-
 </form>
 
-
-
-
-<?php require_once 'footer_content.php' ?>
-<script>
-    $(document).ready(function() {
-        $('#s_date').daterangepicker({
-
-            singleDatePicker: true,
-            calender_style: "picker_4",
-
-        }, function(start, end, label) {
-            console.log(start.toISOString(), end.toISOString(), label);
-        });
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-        $('#e_date').daterangepicker({
-
-            singleDatePicker: true,
-            calender_style: "picker_4",
-
-        }, function(start, end, label) {
-            console.log(start.toISOString(), end.toISOString(), label);
-        });
-    });
-</script>
+<?=$html->footer_content();?>

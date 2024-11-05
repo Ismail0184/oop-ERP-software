@@ -372,7 +372,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
         if($_POST['warehouse_id']>0) 				$warehouse_id=$_POST['warehouse_id'];
         if(isset($warehouse_id)) 				{$warehouse_con=' and sdd.depot_id='.$warehouse_id;}
         if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
-        if(isset($item_id))				{$item_con=' and sdd.item_id='.$item_id;}
+        if(isset($item_id))				{$item_con=' and sdd.item_id='.$item_id;} else { $item_con=''; }
 
         $sql='select
 		i.item_id,
@@ -701,7 +701,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                                      <th style="border: solid 1px #999; padding:2px">UOM</th>
                                      <th style="border: solid 1px #999; padding:2px">Category</th>
                                      <th style="border: solid 1px #999; padding:2px">Pack<br>Size</th>
-                                     <th style="border: solid 1px #999; padding:2px; ">Warehoues Name</th>
+                                     <th style="border: solid 1px #999; padding:2px; ">Warehouse Name</th>
                                      <th style="border: solid 1px #999; padding:2px; ">Pi No</th>
                                      <th style="border: solid 1px #999; padding:2px; ">Pi Date</th>
                                      <th style="border: solid 1px #999; padding:2px; ">STO Qty</th>
@@ -710,7 +710,8 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                                      <th style="border: solid 1px #999; padding:2px; ">Stock Received Qty</th>
                                      <th style="border: solid 1px #999; padding:2px; ">Difference (Exit vs Received)</th>
                                  </tr></thead><tbody>
-                                 <?php while($data=mysqli_fetch_object($result)){ ?>
+                                 <?php $i=0;$STO_total=0;$stock_exit_total=0;$stock_received_total=0;
+                                 while($data=mysqli_fetch_object($result)){ ?>
                                      <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
                                          <td style="border: solid 1px #999; text-align:center"><?=$i=$i+1;?></td>
                                          <td style="border: solid 1px #999; text-align:center"><?=$data->item_id;?></td>
@@ -745,6 +746,7 @@ $totalcomissionamount=$totalcomissionamount+$data->comissionamount;
                                  </tr>
                                  </tbody>
                              </table>
+
 
 
 <?php } elseif ($report_id=='7003001'){

@@ -3,12 +3,6 @@ require_once 'support_file.php';
 $title="Pending Early Leave Request";
 $dfrom=date('Y-1-1');
 $dto=date('Y-m-d');
-
-$resultdets=mysql_query("Select * from warehouse_other_issue where ".$unique."='".$_GET[$unique]."'") ;
-$getid=mysql_fetch_array($resultdets);
-$dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-$todayss=$dateTime->format("d/m/Y  h:i A");
-
 $now=time();
 $unique='id';
 $unique_field='PBI_DEPT_HEAD';
@@ -30,14 +24,14 @@ if(prevent_multi_submit()){
 //for modify..................................
     if(isset($_POST['confirm']))
     {
-        $sd=$_POST[s_date];
-        $ed=$_POST[e_date];
-        $_POST[s_date]=date('Y-m-d' , strtotime($sd));
-        $_POST[e_date]=date('Y-m-d' , strtotime($ed));
+        $sd=$_POST['s_date'];
+        $ed=$_POST['e_date'];
+        $_POST['s_date']=date('Y-m-d' , strtotime($sd));
+        $_POST['e_date']=date('Y-m-d' , strtotime($ed));
         $date1=date_create($_POST[s_date]);
         $date2=date_create($_POST[e_date]);
         $diff=date_diff($date1,$date2);
-        $_POST[total_days]=		$diff->format("%R%a")+1;
+        $_POST['total_days']=		$diff->format("%R%a")+1;
 
         $_POST['leave_status']="GRANTED";
         $_POST['approved_at']=date("Y-m-d h:i:sa");
@@ -76,7 +70,6 @@ if(isset($$unique))
 <?php require_once 'body_content.php'; ?>
 
 <?php if(!isset($_GET[$unique])){ ?>
-    <!-------------------list view ------------------------->
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -85,7 +78,6 @@ if(isset($$unique))
             </div>
 
             <div class="x_content">
-
                 <table class="table table-striped table-bordered" style="width:100%;font-size:11px">
                     <thead>
                     <tr>
@@ -100,7 +92,7 @@ if(isset($$unique))
                     </tr>
                     </thead>
                     <tbody>
-                    <? 	$res=mysql_query('select r.'.$unique.',r.'.$unique.' as Req_No,r.entry_at as Date,r.total_days,
+                    <? 	$res=mysqli_query($conn, 'select r.'.$unique.',r.'.$unique.' as Req_No,r.entry_at as Date,r.total_days,
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM 
 							 
 							personnel_basic_info p2,
@@ -115,9 +107,7 @@ if(isset($$unique))
 				  r.leave_status="Waiting" and 
 				  r.half_or_full in ("Half")
 				   order by r.dept_head_status DESC');
-                    while($req=mysql_fetch_object($res)){
-
-                        ?>
+                    while($req=mysqli_fetch_object($res)){?>
                         <tr style="cursor: pointer" onclick="DoNavPOPUP('<?=$req->$unique;?>', 'TEST!?', 600, 700)">
                             <td><?=$i=$i+1;?></td>
                             <td><?=$req->$unique;?></td>
@@ -127,78 +117,73 @@ if(isset($$unique))
                             <td><?=$req->reason;?></td>
                             <td><?=$req->Approved_status;?></td>
                             <td><?php if($req->Approved_status=="Approve") {?> <?=$req->approved_by;?><br><?=$req->approved_at;?> <?php } else { echo ''; } ?></td>
-
                         </tr>
                     <?php } ?>
-
                     </tbody>
                 </table>
-
             </div>
-
-        </div></div>
-    <!-------------------End of  List View --------------------->
+        </div>
+    </div>
 <?php } ?>
+
+
 <?php if(isset($_GET[$unique])){ ?>
-
-
-<!-- input section-->
-
-<form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
-    <? require_once 'support_html.php';?>
+    <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post">
+        <? require_once 'support_html.php';?>
 
         <table align="center" class="table table-striped table-bordered" style="width:95%;font-size:11px; margin-top: -22px">
-        <thead>
-        <tr style="background-color: #4682B4">
-            <th colspan="7" style="text-align: center; font-size: 15px; font-weight: bold; color: white">Leave Request</th>
-        </tr>
-
-        </thead>
-        <thead>
-        <tr>
-
-            <th style="text-align: center">Leave Types</th>
-            <th style="text-align: center">Date</th>
-            <th style="text-align: center">Departure Time</th>
-            <th style="text-align: center">Reason</th>
-            <th style="text-align: center">Responsible Person</th>
-            <th style="text-align: center">Approved Person</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr style="vertical-align: middle">
-            <td style="text-align: center">Half</td>
-            <td style="text-align: center;"><?=$leaverequest->s_date;?></td>
-            <td style="text-align: center"><?=$leaverequest->departure_time;?></td>
-            <td style="text-align: center"><?=$leaverequest->total_days?></td>
-            <td style="text-align: center"><?=$leaverequest->reason;?></td>
-            <td style="text-align: center"><?=find_a_field("personnel_basic_info","PBI_NAME","PBI_ID=".$leaverequest->leave_responsibility_name."");?></td>
-        </tr>
-
-        </tbody>
-    </table>
-
-
-    <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This leave application has not yet been approved ! Please wait until approval !!</i></h6>';} else { ?>
-        <table align="center" style="width:95%;font-size:12px;">
-            <tr>
-                <td style="width:45%">
-                    <div class="form-group">
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <button type="submit" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger">Cancel & Deleted</button>
-                        </div></div></td>
-                <td style="width:45%; float:right">
-                    <div class="form-group">
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <button type="submit" onclick='return window.confirm("Are you confirm to Approved?");' name="confirm" id="confirm" class="btn btn-success">Approved the Application</button>
-                        </div></div>
-                </td>
+            <thead>
+            <tr style="background-color: #4682B4">
+                <th colspan="7" style="text-align: center; font-size: 15px; font-weight: bold; color: white">Leave Request</th>
             </tr>
+            </thead>
+            <thead>
+
+            <tr>
+                <th style="text-align: center">Leave Types</th>
+                <th style="text-align: center">Date</th>
+                <th style="text-align: center">Departure Time</th>
+                <th style="text-align: center">Reason</th>
+                <th style="text-align: center">Responsible Person</th>
+                <th style="text-align: center">Approved Person</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr style="vertical-align: middle">
+                <td style="text-align: center">Half</td>
+                <td style="text-align: center;"><?=$leaverequest->s_date;?></td>
+                <td style="text-align: center"><?=$leaverequest->departure_time;?></td>
+                <td style="text-align: center"><?=$leaverequest->total_days?></td>
+                <td style="text-align: center"><?=$leaverequest->reason;?></td>
+                <td style="text-align: center"><?=find_a_field("personnel_basic_info","PBI_NAME","PBI_ID=".$leaverequest->leave_responsibility_name."");?></td>
+            </tr>
+            </tbody>
         </table>
-    <?php } ?>
 
-    <?php } ?>
+        <?php if($current_status!=$required_status && $current_status!="MANUAL" && $current_status!="RETURNED"){ echo '<h6 style="text-align:center; color:red; font-weight:bold"><i>This leave application has not yet been approved ! Please wait until approval !!</i></h6>';} else { ?>
+            <table align="center" style="width:95%;font-size:12px;">
+                <tr>
+                    <td style="width:45%">
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <button type="submit" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger">Cancel & Deleted</button>
+                            </div>
+                        </div>
+                    </td>
 
+                    <td style="width:45%; float:right">
+                        <div class="form-group">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <button type="submit" onclick='return window.confirm("Are you confirm to Approved?");' name="confirm" id="confirm" class="btn btn-success">Approved the Application</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        <?php } ?>
 
-</form>
-<?php require_once 'footer_content.php' ?>
+        <?php } ?>
+    </form>
+
+<?=$html->footer_content();?>

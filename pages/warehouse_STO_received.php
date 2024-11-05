@@ -59,7 +59,7 @@ item_info i
  order by d.id";
             $pdetails=mysqli_query($conn, $rs);
             while($uncheckrow=mysqli_fetch_array($pdetails)){
-            $id=$uncheckrow[id];
+            $id=$uncheckrow['id'];
             $qty=$_POST['received_qty'.$id];
             $cost_price=$_POST['cost_price'.$id];
             $_POST['ji_date'] = date('Y-m-d');
@@ -73,7 +73,7 @@ item_info i
             $_POST['batch'] = $uncheckrow['lot_number'];
             $_POST['lot_number'] = $uncheckrow['batch'];
             $_POST['expiry_date'] = $uncheckrow['expiry_date'];
-            $_POST['custom_no'] = $uncheckrow['custom_pi_no'];
+            $_POST['custom_no'] = $uncheckrow['custom_no'];
             $_POST['tr_no'] = $_GET[$unique];
             $_POST['sr_no'] = $uncheckrow['id'];
             $_POST['entry_by'] = $_SESSION['userid'];
@@ -89,8 +89,8 @@ item_info i
         $jv=next_journal_voucher_id();
         $rev_Date=date('Y-m-d');
         if (($_POST['ledger_1'] > 0) && (($_POST['ledger_2'] && $_POST['dr_amount_1']) > 0) && ($_POST['cr_amount_2'] > 0)) {
-            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
-            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['dr_amount_1'], 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], $c_no, $c_date, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
+            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_1'], $_POST['narration_1'], $_POST['dr_amount_1'], 0, 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
+            add_to_journal_new($rev_Date, $proj_id, $jv, 0, $_POST['ledger_2'], $_POST['narration_1'], 0, $_POST['dr_amount_1'], 'ProductionReceived', $$unique, $$unique, 0, 0, $_SESSION['usergroup'], 0, 0, $create_date, $ip, $now, $day, $thisday, $thismonth, $thisyear,'','','');
         }
         $up_master="UPDATE ".$table." SET receive_date='$rev_Date' where ".$unique."=".$$unique."";
         $update_table_master=mysqli_query($conn, $up_master);

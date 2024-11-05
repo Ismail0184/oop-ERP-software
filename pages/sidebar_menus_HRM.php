@@ -9,7 +9,7 @@ $notViewedHandover = find_a_field('handover_application_master','count(handOver_
 $totNotViewed = $notViewedReq + $notViewedTravel + $notViewedVehicle + $notViewedManpower + $notViewedHandover;
 $attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','status not in  ("DRAFTED","REJECTED","GRANTED") and granted_status="PENDING" and half_or_full in ("Full")');
                  $attendance_early_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','leave_status="Waiting" and half_or_full in ("Half")');
-                 $attendance_late_attendance_pending=find_a_field('hrm_late_attendance','COUNT(id)','status not in ("APPROVED")');
+                 $attendance_late_attendance_pending=find_a_field('hrm_late_attendance','COUNT(id)','status not in ("APPROVED","REJECTED")');
                  $attendance_OD_attendance_pending=find_a_field('hrm_od_attendance','COUNT(id)','status not in ("GRANTED")');
 				 $total_attendance=$attendance_leave_pending+$attendance_early_leave_pending+$attendance_late_attendance_pending+$attendance_OD_attendance_pending;
 

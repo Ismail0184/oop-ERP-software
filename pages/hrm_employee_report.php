@@ -30,7 +30,7 @@ if(isset($$unique))
 	
 $res='select p.'.$unique.',p.'.$unique.' as Code,p.'.$unique_field.' as Employee_ID,p.PBI_NAME as Name, (select DESG_SHORT_NAME from designation where DESG_ID=p.PBI_DESIGNATION) as designation,
                                  (select DEPT_DESC from department where DEPT_ID=p.PBI_DEPARTMENT) as Department,DATE_FORMAT(p.PBI_DOJ, "%M %d, %Y") as DOJ,p.PBI_EMAIL,p.PBI_MOBILE as mobile,p.PBI_JOB_STATUS as status
-                                 from '.$table.' p where p.PBI_JOB_STATUS in ("In Service","Not In Service") order by p.'.$unique;	
+                                 from '.$table.' p where p.PBI_JOB_STATUS in ("In Service") order by p.serial';
 $family_member_view='SELECT f.id,f.fi_name as name,r.RELATION_NAME,f.fi_contact_number from hrm_emp_family_info f,relation r where f.fi_relationship=r.RELATION_CODE';                                 
 
 $education_view='SELECT e.id,en.EXAM_NAME as Education,e.ei_passing_year as passed_year,e.ei_grade as Grade,i.institute_name as Institute  from 

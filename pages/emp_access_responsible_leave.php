@@ -32,6 +32,15 @@ if(isset($_POST['confirm']))
     echo "<script>window.close(); </script>";
 }
 
+if(isset($_POST['rejected']))
+{
+    $_POST['responsible_person_acceptance_status']="REJECTED";
+    $_POST['responsible_person_acceptance_at']=date("Y-m-d h:i:sa");
+    $crud->update($unique);
+    echo "<script>self.opener.location = '$page'; self.blur(); </script>";
+    echo "<script>window.close(); </script>";
+}
+
 
 
 
@@ -189,7 +198,7 @@ else :
             <table align="center" style="width:90%;font-size:12px;">
                 <tr>
                     <td>
-                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="Deleted" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
+                        <button type="submit" style="font-size:12px; float:left" onclick='return window.confirm("Are you confirm to Deleted?");' name="rejected" id="Deleted" class="btn btn-danger"><i class="fa fa-ban"></i> Reject & Back</button>
                         <button type="submit" style="font-size:12px; float:right" onclick='return window.confirm("Are you confirm to Recommended the Requisition?");' name="confirm" id="confirm" class="btn btn-success">Accept <i class="fa fa-check"></i></button>
                     </td>
                 </tr>

@@ -151,10 +151,9 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
 
                                      <div id="myTabContent" class="tab-content">
                                          <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
-                                             <hr>
+                                             <h5>Personal Details Information</h5><hr>
                                              <table style="width: 100%;">
                                                  <tr>
-
                                                      <th style="width: 10%">ERP ID</th>
                                                      <th style="width: 1%">:</th>
                                                      <td style="20%">
@@ -222,7 +221,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                  </tr>
 
                                                  <tr>
-                                                     <th>Sex</th>
+                                                     <th>Gender</th>
                                                      <th>:</th>
                                                      <td>
                                                          <select class="select2_single form-control" style="width:100%" name="PBI_SEX" id="PBI_SEX">
@@ -274,34 +273,25 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
 
                                                      </td>
                                                  </tr>
-                                             </table>
 
 
+                                                 <tr>
+                                                     <th>Driving License</th>
+                                                     <th>:</th>
+                                                     <td>
+                                                         <input type="text" id="ESSENTIAL_DRIVING_LICENSE_NO" name="ESSENTIAL_DRIVING_LICENSE_NO" value="<?=$ESSENTIAL_DRIVING_LICENSE_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                     </td>
 
-                                                         <div class="form-group" style="width: 100%">
-                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%"></label>
-                                                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                                             </div>
-                                                         </div>
+                                                     <th>Birth Certificate</th>
+                                                     <th>:</th>
+                                                     <td>
+                                                         <input type="text" id="ESSENTIAL_BIRTH_CERT" name="ESSENTIAL_BIRTH_CERT" value="<?=$ESSENTIAL_BIRTH_CERT;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                     </td>
 
-
-                                                         <div class="form-group" style="width: 100%">
-
-                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Driving License</label>
-
-                                                             <div class="col-md-6 col-sm-6 col-xs-12">
-
-                                                                 <input type="text" id="ESSENTIAL_DRIVING_LICENSE_NO" name="ESSENTIAL_DRIVING_LICENSE_NO" value="<?=$ESSENTIAL_DRIVING_LICENSE_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-
-                                                             </div>
-                                                         </div>
-                                                         
-                                                         <div class="form-group" style="width: 100%">
-                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Photo</label>
-                                                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                                                 <input type="file" id="myfile" name="myfile" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px">
-                                                             </div>
-                                                         </div>
+                                                     <th>Passport No</th>
+                                                     <th>:</th>
+                                                     <td>
+                                                         <input type="text" id="ESSENTIAL_PASSPORT_NO" name="ESSENTIAL_PASSPORT_NO" value="<?=$ESSENTIAL_PASSPORT_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
                                                  </tr>
                                              </table>

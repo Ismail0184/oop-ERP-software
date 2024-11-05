@@ -2293,45 +2293,56 @@ order by c.do_no";
             $total_amount = 0;
             $total_invoice_amount = 0;
             $i = 0;
-            $result=mysqli_query($conn, 'Select
-				sd.*,
-				sd.unit_price as invoice_price,
-				d.dealer_custom_code,
-				d.dealer_name_e,
-				d.dealer_type,
-				w.warehouse_name,
-				i.item_id as itemid,
-				i.finish_goods_code as FGCODE,
-				i.item_name as FGdescription,
-				i.pack_unit as UOM,
-				i.pack_size as psize,
-                ji.*,
-                ji.gift_type as gt,
-                SUM(sd.unit_price * ji.item_ex) as invoice_amount,
-                ib.brand_name,
-                (select SUM(total_amt) from sale_do_details where do_no=sd.do_no and item_id="1096000100010312" and gift_on_item=sd.item_id) as cash_discount,
-                (select SUM(total_unit) from sale_do_details where do_no=sd.do_no and item_id=sd.item_id) as totalQty
-                
-
-				from
-				sale_do_chalan sd,
-				dealer_info d,
-				item_brand ib,
-				warehouse w,
-				item_info i,
-                journal_item ji
-
-				where
-				    
-				ib.brand_id=i.brand_id and 
-                sd.do_no=ji.do_no and
-                sd.item_id=ji.item_id and
-				i.item_id not in ("1096000100010312") and
-				i.item_id=sd.item_id and
-				sd.depot_id=w.warehouse_id and
-				sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" and "'.$lockedEndInterval.'" and 
-				sd.dealer_code=d.dealer_code '.$datecon.$do_type_conn.' group by sd.do_no,ji.batch,ji.item_id,ji.id
-				order by sd.do_no,ji.id asc');
+            $result=mysqli_query($conn, 'SELECT 
+    sd.*,
+    sd.unit_price AS invoice_price,
+    d.dealer_custom_code,
+    d.dealer_name_e,
+    d.dealer_type,
+    w.warehouse_name,
+    i.item_id AS itemid,
+    i.finish_goods_code AS FGCODE,
+    i.item_name AS FGdescription,
+    i.pack_unit AS UOM,
+    i.pack_size AS psize,
+    ji.*,
+    ji.gift_type AS gt,
+    SUM(sd.unit_price * ji.item_ex) AS invoice_amount,
+    ib.brand_name,
+    COALESCE(cash_discount.total_amt, 0) AS cash_discount,
+    COALESCE(total_qty.total_unit, 0) AS totalQty
+FROM 
+    sale_do_chalan sd
+JOIN 
+    dealer_info d ON sd.dealer_code = d.dealer_code
+JOIN 
+    warehouse w ON sd.depot_id = w.warehouse_id
+JOIN 
+    item_info i ON sd.item_id = i.item_id
+JOIN 
+    item_brand ib ON i.brand_id = ib.brand_id
+JOIN 
+    journal_item ji ON sd.do_no = ji.do_no AND sd.item_id = ji.item_id
+LEFT JOIN 
+    (SELECT do_no, item_id, SUM(total_amt) AS total_amt
+     FROM sale_do_details
+     WHERE item_id = "1096000100010312"
+     GROUP BY do_no, item_id) AS cash_discount 
+     ON sd.do_no = cash_discount.do_no AND sd.item_id = cash_discount.item_id
+LEFT JOIN 
+    (SELECT do_no, item_id, SUM(total_unit) AS total_unit
+     FROM sale_do_details
+     GROUP BY do_no, item_id) AS total_qty 
+     ON sd.do_no = total_qty.do_no AND sd.item_id = total_qty.item_id
+WHERE 
+    i.item_id <> "1096000100010312"
+    AND sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" AND "'.$lockedEndInterval.'"
+    '.$datecon.$do_type_conn.'
+GROUP BY 
+    sd.do_no, ji.batch, ji.item_id, ji.id
+ORDER BY 
+    sd.do_no, ji.id ASC;
+');
             while($data=mysqli_fetch_object($result)){$i=$i+1; ?>
                 <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
                     <td style="border: solid 1px #999; text-align:center"><?=$i;?></td>
@@ -3673,7 +3684,8 @@ group by lld.item_id
                         if($patPrevious>0){
                             echo number_format($patPrevious,2); } else { echo '('.number_format(substr($patPrevious,1),2).')'; } ?></strong></td>
             </tr>
-            <thead></table>
+            <thead>
+        </table>
 
 
 
@@ -3683,7 +3695,7 @@ group by lld.item_id
     <?php elseif ($_POST['report_id']=='1005002'):
         $fdate='0000-00-00';
         $tdate=$_POST['t_date'];
-        $comparisonF=date('Y-m-d' , strtotime($t));
+        $comparisonF=date('Y-m-d' , strtotime($fdate));
         $comparisonT=date('Y-m-d' , strtotime($_POST['pt_date']));
         ?>
         <style>
@@ -3735,7 +3747,7 @@ group by lld.item_id
                     echo $grossAssetsCurrents;?>
                 </td>
                 <td style="border: solid 1px #999; padding:2px; text-align: right;">
-                    <? $grossAssetsPrevious = ($TotalPPEPrevious-$TotalADPrevious);
+                    <? $grossAssetsPrevious = ($TotalPPEPrevious);
                     if($grossAssetsPrevious>0){
                         $grossAssetsPreviouss=number_format($grossAssetsPrevious,2);
                     } else {

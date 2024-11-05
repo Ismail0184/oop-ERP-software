@@ -7,17 +7,14 @@ $table="users";
 $table2="users";
 $page="MIS_user_management_ERP_user.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-
+$$unique = @$_GET[$unique];
 
 
 if(prevent_multi_submit()){
-    if(isset($_POST[$unique_field]))
+    if(isset($_POST[$unique_field])){
+        $$unique = $_POST[$unique];
 
-//for insert..................................
-    {    $$unique = $_POST[$unique];
-        if(isset($_POST['record']))
-        {
+        if(isset($_POST['record'])) {
             $_POST['picture_url']=$link.$_POST['PBI_ID'].'.jpeg';
             $_POST['group_for']=$_SESSION['usergroup'];
             if($_POST['gander']=='Female') {
@@ -37,20 +34,7 @@ if(prevent_multi_submit()){
             unset($$unique);
         }
 
-        //for modify..................................
-        if(isset($_POST['modify']))
-        {
-            $_POST['edit_at']=time();
-            $_POST['edit_by']=$_SESSION['userid'];
-            $crud->update($unique);
-            echo "<script>self.opener.location = '$page'; self.blur(); </script>";
-            echo "<script>window.close(); </script>";
-        }
-
-
-//for modify..................................
-        if(isset($_POST['modify']))
-        {
+        if(isset($_POST['modify'])) {
             $_POST['edit_at']=time();
             $_POST['edit_by']=$_SESSION['userid'];
             $crud->update($unique);

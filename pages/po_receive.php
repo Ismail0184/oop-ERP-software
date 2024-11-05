@@ -15,7 +15,8 @@ $journal_item="journal_item";
 $journal_accounts="journal";
 $$unique = @$_GET[$unique];
 $po_master=find_all_field(''.$table_master.'','',''.$unique.'='.$$unique.'');
-$vendor_master=find_all_field('vendor','','vendor_id='.$po_master->vendor_id.'');
+$po_masterVendorId = @$po_master->vendor_id;
+$vendor_master=find_all_field('vendor','','vendor_id='.$po_masterVendorId.'');
 $config_group_class=find_all_field("config_group_class","","1");
 $m_id = @$_GET['m_id'];
 $jv_no = @$_GET['jv_no'];
@@ -31,7 +32,10 @@ if(prevent_multi_submit()){
 			$_POST['grn_inventory_type']='';
 			$crud      =new crud($table_receive_master);
             $crud->insert();	// GRN master
-////////////////////////////////////////////////////////		
+
+////////////////////////////////////////////////////////
+
+        $total_amount = 0;
 		$results="Select * from purchase_invoice  where ".$unique."=".$$unique."";
         $query=mysqli_query($conn, $results);
         while($row=mysqli_fetch_array($query)){
@@ -47,10 +51,10 @@ if(prevent_multi_submit()){
 			$_POST['order_no']=$row['id'];
 			$_POST['rcv_Date']=$_POST['rec_date'];
 			$_POST['status']='UNCHECKED';
-			$_POST['mfg']=$_POST['mfg'.$id];
+			$_POST['mfg']=@$_POST['mfg'.$id];
 			$_POST['m_id']=$m_id;
 			$_POST['lot_number']=$_SESSION['POunique_id'];
-			$_POST['total_cost']=$_POST['transport_bill']+$_POST['labor_bill']+$_POST['others_bill'];
+			$_POST['total_cost']=$_POST['transport_bill']+$_POST['labor_bill'];
 			$crud      =new crud($table_details);
             $crud->insert();	// GRN received
 //////////////////////////////////////////////////////////			
@@ -116,17 +120,21 @@ if(prevent_multi_submit()){
             $tax_ledger =   '1005000400000000';
             $tax_amt = (($sub_tot_amount*$_POST['tax'])/100);
         }
-        if($_POST['other_cost_accounts_head']>0){
-            $others_costsss=$_POST['others_costsss'];
-            $other_cost_accounts_head=$_POST['other_cost_accounts_head'];
-        }
+
 		$vendor_ledger=$vendor_master->ledger_id;		
 		$dd = $_POST['rec_date'];
         $date = date('d-m-y', strtotime($dd));
+
+        $time = [];
         $j = 0;
+
         for ($i = 0; $i < strlen($date); $i++) {
             if (is_numeric($date[$i])) {
-                $time[$j] = $time[$j] . $date[$i];
+                // Initialize $time[$j] if it doesn't exist
+                if (!isset($time[$j])) {
+                    $time[$j] = '';
+                }
+                $time[$j] .= $date[$i];
             } else {
                 $j++;
             }
@@ -143,9 +151,7 @@ if(prevent_multi_submit()){
     }
     elseif($tax_amtcr>0){
         $purchaseamt=$pr_amt+$tax_amtcr;
-    }
-    else
-    {
+    } else {
         $purchaseamt=$pr_amt;
     }
 				

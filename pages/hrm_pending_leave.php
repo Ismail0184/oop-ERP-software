@@ -59,8 +59,8 @@ if(isset($$unique))
 if(isset($_POST['viewReport'])){
 
     $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
-     (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and
-     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason as remarks, r.status as status
+     (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME," - ", d.DEPT_DESC,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and
+     p2.PBI_DEPARTMENT=d.DEPT_ID) as Applicant,concat(r.s_date," <strong> to</strong> ",r.e_date) as "Leave Duration",r.total_days,r.reason as remarks, r.status as status
      		  from '.$table.' r
      		  WHERE   
      		  r.s_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and r.e_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'" and 
@@ -69,8 +69,8 @@ if(isset($_POST['viewReport'])){
 } else {
 
     $res='select r.'.$unique.',r.'.$unique.' as No,r.entry_at as "Application Date",
-     (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and 
-     p2.PBI_DEPARTMENT=d.DEPT_ID) as Application_By,r.s_date as Start_date,r.e_date as End_date,r.total_days,r.reason as remarks,r.status as status
+     (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME," - ", d.DEPT_DESC,")") FROM personnel_basic_info p2,department d,designation de where p2.PBI_ID=r.PBI_ID and p2.PBI_DESIGNATION=de.DESG_ID and 
+     p2.PBI_DEPARTMENT=d.DEPT_ID) as Applicant,concat(r.s_date," <strong> to</strong> ",r.e_date) as "Leave Duration",r.total_days,r.reason as remarks,r.status as status
      from '.$table.' r
      WHERE
      r.status not in  ("DRAFTED","REJECTED","GRANTED") and
