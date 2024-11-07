@@ -98,7 +98,7 @@ order by dm.module_id,mm.sl';
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" id="module_id"  name="module_id">
                                                     <option></option>
-                                                    <?php foreign_relation('module_department', 'id', 'CONCAT(id," : ", module_short_name)', $module_id, 'status in (\'1\')'); ?>
+                                                    <?php foreign_relation('dev_modules', 'id', 'CONCAT(id," : ", module_short_name)', $module_id, 'status in (\'1\')'); ?>
                                                 </select>
                                             </div>
                                         </div>

@@ -1,19 +1,19 @@
 <?php
 require_once 'support_file.php';
-$title='Report';
-
-
-$from_date=date('Y-m-d' , strtotime($_POST[f_date]));
-$to_date=date('Y-m-d' , strtotime($_POST[t_date]));
-
-list( $day,$month,$year1) = split('[/.-]', $_REQUEST['datefrom']);
-$dofdate= '20'.$year1.'-'.$month.'-'.$day;
-
-list($dayt,$montht,$yeart) = split('[/.-]', $_REQUEST['dateto']);
-$dotdate= '20'.$yeart.'-'.$montht.'-'.$dayt;
-
-$warehouseid=$_POST[warehouse_id];
+$from_date=@$_POST['f_date'];
+$to_date=@$_POST['t_date'];
 $unique='PBI_ID';
+
+$datecon=' and p.or_date between  "'.$from_date.'" and "'.$to_date.'"';
+if(@$_POST['PBI_ID']>0) 				$PBI_ID=@$_POST['PBI_ID'];
+if(isset($PBI_ID)) 				{$PBI_ID_con=' and p.PBI_ID='.$PBI_ID;} else { $PBI_ID_con =''; }
+
+if($_POST['department']>0) 					$department=$_POST['department'];
+if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;} else { $department_CON=''; }
+
+if($_POST['designation']>0) 					$department=@$_POST['designation'];
+if(isset($designation))				{$PBI_DESIGNATION_CON=' and p.PBI_DESIGNATION='.$designation;} else { $PBI_DESIGNATION_CON=''; }
+
 ?>
 
 
@@ -27,32 +27,26 @@ $unique='PBI_ID';
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Report</title>
     <script type="text/javascript">
-
         function hide()
-
         {
-
             document.getElementById("pr").style.display = "none";
-
         }
 
     </script>
-    <script type="text/javascript">
-        function DoNavPOPUP(lk)
-        {myWindow = window.open("hrm_employee_basic_info.php?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=900,height=600,left = 250,top = 5");}
-    </script>
-
+    <style>
+        #customers {
+            font-family: "Gill Sans", sans-serif;
+        }
+        #customers td {
+        }
+        #customers tr:ntd-child(even)
+        {background-color: #f0f0f0;}
+        #customers tr:hover {background-color: #f5f5f5;}
+    </style>
 </head>
 
-<body style="font-family: cursive;">
-
-
-
-
-
+<body>
 <div id="pr" style="margin-left:48%">
     <div align="left">
         <form id="form1" name="form1" method="post" action="">
@@ -67,109 +61,42 @@ $unique='PBI_ID';
 
 
 
-<?php if ($_POST['reporttypes']=='3002'):
-/////////////////////////////////////Received and Payments----------------------------------------------------------
-
-    if($_POST['PBI_DESIGNATION']>0) 					$PBI_DESIGNATION=$_POST['PBI_DESIGNATION'];
-    if(isset($PBI_DESIGNATION))				{$PBI_DESIGNATION_CON=' and p.PBI_DESIGNATION='.$PBI_DESIGNATION;}
-    if($_POST['department']>0) 					$department=$_POST['department'];
-    if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;}
-    ?>
-
-    <h2 align="center" style="margin-top:-5px"><?=$_SESSION['company_name'];?></h2>
-    <h5 align="center" style="margin-top:-15px"><?=$_POST[PBI_JOB_STATUS];?> Employee List</h5>
-    <?php if($_POST['department']){?>
-    <h5 align="center" style="margin-top:-15px">Department : <?=find_a_field('department','DEPT_DESC','DEPT_ID='.$_POST[department].'')?></h5>
-    <?php } ?>
-     <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
-        <thead>
-        <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-            echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
-
-        <tr style="border: solid 1px #999;font-size:11px; height: 30px">
-            <th style="border: solid 1px #999; padding:2px">SL</th>
-            <th style="border: solid 1px #999; padding:2px; width:5%">Emp ID</th>
-            <th style="border: solid 1px #999; padding:2px; width:10%">Unique ID</th>
-            <th style="border: solid 1px #999; padding:2px">Full Name</th>
-            <th style="border: solid 1px #999; padding:2px">Designation</th>
-            <th style="border: solid 1px #999; padding:2px">Department</th>
-            <th style="border: solid 1px #999; padding:2px">Joining Date</th>
-            <th style="border: solid 1px #999; padding:2px">Date of Birth</th>
-            <th style="border: solid 1px #999; padding:2px">Mobile</th>
-            <th style="border: solid 1px #999; padding:2px">Corp. Mobile</th>
-            <th style="border: solid 1px #999; padding:2px">Email</th>
-            <th style="border: solid 1px #999; padding:2px">Blood Group</th>
-        </tr></thead>
-        <tbody>
-        <? 	$result=mysql_query("SELECT  p.*,d.*,des.* FROM 
-							 
-							personnel_basic_info p,
-							department d,
-							designation des
-							 where 							 							 
-							 p.PBI_DEPARTMENT=d.DEPT_ID	and 
-							 p.PBI_DESIGNATION=des.DESG_ID	 and 
-							 p.PBI_JOB_STATUS='".$_POST['PBI_JOB_STATUS']."'
-							 ".$department_CON.$PBI_DESIGNATION_CON."			 
-							  order by p.PBI_ID");
-        while($data=mysql_fetch_object($result)){
-
-        ?>
-        <tr style="cursor: pointer; font-size: 12px; font-family: Calibri" onclick="DoNavPOPUP('<?=$data->PBI_ID;?>', 'TEST!?', 600, 700)">
-            <td style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID_UNIQUE;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_NAME;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->DESG_DESC;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->DEPT_SHORT_NAME;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_DOJ;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_DOB;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_MOBILE;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_PHONE;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_EMAIL;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->ESSENTIAL_BLOOD_GROUP;?></td>
-        </tr>
-        <?php } ?>
-
-        </tbody>
-    </table> </div>
-    </div>
-    </div>
+<?php if ($_POST['report_id']=='1000101'): ?>
+    <title>HRM Report :: Employee Report</title>
+<?php
+$query="SELECT  p.PBI_ID as ID,p.PBI_ID as ID,
+        p.PBI_ID_UNIQUE as User_ID,
+        p.PBI_NAME as Employee_Name,
+        p.PBI_FATHER_NAME as father_name,
+        p.PBI_MOTHER_NAME as mother_name,
+        des.DESG_DESC as designation,
+        d.DEPT_DESC as Department,
+        p.PBI_DOJ as joining_date,
+        p.PBI_SEX as Gender,
+        p.PBI_RELIGION as religion,
+        ei.ESS_CORPORATE_PHONE as mobile,
+        ei.ESS_CORPORATE_EMAIL as email
+        
+FROM 
+                          personnel_basic_info p,
+                          department d,
+                          designation des,
+                          essential_info ei
+                      WHERE
+                          p.PBI_ID=ei.PBI_ID and
+                          p.PBI_DEPARTMENT=d.DEPT_ID	and 
+                          p.PBI_DESIGNATION=des.DESG_ID	 and 
+                          p.PBI_JOB_STATUS='".$_POST['PBI_JOB_STATUS']."'
+                          ".$department_CON.$PBI_DESIGNATION_CON." group by p.PBI_ID
+                          order by p.serial";
+echo reportview($query, 'Employee Report', '98', '', '', '');?>
 
 
-<?php elseif ($_POST['reporttypes']=='2001'):?>
-    <h2 align="center"><?=$_SESSION['company_name'];?></h2>
-    <h4 align="center" style="margin-top:-10px">Leave Summery</h4>
-    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
-    <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
-        <thead>
-        <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-            echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
-        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
-            <th style="border: solid 1px #999; padding:2px">SL</th>
-            <th style="border: solid 1px #999; padding:2px">Leave By</th>
-            <th style="border: solid 1px #999; padding:2px">Designation</th>
-            <th style="border: solid 1px #999; padding:2px">Department</th>
-            <th style="border: solid 1px #999; padding:2px; ">leave Type</th>
-            <th style="border: solid 1px #999; padding:2px; ">Authorized By</th>
-            <th style="border: solid 1px #999; padding:2px">From</th>
-            <th style="border: solid 1px #999; padding:2px; ">To</th>
-            <th style="border: solid 1px #999; padding:2px; ">Total Days</th>
-        </tr></thead>
 
+<?php elseif ($_POST['report_id']=='1000201'):
 
-        <tbody>
-        <?php
-        $datecon=' and p.or_date between  "'.$from_date.'" and "'.$to_date.'"';
-        if($_POST['PBI_ID']>0) 				$PBI_ID=$_POST['PBI_ID'];
-        if(isset($PBI_ID)) 				{$PBI_ID_con=' and p.PBI_ID='.$PBI_ID;}
-
-        if($_POST['department']>0) 					$department=$_POST['department'];
-        if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;}
-
-        $result='select  p.*,l.*,
-(select PBI_NAME from personnel_basic_info where PBI_ID=l.PBI_DEPT_HEAD) as authorized_by,
-des.*,dep.*,t.*	
+        $query='select  l.id,l.id as aid,p.PBI_name as Applicant,
+des.DESG_DESC as designaiton,dep.DEPT_DESC as department,t.leave_type_name as LeaveType,l.reason as remarks,CONCAT(l.s_date, " to ", l.e_date) as leve_duration,l.applied_days,FORMAT(total_days,0) as granted_days,l.status
 					
 				from
 				hrm_leave_info l,
@@ -184,39 +111,18 @@ des.*,dep.*,t.*
 				p.PBI_DEPARTMENT=dep.DEPT_ID and 
 				t.id=l.type and 
 				l.half_or_full in ("Full") and
-				l.leave_status in ("GRANTED") and 
-				l.s_date between "'.$from_date.'" and "'.$to_date.'" '.$PBI_ID_con.$department_CON.'
-				
-				order by l.id desc
-				';
-        $query2 = mysql_query($result);
-        while($data=mysql_fetch_object($query2)){
-            $i=$i+1; ?>
+				l.status not in ("DRAFTED","REJECTED") and 
+				l.s_date between "'.$from_date.'" and "'.$to_date.'"
+				 '.$PBI_ID_con.$department_CON.' order by l.id desc';?>
 
-            <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
-                <td style="border: solid 1px #999; text-align:center"><?php echo $i; ?></td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->PBI_NAME;?></td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->DESG_DESC;?></td>
-                <td style="border: solid 1px #999; text-align:left"><?=$data->DEPT_DESC;?></td>
-                <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->leave_type_name;?></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->authorized_by;?></td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->s_date;?></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->e_date;?></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->total_days);?></td>
-
-            </tr>
-            <?php  $total_leave_days=$total_leave_days+$data->total_days; } ?>
-        <tr style="font-size:12px"><td colspan="8" style="text-align:right; "><strong>Total</strong></td>
-            <td style="border: solid 1px #999; text-align:right;  padding:2px"><strong><?=number_format($total_leave_days)?></strong></td>
-        </tr>
-        </tbody>
-    </table>
+    <?=reportview($query,'Leave Report','98',0,'',0); ?>
 
 
-<?php elseif ($_POST['reporttypes']=='2002'):?>
+
+<?php elseif ($_POST['report_id']=='1000202'):?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-10px">Early Leave Summery</h4>
-    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
+    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
     <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
         <thead>
         <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -287,10 +193,10 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='2003'):?>
+<?php elseif ($_POST['report_id']=='1000204'):?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-10px">Outdoor Duty Attendance Summery</h4>
-    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
+    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
     <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
         <thead>
         <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -359,29 +265,9 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='2004'):?>
-    <h2 align="center"><?=$_SESSION['company_name'];?></h2>
-    <h4 align="center" style="margin-top:-10px">Late Attendance Summery</h4>
-    <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
-    <table align="center"  style="width:98%; border: solid 1px #999; border-collapse:collapse;">
-        <thead>
-        <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-            echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
-        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
-            <th style="border: solid 1px #999; padding:2px">SL</th>
-            <th style="border: solid 1px #999; padding:2px">Leave By</th>
-            <th style="border: solid 1px #999; padding:2px">Designation</th>
-            <th style="border: solid 1px #999; padding:2px">Department</th>
-            <th style="border: solid 1px #999; padding:2px; ">leave Type</th>
-            <th style="border: solid 1px #999; padding:2px; ">Authorized By</th>
-            <th style="border: solid 1px #999; padding:2px">Date</th>
-            <th style="border: solid 1px #999; padding:2px">Late Reason</th>
-            <th style="border: solid 1px #999; padding:2px; ">Total Days</th>
-        </tr></thead>
+<?php elseif ($_POST['report_id']=='1000203'):?>
 
-
-        <tbody>
-        <?php
+<?php
         $datecon=' and p.or_date between  "'.$from_date.'" and "'.$to_date.'"';
         if($_POST['PBI_ID']>0) 				$PBI_ID=$_POST['PBI_ID'];
         if(isset($PBI_ID)) 				{$PBI_ID_con=' and p.PBI_ID='.$PBI_ID;}
@@ -389,52 +275,40 @@ des.*,dep.*
         if($_POST['department']>0) 					$department=$_POST['department'];
         if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;}
 
-        $result='select  p.*,l.*,
-(select PBI_NAME from personnel_basic_info where PBI_ID=l.authorised_by) as authorized_by,
-des.*,dep.*
+
+        $sql='select  
+    
+    l.id,
+    l.id as aid,
+    p.PBI_name as Applicant,
+   des.DESG_DESC as designaiton,
+   dep.DEPT_DESC as department,
+   l.late_reason as remarks,
+   l.attendance_date as late_date,
+   l.status
 					
 				from
 				hrm_late_attendance l,
 				personnel_basic_info p,							
 				designation des,
 				department dep
-				 
-				where 
+				
+				 WHERE
+				     
 				l.PBI_ID=p.PBI_ID and 
 				p.PBI_DESIGNATION=des.DESG_ID and 
 				p.PBI_DEPARTMENT=dep.DEPT_ID and 
-				l.status in ("APPROVED") and 
+				l.status not in ("REJECTED") and
 				l.attendance_date between "'.$from_date.'" and "'.$to_date.'" '.$PBI_ID_con.$department_CON.'
 				
-				order by l.id desc
-				';
-        $query2 = mysql_query($result);
-        while($data=mysql_fetch_object($query2)){
-            $i=$i+1; ?>
+				order by l.id desc';?>
 
-            <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
-                <td style="border: solid 1px #999; text-align:center"><?php echo $i; ?></td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->PBI_NAME;?></td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->DESG_DESC;?></td>
-                <td style="border: solid 1px #999; text-align:left"><?=$data->DEPT_DESC;?></td>
-                <td style="border: solid 1px #999; text-align:center;  padding:2px">Late Attendance</td>
-                <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->authorized_by;?></td>
-                <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->attendance_date;?></td>
-                <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->late_reason;?></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$total_days='1';?></td>
-
-            </tr>
-            <?php  $total_leave_days=$total_leave_days+$total_days; } ?>
-        <tr style="font-size:12px"><td colspan="8" style="text-align:right; "><strong>Total</strong></td>
-            <td style="border: solid 1px #999; text-align:right;  padding:2px"><strong><?=number_format($total_leave_days)?></strong></td>
-        </tr>
-        </tbody>
-    </table>
+    <?=reportview($sql,'Late Attendance Report','98',0,'',0); ?>
 
 
 
 
-<?php elseif ($_POST['reporttypes']=='6001'):
+<?php elseif ($_POST['report_id']=='6001'):
 
     $page="print_preview_requisition.php";
     $unique="oi_no";
@@ -525,7 +399,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='6003'):
+<?php elseif ($_POST['report_id']=='6003'):
 $page="print_preview_travel_claim_exp.php";
 $unique="trvClaim_id";
 ?>
@@ -629,7 +503,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='6004'):
+<?php elseif ($_POST['report_id']=='6004'):
 $page="print_preview_vehicle.php";
 $unique="vehApp_id";
 ?>
@@ -705,7 +579,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='6005'):
+<?php elseif ($_POST['report_id']=='6005'):
 $page="print_preview_manPower.php";
 $unique="manPowerApp_id";
 ?>
@@ -779,7 +653,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='6008'):
+<?php elseif ($_POST['report_id']=='6008'):
 $page="print_preview_handOver.php";
 $unique="handOver_id";
 ?>
@@ -846,7 +720,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='6002'):
+<?php elseif ($_POST['report_id']=='6002'):
 $page="print_preview_requisition_food.php";
 $unique="oi_no";
 ?>
@@ -936,7 +810,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='6006'):?>
+<?php elseif ($_POST['report_id']=='6006'):?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-10px">Sample & Gift Report</h4>
     <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
@@ -1020,7 +894,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='6007'):?>
+<?php elseif ($_POST['report_id']=='6007'):?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-10px">FG Purchased Report</h4>
     <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
@@ -1103,7 +977,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='5001'):
+<?php elseif ($_POST['report_id']=='5001'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
     <h2 align="center">International Consumer Products Bangladesh Ltd.</h2>
@@ -1249,7 +1123,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='5002'):?>
+<?php elseif ($_POST['report_id']=='5002'):?>
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h4 align="center" style="margin-top:-10px">Stationary Purchase Report</h4>
     <h5 align="center" style="margin-top:-10px">Report From <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h5>
@@ -1311,7 +1185,7 @@ des.*,dep.*
     </table>
 
 
-<?php elseif ($_POST['reporttypes']=='5003'):
+<?php elseif ($_POST['report_id']=='5003'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
 
@@ -1391,7 +1265,7 @@ des.*,dep.*
         </tbody>
     </table>
 
-<?php elseif ($_POST['reporttypes']=='5004'):
+<?php elseif ($_POST['report_id']=='5004'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
 
@@ -1486,7 +1360,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='3004'):
+<?php elseif ($_POST['report_id']=='3004'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
 
@@ -1585,7 +1459,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='3007'):
+<?php elseif ($_POST['report_id']=='3007'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------?>
 
     <h2 align="center">International Consumer Products Bangladesh Ltd.</h2>
@@ -1695,7 +1569,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='dealer'):
+<?php elseif ($_POST['report_id']=='dealer'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
 
@@ -1804,7 +1678,7 @@ des.*,dep.*
     </div>
 
 
-<?php elseif ($_POST['reporttypes']=='dealerledger'):
+<?php elseif ($_POST['report_id']=='dealerledger'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
 
     $ledger_id=$_POST[account_code];	 ?>
@@ -1960,7 +1834,7 @@ des.*,dep.*
 
 
 
-<?php elseif ($_POST['reporttypes']=='allcurrent'):
+<?php elseif ($_POST['report_id']=='allcurrent'):
 /////////////////////////////////////Received and Payments----------------------------------------------------------
     ?>
 

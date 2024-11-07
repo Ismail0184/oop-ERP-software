@@ -51,7 +51,7 @@ $SD_VAT_TAX=$mushak_challan+$mushak_challan_IR;
         }
         $master_result=mysqli_query($conn, $result);
         while($mainrow=mysqli_fetch_object($master_result)):  ?>
-            <?php if($mainrow->main_menu_name!="VAT Reports"): ?>
+            <?php if($mainrow->main_menu_name!="Material Reports"): ?>
                 <li><a href="#"><i class="<?=$mainrow->iconmain;?>"></i><?=$mainrow->main_menu_name;?>
                         <?php if($mainrow->main_menu_id=="10043") if($SD_VAT_TAX>0) : ?><?='[<span style="color:red;font-weight:bold;">'.$SD_VAT_TAX.'</span>]'?><?php else : echo''; endif; ?>
                         <span class="fa fa-chevron-down"></span></a>

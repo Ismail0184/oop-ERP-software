@@ -1029,21 +1029,21 @@ function reload1(form)
                     </div>
 
                 <?php  else:  ?>
-                    <p style="text-align: center">Please select a report from left</p>
+                    <h5 class="text-danger" style="text-align: center">Please select a report from left</h5>
                 <?php endif; ?>
 
                 <?php if ($report_id>0): ?>
                     <div class="ln_solid"></div>
                     <div class="form-group">
                         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                            <a href="<?=$page?>"  class="btn btn-danger" style="font-size: 12px">Cancel</a>
-                            <button type="submit" class="btn btn-primary" name="getstarted" style="font-size: 12px">View Report</button>
+                            <a href="<?=$page?>"  class="btn btn-danger" style="font-size: 12px"><i class="fa fa-close"></i> Cancel</a>
+                            <button type="submit" class="btn btn-primary" name="getstarted" style="font-size: 12px"><i class="fa fa-file"></i> Generate Report</button>
                         </div>
                     </div>
                 <?php  else:  ?>
                 <?php endif; ?>
+            </div>
+        </div>
+    </div>
 </form>
-</div>
-</div>
-</div>
 <?=$html->footer_content();?>

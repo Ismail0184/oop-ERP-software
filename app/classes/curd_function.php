@@ -289,8 +289,8 @@ class crud{
         global $conn;
         $str = '';
         $query = mysqli_query($conn, "
-SELECT zm.optgroup_label_name,zs.report_name as subzonename,zs.report_id FROM module_reportview_optgroup_label AS zm
-RIGHT JOIN module_reportview_report AS zs ON zm.optgroup_label_id = zs.optgroup_label_id RIGHT JOIN user_permission_matrix_reportview AS p ON p.optgroup_label_id=zm.optgroup_label_id AND p.report_id=zs.report_id WHERE p.status in ('1') and p.module_id='".$module_id."' and p.user_id=".$_SESSION['userid']."
+SELECT zm.optgroup_label_name,zs.report_name,zs.report_id FROM module_reportview_optgroup_label AS zm
+RIGHT JOIN module_reportview_report AS zs ON zm.optgroup_label_id = zs.optgroup_label_id RIGHT JOIN user_permission_matrix_reportview AS p ON p.optgroup_label_id=zm.optgroup_label_id AND p.report_id=zs.report_id WHERE zs.status=1 and p.status in ('1') and zs.module_id='".$module_id."' and p.module_id='".$module_id."' and p.user_id=".$_SESSION['userid']."
 ORDER BY zm.sl, zs.sl");
         $result = array();
         while ($row = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
@@ -298,7 +298,7 @@ ORDER BY zm.sl, zs.sl");
             if (!isset($results[$cat_name])) {
                 $results[$cat_name] = array();
             }
-            $results[$cat_name][] = array("subzonename" => $row['subzonename'], "report_id" => $row['report_id']);
+            $results[$cat_name][] = array("report_name" => $row['report_name'], "report_id" => $row['report_id']);
         }
         if (!empty($results)) {
             $str .= '<select id="first-name"  required="required" size="27" style="font-size: 11px; border: none;white-space: nowrap;
@@ -313,7 +313,7 @@ ORDER BY zm.sl, zs.sl");
                     } else {
                         $selected = '';
                     }
-                    $str .= '<option style="height:20px" value="' . $subcategory['report_id'] . '" ' . $selected . '>' . $subcategory['subzonename'] . '</option>';
+                    $str .= '<option style="height:20px" value="' . $subcategory['report_id'] . '" ' . $selected . '>' . $subcategory['report_name'] . '</option>';
                 }
                 $str .= '</optgroup>';
             }

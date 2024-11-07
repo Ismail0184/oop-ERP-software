@@ -34,7 +34,7 @@ if(isset($$unique))
 {   $condition=$unique."=".$$unique;
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data)){ $$key=$value;}}
-$query="Select r.report_id,r.report_id,r.report_name,ol.optgroup_label_name,m.module_short_name as module,IF(r.status=1, 'Active', 'Inactive') as status from $table r,module_reportview_optgroup_label ol,module_department m where  r.optgroup_label_id=ol.optgroup_label_id and r.module_id=m.module_id order by r.$unique ";
+$query="Select r.report_id,r.report_id,r.report_name,ol.optgroup_label_name,m.module_short_name as module,IF(r.status=1, 'Active', 'Inactive') as status from $table r,module_reportview_optgroup_label ol,dev_modules m where  r.optgroup_label_id=ol.optgroup_label_id and r.module_id=m.module_id order by r.$unique ";
 ?>
 <?php require_once 'header_content.php'; ?>
     <style>
@@ -77,7 +77,7 @@ $query="Select r.report_id,r.report_id,r.report_name,ol.optgroup_label_name,m.mo
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" id="module_id"  name="module_id">
                                                     <option></option>
-                                                    <?php foreign_relation('module_department', 'id', 'CONCAT(id," : ", module_short_name)', $module_id, 'status in (\'1\')'); ?>
+                                                    <?php foreign_relation('dev_modules', 'id', 'CONCAT(id," : ", module_short_name)', $module_id, 'status in (\'1\')'); ?>
                                                 </select>
                                             </div>
                                         </div>
@@ -102,8 +102,8 @@ $query="Select r.report_id,r.report_id,r.report_name,ol.optgroup_label_name,m.mo
                                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Status<span class="required">*</span></label>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" id="status" name="status">
-                                                <option value="1">Active</option>
-                                                <option value="0">Inactive</option>
+                                                <option <?php if($status==1) { ?> selected <?php } ?> value="1">Active</option>
+                                                <option <?php if($status==0) { ?> selected <?php } ?> value="0">Inactive</option>
                                             </select></div></div>
 
                                     <div class="form-group">

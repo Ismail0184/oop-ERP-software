@@ -95,7 +95,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
  <?php require_once 'header_content.php'; ?>
  <script type="text/javascript">
      function DoNavPOPUP(lk)
-     {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=900,height=600,left = 230,top = 5");}
+     {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=900,height=800,left = 230,top = 5");}
  </script>
 
  <style>
@@ -131,9 +131,8 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                          <div class="modal-body">
                              <div class="clearfix"></div>
                              <?php endif; ?>
-                             <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
                                  <div class="" role="tabpanel" data-example-id="togglable-tabs">
-                                     <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                     <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist" style="font-size: 11px">
                                          <li role="presentation" class="active"><a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Per.</a></li>
                                          <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Con.</a></li>
                                          <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Job</a></li>
@@ -152,29 +151,30 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                      <div id="myTabContent" class="tab-content">
                                          <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
                                              <h5>Personal Details Information</h5><hr>
-                                             <table style="width: 100%;">
+                                             <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
+                                             <table class="table" style="width: 100%;border: none">
                                                  <tr>
-                                                     <th style="width: 10%">ERP ID</th>
+                                                     <th style="width: 10%; vertical-align: middle">ERP ID</th>
                                                      <th style="width: 1%">:</th>
                                                      <td style="20%">
                                                          <input type="text" id="PBI_ID_UNIQUE"  required="required" readonly name="PBI_ID_UNIQUE" value="<? if($$unique>0) { echo  $$unique; } else { echo find_a_field($table,'max('.$unique.')+1','1');
                                                              if($$unique<1) $$unique = 1;}?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
 
-                                                     <th style="width: 10%">ERP ID</th>
+                                                     <th style="width: 10%">Custom ID</th>
                                                      <th style="width: 1%">:</th>
                                                      <td style="width: 20%">
                                                          <input type="text" id="PBI_ID_UNIQUE"  required="required" name="PBI_ID_UNIQUE" value="<?=$PBI_ID_UNIQUE;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
 
-                                                     <th style="width: 10%">ERP ID</th>
+                                                     <th style="width: 10%">Name</th>
                                                      <th style="width: 1%">:</th>
                                                      <td style="width: 20%">
-                                                         <input type="text" id="PBI_ID_UNIQUE"  required="required" name="PBI_ID_UNIQUE" value="<?=$PBI_ID_UNIQUE;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                         <input type="text" id="PBI_NAME"  required="required" name="PBI_NAME" value="<?=$PBI_NAME;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
                                                  </tr>
 
-                                                 <tr>
+                                                 <tr class="p-5">
                                                      <th>Father's Name</th>
                                                      <th>:</th>
                                                      <td>
@@ -295,12 +295,13 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                      </td>
                                                  </tr>
                                              </table>
+                                             </form>
 
                             <hr>
                           
                           <?php if($_GET[$unique]):  ?>
-                          <button type="submit" name="cancel" id="cancel" style="font-size:12px; float:left" class="btn btn-danger">Cancel</button>
-                          <button type="submit" name="modify" id="modify" style="font-size:12px; float:right" class="btn btn-primary">Modify</button>
+                          <button type="submit" name="cancel" id="cancel" style="font-size:12px; float:left" class="btn btn-danger"> <i class="fa fa-close"></i> Cancel</button>
+                          <button type="submit" name="modify" id="modify" style="font-size:12px; float:right" class="btn btn-primary"> <i class="fa fa-edit"></i> Information Update</button>
                           <?php else: ?>
                           <button type="button" class="btn btn-primary" style="font-size:12px; float:right; margin-right:110px">Save Employee Info</button>
                           <?php endif; ?>
@@ -1009,8 +1010,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                           </div>
                           </div>
                         </div>
- </div>
- </form>
+                                 </div>
         </div>
       </div>
     </div>

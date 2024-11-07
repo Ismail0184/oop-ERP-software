@@ -28,13 +28,18 @@ if(prevent_multi_submit()){
     if(isset($_POST['confirm']))
     {
         $sd=$_POST['attendance_date'];
-        $_POST['attendance_date']=date('Y-m-d' , strtotime($sd));
         $_POST['status']="APPROVED";
         $_POST['dept_head_aprv_at']=date("Y-m-d h:i:sa");
         $crud->update($unique);
         $type=1;
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
+    }
+
+    if (isset($_POST['GrantAllApplication']))
+    {
+        $grantedAt = date("Y-m-d h:i:sa");
+        mysqli_query($conn, "UPDATE hrm_late_attendance set status='APPROVED',granted_status='GRANTED',approved_by='".$_SESSION['userid']."',granted_by='".$_SESSION['userid']."',granted_at='".$grantedAt."' WHERE status='RECOMMENDED'");
     }
 
 //for Delete..................................
@@ -55,7 +60,7 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-if(isset($_POST['viewreport'])){
+if(isset($_POST['viewReport'])){
     $res='select r.'.$unique.',r.'.$unique.' as AID,CONCAT(r.attendance_date, " ", r.late_entry_at) AS "Late date & time",
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME," - ", d.DEPT_DESC,")") FROM 
 							 
@@ -125,7 +130,8 @@ ORDER BY r.'.$unique.' DESC;
                     <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
                 <td style="width:10px; text-align:center"> -</td>
                 <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Late Attendance</button></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Late Attendance</button></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="GrantAllApplication"  class="btn btn-success" onclick='return window.confirm("Are you sure to grant all applications??");'>Grant all Application</button></td>
             </tr></table>
         <?=$crud->report_templates_with_status_employee_dashboard($res,$title);?>
     </form>

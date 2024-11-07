@@ -69,7 +69,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
  <?php require_once 'header_content.php'; ?>
  <script type="text/javascript">
      function DoNavPOPUP(lk)
-     {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=990,height=600,left = 230,top = 5");}
+     {myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=990,height=750,left = 230,top = 5");}
  </script>
 
  <style>
