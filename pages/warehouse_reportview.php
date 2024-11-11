@@ -10,8 +10,8 @@ $PostFDate = @$_POST['f_date'];
 $PostTDate = @$_POST['t_date'];
 if(isset($_REQUEST['submit'])&&isset($_REQUEST['report_id'])>0)
 {
-$to_date=date('Y-m-d' , strtotime($PostFDate));
-$fr_date=date('Y-m-d' , strtotime($PostTDate));
+$to_date=@$_POST['f_date'];
+$fr_date=@$_POST['t_date'];
 $date_con=' and j.ji_date between \''.$fr_date.'\' and \''.$to_date.'\'';
 $do_date_con=' and m.do_date between \''.$fr_date.'\' and \''.$to_date.'\'';
 $PostProductGroup = @$_POST['product_group'];
@@ -201,10 +201,12 @@ where w.warehouse_id=j.warehouse_id and j.warehouse_id='".$_SESSION['warehouse']
 
 }}
 
-?>
+$str = '';
+// Retrieve from POST and set defaults if not provided
+$PostItemId = isset($_POST['PostItemId']) ? (int)$_POST['PostItemId'] : 0;
+$PostUserId = isset($_POST['PostUserId']) ? (int)$_POST['PostUserId'] : 0;
+$to_date = isset($_POST['t_date']) ? (int)$_POST['t_date'] : 0;
 
-
-<? $str = '';
 $str 	.= '<div class="header">';
 if(isset($_SESSION['company_name']))
 $str 	.= '<h1>'.$_SESSION['company_name'].'</h1>';

@@ -17,35 +17,35 @@ function filterData(&$str){
 }
 // Excel file name for download
 
-if($_GET['report_id']=='1012001') {
+if(isset($_GET['report_id']) && $_GET['report_id']=='1012001') {
     $fileName = "Purchase Data.xls";
     $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty','Rate','Amount');
-} elseif ($_GET['report_id']=='1012002'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012002'){
     $fileName = "Sales Data.xls";
-} elseif ($_GET['report_id']=='1012011'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012011'){
     $fileName = "Sales Return Data.xls";
     $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount');
-} elseif ($_GET['report_id']=='1012003'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012003'){
     $fileName = "Stock Report.xls";
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
-} elseif ($_GET['report_id']=='1012004'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012004'){
     $fileName = "Customer Outstanding Report.xls";
     $fields = array('DB Code','Ledger Id','Dealer Name', 'Dealer Type', 'Territory', 'Region','Current Credit Limit','Balance');
-} elseif ($_GET['report_id']=='1012005'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012005'){
     $fileName = "Invoice List.xls";
     $fields = array('Chalan No', 'Chalan Date', 'Do No', 'Do Date', 'Do Type','Dealer Code','Dealer Name','Territory','Depot','Invoice Amount','Discount','Commission');
-} elseif ($_GET['report_id']=='1012006'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012006'){
     $fileName = "Collection and Shipment Report.xls";
     $fields = array('DB Code', 'Dealer Name', 'Dealer Type', 'Territory', 'Region','Collection','Shipment');
-} elseif ($_GET['report_id']=='1012007'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012007'){
     $fileName = "Stock Report.xls";
     $fields = array('Finish Goods Code', 'Item Name', 'Unit Name', 'Pack Size', 'Available Stock Balance');
 
-} elseif ($_GET['report_id']=='1012008'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012008'){
     $fileName = "Customer Details.xls";
     $fields = array('Dealer Code', 'Dealer Custom Code','Ledger ID','Customer Name', 'Town', 'Territory','Region','Propritor Name','Contact Person','Contact Number','Address','National Id','TIN / BIN');
 
-} elseif ($_GET['report_id']=='1012012'){
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012012'){
     $fileName = "Collection Register.xls";
     $fields = array('Collection Id', 'Collection Date','Customer Code','Ledger ID', 'Customer Name', 'Customer Group','Territory','Address','Phone No','Bank','Particulars','Amount');
 }

@@ -791,8 +791,8 @@ order by a.jvdate,a.id";
             <td align="right" bgcolor="#FFCCFF"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),0,'.','');else echo "0.00"; ?></td>
         </tr>
 
-        <?php
-        $sql=mysqli_query($conn, $p); $i=0;
+        <?php $i=0;
+        $sql=mysqli_query($conn, $p);
         while($data=mysqli_fetch_row($sql)){?>
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
             <td align="center" style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>

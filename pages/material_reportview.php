@@ -17,11 +17,13 @@ if($date_checking>0) {
     $lockedEndInterval = '';
 }
 
-if($_POST['item_id']>0) 					$itemId=@$_POST['item_id'];
-if(isset($itemId))				{$itemIdConn=' and i.item_id='.$itemId;} else { $itemIdConn=''; }
+$itemId = isset($_POST['item_id']) && $_POST['item_id'] > 0 ? $_POST['item_id'] : null;
 
-
-?>
+if (isset($itemId)) {
+    $itemIdConn = ' and i.item_id=' . $itemId;
+} else {
+    $itemIdConn = '';
+} ?>
 
 <!DOCTYPE html>
 <html lang="en">

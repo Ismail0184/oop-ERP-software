@@ -228,15 +228,23 @@ where d.id=b.order_no and j.sr_no='".$chalan_no."' and  j.item_id=d.item_id and 
                         </tr>
                         <tr>
                             <td colspan="11" align="left" valign="middle">In Word:<strong> Taka
-                                    <?
-                                    $gnet_tot=($tot-$tot_sales_cash_discount-$commission_amountGET);
-                                    $credit_amt = explode('.',$gnet_tot);
-                                    if($credit_amt[0]>0){
-                                        echo convertNumberToWordsForIndia($credit_amt[0]);}
-                                    if($credit_amt[1]>0){
-                                        echo  ' & Paisa '.convertNumberToWordsForIndia($credit_amt[1]);}
+                                    <?php
+                                    $gnet_tot = ($tot - $tot_sales_cash_discount - $commission_amountGET);
+                                    $credit_amt = explode('.', $gnet_tot);
+
+                                    // Check if the integer part is greater than zero
+                                    if ($credit_amt[0] > 0) {
+                                        echo convertNumberToWordsForIndia($credit_amt[0]);
+                                    }
+
+                                    // Check if the decimal part exists and is greater than zero
+                                    if (isset($credit_amt[1]) && $credit_amt[1] > 0) {
+                                        echo ' & Paisa ' . convertNumberToWordsForIndia($credit_amt[1]);
+                                    }
+
                                     echo ' Only';
                                     ?>
+
                                 </strong></td>
                         </tr>
                     </table>

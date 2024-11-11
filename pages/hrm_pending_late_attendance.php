@@ -10,16 +10,16 @@ $now=time();
 $unique='id';
 $unique_field='PBI_ID';
 $table="hrm_late_attendance";
-
-$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+$$unique = @$_GET[$unique];
+$current_status=find_a_field("".$table."","status","".$unique."=".$$unique."");
 $required_status="RECOMMENDED";
 $authorused_status="APPROVED";
 $page="hrm_pending_late_attendance.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
-$leaverequest=find_all_field(''.$table.'','',''.$unique.'='.$_GET[$unique]);
+$leaverequest=find_all_field(''.$table.'','',''.$unique.'='.$$unique);
 
 if(prevent_multi_submit()){
 

@@ -140,8 +140,8 @@ VALUES
         if(mysqli_query($conn, $sql)){
             $tr_id = mysqli_insert_id();
             add_to_journal($jvdate,$proj_id, $jv_no, $jv_date, $ledger, $_POST['narration_new2'], $_POST['dr_amt_new2'], $_POST['cr_amt_new2'],$tr_from, $tr_no, '', $tr_id, '',$_POST['cc_new2'],$create_date,$ip,$now,$day,$thisday,$thismonth,$thisyear);}
-    }
-$update_journal_master=mysqli_query($conn, "Update journal_voucher_master set purpose_of_edit_delete='".$_POST['purpose_of_edit_delete']."',edited_by='".$_SESSION['userid']."',edited_at='".$todaysss."' where voucherno='".$v_no."'");
+    } $purposeOfEditOrDelete = @$_POST['purpose_of_edit_delete'];
+$update_journal_master=mysqli_query($conn, "Update journal_voucher_master set purpose_of_edit_delete='".$purposeOfEditOrDelete."',edited_by='".$_SESSION['userid']."',edited_at='".$todaysss."' where voucherno='".$v_no."'");
 } // end of modify
 
 
