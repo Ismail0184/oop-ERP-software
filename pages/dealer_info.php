@@ -165,7 +165,7 @@ function reload2(form)
                         <input name="<?=$unique?>" id="<?=$unique?>" value="<?=$$unique?>" type="hidden" />
                         <input name="dealer_code" type="hidden" id="dealer_code" tabindex="1" value="<?=$dealer_code?>" readonly>
                         <td style="width: 21.5%">
-                            <select class="select2_single form-control" name="area_code" id="area_code" tabindex="11" style="width: 90%" onchange="javascript:reload(this.form)">
+                            <select class="select2_single form-control" name="area_code" id="area_code" tabindex="11" style="width: 90%">
                                 <option></option>
                                 <?=advance_foreign_relation($sql_area,$area_code);?>
                             </select>
@@ -196,16 +196,10 @@ function reload2(form)
                     <tr>
                         <th style="">Region</th><th>:</th>
                         <td>
-                            <?php if(@$_GET['area_codeGET']){ ?>
-                                <input name="region" type="hidden" id="region" tabindex="2" value="<?=$region= find_a_field('area','Region_code','AREA_CODE='.$_GET['area_codeGET']);?>">
-                            <?php } else { ?>
-                                <input name="region" type="hidden" id="region" tabindex="2" value="<?=$region?>">
-                            <?php } ?>
-                            <input type="text" id="regionName"  value="<?php
-                            if(@$_GET['area_codeGET'])
-                                echo $rg = find_a_field('branch','BRANCH_NAME','BRANCH_ID='.$region);
-                            else  echo $rg = find_a_field('branch','BRANCH_NAME','BRANCH_ID='.$region);
-                            ?>" name="regionName" class="form-control col-md-7 col-xs-12" style="width: 90%" readonly >
+                            <select class="select2_single form-control" name="region" tabindex="11" style="width: 90%">
+                                <option></option>
+                                <?=foreign_relation('branch','BRANCH_ID','BRANCH_NAME',$region,' status=1');?>
+                            </select>
                         </td>
 
                         <th style="">Dealer Name</th><th>:</th>
@@ -219,7 +213,7 @@ function reload2(form)
                     </tr>
 
                     <tr>
-                        <th style="">Propritor's Name</th><th>:</th>
+                        <th style="">Proprietor's Name</th><th>:</th>
                         <td>
                             <input type="text" id="propritor_name_e"  value="<?=$propritor_name_e?>" name="propritor_name_e" style="width: 90%" class="form-control col-md-7 col-xs-12">
                         </td>
@@ -340,7 +334,7 @@ function reload2(form)
                     <?php if(@$_SESSION['userid']=='10019'){ ?>
                     <?php } ?>
                 <?php } else {?>
-                    <button type="submit" name="insert" id="insert" style="float: right; font-size: 12px" class="btn btn-primary">Create New Dealer</button>
+                    <button type="submit" name="insert" id="insert" style="float: right; font-size: 12px" class="btn btn-primary"><i class="fa fa-plus"></i> Submit Customer</button>
                 <?php } ?>
             </form>
         </div>

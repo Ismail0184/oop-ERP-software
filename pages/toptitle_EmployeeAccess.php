@@ -35,6 +35,7 @@
 
 require_once 'support_file.php';
 require_once 'dashboard_data.php';
+
 $dyear=date('Y');
 $dmon='12';
 $dday='31';
@@ -72,18 +73,55 @@ $endday = date('Y-m-d',$endTime);
 $start_date = $year.'-'.($mon-1).'-26';
 $end_date = $year.'-'.$mon.'-25';
 
+$firstDayOfCurrentMonth = date("Y-m-01");
+$lastDayOfPreviousMonth = date("Y-m-t", strtotime($firstDayOfCurrentMonth . " -1 month"));
+$totalDaysInLastMonth = date("d", strtotime($lastDayOfPreviousMonth));
+
+
+$lastMonthGet = date('m')-1;
+$lastMonthStartDay = date('Y-'.$lastMonthGet.'-01');
+$lastMonthEndDay = date('Y-'.$lastMonthGet.'-'.$totalDaysInLastMonth.'');
+
+$currentMonthStartDate = date('Y-m-01');
+$currentMonthEndDate = date('Y-m-31');
+
+$lastMonthLeaveCount = find_a_field('hrm_leave_info','SUM(total_days)','s_date between "'.$lastMonthStartDay.'" and "'.$lastMonthEndDay.'" and PBI_ID='.$_SESSION['PBI_ID']);
+$lastMonthODCount = find_a_field('hrm_od_attendance','COUNT(id)','PBI_ID='.$_SESSION['PBI_ID']);
+$currentMonthOffDayCount = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+$currentMonthPresentCount = find_a_field('ZKTeco_attendance','COUNT(id)','employee_id='.$_SESSION['PBI_ID'].' and date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+$currentMonthLateCount = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="Late" and employee_id='.$_SESSION['PBI_ID'].' and date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+$currentMonthEarlyLeaveCount = find_a_field('ZKTeco_attendance','COUNT(id)','clock_out_status="Early" and employee_id='.$_SESSION['PBI_ID'].' and date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+
+$query = "SELECT OT_time FROM ZKTeco_attendance WHERE date between '".date('Y-m-01')."' and '".date('Y-m-t')."' and employee_id = ".$_SESSION['PBI_ID'];
+$result = mysqli_query($conn, $query);
+
+$totalSeconds = 0;
+
+// Loop through results
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        // Split duration into hours, minutes, and seconds
+        list($hours, $minutes, $seconds) = explode(':', $row['OT_time']);
+        $totalSeconds += $hours * 3600 + $minutes * 60 + $seconds;
+    }
+}
+
+// Convert total seconds to hours, minutes, and seconds
+$totalHours = floor($totalSeconds / 3600);
+$totalMinutes = floor(($totalSeconds % 3600) / 60);
+$totalSeconds = $totalSeconds % 60;
+
+$currentMonthOverTimeCount = $totalHours.':'.$totalMinutes.':'.$totalSeconds;
+
+$currentMonthLeaveCount = find_a_field('hrm_leave_info','COUNT(id)','clock_in_status="Late" and PBI_ID='.$_SESSION['PBI_ID'].' and s_date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+$currentMonthOSDCount = find_a_field('hrm_od_attendance','COUNT(id)','PBI_ID='.$_SESSION['PBI_ID'].' and attendance_date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
+$currentMonthAbsentCount = 0;
+
+$lastMonthTotalAbsent = $totalDaysInLastMonth-($lastMonthLeaveCount);
 
 $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)','user_id='.$_SESSION['userid'].' and module_id='.$_SESSION['module_id'].'');
+$lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
 ?>
-
-
-<?php if($_SESSION['module_id']=='11') { ?>
-
-    <div class="col-md-12 col-xs-12">
-        <div class="x_panel" >
-            <div class="x_content">Under build.</div>
-        </div>
-    </div>
 
 
     <div class="col-md-6 col-xs-12">
@@ -98,43 +136,61 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
                     <tr class="bg-success">
                         <th colspan="10" style="text-align: center; font-size: 15px; font-weight: bold">Current Month Attendance Status</th>
                     </tr>
-                    <th style="text-align: center">Total Day</th>
-                    <th style="text-align: center">Off Day</th>
-                    <th style="text-align: center">Holiday</th>
-                    <th style="text-align: center">Present</th>
-                    <th style="text-align: center">Late Present</th>
-                    <th style="text-align: center">Leave</th>
-                    <th style="text-align: center">Early Leave</th>
-                    <th style="text-align: center">Absent</th>
-                    <th style="text-align: center">Outdoor Duty</th>
-                    <th style="text-align: center">Overtime</th>
+                    <th style="text-align: center; vertical-align: middle">Total Day</th>
+                    <th style="text-align: center; vertical-align: middle">Off Day</th>
+                    <th style="text-align: center; vertical-align: middle">Holiday</th>
+                    <th style="text-align: center; vertical-align: middle">Present</th>
+                    <th style="text-align: center; vertical-align: middle">Late Present</th>
+                    <th style="text-align: center; vertical-align: middle">Leave</th>
+                    <th style="text-align: center; vertical-align: middle">Early Leave</th>
+                    <th style="text-align: center; vertical-align: middle">Absent</th>
+                    <th style="text-align: center; vertical-align: middle">Outdoor Duty</th>
+                    <th style="text-align: center; vertical-align: middle">Overtime</th>
                     </thead>
                     <tbody>
                     <tr>
                         <td style="text-align: center"><?=$days_in_month;?></td>
+                        <td style="text-align: center"><?=($currentMonthOffDayCount>0)? $currentMonthOffDayCount : '-' ?></td>
+                        <td style="text-align: center"><?=countFridaysInMonth(date('Y'),date('m'));?></td>
+                        <td style="text-align: center"><?=($currentMonthPresentCount>0)? $currentMonthPresentCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthLateCount>0)? $currentMonthLateCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthLeaveCount>0)? $currentMonthLeaveCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthEarlyLeaveCount>0)? $currentMonthEarlyLeaveCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthAbsentCount>0)? $currentMonthAbsentCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthOSDCount>0)? $currentMonthOSDCount : '-' ?></td>
+                        <td style="text-align: center"><?=($currentMonthOverTimeCount>0)? $currentMonthOverTimeCount : '-' ?></td>
+                    </tr>
+                    </tbody></table>
+                <table align="center" class="table table-striped table-bordered" style="width:100%;font-size:11px;">
+                    <thead>
+                    <tr class="bg-success">
+                        <th colspan="10" style="text-align: center; font-size: 15px; font-weight: bold">Last Month Attendance Status</th>
+                    </tr>
+                    <th style="text-align: center; vertical-align: middle">Total Day</th>
+                    <th style="text-align: center; vertical-align: middle">Off Day</th>
+                    <th style="text-align: center; vertical-align: middle">Holiday</th>
+                    <th style="text-align: center; vertical-align: middle">Present</th>
+                    <th style="text-align: center; vertical-align: middle">Late Present</th>
+                    <th style="text-align: center; vertical-align: middle">Leave</th>
+                    <th style="text-align: center; vertical-align: middle">Early Leave</th>
+                    <th style="text-align: center; vertical-align: middle">Absent</th>
+                    <th style="text-align: center; vertical-align: middle">Outdoor Duty</th>
+                    <th style="text-align: center; vertical-align: middle">Overtime</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="text-align: center"><?=$totalDaysInLastMonth;?></td>
+                        <td style="text-align: center"></td>
+                        <td style="text-align: center"><?=$fridayCount;?></td>
                         <td style="text-align: center"></td>
                         <td style="text-align: center"></td>
+                        <td style="text-align: center"><?=number_format($lastMonthLeaveCount,0)?></td>
                         <td style="text-align: center"></td>
-                        <td style="text-align: center"></td>
-                        <td style="text-align: center"></td>
-                        <td style="text-align: center"></td>
-                        <td></td>
-                        <td style="text-align: center"></td>
+                        <td style="text-align: center"><?=$lastMonthTotalAbsent;?></td>
+                        <td style="text-align: center"><?=number_format($lastMonthODCount,0)?></td>
                         <td style="text-align: center"></td>
                     </tr>
                     </tbody></table>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-md-6 col-xs-12">
-        <div class="x_panel fixed_height_230" >
-            <div class="x_title">
-                <h2 style="color: #FF6347"><i class="fa fa-calendar"></i> Leave Status</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
                 <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
                     <thead>
                     <tr class="bg-primary">
@@ -191,6 +247,64 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
             </div>
         </div>
     </div>
+
+
+    <div class="col-md-6 col-xs-12">
+        <div class="x_panel" style="height: 568px; overflow: auto">
+            <div class="x_title">
+                <h2 style="color: #FF6347"><i class="fa fa-calendar"></i> Finger Punch Logs</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+                    <thead>
+                    <tr class="bg-info">
+                        <th colspan="8" style="text-align: center; font-size: 15px; font-weight: bold">Current Month <?=date('M Y')?></th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th class="bg-green">Clock In</th>
+                        <th>Clock In Status</th>
+                        <th>Late Time</th>
+                        <th class="bg-red">Clock Out</th>
+                        <th>Clock Out Status</th>
+                        <th>Early Time</th>
+                        <th>Work Time</th>
+                    </tr>
+                    </thead>
+
+                    <?php $res=mysqli_query($conn, "select * from ZKTeco_attendance where employee_id=".$_SESSION['PBI_ID']." and date between '".$currentMonthStartDate."' and '".$currentMonthEndDate."' order by date desc");
+                    while($data=mysqli_fetch_object($res)){ $yesterday = date("Y-m-d", strtotime("-1 day")); ?>
+                        <tr>
+                            <td class="text-center">
+                                <?= ($data->date===date("Y-m-d")) ? 'Today' : (($data->date === $yesterday) ? 'Yesterday' : date("d M Y", strtotime($data->date))); ?>
+                            </td>
+                            <td><?=$data->clock_in?></td>
+                            <?php if($data->clock_in_status=='Late'){?>
+                            <td class="bg-danger">
+                                <a <?php if($data->apply_status=='PENDING') { ?> href="<?=$lateAttendanceApplicationURL?>?rid=<?=$data->id?>" <?php } else { ?> href="#" <?php } ?>><?=$data->clock_in_status?></a> <?php if($data->apply_status=='APPLIED') { ?><i class="fa fa-check text-danger"></i> <?php } ?> <?php if($data->apply_status=='APPROVED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-check text-success"></i> <?php } ?>
+                                <?php if($data->apply_status=='REJECTED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-close text-danger"></i> <?php } ?>
+                            </td>
+                            <?php } else { ?>
+                            <td><?=$data->clock_in_status?></td>
+                            <?php } ?>
+                            <td><?=($data->clock_in_status=='Late')? $data->late : '-';?> </td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out?><?php } ?></td>
+                            <?php if($data->clock_out_status=='Early'){?>
+                            <td <?php if ($data->date===date("Y-m-d")) { echo '';} else { ?> class="bg-danger" <?php } ?>><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } else {?>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } ?>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->early?><?php } ?></td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->work_time?><?php } ?></td>
+                        </tr>
+                    <?php } ?>
+
+
+                </table>
+            </div>
+        </div>
+    </div>
  
     <div class="col-md-6 col-xs-12">
         <div class="x_panel fixed_height_250">
@@ -215,16 +329,146 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
         </div>
     </div>
 
-    <div class="col-md-6 col-xs-12">
-        <div class="x_panel fixed_height_250" >
+<div class="col-md-6 col-xs-12">
+        <div class="x_panel" style="height: 300px; overflow: auto">
             <div class="x_title">
-                <h2 class="text-danger"><i class="fa fa-bell"></i> Admin Action</h2>
+                <h2 class="text-danger"><i class="fa fa-bell"></i> Login Logs</h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <ul class="legend list-unstyled">
+                <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+                    <thead>
+                    <tr class="bg-info">
+                        <th>#</th>
+                        <th>Login Time</th>
+                        <th>Browser</th>
+                        <th>Operating System</th>
+                        <th>LogOut</th>
+                        <th>IP</th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     <?php
-                    $result=mysqli_query($conn, "SELECT  a.*,p.*,d.* FROM 
+                    $i = 0;
+                    $queryLog = mysqli_query($conn, "SELECT * from user_activity_log where user_id=".$_SESSION['userid']." order by id desc limit 10");
+                    while( $logData = mysqli_fetch_object($queryLog)){ ?>
+                    <tr>
+                        <td><?=$i=$i+1?></td>
+                        <td><?=$logData->access_time?></td>
+                        <td><?=$logData->browser?></td>
+                        <td><?=$logData->os?></td>
+                        <td><?=$logData->access_time_out?></td>
+                        <td><?=$logData->ip?></td>
+                    </tr>
+                    <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="col-md-4 col-xs-12">
+    <div class="x_panel" style="height: 300px; overflow: auto">
+        <div class="x_title">
+            <h2 class="text-danger"><i class="fa fa-bell"></i> Upcoming Holiday</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+                <thead>
+                <tr class="bg-info">
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Holiday For</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $ho = 0;
+                $res=mysqli_query($conn, "SELECT * FROM salary_holy_day WHERE holy_day between '".date('Y-01-01')."' and '".date('Y-12-31')."' order by holy_day asc limit 7");
+                while($holiday=mysqli_fetch_object($res)){?>
+                    <tr>
+                        <td><?=$ho=$ho+1?></td>
+                        <td><?=date('l', strtotime($holiday->holy_day)); ?>, <?=date("d M Y", strtotime($holiday->holy_day)); ?></td>
+                        <td><?=$holiday->reason?></td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-4 col-xs-12">
+    <div class="x_panel fixed_height_390" >
+        <div class="x_title">
+            <h2 class="text-success"><i class="fa fa-birthday-cake"></i> Upcoming Birthday</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content" style="height: 300px">
+            <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
+                <thead>
+                <tr class="bg-info">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Date of Birth</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $ho = 0;
+                $res=mysqli_query($conn, "SELECT 
+    p.PBI_ID_UNIQUE, 
+    p.PBI_NAME AS Name, 
+    d.DESG_SHORT_NAME AS designation,
+    DATE_FORMAT(p.PBI_DOB, '%Y-%m-%d') AS DOB,
+    CASE 
+        WHEN p.PBI_DOB IS NOT NULL AND p.PBI_DOB != '0000-00-00' THEN 
+            CASE 
+                WHEN DATE_FORMAT(p.PBI_DOB, CONCAT(YEAR(CURDATE()), '-%m-%d')) >= CURDATE() 
+                THEN DATE_FORMAT(p.PBI_DOB, CONCAT(YEAR(CURDATE()), '-%m-%d')) 
+                ELSE DATE_FORMAT(p.PBI_DOB, CONCAT(YEAR(CURDATE()) + 1, '-%m-%d')) 
+            END
+        ELSE 'Date not available'
+    END AS next_birthday
+FROM 
+    personnel_basic_info p
+JOIN 
+    designation d 
+    ON d.DESG_ID = p.PBI_DESIGNATION
+WHERE 
+    p.PBI_DOB IS NOT NULL AND p.PBI_DOB != '0000-00-00' and 
+    p.PBI_JOB_STATUS in ('In Service')
+ORDER BY 
+    next_birthday 
+LIMIT 8;
+");
+                while($empData=mysqli_fetch_object($res)){?>
+                    <tr>
+                        <td><?=$ho=$ho+1?></td>
+                        <td><?=$empData->Name?></td>
+                        <td><?=$empData->designation?></td>
+                        <td><?=date('l', strtotime($empData->DOB)); ?>, <?= !empty($empData->DOB) ? date("d M", strtotime($empData->DOB)) : "Date not available"; ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-md-4 col-xs-12">
+    <div class="x_panel fixed_height_250" >
+        <div class="x_title">
+            <h2 class="text-danger"><i class="fa fa-bell"></i> Admin Action</h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <ul class="legend list-unstyled">
+                <?php
+                $result=mysqli_query($conn, "SELECT  a.*,p.*,d.* FROM 
 							admin_action_detail a,
 							personnel_basic_info p,
 							department d						
@@ -234,78 +478,17 @@ $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)
 							 p.PBI_DEPARTMENT=d.DEPT_ID	and 
 							 a.PBI_ID=".$_SESSION['PBI_ID']."				 
 							  order by p.PBI_NAME");
-                    while($action=mysqli_fetch_object($result)){
-                        ?>
-                        <li style="vertical-align: middle; cursor: pointer" onclick="DoNavPOPUP('<?=$action->ADMIN_ACTION_DID;?>', 'TEST!?', 600, 700)">
-                            <p style="vertical-align: middle">
-                                <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><br><font style="font-size: 10px;"><?=$row->ADMIN_ANN_SUBJECT;?></font></span>
-                            </p>
-                        </li>
-                    <?php } ?></ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-xs-12">
-        <div class="x_panel fixed_height_390" >
-            <div class="x_title">
-                <h2 class="text-success"><i class="fa fa-birthday-cake"></i> Upcoming Birthday</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content" style="overflow: auto;height: 320px">
-                <ul class="legend list-unstyled">
-                    <?php $res=mysqli_query($conn, 'select p2.*,d.*,de.* FROM 
-							personnel_basic_info p2,
-							department d,
-							designation de 
-							 where 
-							 p2.PBI_JOB_STATUS in ("In Service") and 
-							 p2.PBI_DESIGNATION=de.DESG_ID and  							 
-							 p2.PBI_DEPARTMENT=d.DEPT_ID order by p2.PBI_DOB asc ');
-				   while($birthday=mysqli_fetch_object($res)){
-                       $bday=$birthday->PBI_DOB;
-                       $dateArray = explode("-", $bday);
-                       if (count($dateArray) === 3) {
-                           list($year, $month, $day) = $dateArray;
-                       } else {
-                           echo "Invalid date format";
-                       }
-                       if($month==$mon){
-                        ?>
-                        <li style="vertical-align: middle; cursor: pointer">
-                            <p style="vertical-align: middle">
-                                <span class="icon" ><i class="fa fa-square grey"></i></span> <span class="name" style="vertical-align: middle"><?=$birthday->PBI_NAME;?></span>
-                            </p>
-                            <p style="font-size: 10px; margin-top: -10px"><?=$birthday->DESG_DESC;?></p>
-                            <p style="font-size: 10px;margin-top: -10px; color: red"><?=date("d M", strtotime($birthday->PBI_DOB));?> (<strong><?=date("D", strtotime($birthday->PBI_DOB));?></strong>)</p>
-                        </li>
-                    <?php }} ?></ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-xs-12 widget widget_tally_box">
-        <div class="x_panel fixed_height_390" >
-            <div class="x_title">
-                <h2 class="text-light"><i class="fa fa-calendar"></i> Upcoming Holiday</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content" style="overflow: auto;height: 320px">
-                <ul class="legend list-unstyled">
-                    <?php
-                    $res=mysqli_query($conn, "SELECT * FROM salary_holy_day WHERE holy_day between '$year-$mon-$cday' and '$dyear-$dmon-$dday' order by id asc limit 7");
-                    while($holiday=mysqli_fetch_object($res)){
-                                               ?>
-                    <li style="vertical-align: middle; cursor: pointer">
+                while($action=mysqli_fetch_object($result)){
+                    ?>
+                    <li style="vertical-align: middle; cursor: pointer" onclick="DoNavPOPUP('<?=$action->ADMIN_ACTION_DID;?>', 'TEST!?', 600, 700)">
                         <p style="vertical-align: middle">
-                            <span class="icon" ><i class="fa fa-square dark"></i></span> <span class="name" style="vertical-align: middle"><?=$holiday->reason;?><br><font style="font-size: 10px;"><?=date("d M Y", strtotime($holiday->holy_day));?> (<strong><?=date("D", strtotime($holiday->holy_day));?></strong>)</font></span>
+                            <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><br><font style="font-size: 10px;"><?=$row->ADMIN_ANN_SUBJECT;?></font></span>
                         </p>
                     </li>
-                    <?php } ?></ul>
-
-            </div>
+                <?php } ?>
+            </ul>
         </div>
     </div>
-    <?php } else { ?>
-             <h1 style="text-align:center; margin-top:200px">Welcome to <?php if($_SESSION['module_id']>0) { ?> <?=find_a_field('module_department', 'modulename','id='.$_SESSION['module_id']);?> Module <?php } else { echo 'ERP Software. <br><font style="font-size: 15px">Please See the above menu</font>'; }?></h1>
-       <?php } ?><?php ob_end_flush(); ?>
+</div>
+
+<?php ob_end_flush(); ?>

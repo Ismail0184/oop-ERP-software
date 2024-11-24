@@ -14,7 +14,7 @@ $create_date=date('Y-m-d');
 
 if(prevent_multi_submit()) {
     if (isset($_POST['initiate'])) {
-        $_SESSION[ID_while_LC_settelement] = $_POST[$unique];
+        $_SESSION['ID_while_LC_settelement'] = $_POST[$unique];
         unset($_POST);
     }
 

@@ -2220,9 +2220,19 @@ order by c.do_no";
                 <?php
                 $total_sales_amount=@$total_sales_amount+$data->total_amt;
             }
-            $toatl_sales_reguler=find_a_field('sale_do_details','SUM(total_amt)','do_type in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type not in ("export") ');
-            $toatl_sales=find_a_field('sale_do_details','SUM(total_amt)','do_type not in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type in ("export")')
+            if($_POST['item_id']>0) 					$item_id=$_POST['item_id'];
+            if(isset($item_id))				{$item_conT=' and item_id='.$item_id;} else { $item_conT=''; }
+            $totalQty=find_a_field('sale_do_details','SUM(total_unit)','do_type in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type not in ("export") '.$item_conT.'');
+            $toatl_sales_reguler=find_a_field('sale_do_details','SUM(total_amt)','do_type in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type not in ("export") '.$item_conT.'');
+            $toatl_sales=find_a_field('sale_do_details','SUM(total_amt)','do_type not in ("","sales") and do_date between "'.$f_date.'" and "'.$t_date.'" and dealer_type in ("export") '.$item_conT.'')
             ?>
+            <?php if($_POST['item_id']>0) { ?>
+            <tr style="border: solid 1px #999; font-size:11px; font-weight:normal">
+                <td style="border: solid 1px #999; padding:2px; text-align: right" colspan="17">Total Qty  = </td>
+                <td style="border: solid 1px #999; padding:2px; text-align: right"><?=$totalQty;?></td>
+                <td style="border: solid 1px #999; padding:2px; "></td>
+            </tr>
+            <?php } ?>
             <tr style="border: solid 1px #999; font-size:11px; font-weight:normal">
                 <td style="border: solid 1px #999; padding:2px; text-align: right" colspan="17">Local Sales in Amount  = </td>
                 <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($toatl_sales_reguler,2);?></td>

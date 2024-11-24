@@ -7,8 +7,6 @@ $dto=date('Y-m-d');
 $dfromM=date('Y-m-1');
 $dtoM=date('Y-m-d');
 
-$resultdets=mysql_query("Select * from warehouse_other_issue where ".$unique."='".$_GET[$unique]."'") ;
-$getid=mysql_fetch_array($resultdets);
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $todayss=$dateTime->format("d/m/Y  h:i A");
 
@@ -25,7 +23,7 @@ $crud      =new crud($table);
 $$unique = $_GET[$unique];
 $targeturl="<meta http-equiv='refresh' content='0;$page'>";
 
-$leaverequest=find_all_field(''.$table.'','',''.$unique.'='.$_GET[$unique]);
+$lateRequestData=find_all_field(''.$table.'','',''.$unique.'='.$_GET[$unique]);
 
 if(prevent_multi_submit()){
 
@@ -36,6 +34,7 @@ if(prevent_multi_submit()){
         $_POST['status']="RECOMMENDED";
         $_POST['authorised_at']=date("Y-m-d h:i:sa");
         $crud->update($unique);
+        mysqli_query($conn, "UPDATE ZKTeco_attendance SET apply_status='APPROVED' where id=".$lateRequestData->rid);
         $type=1;
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
@@ -45,9 +44,10 @@ if(prevent_multi_submit()){
     if(isset($_POST['reject']))
     {
         $_POST['status']="REJECTED";		
-		$_POST['authorised_by']=$_SESSION[userid];
+		$_POST['authorised_by']=$_SESSION['userid'];
         $_POST['authorised_at']=date("Y-m-d h:i:sa");
         $crud->update($unique);
+        mysqli_query($conn, "UPDATE ZKTeco_attendance SET apply_status='REJECTED' where id=".$lateRequestData->rid);
         $type=1;
         echo "<script>self.opener.location = '$page'; self.blur(); </script>";
         echo "<script>window.close(); </script>";
@@ -158,11 +158,11 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
                      <tbody>
                      <tr>
                          
-                         <td style="text-align: center;vertical-align:middle"><?=$leaverequest->attendance_date;?></td>
-                         <td style="text-align: center;vertical-align:middle"><?=$leaverequest->late_entry_at;?>, <?=$leaverequest->am_pm;?></td>
-                         <td style="text-align: center;vertical-align:middle"><?php $leave_taken=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfrom' and '$dto' and  PBI_ID='".$leaverequest->PBI_ID."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
-                         <td style="text-align: center; vertical-align:middle"><?php $leave_takenM=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfromM' and '$dtoM' and  PBI_ID='".$leaverequest->PBI_ID."'"); if($leave_takenM>0){ echo $leave_takenM,', Days';} else echo ''; ?></td>
-                         <td style="text-align: center; vertical-align: middle"><?=$leaverequest->late_reason;?></td>
+                         <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->attendance_date;?></td>
+                         <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->late_entry_at;?>, <?=$lateRequestData->am_pm;?></td>
+                         <td style="text-align: center;vertical-align:middle"><?php $leave_taken=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfrom' and '$dto' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
+                         <td style="text-align: center; vertical-align:middle"><?php $leave_takenM=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfromM' and '$dtoM' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_takenM>0){ echo $leave_takenM,', Days';} else echo ''; ?></td>
+                         <td style="text-align: center; vertical-align: middle"><?=$lateRequestData->late_reason;?></td>
                      </tr>
 
                      </tbody>

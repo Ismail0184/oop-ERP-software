@@ -361,7 +361,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                                     <?php if(isset($_SESSION['unique_master_for_regular'])>0): ?>
                                         <option value="<?=$depot_id?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$depot_id)?></option>
                                     <?php else: ?>
-                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$depot_id);?>
+                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_SESSION['warehouse']);?>
                                     <?php endif; ?>
                                 </select>
                             </td>

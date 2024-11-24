@@ -12,6 +12,29 @@ $thisyear=$year1;
 $thismonth=$month;
 
 
+function countFridaysInMonth($year, $month) {
+ $fridayCount = 0;
+
+ // Get the total number of days in the specified month
+ $totalDays = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+ // Loop through each day of the month
+ for ($day = 1; $day <= $totalDays; $day++) {
+  // Get the timestamp for the current day
+  $timestamp = mktime(0, 0, 0, $month, $day, $year);
+
+  // Check if the day is Friday
+  if (date("N", $timestamp) == 5) { // 5 means Friday in ISO-8601 (1 = Monday, 7 = Sunday)
+   $fridayCount++;
+  }
+ }
+ return $fridayCount;
+}
+
+function getTotalDaysInMonth($year, $month) {
+ return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+}
+
 
 function check_plant_permission($userid){
  $companyid=@$_SESSION['companyid'];

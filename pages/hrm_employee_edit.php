@@ -6,17 +6,13 @@ $now=time();
 $unique='PBI_ID';
 $unique_field='PBI_ID_UNIQUE';
 $table="personnel_basic_info";
+$table_essential_info="essential_info";
 $page="hrm_employee_report.php";
 $crud      =new crud($table);
 $$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
- $jobinfo="hrm_employee_job_info.php".'?'.$unique.'='.$$unique;
- $targeturlJOBINFO="<meta http-equiv='refresh' content='0;$jobinfo'>";
 
 if(prevent_multi_submit()){
 if(isset($_POST[$unique_field]))
-
-//for insert..................................
 {    $$unique = $_POST[$unique];
     if(isset($_POST['goback']))
     {
@@ -25,13 +21,17 @@ if(isset($_POST[$unique_field]))
     
     
 //for modify..................................
-if(isset($_POST['modify']))
+if(isset($_POST['UpdatePersonalInfo']))
 {
     $_POST['edit_at']=time();
     $_POST['edit_by']=$_SESSION['userid'];
+    $crud      =new crud($table);
     $crud->update($unique);
-    $type=1;
-    //echo $targeturl;
+
+    // essential info update
+    $crud      =new crud($table_essential_info);
+    $crud->update($unique);
+
     echo "<script>self.opener.location = '$page'; self.blur(); </script>";
     echo "<script>window.close(); </script>";
 }
@@ -99,8 +99,12 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
  </script>
 
  <style>
+     th, td {
+         vertical-align: middle !important;
+     }
      input[type=text]{font-size: 11px;}
      select{font-size: 11px;}.rcom{color:red}
+
  </style>
 
 <?php require_once 'body_content_without_menu.php'; ?>
@@ -152,7 +156,8 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                          <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
                                              <h5>Personal Details Information</h5><hr>
                                              <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" style="font-size: 11px">
-                                             <table class="table" style="width: 100%;border: none">
+                                                 <input type="hidden" name="<?=$unique?>" value="<?=$$unique?>">
+                                                 <table class="table" style="width: 100%;border: none">
                                                  <tr>
                                                      <th style="width: 10%; vertical-align: middle">ERP ID</th>
                                                      <th style="width: 1%">:</th>
@@ -231,7 +236,7 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                          </select>
                                                      </td>
 
-                                                     <th>Blood Group</th>
+                                                     <th>Marital Status</th>
                                                      <th>:</th>
                                                      <td>
                                                          <select class="select2_single form-control" style="width:100%" name="PBI_MARITAL_STA" id="PBI_MARITAL_STA">
@@ -266,14 +271,15 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                          <input type="text" id="ESSENTIAL_BIRTH_CERT" name="ESSENTIAL_BIRTH_CERT" value="<?=$ESSENTIAL_BIRTH_CERT;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
 
-                                                     <th>Passport No</th>
+                                                     <th>Place of Birth (District)</th>
                                                      <th>:</th>
                                                      <td>
-                                                         <input type="text" id="ESSENTIAL_PASSPORT_NO" name="ESSENTIAL_PASSPORT_NO" value="<?=$ESSENTIAL_PASSPORT_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-
+                                                         <select class="select2_single form-control" style="width:100%" name="PBI_POB">
+                                                             <option></option>
+                                                             <?=foreign_relation('district_list','district_name','district_name',$PBI_POB,' 1 order by district_name');?>
+                                                         </select>
                                                      </td>
                                                  </tr>
-
 
                                                  <tr>
                                                      <th>Driving License</th>
@@ -282,30 +288,29 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                          <input type="text" id="ESSENTIAL_DRIVING_LICENSE_NO" name="ESSENTIAL_DRIVING_LICENSE_NO" value="<?=$ESSENTIAL_DRIVING_LICENSE_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
 
-                                                     <th>Birth Certificate</th>
+                                                     <th>TIN Certificate</th>
                                                      <th>:</th>
                                                      <td>
-                                                         <input type="text" id="ESSENTIAL_BIRTH_CERT" name="ESSENTIAL_BIRTH_CERT" value="<?=$ESSENTIAL_BIRTH_CERT;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                         <input type="text" name="ESSENTIAL_TIN_NO" value="<?=$ESSENTIAL_TIN_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
 
                                                      <th>Passport No</th>
                                                      <th>:</th>
                                                      <td>
-                                                         <input type="text" id="ESSENTIAL_PASSPORT_NO" name="ESSENTIAL_PASSPORT_NO" value="<?=$ESSENTIAL_PASSPORT_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                         <input type="text" name="ESSENTIAL_TIN_NO" value="<?=$ESSENTIAL_PASSPORT_NO;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                      </td>
                                                  </tr>
                                              </table>
-                                             </form>
 
-                            <hr>
-                          
-                          <?php if($_GET[$unique]):  ?>
-                          <button type="submit" name="cancel" id="cancel" style="font-size:12px; float:left" class="btn btn-danger"> <i class="fa fa-close"></i> Cancel</button>
-                          <button type="submit" name="modify" id="modify" style="font-size:12px; float:right" class="btn btn-primary"> <i class="fa fa-edit"></i> Information Update</button>
-                          <?php else: ?>
-                          <button type="button" class="btn btn-primary" style="font-size:12px; float:right; margin-right:110px">Save Employee Info</button>
-                          <?php endif; ?>
-                          </div>
+                                                 <hr>
+                                                 <?php if($_GET[$unique]):  ?>
+                                                     <button type="submit" name="cancel" id="cancel" style="font-size:12px; float:left" class="btn btn-danger"> <i class="fa fa-close"></i> Cancel</button>
+                                                     <button type="submit" name="UpdatePersonalInfo" style="font-size:12px; float:right" class="btn btn-primary"> <i class="fa fa-edit"></i> Update Personal Info.</button>
+                                                 <?php else: ?>
+                                                     <button type="button" class="btn btn-primary" style="font-size:12px; float:right; margin-right:110px">Save Employee Info</button>
+                                                 <?php endif; ?>
+                                             </form>
+                                         </div>
                           
  
  
@@ -355,7 +360,8 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                             <select class="select2_single form-control" style="width:100%" name="ci_present_address_country" id="ci_present_address_country">
                             <option></option>
                             <?=foreign_relation('apps_nationality', 'num_code', 'CONCAT(num_code," : ", en_short_name)',$ci_present_address_country, 'status="1"','order by num_code'); ?></select>
-                            </div></div>
+                            </div>
+                            </div>
 
                             <div class="form-group" style="width: 100%">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">State <span class="required rcom">*</span></label>

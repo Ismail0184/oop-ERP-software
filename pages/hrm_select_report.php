@@ -111,14 +111,14 @@ $report_id = @$_REQUEST['report_id'];
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date From <span class="required text-danger">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="date"  required="required" name="f_date"   class="form-control col-md-7 col-xs-12" placeholder="From Date" autocomplete="off"></td>
+                                <input type="date"  required="required" name="f_date" value="<?=date('Y-m-01')?>" class="form-control col-md-7 col-xs-12" placeholder="From Date" autocomplete="off"></td>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date to <span class="required text-danger">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <input type="date"  required="required" name="t_date"  class="form-control col-md-7 col-xs-12"  placeholder="to Date" autocomplete="off"></td>
+                                <input type="date"  required="required" name="t_date" value="<?=date('Y-m-d')?>" class="form-control col-md-7 col-xs-12"  placeholder="to Date" autocomplete="off"></td>
                             </div>
                         </div>
 
@@ -133,7 +133,7 @@ $report_id = @$_REQUEST['report_id'];
                     <div class="form-group">
                         <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
                             <a href="<?=$page;?>"  class="btn btn-danger" style="font-size: 12px">Cancel</a>
-                            <button type="submit" class="btn btn-primary" name="getstarted" style="font-size: 12px">Generate Report</button>
+                            <button type="submit" class="btn btn-primary" name="getstarted" style="font-size: 12px"><i class="fa fa-file"></i> Generate Report</button>
                         </div>
                     </div>
                     <?php  else:  ?>

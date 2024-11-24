@@ -147,7 +147,7 @@ des.DESG_DESC as designaiton,dep.DEPT_DESC as department,t.leave_type_name as Le
 
         if($_POST['department']>0) 					$department=$_POST['department'];
         if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;}
-
+        $i=0;
         $result='select  p.*,l.*,
 (select PBI_NAME from personnel_basic_info where PBI_ID=l.PBI_DEPT_HEAD) as authorized_by,
 des.*,dep.*
@@ -168,8 +168,8 @@ des.*,dep.*
 				
 				order by l.id desc
 				';
-        $query2 = mysql_query($result);
-        while($data=mysql_fetch_object($query2)){
+        $query2 = mysqli_query($conn, $result);
+        while($data=mysqli_fetch_object($query2)){
             $i=$i+1; ?>
 
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
@@ -221,7 +221,7 @@ des.*,dep.*
 
         if($_POST['department']>0) 					$department=$_POST['department'];
         if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;}
-
+        $i = 0;
         $result='select  p.*,l.*,
 (select PBI_NAME from personnel_basic_info where PBI_ID=l.authorised_by) as authorized_by,
 des.*,dep.*
@@ -241,8 +241,8 @@ des.*,dep.*
 				
 				order by l.id desc
 				';
-        $query2 = mysql_query($result);
-        while($data=mysql_fetch_object($query2)){
+        $query2 = mysqli_query($conn, $result);
+        while($data=mysqli_fetch_object($query2)){
             $i=$i+1; ?>
 
             <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
@@ -264,6 +264,157 @@ des.*,dep.*
     </table>
 
 
+<?php elseif ($_POST['report_id']=='1000205'):?>
+   <?php  // Fetch data
+    $date_from = $_POST['f_date']; // Example date range
+    $date_to = $_POST['t_date'];
+
+    // Generate date range dynamically
+    $date_period = [];
+    $start = new DateTime($date_from);
+    $end = new DateTime($date_to);
+    $end->modify('+1 day'); // Include the last date
+    $interval = new DateInterval('P1D'); // 1 day interval
+    $daterange = new DatePeriod($start, $interval, $end);
+
+    foreach ($daterange as $date) {
+        $date_period[] = $date->format("Y-m-d");
+    }
+
+    $sql = "SELECT z.employee_id,p.PBI_ID_UNIQUE as finger_id,z.clock_in_status, z.date, z.clock_in, z.clock_out,p.PBI_NAME as name,d.DESG_DESC designation
+    FROM ZKTeco_attendance z, personnel_basic_info p, designation d
+    WHERE p.PBI_ID=z.employee_id and p.PBI_DESIGNATION=d.DESG_ID and z.date BETWEEN '$date_from' AND '$date_to'
+    ORDER BY p.serial, z.date";
+    $result = $conn->query($sql);
+
+    // Process data into a grouped format
+    $attendance = [];
+    while ($row = $result->fetch_assoc()) {
+    $attendance[$row['employee_id']]['details'] = [
+    'finger_id' => $row['finger_id'],
+    'name' => $row['name'],
+    'designation' => $row['designation']
+    ];
+    $attendance[$row['employee_id']]['attendance'][$row['date']] = [
+    'status' => $row['clock_in_status'],
+    'clock_in' => $row['clock_in'],
+    'clock_out' => $row['clock_out']
+    ];
+    }
+
+   $start_date = new DateTime($from_date);
+   $end_date = new DateTime($to_date);
+
+   $interval = $start_date->diff($end_date); // Calculate the difference
+   $total_days = $interval->days; // Get the total days
+    ?>
+
+    <table align="center" id="customers"  style="width:auto; border: solid 1px #999; border-collapse:collapse;font-size:11px; margin-top: 20px">
+        <thead>
+        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">#</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Code</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Name</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Designation</th>
+            <th colspan="<?=$total_days+1;?>" style="border: solid 1px #999; padding:2px;vertical-align:middle">Date</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Present</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">OSD</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Leave</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Late</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Holiday</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Absent</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Deduction Day (Late + Absent)</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Pay Day</th>
+            <th rowspan="3" style="border: solid 1px #999; padding:2px;vertical-align:middle">Total Day</th>
+        </tr>
+        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">
+            <?php foreach ($date_period as $date) { ?>
+                <th style="border: solid 1px #999; padding:2px;vertical-align:middle"><?=date("D", strtotime($date))?></th>
+            <?php  } ?>
+        </tr>
+        <tr style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">
+            <?php foreach ($date_period as $date) { ?>
+                <th style="border: solid 1px #999; padding:2px;vertical-align:middle"><?=date("d-M", strtotime($date))?></th>
+            <?php  } ?>
+        </tr>
+        </thead>
+        <tbody>
+        <?php $sl = 1;
+        foreach ($attendance as $employee_id => $data) { ?>
+        <tr style="border: solid 1px #999; font-size:11px; font-weight:normal;">
+            <td rowspan="3" style="border: solid 1px #999; padding:2px" ><?=$sl?></td>
+            <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['finger_id']?></td>
+            <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['name']?></td>
+            <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['designation']?></td>
+            <?php foreach ($date_period as $date) {
+                $dayName = date('l', strtotime($date));
+                if (isset($data['attendance'][$date])) {
+                    $status = $data['attendance'][$date]['status'];
+                    $clock_in = $data['attendance'][$date]['clock_in'];
+                    $clock_out = $data['attendance'][$date]['clock_out']; ?>
+                    <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: <?=($status=='Late')? '#DCDCDC; color:blue' : ''; ?>"><?= ($status == 'Late') ? 'LP' : (($status == 'On Time') ? 'P' : 'A'); ?></td>
+                <?php } else { ?>
+                    <td style="border: solid 1px #999; text-align: center; vertical-align: middle">
+                        <?php
+                        if ($dayName == 'Friday') {
+                            echo 'H'; // Holiday
+                        } elseif (!empty($data['attendance'][$date]['clock_in']) && $status == 'On Time') {
+                            echo 'P'; // Present
+                        } else {
+                            echo '-'; // Default case
+                        }
+                        ?>
+                    </td>
+                <?php }}
+            $totalDaysInTheMonth = cal_days_in_month(CAL_GREGORIAN, date('m', strtotime($from_date)), date('Y', strtotime($from_date)));
+            $totalPresent = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="On Time" and employee_id='.$employee_id);
+            $totalLatePresent = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="Late" and employee_id='.$employee_id);
+            $totalLeave = find_a_field('hrm_leave_info','COUNT(id)','s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalFriday = countFridaysInMonth(date('Y', strtotime($from_date)),date('m', strtotime($from_date)));
+            $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
+            $totalDeductionDays = ($totalLatePresent/3)+$totalAbsent;
+            $totalPayDays = ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalAbsent)-$totalDeductionDays;
+            ?>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalPresent>0)? $totalPresent : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalOSD>0)? $totalOSD : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLeave>0)? $totalLeave : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLatePresent>0)? $totalLatePresent : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalFriday;?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalAbsent;?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=number_format($totalDeductionDays);?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=number_format($totalPayDays);?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalDaysInTheMonth?></td>
+            </tr>
+            <tr>
+                <?php foreach ($date_period as $date) {
+                    if (isset($data['attendance'][$date])) {
+                        $status = $data['attendance'][$date]['status'];
+                        $clock_in = $data['attendance'][$date]['clock_in'];
+                        $clock_out = $data['attendance'][$date]['clock_out']; ?>
+                        <td style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$clock_in?></td>
+
+                    <?php } else { ?>
+                        <td style="border: solid 1px #999; text-align: center; vertical-align: middle">-</td>
+                    <?php }} ?>
+            </tr>
+            <tr>
+                <?php foreach ($date_period as $date) {
+                    if (isset($data['attendance'][$date])) {
+                        $status = $data['attendance'][$date]['status'];
+                        $clock_in = $data['attendance'][$date]['clock_in'];
+                        $clock_out = $data['attendance'][$date]['clock_out']; ?>
+                        <td style="border: solid 1px #999;text-align: center; vertical-align: middle"><?=$clock_out?></td>
+
+                    <?php } else { ?>
+                        <td style="border: solid 1px #999;text-align: center; vertical-align: middle">-</td>
+                    <?php }} ?>
+            </tr>
+            <?php  $sl++; } ?>
+        </tbody>
+        </table>
+
+    <?php $conn->close(); ?>
 
 <?php elseif ($_POST['report_id']=='1000203'):?>
 

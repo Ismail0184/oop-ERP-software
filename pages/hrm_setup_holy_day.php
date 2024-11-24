@@ -72,7 +72,7 @@ if(isset($$unique))
              </div>
 
              <div class="x_content">
-                 <? 	$res='select '.$unique.','.$unique.' as Code,'.$unique_field.', reason from '.$table.' order by '.$unique;
+                 <? 	$res='select '.$unique.','.$unique.' as Code,'.$unique_field.', reason from '.$table.' order by '.$unique.' desc';
                  echo $crud->link_report_popup($res,$link);?>
                  <?=paging(10);?>
              </div>
@@ -87,13 +87,6 @@ if(isset($$unique))
                         <div class="x_panel">
                             <div class="x_title">
                                 <h2><?=$title;?></h2>
-                                <ul class="nav navbar-right panel_toolbox">
-                                    <div class="input-group pull-right">
-                                        <!--a target="_new" class="btn btn-sm btn-default"  href="user_permission2.php">
-                                            <i class="fa fa-plus-circle"></i> <span class="language" style="color:#000">Uer Permission (SUB)</span>
-                                        </a-->
-                                    </div>
-                                </ul>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
@@ -139,17 +132,11 @@ if(isset($$unique))
                                             <button type="submit" name="record" id="record"  class="btn btn-primary">Add Holy Day </button>
                                             </div></div>                                                                                        
                                             <?php } ?> 
-
-
                                 </form>
-                                </div>
-                                </div>
-                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
-
-
-                
-        
-<?php require_once 'footer_content.php' ?>
+ <?=$html->footer_content();mysqli_close($conn);?>
 
