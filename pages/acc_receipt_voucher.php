@@ -248,7 +248,6 @@ cost_center c
         }
     </script>
 <?php require_once 'body_content_nva_sm.php'; ?>
-
     <div class="col-md-8 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
@@ -306,7 +305,7 @@ cost_center c
                         ?>
                         <div class="form-group" style="margin-left:<?=$ml;?>%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="8">Update Receipt Voucher</button>
+                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="8"><i class="fa fa-edit"></i> Update Receipt Voucher</button>
                             </div>
                         </div>
                         <div class="form-group" <?=$display;?>>
@@ -317,7 +316,7 @@ cost_center c
                     <?php   } else {?>
                         <div class="form-group" style="margin-left:40%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="8">Initiate Receipt Voucher</button>
+                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="8"> <i class="fa fa-plus"></i> Initiate Receipt Voucher</button>
                             </div>
                         </div>
                     <?php } ?>
@@ -340,8 +339,8 @@ cost_center c
         <?php } ?>
         <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
         <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-            <tbody>
-            <tr style="background-color: #3caae4; color:white">
+            <thead>
+            <tr class="bg-primary text-white">
                 <th style="text-align: center">Cash , Bank & Others</th>
                 <!--th style="text-align: center">Profit Center</th-->
                 <th style="text-align: center">Narration</th>
@@ -349,6 +348,7 @@ cost_center c
                 <th style="width:5%; text-align:center">Amount</th>
                 <th style="text-align:center;">Action</th>
             </tr>
+            </thead>
             <tbody>
             <tr>
                 <td style="width: 25%; vertical-align: middle" align="center">
@@ -377,8 +377,8 @@ cost_center c
                     <?php } ?>
                 </td>
                 <td align="center" style="width:5%; vertical-align: middle ">
-                    <?php if (isset($_REQUEST['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_REQUEST['id'];?>" id="editdata<?=$_REQUEST['id'];?>" style="font-size: 11px" tabindex="16">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
-                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="16" />Add</button> <?php endif; ?></td></tr>
+                    <?php if (isset($_REQUEST['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_REQUEST['id'];?>" id="editdata<?=$_REQUEST['id'];?>" style="font-size: 11px" tabindex="16"><i class="fa fa-edit"></i> Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger"><i class="fa fa-close"></i> Cancel</a>
+                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="16" /><i class="fa fa-plus"></i> Add</button> <?php endif; ?></td></tr>
             </tbody>
         </table>
         <SCRIPT language=JavaScript>

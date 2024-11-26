@@ -320,7 +320,7 @@ where
                         ?>
                         <div class="form-group" style="margin-left:<?=$ml;?>%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="9">Update Payment Voucher</button>
+                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="9"><i class="fa fa-edit"></i> Update Payment Voucher</button>
                             </div></div>
                         <div class="form-group" <?=$display;?>>
                             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -329,7 +329,7 @@ where
                     <?php   } else {?>
                         <div class="form-group" style="margin-left:40%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="9">Initiate Payment Voucher</button>
+                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="9"><i class="fa fa-plus"></i> Initiate Payment Voucher</button>
                             </div></div>
                     <?php } ?>
                 </form>
@@ -353,8 +353,8 @@ where
         <?php } ?>
         <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
         <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-            <tbody>
-            <tr style="background-color: #3caae4; color:white">
+            <thead>
+            <tr class="bg-primary text-white">
                 <th style="text-align: center">Vendor, Payment & Expenses Head</th>
                 <th style="text-align: center">Cost Center</th>
                 <th style="text-align: center">Narration</th>
@@ -362,6 +362,7 @@ where
                 <th style="width:5%; text-align:center">Amount</th>
                 <th style="text-align:center">Action</th>
             </tr>
+            </thead>
             <tbody>
             <tr>
                 <td style="width: 25%; vertical-align: middle" align="center">
@@ -387,8 +388,8 @@ where
                         <input type="hidden" id="rcved_remining" style="width:100%; height:37px; font-size: 11px; text-align:center"  value="<?=$rcved_remining=$amount-$inputted_amount;?>"  name="rcved_remining" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" /><input type="number" id="dr_amt" onkeyup="doAlert(this.form);" style="width:100%; height:37px; font-size: 11px; text-align:center"  value="<?=$rcved_remining;?>"  name="dr_amt" class="form-control col-md-7 col-xs-12" autocomplete="off" step="any" min="1" tabindex="15" />
                     <?php } ?>
                 </td>
-                <td align="center" style="width:5%; vertical-align: middle "><?php if (isset($GET_ID)) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$GET_ID;?>" id="editdata<?=$GET_ID;?>" style="font-size: 11px" tabindex="18">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="19">Cancel</a>
-                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="17">Add</button> <?php endif; ?></td></tr>
+                <td align="center" style="width:5%; vertical-align: middle "><?php if (isset($GET_ID)) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$GET_ID;?>" id="editdata<?=$GET_ID;?>" style="font-size: 11px" tabindex="18"><i class="fa fa-edit"></i> Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="19"><i class="fa fa-close"></i> Cancel</a>
+                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="17"><i class="fa fa-plus"></i> Add</button> <?php endif; ?></td></tr>
             </tbody>
         </table>
         <SCRIPT language=JavaScript>

@@ -115,7 +115,7 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                     <? require_once 'support_html.php';?>
                     <table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
                         <thead>
-                        <tr style="background-color: bisque; vertical-align: middle">
+                        <tr class="bg-primary text-white" style="vertical-align: middle">
                             <th style="vertical-align: middle">SL</th>
                             <th style="vertical-align: middle">Code</th>
                             <th style="vertical-align: middle">Finish Goods</th>

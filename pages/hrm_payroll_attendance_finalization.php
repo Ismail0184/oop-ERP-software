@@ -5,12 +5,15 @@ $table='hrm_attendance_info';
 $unique='id';
 $page="hrm_payroll_attendance_finalization.php";
 
-if (isset($_POST['clearAllData'])){
+if (isset($_POST['clearManualData'])){
     mysqli_query($conn, "DELETE from ".$table." where status='MANUAL'");
 }
 
-if (isset($_POST['confirmAllData'])){
-    mysqli_query($conn, "UPDATE ".$table." SET status='CHECKED' where status='MANUAL'");
+if (isset($_POST['confirmAttendance'])){
+    mysqli_query($conn, "UPDATE ".$table." SET status='UNCHECKED' where status='MANUAL' and month='".$_SESSION['selectedMonth']."' and year='".$_SESSION['selectedYear']."'");
+    unset($_SESSION['selectedYear']);
+    unset($_SESSION['selectedMonth']);
+    //unset($_POST);
 }
 
 if (isset($_POST['initiate'])){
@@ -35,7 +38,7 @@ $selectedMonth =  @$_SESSION['selectedMonth'];
 $year = date('Y');
 
 if(prevent_multi_submit()) {
-    if (isset($_POST['confirmAttendance'])) {
+    if (isset($_POST['submitAttendance'])) {
         $sql = "SELECT p.* From personnel_basic_info p where p.PBI_JOB_STATUS='In Service' order by p.serial";
         $result = mysqli_query($conn, $sql);
         while ($data = mysqli_fetch_object($result)) {
@@ -58,19 +61,22 @@ if(prevent_multi_submit()) {
             $entry_at = date('Y-m-d H:i:s');
             $sectionid = @$_SESSION['sectionid'];
             $companyid = @$_SESSION['companyid'];
-
-            mysqli_query($conn, "INSERT INTO " . $table . " 
-            (`PBI_ID`,`present`,`latePresent`,`OSD`,`leave`,`earlyLeave`,`offDay`,`holiday`,`absent`,`deductionDays`,`payDay`,`totalDaysInTheMonth`,`month`,`year`,`entry_by`,`entry_at`,`section_id`,`company_id`) VALUES 
-            ($id,'" . $present . "','" . $latePresent . "','" . $OSD . "','" . $leave . "','" . $earlyLeave . "','" . $offDay . "','" . $holiday . "','" . $absent . "','" . $deductionDays . "','" . $payDay . "','" . $totalDaysInTheMonth . "','" . $month . "','" . $year . "','" . $entry_by . "','" . $entry_at . "','" . $sectionid . "','" . $companyid . "')");
+            mysqli_query($conn, "INSERT INTO ".$table." 
+            (`PBI_ID`,`present`,`latePresent`,`OSD`,`leave`,`earlyLeave`,`offDay`,`holiday`,`absent`,`deductionDays`,`payDay`,`totalDaysInTheMonth`,`month`,`year`,`entry_by`,`entry_at`,`section_id`,`company_id`,`status`) VALUES 
+            ($id,'".$present."','".$latePresent."','".$OSD."','".$leave."','".$earlyLeave."','".$offDay."','".$holiday."','" . $absent . "','" . $deductionDays . "','" . $payDay . "','" . $totalDaysInTheMonth . "','" . $month . "','" . $year . "','" . $entry_by . "','" . $entry_at . "','" . $sectionid . "','".$companyid."','MANUAL')");
         }
-        unset($_POST);
+        //unset($_POST);
     }
 }
+
+
+
 $selectedMonthStartDay = date(''.$selectedYear.'-'.$selectedMonth.'-01');
 $selectedMonthEndDay = date(''.$selectedYear.'-'.$selectedMonth.'-31');
 $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
+$sqlQueryMANUAL = mysqli_query($conn, "SELECT p.*,d.DESG_DESC,a.* From personnel_basic_info p, designation d, hrm_attendance_info a where p.PBI_ID=a.PBI_ID and p.PBI_DESIGNATION=d.DESG_ID and p.PBI_JOB_STATUS='In Service' order by p.serial");
 $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_info p, designation d where p.PBI_DESIGNATION=d.DESG_ID and p.PBI_JOB_STATUS='In Service' order by p.serial");
-
+$countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and month="'.$selectedMonth.'" and year="'.$selectedYear.'"');
 ?>
 <?php require_once 'header_content.php'; ?>
 <style>
@@ -92,6 +98,7 @@ $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_inf
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
+            <?php if (isset($_POST['confirmAttendance'])){ ?><h5 class="text-success text-center">Attendance recorded successfully!!</h5><?php } ?>
             <form action="<?=$page;?>" method="post" enctype="multipart/form-data" name="cloud" id="cloud" class="form-horizontal form-label-left">
                 <? require_once 'support_html.php';?>
                 <table align="center" style="width:60%; font-size: 11px" class="table table-striped table-bordered">
@@ -107,7 +114,7 @@ $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_inf
                         <td align="center" style="vertical-align: middle">
                             <select class="select2_single form-control" style="width:98%; font-size: 11px" tabindex="6" required="required"  name="selectedMonth">
                                 <option></option>
-                                <?php foreign_relation("monthname", "month", "CONCAT(month,' : ', monthfullName)", $_SESSION['selectedMonth'], "1"); ?>
+                                <?php foreign_relation("monthname", "month", "CONCAT(month,' : ', monthfullName)", $selectedMonth, "1"); ?>
                             </select>
                         </td>
                         <td style="vertical-align: middle">
@@ -138,10 +145,15 @@ $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_inf
     </div>
 </div>
 
+
+
 <?php if (isset($selectedMonth)) {?>
 <div class="col-md-12 col-xs-12">
     <div class="x_panel">
         <div class="x_title">
+            <?php if (isset($_POST['submitAttendance'])){ ?><h5 class="text-primary text-center">Attendance submit successfully!!</h5> <?php } ?>
+            <?php if (isset($_POST['clearManualData'])){ ?><h5 class="text-danger text-center">Manual attendance removed successfully!!</h5> <?php } ?>
+
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
@@ -164,11 +176,34 @@ $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_inf
                         <th style="text-align: center; vertical-align: middle">Deduction Day <br>(Late + Absent)</th>
                         <th style="text-align: center; vertical-align: middle">Pay Day</th>
                         <th style="text-align: center; vertical-align: middle">Total Days</th>
+                        <?php if ($countManualData>0){ ?>
+                        <th style="text-align: center; vertical-align: middle">Option</th>
+                        <?php } ?>
 
                     </tr>
                     </thead>
                     <tbody>
-                    <?php
+                    <?php if ($countManualData>0){
+                        while ($data = mysqli_fetch_object($sqlQueryMANUAL)){
+                        ?>
+                        <tr>
+                            <td style="vertical-align: middle;"><?=$data->PBI_ID;?>:<?=$data->PBI_ID_UNIQUE;?></td>
+                            <td style="vertical-align: middle"><?=$data->PBI_NAME;?></td>
+                            <td style="vertical-align: middle; text-align: left"><?=$data->DESG_DESC;?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->present>0)? $data->present : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->latePresent>0)? $data->latePresent : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->OSD>0)? $data->OSD : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->leave>0)? $data->leave : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->earlyLeave>0)? $data->earlyLeave : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->offDay>0)? $data->offDay : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->holiday>0)? $data->holiday : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->absent>0)? $data->absent : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->deductionDays>0)? $data->deductionDays : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->payDay>0)? $data->payDay : '-'; ?></td>
+                            <td style="vertical-align: middle; text-align: center"><?=($data->totalDaysInTheMonth>0)? $data->totalDaysInTheMonth : '-'; ?></td>
+                            <td></td>
+                        </tr>
+                    <?php }} else {
                     $totalDaysInTheMonth = getTotalDaysInMonth($year, $selectedMonth);
                     $getTotalFridays = countFridaysInMonth(date('Y'), $selectedMonth);
                     while($data=mysqli_fetch_object($sqlQuery)){
@@ -208,17 +243,21 @@ $sqlQuery = mysqli_query($conn, "SELECT p.*,d.DESG_DESC From personnel_basic_inf
                         <td style="vertical-align: middle"><input type="number"  readonly value="<?=($totalPayDays>0)? number_format($totalPayDays) : '';?>" name="payDay<?=$id?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
                         <td style="vertical-align: middle"><input type="number"  readonly value="<?=($totalDaysInTheMonth>0)? $totalDaysInTheMonth : '';?>" name="totalDaysInTheMonth<?=$id?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
                     </tr>
-                    <?php } ?>
+                    <?php }} ?>
                     </tbody>
                 </table>
                 <div class="col text-center">
-                        <button type="submit" name="clearAllData" onclick='return window.confirm("Are you confirm to clear all data?");' class="btn btn-danger text-center" style="font-size: 11px"> <i class="fa fa-eraser"></i> Clear Manual Data</button>
-                        <button type="submit" name="confirmAttendance" onclick='return window.confirm("Are you confirm to clear all data?");' class="btn btn-success text-center" style="font-size: 11px"> <i class="fa fa-check"></i> Confirm Attendance</button>
+                    <?php if ($countManualData>0){ ?>
+                        <button type="submit" name="clearManualData" onclick='return window.confirm("Are you confirm to clear all data?");' class="btn btn-danger text-center" style="font-size: 13px"> <i class="fa fa-eraser"></i> Clear Manual Data</button>
+                        <button type="submit" name="confirmAttendance" onclick='return window.confirm("Are you confirm to clear all data?");' class="btn btn-success text-center" style="font-size: 13px"> <i class="fa fa-check"></i> Confirm Attendance</button>
+                    <?php } else { ?>
+                        <button type="submit" name="cancel" onclick='return window.confirm("Are you confirm to Cancel Month?");' class="btn btn-danger" style="font-size: 13px"> <i class="fa fa-close"></i> Cancel</button>
+                        <button type="submit" name="submitAttendance" onclick='return window.confirm("Are you confirm to submit data?");' class="btn btn-primary text-center" style="font-size: 13px"> <i class="fa fa-plus"></i> Submit Attendance</button>
+                    <?php } ?>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <?php } ?>
-
 <?=$html->footer_content();mysqli_close($conn);?>

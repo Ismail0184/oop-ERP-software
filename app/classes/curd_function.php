@@ -476,6 +476,92 @@ ORDER BY zm.sl, zs.sl");
         mysqli_close($conn);
     }
 
+    public function report_templates_with_status_filter($sql,$status,$title){
+        global $conn;
+        $str = '';
+        if($sql==NULL) return NULL;
+        $str.='
+		<div class="col-md-12 col-sm-12 col-xs-12">
+                        <div class="x_panel">
+                        <div class="x_title">
+                        <h2>'.$title.'</h2> <span class="text-right h5" style="float: right" data-toggle="collapse" data-target="#experience2">Filter <i class="fa fa-filter"></i></span>
+                        <div class="clearfix"></div>
+                        </div>
+                            <div class="x_content">
+		<table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
+        if ($result = mysqli_query($conn , $sql)) {
+            $cols = mysqli_num_fields($result);
+            $fieldinfo = mysqli_fetch_fields($result);
+            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+                $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+            }
+            $str .='</tr></thead>';
+            $str .='<!--tfoot><tr>';
+            for($i=1;$i<$cols;$i++)
+            { $str .='<td></td>'; }
+            $str .='</tr></tfoot-->';
+            $c=0;
+            if (mysqli_num_rows($result)>0){
+                $sl = 0;
+                while($row = mysqli_fetch_array($result)) {
+                    $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle">'.($sl=$sl+1).'</td>';
+                    for($i=1;$i<$cols;$i++) {
+                        $b=$row[$i];
+                        if($b=='YES'):
+                            $sp='<span class="label label-success" style="font-size:10px">Settled</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Unsettled</span>';
+                        elseif ($b=='PENDINGS'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';
+                        elseif ($b=='PREMATURE'):
+                            $sp='<span class="label label-warning" style="font-size:10px">PREMATURE</span>';
+                        elseif($b=='PROCESSING'):
+                            $sp='<span class="label label-info" style="font-size:10px">PROCESSING</span>';
+                        elseif($b=='ROCOMMENDED'):
+                            $sp='<span class="label label-info" style="font-size:10px">ROCOMMENDED</span>';
+                        elseif($b=='COMPLETED' || $b=='VERIFIED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-success" style="font-size:10px">COMPLETED</span>';
+                        elseif($b=='APPROVEDS'):
+                            $sp='<span class="label label-success" style="font-size:10px">Approved</span>';
+                        elseif($b=='SETTLED'):
+                            $sp='<span class="label label-success" style="font-size:10px">SETTLED</span>';
+                        elseif($b=='RETURNED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='CANCELED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
+                        elseif($b=='REJECTED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">REJECTED</span>';
+                        elseif($b=='BOUNCED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
+                        elseif($b=='CHECKED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">CHECKED</span>';
+                        elseif($b=='RECORDED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">RECORDED</span>';
+                        elseif($b=='UNRECORDED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNRECORDED</span>';
+                        elseif($b=='UNCHECKED'):
+                            $sp='<span class="label label-default" style="font-size:10px">UNCHECKED</span>';
+                        elseif($b=='MANUAL'):
+                            $sp='<span class="label label-default" style="font-size:10px">MANUAL</span>';
+                        elseif($b=='NO'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Unchecked</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp.'</td>';
+                    }
+                    $str .='</tr></thead>';
+                }}
+            mysqli_free_result($result);
+        }
+        $str .='</table></div></div></div>';
+        return $str;
+        mysqli_close($conn);
+    }
+
     public function report_templates_with_status_employee_dashboard($sql,$status){
         global $conn;
         $str = '';
@@ -850,6 +936,69 @@ ORDER BY zm.sl, zs.sl");
             mysqli_free_result($result);
         endif;
         $str .='</table></form></div></div></div>';
+        return $str;
+        mysqli_close($conn);
+    }
+
+    public function report_templates_with_add_newView($sql,$title,$button){
+        global $conn;
+        $str = '';
+        if($sql==NULL) return NULL;
+        $str.='
+		<div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>'.$title.'</h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                        <a class="btn btn-primary btn-block" data-toggle="modal" data-target="#addModal">
+                            <i class="fa fa-plus-circle"></i> <span class="language" style="color:white; font-size:12px">'.$button.'</span>
+                        </a>
+                    </ul>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%; font-size: 11px">';
+                        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle">#</th>';
+                            if ($result = mysqli_query($conn , $sql)) {
+                            $cols = mysqli_num_fields($result);
+                            $fieldinfo = mysqli_fetch_fields($result);
+                            foreach (array_slice($fieldinfo, 1) as $key=>$val) {
+                            $str .='<th style="vertical-align:middle">'.ucwords(str_replace('_', ' ',$val->name)).'</th>';
+                            }
+                            $str .='</tr></thead>';
+            $str .='<!--tfoot><tr>';
+            for($i=1;$i<$cols;$i++)
+            { $str .='<td></td>'; }
+            $str .='</tr></tfoot-->';
+            $c=0;
+            if (mysqli_num_rows($result)>0){
+                $sl = 0;
+                while($row = mysqli_fetch_array($result)) {
+                    $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td style="vertical-align:middle; text-align: center">'.($sl=$sl+1).'</td>';
+                    for($i=1;$i<$cols;$i++) {
+                        $b=$row[$i];
+                        if($b=='DRAFTED'):
+                            $sp='<span class="label label-default" style="font-size:10px">Drafted</span>';
+                        elseif ($b=='PENDING'):
+                            $sp='<span class="label label-warning" style="font-size:10px">Pending</span>';;
+                        elseif($b=='REJECTED'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Rejected</span>';
+                        elseif($b=='RECOMMENDED'):
+                            $sp='<span class="label label-primary" style="font-size:10px">Recommended</span>';
+                        elseif($b=='APPROVED'):
+                            $sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
+                        elseif($b=='GRANTED'):
+                            $sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
+                        else :
+                            $sp=$b;
+                        endif;
+                        $str .='<td style="vertical-align:middle">'.$sp.'</td>';
+                    }
+                    $str .='</tr></thead>';
+                }}
+            mysqli_free_result($result);
+        }
+        $str .='</table></div></div></div>';
         return $str;
         mysqli_close($conn);
     }
@@ -1903,10 +2052,10 @@ function voucher_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$page)
         $str .='</tbody></table>';
     endif;
 
-    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete the Voucher </button>';
+    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger"><i class="fa fa-trash"></i> Delete the Voucher </button>';
     if($COUNT_details_data>0):
         if(number_format($tdramt,2) === number_format($tcramt,2)) {
-            $str .= '<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirmsave" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish Voucher </button>';
+            $str .= '<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirmsave" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success"><i class="fa fa-check"></i> Confirm and Finish Voucher </button>';
         } else {
             $str .= '<h6  style="color: red; font-weight: bold; float: right; margin-right: 1%">Invalid Voucher. Debit ('.$tdramt.') and Credit ('.$tcramt.') amount are not equal !!</h6>';
             //$str .= '<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirmsave" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish Voucher </button>';
@@ -1978,7 +2127,7 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
         $str.='
 		<input type="hidden" name="'.$unique.'" id="'.$unique.'"  value="'.$unique_GET.'">
 		<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: bisque; "><th style="vertical-align:middle; text-align:center">#</th>';
+        $str .='<thead><tr class="bg-primary text-white"><th style="vertical-align:middle; text-align:center">#</th>';
         if ($result = mysqli_query($conn , $sql)):
             $cols = mysqli_num_fields($result);
             $fieldinfo = mysqli_fetch_fields($result);
@@ -2022,9 +2171,9 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
         endif;
         $str .='</tfoot></table>';
     endif;
-    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
+    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger"><i class="fa fa-close"></i> Delete</button>';
     if($COUNT_details_data>0):
-        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success"><i class="fa fa-check"></i> Confirm and Finish</button>';
     endif;$str .='</form>';
     return $str;
     mysqli_close($conn);

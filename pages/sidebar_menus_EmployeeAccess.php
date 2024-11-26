@@ -42,8 +42,8 @@ $unAuthorisedTravel = find_a_field('travel_application_master','count(trvApp_id)
 $unApprovedTravelExp = find_a_field('travel_application_claim_master','count(trvClaim_id)','status="UNCHECKED" and checked_by='.$_SESSION['PBI_ID']);
 $unAuthorisedTravelExp = find_a_field('travel_application_claim_master','count(trvClaim_id)','status="CHECKED" and approved_by='.$_SESSION['PBI_ID']);
 
-$unApprovedIOU = find_a_field('user_IOU','count(id)','status="UNCHECKED" and recommended_by='.$_SESSION['PBI_ID']);
-$unAuthorisedIOU = find_a_field('user_IOU','count(id)','status="RECOMMENDED" and authorized_by='.$_SESSION['PBI_ID']);
+$unApprovedIOU = find_a_field('emp_access_IOU_request','count(id)','recommended_status="PENDING" and status="PENDING" and recommended_by='.$_SESSION['PBI_ID']);
+$unAuthorisedIOU = find_a_field('emp_access_IOU_request','count(id)','approved_status="PENDING"  and status="RECOMMENDED" and approved_by='.$_SESSION['PBI_ID']);
 
 
 $unApprovedVehicle = find_a_field('vehicle_application_master','count(vehApp_id)','status="PENDING" and approved_by='.$_SESSION['PBI_ID']);
@@ -86,7 +86,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
                 <li><a href="emp_access_unapproved_leave.php">Leave <?php if($unApprovedLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:12px"> '.$unApprovedLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_requisition_stationary.php">Stationary Requisition <?php if($unApprovedReq>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedReq.' </span>]'?> <?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_requisition_food_beverage.php">Food & Beverage <?php if($unApprovedReqFood>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedReqFood.' </span>]'?><?php } else {echo'';} ?></a></li>
-                <li><a href="user_unapproved_requisition_IOU.php">IOU Requisition<?php if($unApprovedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
+                <li><a href="emp_access_recommended_IOU_request.php">IOU Request<?php if($unApprovedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="emp_access_unapproved_requisition_travel_exp_claim.php">Travel Exp. Claim <?php if($unApprovedTravelExp>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedTravelExp.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_vehicle_application.php">Vehicle Application <?php if($unApprovedVehicle>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedVehicle.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unapproved_manpower_application.php">Man Power Application <?php if($unApprovedManpower>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unApprovedManpower.' </span>]'?><?php } else {echo'';} ?></a></li>
@@ -105,7 +105,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
                 <li><a href="hrm_unauthorised_late_attendance.php">Late Attendance <?php if($unAuthorisedLate>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedLate.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_requisition_stationary.php">Stationary Requisition <?php if($unAuthorisedReq>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedReq.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_requisition_food_beverage.php">Food & Beverage <?php if($unAuthorisedReqFood>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedReqFood.' </span>]'?><?php } else {echo'';} ?></a></li>
-                <li><a href="user_unauthorised_requisition_IOU.php">IOU Requisition<?php if($unAuthorisedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
+                <li><a href="#">IOU Request<?php if($unAuthorisedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="emp_access_unauthorized_requisition_travel_exp_claim.php">Travel Exp. Claim <?php if($unAuthorisedTravelExp>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedTravelExp.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_vehicle_application.php">Vehicle Application <?php if($unAuthorisedVehicle>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedVehicle.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_manpower_application.php">Man Power Application <?php if($unAuthorisedManpower>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedManpower.' </span>]'?><?php } else {echo'';} ?></a></li>
@@ -130,7 +130,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
             <ul class="nav child_menu">
                 <li><a href="emp_access_requisition_stationary.php">Stationary Requisition</a></li>
                 <li><a href="hrm_requisition_food_beverage.php">Food & Beverage Requisition</a></li>
-                <li><a href="user_IOU_requisition.php">Create IOU</a></li>
+                <li><a href="emp_access_requisition_IOU.php">IOU Request</a></li>
                 <li><a href="emp_access_requisition_travel_exp_claim.php">Travel Exp. Claim</a></li>
                 <li><a href="emp_access_requisition_vehicle_application.php">Vehicle Application</a></li>
                 <li><a href="hrm_requisition_manpower_application.php">Man Power Application Form</a></li>

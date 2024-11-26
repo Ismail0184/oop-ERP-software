@@ -327,21 +327,27 @@ journal_info j,
                         ?>
                         <div class="form-group" style="margin-left:<?=$ml;?>%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="7">Update Journal Voucher</button>
-                            </div></div>
+                                <button type="submit" name="modify" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Update?");' style="font-size: 11px" tabindex="7"><i class="fa fa-edit"></i> Update Journal Voucher</button>
+                            </div>
+                        </div>
 
                         <div class="form-group" <?=$display;?>>
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <a  href="voucher_print_preview.php?v_type=journal_info&vo_no=<?=$initiate_journal_note;?>&v_date=<?=$voucher_date;?>" target="_blank" style="color: blue; text-decoration: underline; font-size: 11px; font-weight: bold; vertical-align: middle" tabindex="8">View Journal Voucher</a>
-                            </div></div>
+                            </div>
+                        </div>
+
                     <?php   } else {?>
+
                         <div class="form-group" style="margin-left:40%; margin-top: 15px">
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="7">Initiate Journal Voucher</button>
+                                <button type="submit" name="initiate" class="btn btn-primary" style="font-size: 11px" tabindex="7"><i class="fa fa-plus"></i> Initiate Journal Voucher</button>
                             </div></div>
                     <?php } ?>
-
-                </form></div></div></div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 <?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','journal_info','166px','');?>
 <?php if($initiate_journal_note):  ?>
@@ -359,8 +365,8 @@ journal_info j,
             <?php } ?>
             <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
             <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-                <tbody>
-                <tr style="background-color: #3caae4; color:white">
+                <thead>
+                <tr class="bg-primary text-white">
                     <th style="text-align: center">Accounts Ledger</th>
                     <th style="text-align: center">Cost Center</th>
                     <th style="text-align: center">Narration</th>
@@ -368,13 +374,14 @@ journal_info j,
                     <th style="width:5%; text-align:center">Amount</th>
                     <th style="text-align:center">Action</th>
                 </tr>
+                </thead>
                 <tbody>
                 <tr>
                     <td align="center" colspan="5">
                         <input style="font-size:11px" type="file" id="file" name="file" required class="form-control col-md-7 col-xs-12" >
                     </td>
                     <td align="center" style="width:5%; vertical-align:middle">
-                        <button type="submit" name="Import" onclick='return window.confirm("Are you confirm to Upload?");' class="btn btn-primary" style="font-size: 11px">Upload the File</button>
+                        <button type="submit" name="Import" onclick='return window.confirm("Are you confirm to Upload?");' class="btn btn-primary" style="font-size: 11px"><i class="fa fa-upload"></i> Upload the File</button>
                     </td>
                 </tr>
                 <tr><th colspan="6" style="text-align: center">or</th></tr>
@@ -396,8 +403,8 @@ journal_info j,
             <?php } ?>
             <input type="hidden" name="Cheque_of_bank" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>">
             <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-                <tbody>
-                <tr style="background-color: #3caae4; color:white">
+                <thead>
+                <tr class="bg-primary text-white">
                     <th style="text-align: center">Accounts Ledger</th>
                     <th style="text-align: center">Cost Center</th>
                     <th style="text-align: center">Narration</th>
@@ -405,6 +412,7 @@ journal_info j,
                     <th style="width:5%; text-align:center">Amount</th>
                     <th style="text-align:center">Action</th>
                 </tr>
+                </thead>
                 <tbody>
                 <tr>
                     <td style="width: 25%; vertical-align: middle" align="center">
@@ -435,9 +443,9 @@ journal_info j,
                     </td>
                     <td align="center" style="width:5%; vertical-align: middle ">
                         <?php if (isset($_GET['id'])) : ?>
-                            <button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px" tabindex="15">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="16">Cancel</a>
+                            <button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px" tabindex="15"><i class="fa fa-edit"></i> Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger" tabindex="16"><i class="fa fa-close"></i> Cancel</a>
                         <?php else: ?>
-                            <button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="15">Add</button>
+                            <button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px" tabindex="15"><i class="fa fa-plus"></i> Add</button>
                         <?php endif; ?>
                     </td>
                 </tr>

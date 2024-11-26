@@ -282,14 +282,14 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                     <?php if(isset($select_dealer_do_regular)>0){
                         $status = find_a_field(''.$table_master.'','status','do_no='.$select_dealer_do_regular)
                         ?>
-                        <button type="submit" style="font-size: 11px; height: 30px" name="dealer_cancel" id="dealer_cancel"  class="btn btn-danger">Cancel the dealer</button>
+                        <button type="submit" style="font-size: 11px; height: 30px" name="dealer_cancel" id="dealer_cancel"  class="btn btn-danger"><i class="fa fa-close"></i> Cancel the dealer</button>
                         <?php if($status!=='COMPLETED'){ ?>
                             <a align="center" href="do_challan_view.php?v_no=<?=$select_dealer_do_regular;?>" target="_new"><img src="../../assets/images/print.png" width="25" height="25" /></a>
                         <?php } else { ?>
                             <a target="_blank" href="chalan_view.php?v_no=<?=$select_dealer_do_regular;?>"><img src="../../assets/images/print.png" width="25" height="25" /></a>
                         <?php } ?>
                     <?php } else { ?>
-                        <button type="submit" style="font-size: 11px;" name="select_dealer_do"  class="btn btn-primary">Select and Proceed to Next</button>
+                        <button type="submit" style="font-size: 11px;" name="select_dealer_do"  class="btn btn-primary"><i class="fa fa-plus"></i> Select and Proceed to Next</button>
                     <?php } ?>
                 </td>
             </tr></table>
@@ -370,10 +370,10 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                     <p align="center" style="margin-top:10px">
                         <?
                         if($unique_master_for_regular>0) {?>
-                            <button type="submit" name="new" class="btn btn-primary" style="font-size: 12px">Modify Invoice Info</button>
+                            <button type="submit" name="new" class="btn btn-primary" style="font-size: 12px"><i class="fa fa-edit"></i> Update Invoice Info</button>
                             <input name="flag" id="flag" type="hidden" value="1" />
                         <? }else{?>
-                            <button type="submit" name="new" class="btn btn-primary" style="font-size: 12px">Initiate Invoice</button>
+                            <button type="submit" name="new" class="btn btn-primary" style="font-size: 12px"><i class="fa fa-plus"></i> Initiate Invoice</button>
                             <input name="flag" id="flag" type="hidden" value="0" />
                         <? } ?></p></form>
 
@@ -404,7 +404,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
         <input style="width:155px;"  name="revenue_persentage" type="hidden" id="revenue_persentage" value="<?=$item_all_revenue_persentage?>"/>
         <table align="center" style="width:98%; font-size: 11px" class="table table-striped table-bordered">
             <thead>
-            <tr style="background-color: bisque">
+            <tr class="bg-primary text-white">
                 <th style="text-align: center">Finish Goods Code</th>
                 <th style="text-align: center">In Stock</th>
                 <th style="text-align: center">D Price</th>
@@ -434,8 +434,8 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                 <td align="center" style="width:10%; vertical-align: middle">
                     <input type="number" id="total_amt" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="total_amt" value="<?=$edit_value_total_amt?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="total_amt" ></td>
                 <td align="center" style="width:5%; vertical-align: middle">
-                    <?php if (isset($_REQUEST['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_REQUEST['id'];?>" id="editdata<?=$_REQUEST['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
-                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?></td>
+                    <?php if (isset($_REQUEST['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_REQUEST['id'];?>" id="editdata<?=$_REQUEST['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger"><i class="fa fa-close"></i> Cancel</a>
+                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px"><i class="fa fa-plus"></i> Add</button> <?php endif; ?></td>
             </tr>
             </tbody>
             <script>
@@ -456,7 +456,8 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                         form.dist_unit.value='';}
                     form.dist_unit.focus();
                 }</script>
-        </table></form>
+        </table>
+    </form>
     <?=added_data_delete_edit_invoice($res,$unique,$unique_GET,$COUNT_details_data,$page,8,8,$commission);
 endif;endif;?>
 <?=$html->footer_content();mysqli_close($conn);?>

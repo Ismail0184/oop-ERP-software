@@ -391,7 +391,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                 while($holiday=mysqli_fetch_object($res)){?>
                     <tr>
                         <td><?=$ho=$ho+1?></td>
-                        <td><?=date('l', strtotime($holiday->holy_day)); ?>, <?=date("d M Y", strtotime($holiday->holy_day)); ?></td>
+                        <td><?=date('l', strtotime($holiday->holy_day)); ?>, <?=date("M d Y", strtotime($holiday->holy_day)); ?></td>
                         <td><?=$holiday->reason?></td>
                     </tr>
                 <?php } ?>

@@ -1,6 +1,6 @@
  <?php
 require_once 'support_file.php';
-$title="Primary DO List";
+$title="Primary Invoice List";
  $table_master='sale_do_master';
  $unique_master='do_no';
  $table_detail='sale_do_details';
@@ -31,20 +31,23 @@ $title="Primary DO List";
      </script>
  <?php require_once 'body_content.php'; ?>
 
-
- <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
- <table align="center" style="width: 50%;">
-     <tr><td>
-             <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date"  >
-         <td style="width:10px; text-align:center"> -</td>
-         <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date" ></td>
-         <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View Order</button></td>
-     </tr></table>
- </form>
+ <div class="col-md-12 col-xs-12">
+     <div class="<?php if(isset($_POST['viewReport'])){ ?> row <?php } else { echo 'row collapse';} ?>" id="experience2">
+         <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+             <table align="center" style="width: 50%;">
+                 <tr><td>
+                         <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                     <td style="width:10px; text-align:center"> -</td>
+                     <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                     <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary"><i class="fa fa-eye"></i> View Invoice</button></td>
+                 </tr></table>
+         </form>
+     </div>
+ </div>
 
 
 <?php
-if(isset($_POST['viewreport'])){
+if(isset($_POST['viewReport'])){
 $res = "select m.do_no,m.do_no,m.do_date,concat(d.dealer_code,' - ',d.dealer_name_e) as dealer_name,w.warehouse_name as 'Warehouse',
 concat(u.fname,'<br> at: ',m.entry_at) as Invoice_By,
 SUM(dt.total_amt)	 as Order_Amount,m.remarks,m.sent_to_warehuse_at as sent_warehouse,m.status
@@ -82,5 +85,5 @@ m.status in ('PROCESSING','RETURNED','MANUAL') ".$sec_com_connection."
 group by m.do_no order by m.do_no desc";
 }
     ?>
-<?=$crud->report_templates_with_status($res,$title);?>
+<?=$crud->report_templates_with_status_filter($res,'',$title);?>
 <?=$html->footer_content();?>

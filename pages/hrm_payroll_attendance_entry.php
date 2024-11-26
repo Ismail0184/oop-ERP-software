@@ -10,6 +10,7 @@ $page="hrm_payroll_attendance_entry.php";
 if(prevent_multi_submit()){
 
     if (isset($_POST['submit']) && isset($_FILES['file'])) {
+        mysqli_query($conn, "DELETE from ZKTeco_basic_data where record_status = 'PENDING'");
         $filename = $_FILES["file"]["tmp_name"];
         if ($_FILES["file"]["size"] > 0) {
             $file = fopen($filename, "r");
@@ -26,10 +27,17 @@ if(prevent_multi_submit()){
                 $check_result = mysqli_query($conn, $check_query);
                 $check_row = mysqli_fetch_assoc($check_result);
 
+                if ($attendanceDate==date('Y-m-d'))
+                {
+                    $recordStatus = "PENDING";
+                } else {
+                    $recordStatus = "FINISHED";
+                }
+
                 if ($check_row['count'] == 0 && $employee_id>0) {
-                    // If no duplicate, insert the record
-                    $sql = "INSERT INTO ZKTeco_basic_data (employee_id, attendance_date, clock_time, upload_at, upload_by, status)
-                        VALUES ('".$employee_id."', '".$attendanceDate."','".$formatted_date."', '".$entry_at."', '".$entry_by."', 'MANUAL')";
+
+                    $sql = "INSERT INTO ZKTeco_basic_data (employee_id, attendance_date, clock_time, upload_at, upload_by, status,record_status)
+                        VALUES ('".$employee_id."', '".$attendanceDate."','".$formatted_date."', '".$entry_at."', '".$entry_by."', 'MANUAL','".$recordStatus."')";
                     $result = mysqli_query($conn, $sql);
 
                     if (!$result) {
