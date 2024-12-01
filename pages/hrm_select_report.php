@@ -122,6 +122,52 @@ $report_id = @$_REQUEST['report_id'];
                             </div>
                         </div>
 
+                    <?php elseif ( $report_id=='1000301' || $report_id=='1000302'): ?>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Department</label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <select class="select2_single form-control" style="width:100%" tabindex="-1"   name="department" >
+                                    <option></option>
+                                    <?=foreign_relation('department', 'DEPT_ID', 'CONCAT(DEPT_ID," : ", DEPT_DESC)','', '1'); ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Employee Name</label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <select style="width: 100%;" class="select2_single form-control" name="PBI_ID" id="PBI_ID">
+                                    <option></option>
+                                    <?=foreign_relation('personnel_basic_info', 'PBI_ID', 'CONCAT(PBI_ID_UNIQUE," : ", PBI_NAME)','', '1'); ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Month <span class="required text-danger">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <select class="select2_single form-control" style="width:98%; font-size: 11px" tabindex="6" required="required"  name="month">
+                                    <option></option>
+                                    <?php foreign_relation("monthname", "month", "CONCAT(month,' : ', monthfullName)", '', "1"); ?>
+                                </select>                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name"> Year <span class="required text-danger">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <?php
+                                $start_year = 2020; // Starting year
+                                $end_year = date('Y'); // Current year or any ending year
+                                ?>
+                                <select class="select2_single form-control" style="width:98%; font-size: 11px" name="year">
+                                    <?php
+                                    for ($year = $end_year; $year >= $start_year; $year--) { ?>
+                                        <option value='<?=$year?>'><?=$year?></option>";
+                                    <?php } ?>
+                                </select>                            </div>
+                        </div>
+
 
                     <?php  else:  ?>
                         <h5 class="text-danger" style="text-align: center">Please select a report from left</h5>

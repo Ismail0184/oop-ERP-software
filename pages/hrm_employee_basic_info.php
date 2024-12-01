@@ -33,8 +33,9 @@ if(isset($_POST[$unique_field]))
         $crud->insert();
         $type=1;
         $msg='New Entry Successfully Inserted.';
-        unset($_POST);
-        unset($$unique);
+        echo $targeturlJOBINFO;
+        //unset($_POST);
+        //unset($$unique);
     }
     
     

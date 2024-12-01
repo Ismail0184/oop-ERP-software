@@ -346,12 +346,15 @@ des.*,dep.*
             <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['finger_id']?></td>
             <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['name']?></td>
             <td rowspan="3" style="border: solid 1px #999; padding:2px"><?=$data['details']['designation']?></td>
+
             <?php foreach ($date_period as $date) {
                 $dayName = date('l', strtotime($date));
                 if (isset($data['attendance'][$date])) {
                     $status = $data['attendance'][$date]['status'];
                     $clock_in = $data['attendance'][$date]['clock_in'];
-                    $clock_out = $data['attendance'][$date]['clock_out']; ?>
+                    $clock_out = $data['attendance'][$date]['clock_out'];
+                    $attDate= $data['attendance'][$date]['date'];
+                    ?>
                     <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: <?=($status=='Late')? '#DCDCDC; color:blue' : ''; ?>"><?= ($status == 'Late') ? 'LP' : (($status == 'On Time') ? 'P' : 'A'); ?></td>
                 <?php } else { ?>
                     <td style="border: solid 1px #999; text-align: center; vertical-align: middle">
@@ -361,7 +364,8 @@ des.*,dep.*
                         } elseif (!empty($data['attendance'][$date]['clock_in']) && $status == 'On Time') {
                             echo 'P'; // Present
                         } else {
-                            echo '-'; // Default case
+                            $getODS = find_a_field('','','');
+                            echo $date; // Default case
                         }
                         ?>
                     </td>
@@ -455,6 +459,127 @@ des.*,dep.*
 				order by l.id desc';?>
 
     <?=reportview($sql,'Late Attendance Report','98',0,'',0); ?>
+
+    <?php elseif ($_POST['report_id']=='1000301'):?>
+    <title>ICP Distribution | Salary Sheet</title>
+    <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">ICP Distribution</p>
+    <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">Salary Sheet</p>
+    <p align="center" style="margin-top:-15px; font-size: 12px">Month # <?=$_POST['month']?>, Year # <?=$_POST['year']?> </p>
+
+
+
+    <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;font-size:11px">
+        <thead>
+        <p style="width:98%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: 28/11/2024  10:22:15 AM </p>
+
+        <tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">#</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Employee ID</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Unique ID</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Name</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Designation</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Department</th>
+            <th colspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Salary Calculation</th>
+            <th colspan="8" style="border: solid 1px #999; padding:2px;vertical-align:middle">Attendance Calculation</th>
+
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Total Deduction Days</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Pay Day</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Amount Deduction Against Attendance</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Salary Arrears</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Actual Salary</th>
+            <th colspan="4" style="border: solid 1px #999; padding:2px;vertical-align:middle">Others Deduction</th>
+
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Total Deduction</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Salary Payable</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">DOJ</th>
+        </tr>
+
+
+        <tr>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Gross Salary</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Basic Salary</th>
+
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">TA/DA</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Extra Allowance</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Month Days</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Working Day</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Holiday</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Leave</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Absent</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Late</th>
+
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Advance/Loan</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Product Purchase</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Mobile Use</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Tax</th>
+        </tr>
+        </thead>
+
+        <?php
+        $i = 0;
+
+        $sql='select  
+    
+    p.PBI_ID,
+    p.PBI_ID_UNIQUE,
+    p.PBI_NAME,
+   des.DESG_DESC as designaiton,
+   dep.DEPT_DESC as department,
+   a.*,
+   s.*
+					
+				from
+				hrm_attendance_info a,
+				personnel_basic_info p,							
+				designation des,
+				department dep,
+				salary_info s
+				
+				 WHERE
+				p.PBI_ID=s.PBI_ID and     
+				a.PBI_ID=p.PBI_ID and 
+				p.PBI_DESIGNATION=des.DESG_ID and 
+				p.PBI_DEPARTMENT=dep.DEPT_ID and 
+				a.month='.$_POST["month"].' and 
+				 a.year = '.$_POST["year"].'
+				 '.$PBI_ID_con.$department_CON.'
+				
+				order by p.serial';
+        $result = mysqli_query($conn, $sql);
+        while($data=mysqli_fetch_object($result)){?>
+        <tr style="border: solid 1px #999; font-size:11px; font-weight:normal;" >
+            <td align="center" style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID;?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID_UNIQUE;?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_NAME;?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->designaiton;?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->department;?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($data->gross_salary)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($data->basic_salary)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->totalDaysInTheMonth?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->totalDaysInTheMonth-($data->offDay+$data->holiday)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->offDay+$data->holiday?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->leave?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->absent?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->latePresent?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->deductionDays?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->payDay?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format(($AmountDeductionAgainstAttendance=$data->basic_salary/$data->totalDaysInTheMonth)*$data->deductionDays)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right">-</td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($actualSalary=($data->gross_salary+$data->da+$data->special_allowance)-$AmountDeductionAgainstAttendance)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+        </tr>
+        <?php } ?>
+        </thead>
+    </table>
+    <p style="width:98%; text-align:left; margin-left: 15px;font-size:11px; font-weight:normal">Report Generated By: Md. Ismail Hossain, Manager, MIS. </p>
 
 
 

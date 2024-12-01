@@ -1,31 +1,24 @@
 <?php
 require_once 'support_file.php';
-// ::::: Edit This Section :::::
-$title='Salary Breakdown';			// Page Name and Page Title
-$page="hrm_payroll_salaryandallowance.php";		// PHP File Name
+$title='Salary Breakdown';
+$page="hrm_payroll_salaryandallowance.php";
 $input_page="employee_essential_information_input.php";
 $root='hrm';
-$table='salary_info';		// Database Table Name Mainly related to this page
-$unique='id';			// Primary Key of this Database table
-$PBI_unique='PBI_IID';
-$shown='gross_salary';				// For a New or Edit Data a must have data field
-//do_calander('#ESSENTIAL_ISSUE_DATE');
-$_SESSION['HRM_payroll_employee']=$_GET[$unique];
-$datas=find_all_field('personnel_basic_info','','PBI_ID='.$_GET[$unique].'');
+$table='salary_info';
+$unique='PBI_ID';
+$PBI_unique='PBI_ID';
+$shown='gross_salary';
 
-// ::::: End Edit Section :::::
+$datas=find_all_field('personnel_basic_info','','PBI_ID='.$_GET[$unique].'');
 $crud      =new crud($table);
 
+$salaryPolicy=find_all_field('hrm_salary_policy','','status="1"');
 
-$saalry_policy=find_all_field('hrm_salary_policy','','status="1"');
 if(isset($_POST['proceed_to_next']))
-{$_SESSION[HRM_payroll_employee]=$_POST[PBI_ID];
-
+{
+    $_SESSION['HRM_payroll_employee']=@$_POST['PBI_ID'];
 }
 
-$required_id=find_a_field($table,$unique,'PBI_ID='.$_SESSION['HRM_payroll_employee'],' order by id desc limit 1');
-if($required_id>0)
-    $$unique = $_GET[$unique] = $required_id;
 
 
 if(isset($_POST['cancel_proceed_to_next'])){
@@ -52,32 +45,26 @@ if(isset($_POST[$shown]))
         unset($$unique);
         unset($_SESSION['HRM_payroll_employee']);
     }
-    //for Modify..................................
+
+
     if(isset($_POST['update']))
     {
         $crud->update($unique);
         $type=1;
     }
-    //for Delete..................................
+
     if(isset($_POST['delete']))
-    {		$condition=$unique."=".$$unique;		$crud->delete($condition);
+    {
+        $condition=$unique."=".$$unique;
+        $crud->delete($condition);
         unset($$unique);
-        echo '<script type="text/javascript">
-parent.parent.document.location.href = "../'.$page.'";
-</script>';
-        $type=1;
-        $msg='Successfully Deleted.';
     }
+
 }
 
-if(isset($$unique))
-{
-    $condition=$unique."=".$$unique;
-    $data=db_fetch_object($table,$condition);
-    while (list($key, $value)=each($data))
-    { $$key=$value;}
-}
-$sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') FROM 						 
+$data = find_all_field('salary_info','','PBI_ID='.$_SESSION['HRM_payroll_employee']);
+
+$sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') FROM 						 
 							personnel_basic_info p,
 							department d,
 							designation des,
@@ -86,13 +73,8 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
 							 p.PBI_DEPARTMENT=d.DEPT_ID and 
 							 u.PBI_ID=p.PBI_ID and
 							 p.PBI_DESIGNATION=des.DESG_ID	 
-							  order by p.PBI_NAME";
+							  order by p.serial";
 ?>
-
-
-
-
-
 
 <?php require_once 'header_content.php'; ?>
     <script type="text/javascript"> function DoNav(lk){
@@ -104,11 +86,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
         id = day.getTime();
         eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=800,height=800,left = 383,top = -16');"); }
 </script>
-<?php require_once 'body_content.php'; ?>
-
-
-
-
+<?php require_once 'body_content_nva_sm.php'; ?>
 
 <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
@@ -119,170 +97,167 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
 
                     <form id="demo-form2" method="post" data-parsley-validate class="form-horizontal form-label-left" style="font-size: 11px">
                     <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Select Employee<span class="required">*</span>
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Employee <span class="required text-danger">*</span>
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <select class="select2_single form-control" style="width: 70%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
                                 <option></option>
-                                <?=advance_foreign_relation($sql_user_id,$_SESSION[HRM_payroll_employee]);?>
+                                <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
                             </select>
-                            <?php if(isset($_SESSION[HRM_payroll_employee])): ?>
-                                <button type="submit" name="cancel_proceed_to_next" class="btn btn-danger" style="font-size: 12px; margin-left:5%">Cancel the Employee</button>
+                            <?php if(isset($_SESSION['HRM_payroll_employee'])): ?>
+                                <button type="submit" name="cancel_proceed_to_next" class="btn btn-danger"  style="font-size: 12px; margin-left:5%"><i class="fa fa-close"></i> Cancel</button>
                             <?php  else: ?>
-                                <button type="submit" name="proceed_to_next" class="btn btn-primary" style="font-size: 12px; margin-left:5%">Proceed to the next</button>
+                                <button type="submit" name="proceed_to_next"        class="btn btn-primary" style="font-size: 12px; margin-left:5%">Proceed to the next <i class="fa fa-forward"></i> </button>
                             <?php endif; ?>
-                        </div></div></form>
+                        </div>
+                    </div>
+                    </form>
             </div></div>
 
-<?php if(isset($_SESSION[HRM_payroll_employee])): ?>
-        <div class="col-md-12 col-sm-12 col-xs-12">
-            <div class="x_panel">
-                <div class="x_content">
-                    <form action="" method="post" enctype="multipart/form-data" style="font-size: 11px">
+<?php if(isset($_SESSION['HRM_payroll_employee'])): ?>
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_content">
+                <form action="" method="post" enctype="multipart/form-data" style="font-size: 11px">
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" class="oe_form_group ">
-                                                                    <tr>
-                                                                        <th width="15%">Gross Salary</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td width="33%" ><input name="<?=$unique?>" id="<?=$unique?>" value="<?=$$unique?>" type="hidden" />
-                                                                            <input name="PBI_ID" id="PBI_ID" value="<?=$_SESSION['HRM_payroll_employee']?>" type="hidden" />
-                                                                        <input name="gross_salary" type="text" id="gross_salary" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" value="<?=$gross_salary?>" onkeyup="salaryCal()"/></td>
+                        <tr>
+                            <th width="15%">Gross Salary</th>
+                            <th style="width: 2%;">:</th>
+                            <td width="33%" ><input name="<?=$unique?>" id="<?=$unique?>" value="<?=$data->PBI_ID?>" type="hidden" />
+                                <input name="PBI_ID" id="PBI_ID" value="<?=$_SESSION['HRM_payroll_employee']?>" type="hidden" />
+                                <input name="gross_salary" type="text" id="gross_salary" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" value="<?=$data->gross_salary?>" onkeyup="salaryCal()"/></td>
 
 
-                                                                        <th width="15%"><span >Bonus Applicable? :</span></th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td width="33%">
-                                                                            <select class="form-control" name="if_bonus_applicable" id="if_bonus_applicable" style="float: left; width: 20%; font-size: 11px" onchange="bonusAppl(), salaryCal()">
-                                                                                <option selected="selected"><?=$if_overtime_applicable?></option>
-                                                                                <option>YES</option>
-                                                                                <option>NO</option>
-                                                                            </select>
-                                                                            <input name="bonus_applicable" type="text" id="bonus_applicable" value="<?=$bonus_applicable?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-left: 2%" onkeyup="salaryCal()" />
-                                                                        </td>
-                                                                    </tr>
+                            <th width="15%"><span >Bonus Applicable? :</span></th>
+                            <th style="width: 2%;">:</th>
+                            <td width="33%">
+                                <select class="form-control" name="if_bonus_applicable" id="if_bonus_applicable" style="float: left; width: 20%; font-size: 11px" onchange="bonusAppl(), salaryCal()">
+                                    <option selected="selected"><?=$data->if_bonus_applicable?></option>
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                                <input name="bonus_applicable" type="text" id="bonus_applicable" value="<?=$data->bonus_applicable?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-left: 2%" onkeyup="salaryCal()" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Basic Salary</th>
+                            <th style="width: 2%;">:</th>
+                            <td><input placeholder="<?=$salaryPolicy->basic?>% Of Gross Amount" name="basic_salary" type="text" id="basic_salary" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$data->basic_salary?>" readonly="readonly" /></td>
+                            <th>Overtime Applicable?</th>
+                            <th style="width: 2%;">:</th>
+                            <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="if_overtime_applicable" id="if_overtime_applicable" onchange="overtimeAllwAppl()">
+                                    <option selected="selected"><?=$data->if_overtime_applicable?></option>
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                                <input name="overtime_applicable" type="text" id="overtime_applicable" class="form-control col-md-7 col-xs-12" style="margin-left:2%; width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$data->overtime_applicable?>"  onkeyup="salaryCal()" />
+                            </td>
+                        </tr>
 
 
-
-                                                                    <tr>
-                                                                        <th>Basic Salary</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><input placeholder="<?=$saalry_policy->basic?>% Of Gross Amount" name="basic_salary" type="text" id="basic_salary" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$basic_salary?>" readonly="readonly" /></td>
-                                                                        <th>Overtime Applicable?</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="if_overtime_applicable" id="if_overtime_applicable" onchange="overtimeAllwAppl()">
-                                                                                <option selected="selected"><?=$if_overtime_applicable?></option>
-                                                                                <option>YES</option>
-                                                                                <option>NO</option>
-                                                                            </select>
-                                                                            <input name="overtime_applicable" type="text" id="overtime_applicable" class="form-control col-md-7 col-xs-12" style="margin-left:2%; width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$overtime_applicable?>"  onkeyup="salaryCal()" />
-                                                                        </td>
-                                                                    </tr>
-
-
-
-
-
-                                                                    <tr>
-                                                                        <th>HRA</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><input placeholder="<?=$saalry_policy->house_rent_allowance?>% Of Gross Amount" name="house_rent" type="text" id="house_rent" value="<?=$house_rent?>" readonly="readonly" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" /></td>
-                                                                        <th>PF Applicable?</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="pf_applicable" id="pf_applicable" onchange="pfAllwAppl(),salaryCal()">
-                                                                                <option selected="selected"><?=$if_overtime_applicable?></option>
-                                                                                <option>YES</option>
-                                                                                <option>NO</option>
-                                                                            </select>
-                                                                            <input name="pf_percentage" type="text" id="pf_percentage" value="<?=$pf_percentage?>" class="form-control col-md-7 col-xs-12" style="width: 20%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" style="width:30px" onkeyup="salaryCal()"/>
-                                                                            <input name="pf" type="text" id="pf" value="<?=$pf?>" class="form-control col-md-7 col-xs-12" style="width: 47%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 1%" />
-                                                                        </td>
-                                                                    </tr>
-
-
-
+                        <tr>
+                            <th>HRA</th>
+                            <th style="width: 2%;">:</th>
+                            <td><input placeholder="<?=$salaryPolicy->house_rent_allowance?>% Of Gross Amount" name="house_rent" type="text" id="house_rent" value="<?=$data->house_rent?>" readonly="readonly" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" /></td>
+                            <th>PF Applicable?</th>
+                            <th style="width: 2%;">:</th>
+                            <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="pf_applicable" id="pf_applicable" onchange="pfAllwAppl(),salaryCal()">
+                                    <option selected="selected"><?=$data->if_overtime_applicable?></option>
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                                <input name="pf_percentage" type="text" id="pf_percentage" value="<?=$data->pf_percentage?>" class="form-control col-md-7 col-xs-12" style="width: 20%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" style="width:30px" onkeyup="salaryCal()"/>
+                                <input name="pf" type="text" id="pf" value="<?=$data->pf?>" class="form-control col-md-7 col-xs-12" style="width: 47%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 1%" />
+                            </td>
+                        </tr>
 
                         <tr>
                             <th>Medical Allowance</th>
                             <th style="width: 2%;">:</th>
-                            <td><input placeholder="<?=$saalry_policy->medical_allowance?>% Of Gross Amount" name="medical_allowance" type="text" id="medical_allowance" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$medical_allowance?>" readonly="readonly" /></td>
+                            <td><input placeholder="<?=$salaryPolicy->medical_allowance?>% Of Gross Amount" name="medical_allowance" type="text" id="medical_allowance" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" value="<?=$data->medical_allowance?>" readonly="readonly" /></td>
                             <th>Medical Insurance Applicable?</th>
                             <th style="width: 2%;">:</th>
                             <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="mi_applicable" id="mi_applicable" onchange="miAllwAppl()">
-                                    <option selected="selected"><?=$mi_applicable?></option>
+                                    <option selected="selected"><?=$data->mi_applicable?></option>
                                     <option>YES</option>
                                     <option>NO</option>
                                 </select>
-                                <input onkeyup="salaryCal()" name="mi_percentage" type="text" id="mi_percentage" value="<?=$mi_percentage?>" class="form-control col-md-7 col-xs-12" style="width: 20%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
-                                <input name="medical_insurance" type="text" id="medical_insurance" value="<?=$medical_insurance?>" class="form-control col-md-7 col-xs-12" style="width: 47%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 1%" />
+                                <input onkeyup="salaryCal()" name="mi_percentage" type="text" id="mi_percentage" value="<?=$data->mi_percentage?>" class="form-control col-md-7 col-xs-12" style="width: 20%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
+                                <input name="medical_insurance" type="text" id="medical_insurance" value="<?=$data->medical_insurance?>" class="form-control col-md-7 col-xs-12" style="width: 47%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 1%" />
                             </td>
                         </tr>
-
-
 
                         <tr>
                             <th>Convenience</th>
                             <th style="width: 2%;">:</th>
-                            <td><input placeholder="<?=$saalry_policy->convenience?>% Of Gross Amount" name="convenience" type="text" id="convenience" value="<?=$convenience?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" readonly="readonly" /></td>
+                            <td><input placeholder="<?=$salaryPolicy->convenience?>% Of Gross Amount" name="convenience" type="text" id="convenience" value="<?=$data->convenience?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" readonly="readonly" /></td>
                             <th>Food Allowance?</th>
                             <th style="width: 2%;">:</th>
                             <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="food_alw_applicable" id="food_alw_applicable" onchange="foodAppl()">
                                     <option selected="selected">
-                                        <?=$food_alw_applicable?>
+                                        <?=$data->food_alw_applicable?>
                                     </option>
                                     <option>YES</option>
                                     <option>NO</option>
                                 </select>
-                                <input onkeyup="salaryCal()" name="food_allowance" type="text" id="food_allowance" value="<?=$food_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
+                                <input onkeyup="salaryCal()" name="food_allowance" type="text" id="food_allowance" value="<?=$data->food_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
                             </td>
                         </tr>
-
-
 
                         <tr>
                             <th>Special Allowance</th>
                             <th style="width: 2%;">:</th>
-                            <td><input placeholder="<?=$saalry_policy->special_allowance?>% Of Gross Amount" name="special_allowance" type="text" id="special_allowance" value="<?=$special_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" readonly="readonly" /></td>
+                            <td><input placeholder="<?=$salaryPolicy->special_allowance?>% Of Gross Amount" name="special_allowance" type="text" id="special_allowance" value="<?=$data->special_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" /></td>
                             <th>Mobile Allowance?</th>
                             <th style="width: 2%;">:</th>
                             <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="mobile_alw_applicable" id="mobile_alw_applicable" onchange="mobileAppl()">
-                                    <option selected="selected"><?=$mobile_alw_applicable?></option>
+                                    <option selected="selected"><?=$data->mobile_alw_applicable?></option>
                                     <option>YES</option>
                                     <option>NO</option>
                                 </select>
-                                <input onkeyup="salaryCal()" name="mobile_allowance" type="text" id="mobile_allowance" value="<?=$mobile_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
+                                <input onkeyup="salaryCal()" name="mobile_allowance" type="text" id="mobile_allowance" value="<?=$data->mobile_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Extra Allowance</th>
+                            <th style="width: 2%;">:</th>
+                            <td><input placeholder="Extra Allowance Amount" name="extra_allowance" type="text" id="extra_allowance" value="<?=$data->extra_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px" /></td>
+                            <th>TA/DA?</th>
+                            <th style="width: 2%;">:</th>
+                            <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="ta_da_alw_applicable" id="ta_da_alw_applicable" onchange="taDaAppl()">
+                                    <option selected="selected"><?=$data->ta_da_alw_applicable?></option>
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                                <input onkeyup="salaryCal()" name="ta_da_allowance" type="text" id="ta_da_allowance" value="<?=$data->ta_da_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 2%" />
                             </td>
                         </tr>
                         
 
-                                                                    <tr>
-                                                                        <th>Salary Pay Through</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><select class="form-control" name="cash_bank" required style="width: 90%; font-size: 11px;margin-top: 5px">
-                                                                                <option selected="selected">
-                                                                                    <?=$cash_bank?>
-                                                                                </option>
-                                                                                <option value="cash">Cash</option>
-                                                                                <option value="bank"> Bank</option>
-                                                                            </select></td>
-                                                                        <th>Transport Allowance</th>
-                                                                        <th style="width: 2%;">:</th>
-                                                                        <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="transportAllwAppl" id="transportAllwAppl" onchange="trnsAppl()">
-                                                                                <option selected="selected"><?=$transportAllwAppl?></option>
-                                                                                <option>YES</option>
-                                                                                <option>NO</option>
-                                                                            </select>
-                                                                            <input name="transport_allowance" type="text" id="transport_allowance" value="<?=$transport_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-left: 2%; margin-top: 5px" />
-                                                                        </td>
-                                                                    </tr></table><br>
-
-
-
-
-
+                        <tr>
+                            <th>Salary Pay Through</th>
+                            <th style="width: 2%;">:</th>
+                            <td><select class="form-control" name="cash_bank" required style="width: 90%; font-size: 11px;margin-top: 5px">
+                                    <option selected="selected">
+                                        <?=$data->cash_bank?>
+                                    </option>
+                                    <option value="cash">Cash</option>
+                                    <option value="bank"> Bank</option>
+                                </select></td>
+                            <th>Transport Allowance</th>
+                            <th style="width: 2%;">:</th>
+                            <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="transportAllwAppl" id="transportAllwAppl" onchange="trnsAppl()">
+                                    <option selected="selected"><?=$data->transportAllwAppl?></option>
+                                    <option>YES</option>
+                                    <option>NO</option>
+                                </select>
+                                <input name="transport_allowance" type="text" id="transport_allowance" value="<?=$data->transport_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-left: 2%; margin-top: 5px" />
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
 
                         <strong><h5>INCOME TAX CALCULATION</h5></strong><hr>
-
-
-
 
                         <table width="100%" border="0" cellpadding="0" cellspacing="0" class="oe_form_group ">
                             <tr>
@@ -290,13 +265,13 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
                                 <th style="width: 2%;">:</th>
                                 <td width="33%">
                                     <input class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" onkeyup="" name="" type="text" id="" value=""  readonly />
-                                    <input class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" onkeyup="salaryCal()" name="total_taxable_amt" type="text" id="total_taxable_amt" value="<?=$total_taxable_amt?>" style="width:100px" /></td>
+                                    <input class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" onkeyup="salaryCal()" name="total_taxable_amt" type="text" id="total_taxable_amt" value="<?=$data->total_taxable_amt?>" style="width:100px" /></td>
 
                                 <th width="15%"><span >Car Facilities? :</span></th>
                                 <th style="width: 2%;">:</th>
                                 <td width="33%">
 						        <select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="carFacilitiesAppl" id="carFacilitiesAppl" onchange="carFacilitiesAppll(), salaryCal()">
-                                <option selected="selected"><?=$carFacilitiesAppl?></option>
+                                <option selected="selected"><?=$data->carFacilitiesAppl?></option>
                                 <option>YES</option>
                                 <option>NO</option>
                                 </select>
@@ -308,13 +283,13 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
                                                                         <th style="width: 2%;">:</th>
                                                                         <td>
                                                                             <input onkeyup="salaryCal()" name="max_invested_amt" type="text" id="max_invested_amt" value="" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" readonly />
-                                                                            <input onkeyup="salaryCal()" name="total_invested_amt" type="text" id="total_invested_amt" value="<?=$total_invested_amt?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" />
+                                                                            <input onkeyup="salaryCal()" name="total_invested_amt" type="text" id="total_invested_amt" value="<?=$data->total_invested_amt?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" />
                                                                         </td>
 
 
                                                                         <th>Income Tax Yearly:</th>
                                                                         <th style="width: 2%;">:</th>
-                                                                        <td><input onkeyup="salaryCal()" name="income_tax_yearly" type="text" id="income_tax_yearly" value="<?=$income_tax_yearly?>" readonly class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
+                                                                        <td><input onkeyup="salaryCal()" name="income_tax_yearly" type="text" id="income_tax_yearly" value="<?=$data->income_tax_yearly?>" readonly class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
                                                                     </tr>
 
 
@@ -324,10 +299,10 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
                                                                         <th style="width: 2%;">:</th>
                                                                         <td>
                                                                             <input onkeyup="" name="" type="text" id="" value="" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" readonly />
-                                                                            <input onkeyup="salaryCal()" name="advance_IT" type="text" id="advance_IT" value="<?=$advance_IT?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
+                                                                            <input onkeyup="salaryCal()" name="advance_IT" type="text" id="advance_IT" value="<?=$data->advance_IT?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
                                                                         <th>Income Tax Monthly</th>
                                                                         <th style="width: 2%;">:</th>
-                                                                        <td><input onkeyup="salaryCal()" name="income_tax" type="text" id="income_tax" value="<?=$income_tax?>" readonly class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
+                                                                        <td><input onkeyup="salaryCal()" name="income_tax" type="text" id="income_tax" value="<?=$data->income_tax?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
                                                                     </tr>
 
                                                                     <tr>
@@ -339,16 +314,16 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
                                                                     <tr>
                                                                         <th>Total Payable Amt : </th>
                                                                         <th style="width: 2%;">:</th>
-                                                                        <td><input name="total_payable_amount" type="text" id="total_payable_amount" value="<?=$total_payable_amount?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" readonly /></td>
+                                                                        <td><input name="total_payable_amount" type="text" id="total_payable_amount" value="<?=$data->total_payable_amount?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" readonly /></td>
                                                                         <td></td>
                                                                         <td></td>
                                                                     </tr></table>
                         <br>
 
-                        <?php if($required_id>0){  ?>
+                        <?php if($data>0){  ?>
                             <div class="form-group" style="float: right">
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <button type="submit" name="modify" id="modify" class="btn btn-primary">Update Salary Info</button>
+                                    <button type="submit" name="update" id="update" class="btn btn-primary">Update Salary Info <i class="fa fa-edit"></i></button>
                                 </div></div>
                             <? if($_SESSION['userid']=="10019"){?>
                                 <div class="form-group" style="float: left">
@@ -359,7 +334,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
                         <?php } else {?>
                             <div class="form-group" style="float: right">
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <button type="submit" name="insert" id="insert"  class="btn btn-primary">Add Salary Info </button>
+                                    <button type="submit" name="insert" id="insert"  class="btn btn-primary"><i class="fa fa-plus"></i> Submit Salary Info </button>
                                 </div></div>
 
 
@@ -410,6 +385,16 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
             document.getElementById('mobile_allowance').removeAttribute("readonly", "readonly");}
     }
 
+    function taDaAppl()
+    {
+        var status = document.getElementById('ta_da_alw_applicable').value;
+        if(status!="YES"){
+            document.getElementById('ta_da_allowance').setAttribute("readonly", "readonly");
+            document.getElementById('ta_da_allowance').value='0.00';}
+        if(status=="YES"){
+            document.getElementById('ta_da_allowance').removeAttribute("readonly", "readonly");}
+    }
+
 
 
     function bonusAppl()
@@ -421,7 +406,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
         if(status=="YES"){
             //document.getElementById('bonus_applicable').removeAttribute("readonly", "readonly");
             var gross_salary = document.getElementById('gross_salary').value*1;
-            document.getElementById('bonus_applicable').value= ((gross_salary*<?=$saalry_policy->bonus?>)/100);;
+            document.getElementById('bonus_applicable').value= ((gross_salary*<?=$salaryPolicy->bonus?>)/100);;
         }
     }
 
@@ -483,7 +468,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
 
 
     window.onload = function(){
-        foodAppl(); mobileAppl(); bonusAppl(); overtimeAllwAppl(); pfAllwAppl(); trnsAppl(); miAllwAppl(), carFacilitiesAppll();
+        foodAppl(); mobileAppl(); taDaAppl(); bonusAppl(); overtimeAllwAppl(); pfAllwAppl(); trnsAppl(); miAllwAppl(); carFacilitiesAppll();
 
     }
     //window.onload= foodAppl, mobileAppl, bonusAppl, overtimeAllwAppl, pfAllwAppl;
@@ -494,17 +479,18 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
 <script>
     function salaryCal(){
         var gross_salary = document.getElementById('gross_salary').value*1;
-        var basic_salary = document.getElementById('basic_salary').value= ((gross_salary*<?=$saalry_policy->basic?>)/100);
+        var basic_salary = document.getElementById('basic_salary').value= ((gross_salary*<?=$salaryPolicy->basic?>)/100);
         var pf_percentage = document.getElementById('pf_percentage').value*1;
         var pf = document.getElementById('pf').value= ((gross_salary*pf_percentage)/100);
         var mi_percentage = document.getElementById('mi_percentage').value*1;
         var medical_insurance = document.getElementById('medical_insurance').value= ((gross_salary*mi_percentage)/100);
-        var house_rent = document.getElementById('house_rent').value= ((gross_salary*<?=$saalry_policy->house_rent_allowance?>)/100);
-        var medical_allowance =document.getElementById('medical_allowance').value= ((gross_salary*<?=$saalry_policy->medical_allowance?>)/100);
-        var convenience = document.getElementById('convenience').value= ((gross_salary*<?=$saalry_policy->convenience?>)/100);
-        var special_allowance= document.getElementById('special_allowance').value= ((gross_salary*<?=$saalry_policy->special_allowance?>)/100);
+        var house_rent = document.getElementById('house_rent').value= ((gross_salary*<?=$salaryPolicy->house_rent_allowance?>)/100);
+        var medical_allowance =document.getElementById('medical_allowance').value= ((gross_salary*<?=$salaryPolicy->medical_allowance?>)/100);
+        var convenience = document.getElementById('convenience').value= ((gross_salary*<?=$salaryPolicy->convenience?>)/100);
+        var special_allowance= document.getElementById('special_allowance').value= ((gross_salary*<?=$salaryPolicy->special_allowance?>)/100);
         var food_allowance = document.getElementById('food_allowance').value*1;
         var mobile_allowance = document.getElementById('mobile_allowance').value*1;
+        var ta_da_allowance = document.getElementById('ta_da_allowance').value*1;
 //var medical_insurance = document.getElementById('medical_insurance').value*1;
         var bonus_applicable = document.getElementById('bonus_applicable').value*1;
         var overtime_applicable = document.getElementById('overtime_applicable').value *1;
@@ -544,7 +530,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.
         var yearly_specialAlw= special_allowance*12;
 
         if(bonus_applicable>0){
-            var yearly_eidBonus = <?=$saalry_policy->bonus?>;
+            var yearly_eidBonus = <?=$salaryPolicy->bonus?>;
         }else{
             var yearly_eidBonus = 0;
         }

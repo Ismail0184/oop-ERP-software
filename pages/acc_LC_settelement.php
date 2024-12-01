@@ -29,29 +29,29 @@ if(prevent_multi_submit()) {
         $_SESSION['next_step_yes'] = 1;
         $sql=mysqli_query($conn,"Select d.id as ids,d.*,i.item_id,i.item_name,t.id as hsid,t.* from ".$table_details." d,item_info i,item_tariff_master t where 
             t.id=i.H_S_code and 
-            d.item_id=i.item_id and d.".$unique."=".$_SESSION[ID_while_LC_settelement]."");
+            d.item_id=i.item_id and d.".$unique."=".$_SESSION['ID_while_LC_settelement']."");
         while($data=mysqli_fetch_object($sql)) {
             $id = $data->ids;
-            $_POST[lc_id]=$_SESSION[ID_while_LC_settelement];
-            $_POST[pi_id]=$_POST[pi_id];
-            $_POST[item_id]=$data->item_id;
-            $_POST[total_unit]=$data->qty;
-            $_POST[unit_price]=$data->rate;
-            $_POST[AV]=$_POST['av'.$id];
-            $_POST[H_S_code]=$data->hsid;
-            $_POST[CD]=$_POST['CD'.$id];
-            $_POST[RD]=$_POST['RD'.$id];
-            $_POST[SD]=$_POST['SD'.$id];
-            $_POST[VAT]=$_POST['VAT'.$id];
-            $_POST[AIT]=$_POST['AIT'.$id];
-            $_POST[ATV]=$_POST['ATV'.$id];
-            $_POST[TTI]=$_POST['TTI'.$id];
-            $_POST[entry_by]=$_SESSION[userid];
-            $_POST[entry_at]=date('Y-m-d H:s:i');
-            $_POST[ip]=$ip;
-            $_POST[status]='MANUAL';
-            $_POST[section_id]=$_SESSION[sectionid];
-            $_POST[company_id]=$_SESSION[companyid];
+            $_POST['lc_id']=$_SESSION['ID_while_LC_settelement'];
+            $_POST['pi_id']=@$_POST['pi_id'];
+            $_POST['item_id']=$data->item_id;
+            $_POST['total_unit']=$data->qty;
+            $_POST['unit_price']=$data->rate;
+            $_POST['AV']=$_POST['av'.$id];
+            $_POST['H_S_code']=$data->hsid;
+            $_POST['CD']=$_POST['CD'.$id];
+            $_POST['RD']=$_POST['RD'.$id];
+            $_POST['SD']=$_POST['SD'.$id];
+            $_POST['VAT']=$_POST['VAT'.$id];
+            $_POST['AIT']=$_POST['AIT'.$id];
+            $_POST['ATV']=$_POST['ATV'.$id];
+            $_POST['TTI']=$_POST['TTI'.$id];
+            $_POST['entry_by']=$_SESSION['userid'];
+            $_POST['entry_at']=date('Y-m-d H:s:i');
+            $_POST['ip']=$ip;
+            $_POST['status']='MANUAL';
+            $_POST['section_id']=$_SESSION['sectionid'];
+            $_POST['company_id']=$_SESSION['companyid'];
             $crud = new crud($table_LC_Duty_cost);
             $crud->insert();
         }
@@ -59,7 +59,7 @@ if(prevent_multi_submit()) {
     }
 
 } // prevent multi submit
-$master=find_all_field(''.$table_master.'','','id='.$_SESSION[ID_while_LC_settelement]);
+$master=find_all_field(''.$table_master.'','','id='.$_SESSION['ID_while_LC_settelement']);
 //for Delete..................................
 if (isset($_POST['cancel'])) {
     $crud = new crud($table_payment);
@@ -88,41 +88,41 @@ if (isset($_POST['confirm'])){
             t.id=i.H_S_code and 
             d.lc_id=dt.lc_id and
             d.item_id=dt.item_id and  
-            d.item_id=i.item_id and d." . $unique . "=" . $_SESSION[ID_while_LC_settelement]." and dt.status='MANUAL' group by d.id");
+            d.item_id=i.item_id and d." . $unique . "=" . $_SESSION['ID_while_LC_settelement']." and dt.status='MANUAL' group by d.id");
     while($data=mysqli_fetch_object($sql)) {
-        $_POST[lc_id]=$_SESSION[ID_while_LC_settelement];
-        $_POST[pi_id]=$data->pi_id;
-        $_POST[item_id]=$data->item_id;
-        $_POST[total_unit]=$data->qty;
-        $_POST[unit_price]=$data->rate;
-        $_POST[total_amt]=$_POST[total_unit]*$_POST[unit_price];
-        $_POST[AV]=$data->AVs;
-        $_POST[H_S_code]=$data->H_S_code;
-        $_POST[CD]=$data->CDs;
-        $_POST[RD]=$data->RDs;
-        $_POST[SD]=$data->SDs;
+        $_POST['lc_id']=$_SESSION['ID_while_LC_settelement'];
+        $_POST['pi_id']=$data->pi_id;
+        $_POST['item_id']=$data->item_id;
+        $_POST['total_unit']=$data->qty;
+        $_POST['unit_price']=$data->rate;
+        $_POST['total_amt']=$_POST['total_unit']*$_POST['unit_price'];
+        $_POST['AV']=$data->AVs;
+        $_POST['H_S_code']=$data->H_S_code;
+        $_POST['CD']=$data->CDs;
+        $_POST['RD']=$data->RDs;
+        $_POST['SD']=$data->SDs;
         if($_POST['dr_ledger_1']=='1005000400000000'){
-            $_POST[VAT] = 0;
+            $_POST['VAT'] = 0;
         } else {
-            $_POST[VAT] = $data->VATs;
+            $_POST['VAT'] = $data->VATs;
         }
         if($_POST['dr_ledger_2']=='1005000100000000'){
-            $_POST[AIT] = 0;
+            $_POST['AIT'] = 0;
         } else {
-            $_POST[AIT] = $data->AITs;
+            $_POST['AIT'] = $data->AITs;
         }
         if($_POST['dr_ledger_3']=='1005000800000000'){
-            $_POST[ATV] = 0;
+            $_POST['ATV'] = 0;
         } else {
-            $_POST[ATV] = $data->ATVs;
+            $_POST['ATV'] = $data->ATVs;
         }
-        $_POST[TTI]=$data->CDs+$data->RDs+$data->SDs+$_POST[VAT]+$_POST[AIT]+$_POST[ATV];
-        $_POST[entry_by]=$_SESSION[userid];
-        $_POST[entry_at]=date('Y-m-d H:s:i');
-        $_POST[ip]=$ip;
-        $_POST[status]='COMPLETED';
-        $_POST[section_id]=$_SESSION[sectionid];
-        $_POST[company_id]=$_SESSION[companyid];
+        $_POST['TTI']=$data->CDs+$data->RDs+$data->SDs+$_POST['VAT']+$_POST['AIT']+$_POST['ATV'];
+        $_POST['entry_by']=$_SESSION['userid'];
+        $_POST['entry_at']=date('Y-m-d H:s:i');
+        $_POST['ip']=$ip;
+        $_POST['status']='COMPLETED';
+        $_POST['section_id']=$_SESSION['sectionid'];
+        $_POST['company_id']=$_SESSION['companyid'];
         $crud = new crud($LC_costing_breakdown);
         $crud->insert();
     }
@@ -442,7 +442,7 @@ if($_SESSION['next_step_yes']>0) {
             </body>
         </table>
         <div class="form-group" style="float: right">
-            <div class="col-md-6 col-sm-6 col-xs-12"><?php if($_SESSION[next_step_yes]){?>
+            <div class="col-md-6 col-sm-6 col-xs-12"><?php if($_SESSION['next_step_yes']){?>
                     <button type="submit" class="btn btn-danger" name="clear_data" id="clear_data" onclick='return window.confirm("Are you confirm?");' style="font-size: 12px">Clear All Data & Reprocess</button>
                 <?php } else { ?>
                     <button type="submit" class="btn btn-primary" name="next_step" id="next_step" onclick='return window.confirm("Are you confirm?");' style="font-size: 12px">Proceed to the next step</button>
@@ -452,7 +452,7 @@ if($_SESSION['next_step_yes']>0) {
 
 
 
-<?php if($_SESSION[next_step_yes]){?>
+<?php if($_SESSION['next_step_yes']){?>
     <form action="" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="pending_LC"  id="pending_LC" value="1003001200010000" style="font-size: 11px; height: 25px;text-align: center" readonly class="form-control col-md-7 col-xs-12">
         <input type="hidden" name="duty_ledger"  id="duty_ledger" value="1003001200010005" style="font-size: 11px; height: 25px;text-align: center" readonly class="form-control col-md-7 col-xs-12"></td>
@@ -514,7 +514,7 @@ if($_SESSION['next_step_yes']>0) {
                 <button type="submit" class="btn btn-danger" name="cancel" id="cancel" onclick='return window.confirm("Are you confirm?");' style="font-size: 12px">Cancel this proceed</button>
             </div></div>
         <div class="form-group" style="float: right">
-            <div class="col-md-6 col-sm-6 col-xs-12"><?php if($_SESSION[next_step_yes]){?>
+            <div class="col-md-6 col-sm-6 col-xs-12"><?php if($_SESSION['next_step_yes']){?>
                     <button type="submit" class="btn btn-primary" name="confirm" id="confirm" onclick='return window.confirm("Are you confirm?");' style="font-size: 12px">Complete the LC Settelement Process</button>
                 <?php } else {} ?>
             </div></div>

@@ -162,6 +162,7 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
                 <table id="customers" align="center" style="width:100%; font-size: 11px" class="table table-striped table-bordered">
                     <thead>
                     <tr class="bg-primary text-white">
+                        <th style="text-align: center; vertical-align: middle">#</th>
                         <th style="text-align: center; vertical-align: middle">ID</th>
                         <th style="text-align: center; vertical-align: middle">Name</th>
                         <th style="text-align: center; vertical-align: middle">Designation</th>
@@ -184,9 +185,11 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
                     </thead>
                     <tbody>
                     <?php if ($countManualData>0){
+                        $i = 0;
                         while ($data = mysqli_fetch_object($sqlQueryMANUAL)){
                         ?>
                         <tr>
+                            <td style="vertical-align: middle;"><?=$i=$i=1;?></td>
                             <td style="vertical-align: middle;"><?=$data->PBI_ID;?>:<?=$data->PBI_ID_UNIQUE;?></td>
                             <td style="vertical-align: middle"><?=$data->PBI_NAME;?></td>
                             <td style="vertical-align: middle; text-align: left"><?=$data->DESG_DESC;?></td>
@@ -206,6 +209,7 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
                     <?php }} else {
                     $totalDaysInTheMonth = getTotalDaysInMonth($year, $selectedMonth);
                     $getTotalFridays = countFridaysInMonth(date('Y'), $selectedMonth);
+                    $i = 0;
                     while($data=mysqli_fetch_object($sqlQuery)){
                         $id = $data->PBI_ID;
                         $totalPresent = find_a_field('ZKTeco_attendance','COUNT(id)','date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'" and clock_in_status="On Time" and employee_id='.$id);
@@ -215,7 +219,7 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
 
                         $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'" and PBI_ID='.$id);
 
-                        $totalLeave = find_a_field('hrm_leave_info','SUM(total_days)','half_or_full="Full" and PBI_ID='.$id.' and s_date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
+                        $totalLeave = find_a_field('hrm_leave_info','SUM(total_days)','approved_status="APPROVED" and half_or_full="Full" and PBI_ID='.$id.' and s_date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
                         $totalEarlyLeave = find_a_field('ZKTeco_attendance','COUNT(id)','date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'" and clock_out_status="Early" and employee_id='.$id);
 
                         $totalOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
@@ -225,23 +229,44 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
                         $getEarlyLeaveDays = find_a_field('hrm_leave_info','COUNT(id)','half_or_full="Half" and PBI_ID='.$id.' and s_date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
                         $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
                         $totalDeductionDays = ($deductionForLateDays/3)+$totalAbsent;
-                        $totalPayDays = ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalAbsent)-$totalDeductionDays;
+                        if($totalDeductionDays>.99) {
+                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent) - $totalDeductionDays;
+                        } else {
+                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent);
+
+                        }
                         ?>
                     <tr>
-                        <td style="vertical-align: middle;"><?=$data->PBI_ID;?>:<?=$data->PBI_ID_UNIQUE;?></td>
+                        <td style="vertical-align: middle;"><?=$i=$i+1;?></td>
+                        <td style="vertical-align: middle;"><?=$data->PBI_ID;?>:<?=$data->PBI_ID_UNIQUE;?> - <?=$totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday?></td>
                         <td style="vertical-align: middle"><?=$data->PBI_NAME;?></td>
                         <td style="vertical-align: middle; text-align: left"><?=$data->DESG_DESC;?></td>
-                        <td style="vertical-align: middle"><input type="number"  <?php if($totalPresent>0) { ?> readonly <?php } ?> name="present<?=$id?>"  value="<?=($totalPresent>0)? $totalPresent : '';?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="2" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="latePresent<?=$id?>"  value="<?=($totalLatePresent>0)? $totalLatePresent : '';?>" name="offDay<?=$id?>"    class="form-control col-md-7 col-xs-12 text-center"   tabindex="3" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="OSD<?=$id?>"  value="<?=($totalOSD>0)? $totalOSD : '';?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="2" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="leave<?=$id?>" value="<?=($totalLeave>0)? number_format($totalLeave,0) : '';?>"            class="form-control col-md-7 col-xs-12 text-center"   tabindex="4" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="earlyLeave<?=$id?>"  value="<?=($totalEarlyLeave>0)? $totalEarlyLeave : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="0" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="offDay<?=$id?>" value="<?=($totalOffDay>0)? $totalOffDay : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="1" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="holiday<?=$id?>" value="<?=($totalFriday>0)? number_format($totalFriday,0) : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="5" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly name="absent<?=$id?>" value="<?=$totalAbsent?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="6" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly value="<?=($totalDeductionDays>0)? number_format($totalDeductionDays) : '';?>" name="deductionDays<?=$id?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly value="<?=($totalPayDays>0)? number_format($totalPayDays) : '';?>" name="payDay<?=$id?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
-                        <td style="vertical-align: middle"><input type="number"  readonly value="<?=($totalDaysInTheMonth>0)? $totalDaysInTheMonth : '';?>" name="totalDaysInTheMonth<?=$id?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="present<?=$id?>" id="present<?=$id?>" value="<?=($totalPresent>0)? $totalPresent : '';?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="2" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="latePresent<?=$id?>" id="latePresent<?=$id?>" value="<?=($totalLatePresent>0)? $totalLatePresent : '';?>" name="offDay<?=$id?>"    class="form-control col-md-7 col-xs-12 text-center"   tabindex="3" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="OSD<?=$id?>"  id="OSD<?=$id?>" value="<?=($totalOSD>0)? $totalOSD : '';?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="2" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="leave<?=$id?>" id="leave<?=$id?>" value="<?=($totalLeave>0)? number_format($totalLeave,0) : '';?>"            class="form-control col-md-7 col-xs-12 text-center"   tabindex="4" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="earlyLeave<?=$id?>" id="earlyLeave<?=$id?>" value="<?=($totalEarlyLeave>0)? $totalEarlyLeave : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="0" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="offDay<?=$id?>" id="offDay<?=$id?>" value="<?=($totalOffDay>0)? $totalOffDay : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="1" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="holiday<?=$id?>" id="holiday<?=$id?>" value="<?=($totalFriday>0)? number_format($totalFriday,0) : '';?>"  class="form-control col-md-7 col-xs-12 text-center"   tabindex="5" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="absent<?=$id?>" id="absent<?=$id?>" value="<?=$totalAbsent?>" class="form-control col-md-7 col-xs-12 text-center"   tabindex="6" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="deductionDays<?=$id?>" id="deductionDays<?=$id?>" value="<?=($totalDeductionDays>.99)? number_format($totalDeductionDays) : '';?>"   class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="payDay<?=$id?>" id="payDay<?=$id?>" value="<?=($totalPayDays>0)? number_format($totalPayDays) : '';?>"   class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
+                        <td style="vertical-align: middle"><input type="number" name="totalDaysInTheMonth<?=$id?>" id="totalDaysInTheMonth<?=$id?>" value="<?=($totalDaysInTheMonth>0)? $totalDaysInTheMonth : '';?>"   class="form-control col-md-7 col-xs-12 text-center"   tabindex="7" /></td>
+
+                        <script>
+                            $(function(){
+                                $('#av<?=$id;?>').keyup(function(){
+                                    var av<?=$id;?> = parseFloat($('#av<?=$id;?>').val()) || 0;
+                                    var CD<?=$id;?> = parseFloat($('#CD<?=$id;?>').val()) || 0;
+                                    var RD<?=$id;?> = parseFloat($('#RD<?=$id;?>').val()) || 0;
+                                    var SD<?=$id;?> = parseFloat($('#SD<?=$id;?>').val()) || 0;
+                                    var VAT<?=$id;?> = parseFloat($('#VAT<?=$id;?>').val()) || 0;
+                                    var AIT<?=$id;?> = parseFloat($('#AIT<?=$id;?>').val()) || 0;
+                                    var ATV<?=$id;?> = parseFloat($('#ATV<?=$id;?>').val()) || 0;
+                                    $('#TTI<?=$id;?>').val((CD<?=$id;?>+RD<?=$id;?>+SD<?=$id;?>+VAT<?=$id;?>+AIT<?=$id;?>+ATV<?=$id;?>).toFixed(2));
+                                });
+                            });
+                        </script>
                     </tr>
                     <?php }} ?>
                     </tbody>

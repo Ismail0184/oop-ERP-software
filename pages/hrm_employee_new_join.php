@@ -115,5 +115,5 @@ if(isset($$unique))
 
                         </div></div>
 
-        
-<?php require_once 'footer_content.php' ?>
+
+ <?=$html->footer_content();mysqli_close($conn);?>
