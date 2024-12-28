@@ -12,6 +12,36 @@ $thisyear=$year1;
 $thismonth=$month;
 
 
+function sendEmail($to, $subject, $message, $headers = '', $cc = '', $bcc = '') {
+ // Validate email address
+ if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+  return "Invalid email address.";
+ }
+
+ // Default headers if none are provided
+ if (empty($headers)) {
+  $headers = "From: no-reply@example.com\r\n";
+  $headers .= "Reply-To: no-reply@example.com\r\n";
+  $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+ }
+
+ // Add CC and BCC if provided
+ if (!empty($cc)) {
+  $headers .= "CC: $cc\r\n";
+ }
+ if (!empty($bcc)) {
+  $headers .= "BCC: $bcc\r\n";
+ }
+
+ // Send the email
+ if (mail($to, $subject, $message, $headers)) {
+  return "Email sent successfully.";
+ } else {
+  return "Failed to send email.";
+ }
+}
+
+
 function countFridaysInMonth($year, $month) {
  $fridayCount = 0;
 

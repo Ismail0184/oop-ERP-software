@@ -67,12 +67,21 @@ $data = find_all_field('salary_info','','PBI_ID='.$_SESSION['HRM_payroll_employe
 $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') FROM 						 
 							personnel_basic_info p,
 							department d,
-							designation des,
-							users u
+							designation des
 							 where p.PBI_JOB_STATUS='In Service' and 							 
 							 p.PBI_DEPARTMENT=d.DEPT_ID and 
-							 u.PBI_ID=p.PBI_ID and
 							 p.PBI_DESIGNATION=des.DESG_ID	 
+							  order by p.serial";
+
+$sqlQuery = "SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') as Employee,si.gross_salary,si.basic_salary,si.house_rent,si.medical_allowance,si.convenience,si.bonus_applicable as bonus,si.da as TA_DA,si.mobile_allowance mobile_bill FROM 						 
+							personnel_basic_info p,
+							department d,
+							designation des,
+							salary_info si
+							 where p.PBI_JOB_STATUS='In Service' and 							 
+							 p.PBI_DEPARTMENT=d.DEPT_ID and 
+							 p.PBI_DESIGNATION=des.DESG_ID and 
+							 p.PBI_ID=si.PBI_ID
 							  order by p.serial";
 ?>
 
@@ -89,9 +98,25 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
 <?php require_once 'body_content_nva_sm.php'; ?>
 
 <div class="col-md-12 col-sm-12 col-xs-12">
+
+    <div class="<?php if(isset($_POST['viewReport'])){ ?> row <?php } else { echo 'row collapse';} ?>" id="experience2">
+        <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+            <table align="center" style="width: 50%;">
+                <tr><td>
+                        <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=(@$_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                    <td style="width:10px; text-align:center"> -</td>
+                    <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=(@$_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                    <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary"> <i class="fa fa-eye"></i> View Salary Info</button></td>
+                </tr></table>
+        </form>
+    </div>
+
+
+
+
             <div class="x_panel">
                 <div class="x_title">
-                    <h2><?=$title;?></h2>
+                    <h2><?=$title;?></h2> <span class="text-right h5" style="float: right" data-toggle="collapse" data-target="#experience2">Filter <i class="fa fa-filter"></i></span>
                     <div class="clearfix"></div>
                 </div>
 
@@ -237,13 +262,15 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                         <tr>
                             <th>Salary Pay Through</th>
                             <th style="width: 2%;">:</th>
-                            <td><select class="form-control" name="cash_bank" required style="width: 90%; font-size: 11px;margin-top: 5px">
+                            <td><select class="form-control" name="cash_bank" required style="width: 30%; font-size: 11px;margin-top: 5px">
                                     <option selected="selected">
                                         <?=$data->cash_bank?>
                                     </option>
                                     <option value="cash">Cash</option>
                                     <option value="bank"> Bank</option>
-                                </select></td>
+                                    <option value="both">Both</option>
+                                </select>
+                            </td>
                             <th>Transport Allowance</th>
                             <th style="width: 2%;">:</th>
                             <td><select class="form-control" style="float: left; width: 20%; font-size: 11px;margin-top: 5px" name="transportAllwAppl" id="transportAllwAppl" onchange="trnsAppl()">
@@ -252,6 +279,30 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                                     <option>NO</option>
                                 </select>
                                 <input name="transport_allowance" type="text" id="transport_allowance" value="<?=$data->transport_allowance?>" class="form-control col-md-7 col-xs-12" style="width: 68%; font-size: 11px;vertical-align:middle; margin-left: 2%; margin-top: 5px" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Company for</th>
+                            <th style="width: 2%;">:</th>
+                            <td>
+                                <select class="form-control" name="companyInfo" required style="width: 55%; font-size: 11px;margin-top: 5px">
+                                    <?php if (isset($data->companyInfo) && !empty($data->companyInfo)) { ?>
+                                    <option selected="selected">
+                                        <?=$data->companyInfo?>
+                                    </option>
+                                    <?php } else { ?>
+                                        <option>-- select company --</option>
+                                    <?php } ?>
+                                    <option>ICPBL</option>
+                                    <option>ICP Distribution</option>
+                                    <option>LBC Media</option>
+                                </select>
+                            </td>
+                            <th>Salary Portion (Bank & Cash)</th>
+                            <th style="width: 2%;">:</th>
+                            <td>
+                                <input name="bankAmount" type="number" value="<?=$data->bankAmount?>" class="form-control col-md-7 col-xs-12" style="width: 49%; font-size: 11px;vertical-align:middle; margin-top: 5px" placeholder="bank" />
+                                <input name="cashAmount" type="number" value="<?=$data->cashAmount?>" class="form-control col-md-7 col-xs-12" style="width: 40%; font-size: 11px;vertical-align:middle; margin-top: 5px; margin-left: 1%" placeholder="cash" />
                             </td>
                         </tr>
                     </table>
@@ -302,7 +353,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                                                                             <input onkeyup="salaryCal()" name="advance_IT" type="text" id="advance_IT" value="<?=$data->advance_IT?>" class="form-control col-md-7 col-xs-12" style="width: 45%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
                                                                         <th>Income Tax Monthly</th>
                                                                         <th style="width: 2%;">:</th>
-                                                                        <td><input onkeyup="salaryCal()" name="income_tax" type="text" id="income_tax" value="<?=$data->income_tax?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
+                                                                        <td><input name="income_tax" type="text" id="income_tax" value="<?=$data->income_tax?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle; margin-top: 5px;" /></td>
                                                                     </tr>
 
                                                                     <tr>
@@ -349,6 +400,10 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
     </form></div></div></div>
 
 
+<?php endif; ?>
+
+<?php if(isset($_POST['viewReport'])): ?>
+<?=$crud->report_templates_with_status($sqlQuery,$title='Salary Info');?>
 <?php endif; ?>
 <?=$html->footer_content();?>
 

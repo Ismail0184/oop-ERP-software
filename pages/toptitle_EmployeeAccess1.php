@@ -83,7 +83,7 @@ $lastMonthStartDay = date('Y-'.$lastMonthGet.'-01');
 $lastMonthEndDay = date('Y-'.$lastMonthGet.'-'.$totalDaysInLastMonth.'');
 
 $currentMonthStartDate = date('Y-m-01');
-$currentMonthEndDate = date('Y-m-d');
+$currentMonthEndDate = date('Y-m-31');
 
 $lastMonthLeaveCount = find_a_field('hrm_leave_info','SUM(total_days)','status="GRANTED" and s_date between "'.$lastMonthStartDay.'" and "'.$lastMonthEndDay.'" and PBI_ID='.$_SESSION['PBI_ID']);
 $lastMonthODCount = find_a_field('hrm_od_attendance','COUNT(id)','PBI_ID='.$_SESSION['PBI_ID']);
@@ -278,111 +278,33 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                     </tr>
                     </thead>
 
-                    <?php
-                    $startDate = new DateTime($currentMonthStartDate);
-                    $endDate = new DateTime($currentMonthEndDate);
-                    $endDate->modify('+1 day'); // Include the last day
-                    $dateInterval = new DateInterval('P1D');
-                    $datePeriod = new DatePeriod($startDate, $dateInterval, $endDate);
-
-                    // Convert DatePeriod to an array and reverse it
-                    $dates = iterator_to_array($datePeriod);
-                    $dates = array_reverse($dates);
-
-                    $res = mysqli_query($conn, "SELECT * FROM ZKTeco_attendance WHERE employee_id=".$_SESSION['PBI_ID']." AND date BETWEEN '".$currentMonthStartDate."' AND '".$currentMonthEndDate."' ORDER BY date DESC");
-                    $attendanceData = [];
-                    while($data=mysqli_fetch_object($res)){ $yesterday = date("Y-m-d", strtotime("-1 day"));
-                        $attendanceData[$data->date] = $data; // Map attendance by date
-                    }
-
-                    foreach ($dates as $date) {
-                        $currentDate = $date->format("Y-m-d");
-                        $displayDate = ($currentDate === date("Y-m-d")) ? 'Today' : (($currentDate === date("Y-m-d", strtotime("-1 day"))) ? 'Yesterday' : date("d M Y", strtotime($currentDate)));
-
-                        if (isset($attendanceData[$currentDate])) {
-                            $data = $attendanceData[$currentDate];
-                            ?>
-                            <tr>
-                                <td class="text-center">
-                                    <?= ($data->date===date("Y-m-d")) ? 'Today' : (($data->date === $yesterday) ? 'Yesterday' : date("d M Y", strtotime($data->date))); ?>
-                                </td>
-                                <td><?=$data->clock_in?></td>
-                                <?php if($data->clock_in_status=='Late'){?>
-                                    <td class="bg-danger">
-                                        <a <?php if($data->apply_status=='PENDING') { ?> href="<?=$lateAttendanceApplicationURL?>?rid=<?=$data->id?>" <?php } else { ?> href="#" <?php } ?>><?=$data->clock_in_status?></a> <?php if($data->apply_status=='APPLIED') { ?><i class="fa fa-check text-danger"></i> <?php } ?> <?php if($data->apply_status=='APPROVED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-check text-success"></i> <?php } ?>
-                                        <?php if($data->apply_status=='REJECTED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-close text-danger"></i> <?php } ?>
-                                    </td>
-                                <?php } else { ?>
-                                    <td><?=$data->clock_in_status?></td>
-                                <?php } ?>
-                                <td><?=($data->clock_in_status=='Late')? $data->late : '-';?> </td>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out?><?php } ?></td>
-                                <?php if($data->clock_out_status=='Early'){?>
-                                    <td <?php if ($data->date===date("Y-m-d")) { echo '';} else { ?> class="bg-danger" <?php } ?>><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
-                                <?php } else {?>
-                                    <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
-                                <?php } ?>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->early?><?php } ?></td>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->work_time?><?php } ?></td>
-                            </tr>
-                            <?php
-                        } else {
-                            $dayName = date('l', strtotime($displayDate));
-                            $getOSD = find_a_field(
-                                'hrm_od_attendance',
-                                'COUNT(id)',
-                                'approved_status="APPROVED" AND PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
-                            );
-                            $getLeave = find_a_field('hrm_leave_info','COUNT(id)','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
-                            $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$currentDate.'"');
-
-                            if ($dayName == 'Friday') { ?>
-                            <tr>
-                                <td class="text-center"><?=$displayDate?></td>
-                                <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-warning" style="font-size:10px">Friday</span></td>
-                            </tr>
-
-                            <?php } elseif($getOffDay>0){ ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day="'.$currentDate.'"');?></span></td>
-                                </tr>
-
-                            <?php } elseif($getOSD>0){ ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px">Outside Duty</span></td>
-                                </tr>
-
-                            <?php } elseif($getLeave>0){ $getLeaveStatus = find_a_field('hrm_leave_info','status','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
-                                 ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold">
-                                        <span class="label label-success" style="font-size:10px">
-                                            <?php if ($getLeaveStatus=='PENDING'){ echo 'Applied for Leave';
-                                            } elseif ($getLeaveStatus=='RECOMMENDED'){ echo 'Leave is RECOMMENDED';
-                                            } elseif ($getLeaveStatus=='APPROVED') {
-                                                echo 'Leave is Approved';
-                                            } elseif ($getLeaveStatus=='REJECTED'){ echo 'Leave application is REJECTED'; } else {
-                                                echo 'On Leave';
-                                            }?>
-                                        </span>
-                                    </td>
-                                </tr>
-
-
-
+                    <?php $res=mysqli_query($conn, "select * from ZKTeco_attendance where employee_id=".$_SESSION['PBI_ID']." and date between '".$currentMonthStartDate."' and '".$currentMonthEndDate."' order by date desc");
+                    while($data=mysqli_fetch_object($res)){ $yesterday = date("Y-m-d", strtotime("-1 day")); ?>
+                        <tr>
+                            <td class="text-center">
+                                <?= ($data->date===date("Y-m-d")) ? 'Today' : (($data->date === $yesterday) ? 'Yesterday' : date("d M Y", strtotime($data->date))); ?>
+                            </td>
+                            <td><?=$data->clock_in?></td>
+                            <?php if($data->clock_in_status=='Late'){?>
+                            <td class="bg-danger">
+                                <a <?php if($data->apply_status=='PENDING') { ?> href="<?=$lateAttendanceApplicationURL?>?rid=<?=$data->id?>" <?php } else { ?> href="#" <?php } ?>><?=$data->clock_in_status?></a> <?php if($data->apply_status=='APPLIED') { ?><i class="fa fa-check text-danger"></i> <?php } ?> <?php if($data->apply_status=='APPROVED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-check text-success"></i> <?php } ?>
+                                <?php if($data->apply_status=='REJECTED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-close text-danger"></i> <?php } ?>
+                            </td>
                             <?php } else { ?>
-                                 <tr>
-                                     <td class="text-center"><?= $displayDate ?></td>
-                                     <td colspan="7" style="text-align: center; color: red;"><span class="label label-danger" style="font-size:10px">Finger Missing</span></td>
-                                 </tr>
-                             <?php } ?>
+                            <td><?=$data->clock_in_status?></td>
+                            <?php } ?>
+                            <td><?=($data->clock_in_status=='Late')? $data->late : '-';?> </td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out?><?php } ?></td>
+                            <?php if($data->clock_out_status=='Early'){?>
+                            <td <?php if ($data->date===date("Y-m-d")) { echo '';} else { ?> class="bg-danger" <?php } ?>><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } else {?>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } ?>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->early?><?php } ?></td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->work_time?><?php } ?></td>
+                        </tr>
+                    <?php } ?>
 
-                    <?php }
-                    }
-                    ?>
 
                 </table>
 
@@ -403,102 +325,108 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                     </tr>
                     </thead>
 
-                    <?php
-                    $startDate = new DateTime($lastMonthStartDay);
-                    $endDate = new DateTime($lastMonthEndDay);
-                    $endDate->modify('+1 day'); // Include the last day
-                    $dateInterval = new DateInterval('P1D');
-                    $datePeriod = new DatePeriod($startDate, $dateInterval, $endDate);
-
-                    // Convert DatePeriod to an array and reverse it
-                    $dates = iterator_to_array($datePeriod);
-                    $dates = array_reverse($dates);
-
-                    $res = mysqli_query($conn, "SELECT * FROM ZKTeco_attendance WHERE employee_id=".$_SESSION['PBI_ID']." AND date BETWEEN '".$lastMonthStartDay."' AND '".$lastMonthEndDay."' ORDER BY date DESC");
-                    $attendanceData = [];
-                    while ($data = mysqli_fetch_object($res)) {
-                        $attendanceData[$data->date] = $data; // Map attendance by date
-                    }
-
-                    foreach ($dates as $date) {
-                        $currentDate = $date->format("Y-m-d");
-                        $displayDate = ($currentDate === date("Y-m-d")) ? 'Today' : (($currentDate === date("Y-m-d", strtotime("-1 day"))) ? 'Yesterday' : date("d M Y", strtotime($currentDate)));
-
-                        if (isset($attendanceData[$currentDate])) {
-                            $data = $attendanceData[$currentDate];
-                            ?>
-                            <tr>
-                                <td class="text-center">
-                                    <?= ($data->date===date("Y-m-d")) ? 'Today' : (($data->date === $yesterday) ? 'Yesterday' : date("d M Y", strtotime($data->date))); ?>
+                    <?php $res=mysqli_query($conn, "select * from ZKTeco_attendance where employee_id=".$_SESSION['PBI_ID']." and date between '".$lastMonthStartDay."' and '".$lastMonthEndDay."' order by date desc");
+                    while($data=mysqli_fetch_object($res)){ $yesterday = date("Y-m-d", strtotime("-1 day")); ?>
+                        <tr>
+                            <td class="text-center">
+                                <?= ($data->date===date("Y-m-d")) ? 'Today' : (($data->date === $yesterday) ? 'Yesterday' : date("d M Y", strtotime($data->date))); ?>
+                            </td>
+                            <td><?=$data->clock_in?></td>
+                            <?php if($data->clock_in_status=='Late'){?>
+                                <td class="bg-danger">
+                                    <a <?php if($data->apply_status=='PENDING') { ?> href="<?=$lateAttendanceApplicationURL?>?rid=<?=$data->id?>" <?php } else { ?> href="#" <?php } ?>><?=$data->clock_in_status?></a> <?php if($data->apply_status=='APPLIED') { ?><i class="fa fa-check text-danger"></i> <?php } ?> <?php if($data->apply_status=='APPROVED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-check text-success"></i> <?php } ?>
+                                    <?php if($data->apply_status=='REJECTED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-close text-danger"></i> <?php } ?>
                                 </td>
-                                <td><?=$data->clock_in?></td>
-                                <?php if($data->clock_in_status=='Late'){?>
-                                    <td class="bg-danger">
-                                        <a <?php if($data->apply_status=='PENDING') { ?> href="<?=$lateAttendanceApplicationURL?>?rid=<?=$data->id?>" <?php } else { ?> href="#" <?php } ?>><?=$data->clock_in_status?></a> <?php if($data->apply_status=='APPLIED') { ?><i class="fa fa-check text-danger"></i> <?php } ?> <?php if($data->apply_status=='APPROVED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-check text-success"></i> <?php } ?>
-                                        <?php if($data->apply_status=='REJECTED') { ?> <i class="fa fa-check text-danger"></i> <i class="fa fa-close text-danger"></i> <?php } ?>
-                                    </td>
-                                <?php } else { ?>
-                                    <td><?=$data->clock_in_status?></td>
-                                <?php } ?>
-                                <td><?=($data->clock_in_status=='Late')? $data->late : '-';?> </td>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out?><?php } ?></td>
-                                <?php if($data->clock_out_status=='Early'){?>
-                                    <td <?php if ($data->date===date("Y-m-d")) { echo '';} else { ?> class="bg-danger" <?php } ?>><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
-                                <?php } else {?>
-                                    <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
-                                <?php } ?>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->early?><?php } ?></td>
-                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->work_time?><?php } ?></td>
-                            </tr>
-                            <?php
-                        } else {
-                            $dayName = date('l', strtotime($displayDate));
-                            $getOSD = find_a_field(
-                                'hrm_od_attendance',
-                                'COUNT(id)',
-                                'approved_status="APPROVED" AND PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
-                            );
-                            $getLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
-                            $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between="'.$currentDate.'"');
-
-                            if ($dayName == 'Friday') { ?>
-                            <tr>
-                                <td class="text-center"><?=$displayDate?></td>
-                                <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-warning" style="font-size:10px">Friday</span></td>
-                            </tr>
-
-                            <?php } elseif($getOffDay>0){ ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day between="'.$currentDate.'"');?></span></td>
-                                </tr>
-
-                            <?php } elseif($getOSD>0){ ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px">Outside Duty</span></td>
-                                </tr>
-
-                            <?php } elseif($getLeave>0){ ?>
-                                <tr>
-                                    <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-success" style="font-size:10px">Leave</span></td>
-                                </tr>
-
-
-
                             <?php } else { ?>
-                                 <tr>
-                                     <td class="text-center"><?= $displayDate ?></td>
-                                     <td colspan="7" style="text-align: center; color: red;"><span class="label label-danger" style="font-size:10px">Finger Missing</span></td>
-                                 </tr>
-                             <?php } ?>
+                                <td><?=$data->clock_in_status?></td>
+                            <?php } ?>
+                            <td><?=($data->clock_in_status=='Late')? $data->late : '-';?> </td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out?><?php } ?></td>
+                            <?php if($data->clock_out_status=='Early'){?>
+                                <td <?php if ($data->date===date("Y-m-d")) { echo '';} else { ?> class="bg-danger" <?php } ?>><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } else {?>
+                                <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->clock_out_status?><?php } ?></td>
+                            <?php } ?>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->early?><?php } ?></td>
+                            <td><?php if ($data->date===date("Y-m-d")) { echo '-';} else { ?> <?=$data->work_time?><?php } ?></td>
+                        </tr>
+                    <?php } ?>
 
-                    <?php }
-                    }
-                    ?>
 
                 </table>
+
+                <?php
+                // Database connection
+                $conn = mysqli_connect("host", "username", "password", "database");
+
+                // Variables
+                $lastMonthStartDay = '2023-11-01'; // Example start date
+                $lastMonthEndDay = '2023-11-30';   // Example end date
+                $employee_id = $_SESSION['PBI_ID'];
+
+                // Generate a full list of dates in the range
+                $allDates = [];
+                $start = new DateTime($lastMonthStartDay);
+                $end = new DateTime($lastMonthEndDay);
+
+                while ($start <= $end) {
+                    $allDates[] = $start->format("Y-m-d");
+                    $start->modify('+1 day');
+                }
+
+                // Fetch existing attendance data
+                $query = "SELECT * FROM ZKTeco_attendance 
+          WHERE employee_id = $employee_id 
+          AND date BETWEEN '$lastMonthStartDay' AND '$lastMonthEndDay' 
+          ORDER BY date DESC";
+                $result = mysqli_query($conn, $query);
+
+                $presentDates = [];
+                $attendanceData = [];
+
+                // Store attendance data and dates
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $presentDates[] = $row['date'];
+                    $attendanceData[$row['date']] = $row; // Save entire row with key as date
+                }
+
+                // Add missing dates
+                foreach ($allDates as $date) {
+                    if (!in_array($date, $presentDates)) {
+                        // Add missing date with placeholder data
+                        $attendanceData[$date] = [
+                            'date' => $date,
+                            'status' => 'Missing',
+                            'other_columns' => 'N/A' // Placeholder for other columns
+                        ];
+                    }
+                }
+
+                // Sort the list by date in descending order
+                uksort($attendanceData, function ($a, $b) {
+                    return strcmp($b, $a); // Reverse order (descending)
+                });
+
+                // Display the data
+                echo "<table border='1'>
+        <tr>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Other Details</th>
+        </tr>";
+
+                foreach ($attendanceData as $data) {
+                    echo "<tr>
+            <td>{$data['date']}</td>
+            <td>" . (isset($data['status']) ? $data['status'] : 'Present') . "</td>
+            <td>{$data['other_columns']}</td>
+          </tr>";
+                }
+
+                echo "</table>";
+                ?>
+
+
             </div>
         </div>
     </div>

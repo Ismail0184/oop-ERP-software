@@ -78,25 +78,84 @@ order by m.po_no,v.vendor_id");
          $excelData .= 'No records found...' . "\n";
      }
  } elseif ($_GET['report_id']=='1012002') {
-     $query = $db->query("SELECT sdd.id,sdd.id as TID,w.warehouse_name as Depot,d.dealer_custom_code as DBCode,
-d.dealer_name_e as DealerName,d.dealer_type as dealer_type,sdd.do_no as do_no,sdd.do_date as do_date,sdd.do_type as do_type,t.AREA_NAME as Territory,r.BRANCH_NAME as region,
-i.finish_goods_code as FGCode,i.item_name as FGDescription,i.unit_name as UoM,i.pack_size as pack_size,sdd.unit_price as unit_price,sdd.total_unit as qty,sdd.total_amt as amount,
-(select SUM(total_amt) from sale_do_details where do_no=sdd.do_no and item_id='1096000100010312' and gift_on_item=sdd.item_id) as cash_discount,
-IF(sdd.total_amt>'0', 'sales','free') as sales_for
-from sale_do_details sdd,warehouse w,dealer_info d,branch r,area t,item_info i
-where sdd.depot_id=w.warehouse_id and
-      sdd.dealer_code=d.dealer_code and
-      d.dealer_category='".$_GET['pc_code']."' and 
-      d.region=r.BRANCH_ID and 
-      d.area_code=t.AREA_CODE and
-      sdd.item_id=i.item_id and 
-      sdd.item_id not in ('1096000100010312') and
-      sdd.do_date between '".$_GET['f_date']."' and '".$_GET['t_date']."'");
+     $query = $db->query("WITH cash_discount_cte AS (
+    SELECT 
+        do_no,
+        gift_on_item,
+        SUM(total_amt) AS cash_discount
+    FROM 
+        sale_do_details
+    WHERE 
+        item_id = '1096000100010312'
+    GROUP BY 
+        do_no, gift_on_item
+),
+commission_cte AS (
+    SELECT 
+        do_no,
+        SUM(total_unit) AS total_units_for_commission,
+        SUM(CASE WHEN total_amt > 0 THEN total_unit ELSE 0 END) AS total_positive_units
+    FROM 
+        sale_do_details
+    GROUP BY 
+        do_no
+)
+SELECT 
+    sdd.id,
+    sdd.id AS `TID`,
+    w.warehouse_name AS Depot,
+    d.dealer_custom_code AS DBCode,
+    d.dealer_name_e AS DealerName,
+    d.dealer_type,
+    sdd.do_no,
+    sdd.do_date,
+    sdd.do_type,
+    t.AREA_NAME AS Territory,
+    r.BRANCH_NAME AS region,
+    i.finish_goods_code AS FGCode,
+    i.item_name AS FGDescription,
+    i.unit_name AS UoM,
+    i.pack_size,
+    sdd.unit_price,
+    sdd.total_unit AS qty,
+    FORMAT(sdd.total_amt, 2) AS amount,
+    cdc.cash_discount,
+    CASE 
+        WHEN sdd.total_amt > 0 THEN 
+            (m.commission_amount / cc.total_positive_units) * sdd.total_unit
+        ELSE '-' 
+    END AS commission,
+    CASE 
+        WHEN sdd.total_amt > 0 THEN 'sales' 
+        ELSE 'free' 
+    END AS sales_for
+FROM 
+    sale_do_details sdd
+JOIN 
+    warehouse w ON sdd.depot_id = w.warehouse_id
+JOIN 
+    dealer_info d ON sdd.dealer_code = d.dealer_code
+JOIN 
+    branch r ON d.region = r.BRANCH_ID
+JOIN 
+    area t ON d.area_code = t.AREA_CODE
+JOIN 
+    item_info i ON sdd.item_id = i.item_id
+JOIN 
+    sale_do_master m ON m.do_no = sdd.do_no
+LEFT JOIN 
+    cash_discount_cte cdc ON cdc.do_no = sdd.do_no AND cdc.gift_on_item = sdd.item_id
+LEFT JOIN 
+    commission_cte cc ON cc.do_no = sdd.do_no
+WHERE 
+    d.dealer_category = '".$_GET['pc_code']."' 
+    AND sdd.item_id NOT IN ('1096000100010312') 
+    AND sdd.do_date BETWEEN '".$_GET['f_date']."' AND '".$_GET['t_date']."'");
      if ($query->num_rows > 0) {
          // Output each row of the data
          while ($row = $query->fetch_assoc()) {
              $lineData = array($row['TID'], $row['Depot'], $row['DBCode'], $row['DealerName'], $row['dealer_type'], $row['do_no'],$row['do_date'],$row['do_type'],$row['Territory'],$row['region'],
-                 $row['FGCode'],$row['FGDescription'],$row['UoM'],$row['pack_size'],$row['unit_price'],$row['qty'],$row['amount'],$row['cash_discount'],$row['sales_for']);
+                 $row['FGCode'],$row['FGDescription'],$row['UoM'],$row['pack_size'],$row['unit_price'],$row['qty'],$row['amount'],$row['cash_discount'],$row['commission'],$row['sales_for']);
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
          }

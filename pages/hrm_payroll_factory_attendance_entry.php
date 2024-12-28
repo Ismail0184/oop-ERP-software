@@ -1,16 +1,16 @@
 <?php require_once 'support_file.php';require_once 'report.class.php';?>
 <?=(check_permission(basename($_SERVER['SCRIPT_NAME']))>0)? '' : header('Location: dashboard.php');
-$title='Attendance Upload';
+$title='Factory Attendance Upload';
 $unique='id';
 $table='ZKTeco_attendance';
 $crud      =new crud($table);
 
-$page="hrm_payroll_attendance_entry.php";
+$page="hrm_payroll_factory_attendance_entry.php";
 
 if(prevent_multi_submit()){
 
     if (isset($_POST['submit']) && isset($_FILES['file'])) {
-        mysqli_query($conn, "DELETE from ZKTeco_basic_data where record_status = 'PENDING' and dataFor='HeadOffice'");
+        mysqli_query($conn, "DELETE from ZKTeco_basic_data where dataFor='Factory' and record_status = 'PENDING'");
         $filename = $_FILES["file"]["tmp_name"];
         if ($_FILES["file"]["size"] > 0) {
             $file = fopen($filename, "r");
@@ -23,7 +23,7 @@ if(prevent_multi_submit()){
                 $attendanceDate = date("Y-m-d", strtotime($input_date));
 
                 // Check for duplicates
-                $check_query = "SELECT COUNT(*) AS count FROM ZKTeco_basic_data WHERE dataFor='HeadOffice' and employee_id = '".$employee_id."' AND clock_time = '".$formatted_date."'";
+                $check_query = "SELECT COUNT(*) AS count FROM ZKTeco_basic_data WHERE dataFor='Factory' and employee_id = '".$employee_id."' AND clock_time = '".$formatted_date."'";
                 $check_result = mysqli_query($conn, $check_query);
                 $check_row = mysqli_fetch_assoc($check_result);
 
@@ -37,7 +37,7 @@ if(prevent_multi_submit()){
                 if ($check_row['count'] == 0 && $employee_id>0) {
 
                     $sql = "INSERT INTO ZKTeco_basic_data (employee_id, attendance_date, clock_time, upload_at, upload_by, status,record_status,dataFor)
-                        VALUES ('".$employee_id."', '".$attendanceDate."','".$formatted_date."', '".$entry_at."', '".$entry_by."', 'MANUAL','".$recordStatus."','HeadOffice')";
+                        VALUES ('".$employee_id."', '".$attendanceDate."','".$formatted_date."', '".$entry_at."', '".$entry_by."', 'MANUAL','".$recordStatus."','Factory')";
                     $result = mysqli_query($conn, $sql);
 
                     if (!$result) {
@@ -69,7 +69,7 @@ if(prevent_multi_submit()){
 
 
 if (isset($_POST['confirmAllData'])){
-    mysqli_query($conn, "DELETE from ZKTeco_attendance where dataFor='HeadOffice' and record_status = 'PENDING'");
+    mysqli_query($conn, "DELETE from ZKTeco_attendance where record_status = 'PENDING'");
     $sqlQuery = "
     SELECT 
     a.employee_id AS Employee,
@@ -78,43 +78,43 @@ if (isset($_POST['confirmAllData'])){
     MIN(a.clock_time) AS Clock_In,
     MAX(a.clock_time) AS Clock_Out,
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 'Late'
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 'Late'
         ELSE 'On Time'
     END AS Check_In_Status,
     CASE
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 'Early'
+        WHEN MAX(TIME(a.clock_time)) < '19:00:00' THEN 'Early'
         ELSE 'On Time'
     END AS Check_Out_Status,
     
     TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) AS Work_Time,
     CASE
         WHEN TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) > '09:00:00' THEN 
-            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('08:00:00'))
+            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('09:00:00'))
         ELSE '00:00:00'
     END AS OT_Time,
     -- Late Time Calculation
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 
-            TIMEDIFF(MIN(TIME(a.clock_time)), '09:45:00')
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 
+            TIMEDIFF(MIN(TIME(a.clock_time)), '10:00:00')
         ELSE '00:00:00'
     END AS Late_Time,
     -- Early Time Calculation
     CASE 
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 
-            TIMEDIFF('18:15:00', MAX(TIME(a.clock_time)))
+        WHEN MAX(TIME(a.clock_time)) < '19:00:00' THEN 
+            TIMEDIFF('19:00:00', MAX(TIME(a.clock_time)))
         ELSE '00:00:00'
     END AS Early_Time,a.status
 FROM 
     ZKTeco_basic_data a
-    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.status='MANUAL' and a.dataFor='HeadOffice'
+    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.dataFor='Factory' and a.status='MANUAL'
 GROUP BY 
     a.employee_id, DATE(a.clock_time)";
     $result= mysqli_query($conn, $sqlQuery);
     while($data=mysqli_fetch_object($result))
     {
-        $_POST['on_duty'] = '09:30:00';
-        $_POST['off_duty'] = '18:30:00';
-        $_POST['dataFor'] = 'HeadOffice';
+        $_POST['on_duty'] = '10:00:00';
+        $_POST['off_duty'] = '19:00:00';
+        $_POST['for'] = 'Factory';
         $_POST['employee_id'] = $data->Employee;
         $_POST['date'] = $data->Date;
         $_POST['clock_in'] = $data->Clock_In;
@@ -135,12 +135,12 @@ GROUP BY
         $crud->insert();
         unset($_POST);
     }
-    mysqli_query($conn, "UPDATE ZKTeco_basic_data SET status='CHECKED' where dataFor='HeadOffice' and status='MANUAL'");
+    mysqli_query($conn, "UPDATE ZKTeco_basic_data SET status='CHECKED' where dataFor='Factory' and status='MANUAL'");
 } // if isset submit
 
 
 if (isset($_POST['clearAllData'])){
-    mysqli_query($conn, "DELETE from ZKTeco_basic_data where dataFor='HeadOffice' and status='MANUAL'");
+    mysqli_query($conn, "DELETE from ZKTeco_basic_data where dataFor='Factory' and status='MANUAL'");
 }
 
 if(isset($_POST['viewReport'])) {
@@ -153,35 +153,35 @@ if(isset($_POST['viewReport'])) {
     MIN(a.clock_time) AS Clock_In,
     MAX(a.clock_time) AS Clock_Out,
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 'Late'
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 'Late'
         ELSE 'On Time'
     END AS Check_In_Status,
     CASE
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 'Early'
+        WHEN MAX(TIME(a.clock_time)) < '10:00:00' THEN 'Early'
         ELSE 'On Time'
     END AS Check_Out_Status,
     
     TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) AS Work_Time,
     CASE
         WHEN TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) > '09:00:00' THEN 
-            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('08:00:00'))
+            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('09:00:00'))
         ELSE '00:00:00'
     END AS OT_Time,
     -- Late Time Calculation
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 
-            TIMEDIFF(MIN(TIME(a.clock_time)), '09:15:00')
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 
+            TIMEDIFF(MIN(TIME(a.clock_time)), '10:00:00')
         ELSE '00:00:00'
     END AS Late_Time,
     -- Early Time Calculation
     CASE 
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 
-            TIMEDIFF('18:15:00', MAX(TIME(a.clock_time)))
+        WHEN MAX(TIME(a.clock_time)) < '19:00:00' THEN 
+            TIMEDIFF('19:00:00', MAX(TIME(a.clock_time)))
         ELSE '00:00:00'
     END AS Early_Time,a.status
 FROM 
     ZKTeco_basic_data a
-    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.dataFor='HeadOffice'".$dateConn."
+    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.dataFor='Factory'".$dateConn."
 GROUP BY 
     a.employee_id, DATE(a.clock_time)";
 } else {
@@ -193,35 +193,35 @@ GROUP BY
     MIN(a.clock_time) AS Clock_In,
     MAX(a.clock_time) AS Clock_Out,
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 'Late'
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 'Late'
         ELSE 'On Time'
     END AS Check_In_Status,
     CASE
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 'Early'
+        WHEN MAX(TIME(a.clock_time)) < '19:00:00' THEN 'Early'
         ELSE 'On Time'
     END AS Check_Out_Status,
     
     TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) AS Work_Time,
     CASE
         WHEN TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time)) > '09:00:00' THEN 
-            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('08:00:00'))
+            SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(MAX(a.clock_time), MIN(a.clock_time))) - TIME_TO_SEC('09:00:00'))
         ELSE '00:00:00'
     END AS OT_Time,
     -- Late Time Calculation
     CASE 
-        WHEN MIN(TIME(a.clock_time)) > '09:45:00' THEN 
-            TIMEDIFF(MIN(TIME(a.clock_time)), '09:45:00')
+        WHEN MIN(TIME(a.clock_time)) > '10:00:00' THEN 
+            TIMEDIFF(MIN(TIME(a.clock_time)), '10:00:00')
         ELSE '00:00:00'
     END AS Late_Time,
     -- Early Time Calculation
     CASE 
-        WHEN MAX(TIME(a.clock_time)) < '18:15:00' THEN 
-            TIMEDIFF('18:15:00', MAX(TIME(a.clock_time)))
+        WHEN MAX(TIME(a.clock_time)) < '19:00:00' THEN 
+            TIMEDIFF('19:00:00', MAX(TIME(a.clock_time)))
         ELSE '00:00:00'
     END AS Early_Time,a.status
 FROM 
     ZKTeco_basic_data a
-    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.dataFor='HeadOffice' and a.status='MANUAL'
+    JOIN personnel_basic_info p ON a.employee_id = p.PBI_ID where a.dataFor='Factory' and a.status='MANUAL'
 GROUP BY 
     a.employee_id, DATE(a.clock_time)";
     $result = mysqli_query($conn, $sqlQuery);

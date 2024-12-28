@@ -25,7 +25,7 @@ $ordered_total_pcs = find_a_field('sale_do_details','sum(dist_unit)','do_no='.$d
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>.: Challan Copy :.</title>
+<title><?=$dealer->dealer_name_e?>- DO - <?=$_GET['do_no']?></title>
 <link href="../css/invoice.css" type="text/css" rel="stylesheet"/>
 <script type="text/javascript">
 function hide()
@@ -217,7 +217,7 @@ else{?>
                   <th  align="center">Expiry Date</th-->
               </tr>
 
-              <? $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(dist_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
+              <? $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(total_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
         i.item_id=c.item_id and i.finish_goods_code != 2001 and c.chalan_no='.$chalan_no.' group by c.item_id order by c.id asc';
               $queryc=mysqli_query($conn, $sqlc);
               while($datac = mysqli_fetch_object($queryc)){?>

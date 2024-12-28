@@ -212,7 +212,7 @@ if(is_file($attachment)){?>
             <?php  else:  ?>
                 <tr>
                     <td class="tabledesign_text"> Voucher No  : <?php if ($_GET['v_type']=='Loan'): ?><?=$_GET['vo_no']?> <?php else: ?> <?=$vo_no?>  <?php endif;?></td>
-                    <td class="tabledesign_text">Voucher Date : <?php if ($_GET['v_type']=='Loan'): ?><?=$_GET['v_date']?> <?php else: ?> <?=$vo_date?>  <?php endif;?></td>
+                    <td class="tabledesign_text">Voucher Date : <?php if ($_GET['v_type']=='Loan'): ?><?=$_GET['v_date']?> <?php else: ?> <?=$vo_date?> <?php endif;?></td>
                 </tr>
             <?php endif; ?>
 
@@ -273,8 +273,7 @@ $data2=mysqli_query($conn, $sql2);
     <td>&nbsp;</td>
   </tr>
   <tr>
-      <td><strong>Amount in Word :</strong> (<?=convertNumberCustom($cr_amt);?>)
-	 </td>
+      <td><strong>Amount in Word :</strong> (<?=convertNumberCustom($cr_amt);?>)</td>
   </tr>
 
   <tr>

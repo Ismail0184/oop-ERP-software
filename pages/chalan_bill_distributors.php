@@ -67,7 +67,7 @@ $deptt = find_all_field_sql($dept);
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>.: Delivery Chalan Bill Report :.</title>
+<title><?=$dealer->dealer_name_e?> - DO - <?=$_GET['do_no']?></title>
 <link href="../css/invoice.css" type="text/css" rel="stylesheet"/>
 <script type="text/javascript">
 function hide()
@@ -117,7 +117,7 @@ font-size: 14px
       <?=$chalan_date?></td>
   </tr>
   <tr>
-    <td>Contact Person: <?php echo $dealer->propritor_name_e;?></td>
+    <td>Contact Person: <?=$dealer->propritor_name_e;?>, Mobile # <?=$dealer->mobile_no;?></td>
     <td>Do No: <?php echo $do_no;?></td>
   </tr>
   </table>

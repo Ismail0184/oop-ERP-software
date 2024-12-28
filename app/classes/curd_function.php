@@ -2075,7 +2075,7 @@ function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pa
         $str.='
 		<input type="hidden" name="'.$unique.'" id="'.$unique.'"  value="'.$unique_GET.'">
 		<table id="customers" align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">';
-        $str .='<thead><tr style="background-color: bisque; "><th style="vertical-align:middle; text-align:center">#</th>';
+        $str .='<thead><tr class="bg-primary"><th style="vertical-align:middle; text-align:center">#</th>';
 
         if ($result = mysqli_query($conn , $sql)):
             $cols = mysqli_num_fields($result);
@@ -2107,10 +2107,10 @@ function added_data_delete_edit($sql,$unique,$unique_GET,$COUNT_details_data,$pa
         endif;
         $str .='</tfoot></table>';
     endif;
-    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger">Delete</button>';
+    $str .='<button style="float: left; font-size: 11px; margin-left: 1%" type="submit" name="cancel" onclick="return window.confirm(\'Are you sure you want to delete this?\');" class="btn btn-danger"><i class="fa fa-close"></i> Delete</button>';
 
     if($COUNT_details_data>0):
-        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success">Confirm and Finish</button>';
+        $str .='<button style="float: right; font-size: 11px; margin-right: 1%" type="submit" name="confirm" onclick="return window.confirm(\'Are you sure you want to confirm this?\');" class="btn btn-success"> <i class="fa fa-check"></i> Confirm and Finish</button>';
     endif;$str .='</form>';
     return $str;
     mysqli_close($conn);

@@ -291,6 +291,7 @@ des.*,dep.*
     $attendance = [];
     while ($row = $result->fetch_assoc()) {
     $attendance[$row['employee_id']]['details'] = [
+    'employee_id' => $row['employee_id'],
     'finger_id' => $row['finger_id'],
     'name' => $row['name'],
     'designation' => $row['designation']
@@ -357,37 +358,44 @@ des.*,dep.*
                     ?>
                     <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: <?=($status=='Late')? '#DCDCDC; color:blue' : ''; ?>"><?= ($status == 'Late') ? 'LP' : (($status == 'On Time') ? 'P' : 'A'); ?></td>
                 <?php } else { ?>
-                    <td style="border: solid 1px #999; text-align: center; vertical-align: middle">
-                        <?php
-                        if ($dayName == 'Friday') {
-                            echo 'H'; // Holiday
-                        } elseif (!empty($data['attendance'][$date]['clock_in']) && $status == 'On Time') {
-                            echo 'P'; // Present
-                        } else {
-                            $getODS = find_a_field('','','');
-                            echo $date; // Default case
-                        }
-                        ?>
-                    </td>
+
+                        <?php if ($dayName == 'Friday') { ?>
+                            <td style="border: solid 1px #999; text-align: center; vertical-align: middle">H</td>
+                    <?php } elseif (!empty($data['attendance'][$date]['clock_in']) && $status == 'On Time') { ?>
+                        <td style="border: solid 1px #999; text-align: center; vertical-align: middle">P</td>
+                    <?php } else {
+                            $userID = $data['details']['employee_id'];
+                            $getOSD = find_a_field('hrm_od_attendance','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$userID.'" and attendance_date="'.$date.'"');
+                            $getLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$userID.'" and s_date between "'.$date.'" and "'.$date.'" and e_date between "'.$date.'" and "'.$date.'"');
+                            if($getOSD>0) { ?>
+                                <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: #3fc3ee">OD</td>
+                           <?php } elseif($getLeave>0) { ?>
+                                <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: green">L</td>
+                            <?php  } else { ?>
+                        <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: red">A</td>
+                    <?php }}?>
                 <?php }}
             $totalDaysInTheMonth = cal_days_in_month(CAL_GREGORIAN, date('m', strtotime($from_date)), date('Y', strtotime($from_date)));
-            $totalPresent = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="On Time" and employee_id='.$employee_id);
-            $totalLatePresent = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="Late" and employee_id='.$employee_id);
-            $totalLeave = find_a_field('hrm_leave_info','COUNT(id)','s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
-            $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalPresent = find_a_field('ZKTeco_attendance','COUNT(id)','date between "'.$from_date.'" and "'.$to_date.'" and clock_in_status="On Time" and employee_id='.$employee_id);
+            $totalLatePresentApproved = find_a_field('hrm_late_attendance','COUNT(id)','status in ("RECOMMENDED","APPROVED") and attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalLatePresent = find_a_field('ZKTeco_attendance','COUNT(id)','date between "'.$from_date.'" and "'.$to_date.'" and clock_in_status="Late" and employee_id='.$employee_id);
+            $totalLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalLeaveApplication = find_a_field('hrm_leave_info','COUNT(id)','s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','approved_status="APPROVED" and attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
+            $totalOSDApplication = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
             $totalFriday = countFridaysInMonth(date('Y', strtotime($from_date)),date('m', strtotime($from_date)));
             $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
-            $totalDeductionDays = ($totalLatePresent/3)+$totalAbsent;
+            $totalDeductionDays = floor(($totalLatePresent-$totalLatePresentApproved)/3)+$totalAbsent;
             $totalPayDays = ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalAbsent)-$totalDeductionDays;
             ?>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalPresent>0)? $totalPresent : '-'; ?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalOSD>0)? $totalOSD : '-'; ?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLeave>0)? $totalLeave : '-'; ?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLatePresent>0)? $totalLatePresent : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalOSDApplication>0)? $totalOSD.'/'.$totalOSDApplication : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLeaveApplication>0)? $totalLeave.'/'.$totalLeaveApplication : '-'; ?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLatePresent>0)? $totalLatePresentApproved.'/'.$totalLatePresent : '-'; ?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalFriday;?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalAbsent;?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=number_format($totalDeductionDays);?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=number_format($totalPayDays);?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=floor($totalDeductionDays);?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=floor($totalPayDays);?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalDaysInTheMonth?></td>
             </tr>
             <tr>
@@ -460,13 +468,12 @@ des.*,dep.*
 
     <?=reportview($sql,'Late Attendance Report','98',0,'',0); ?>
 
+
     <?php elseif ($_POST['report_id']=='1000301'):?>
     <title>ICP Distribution | Salary Sheet</title>
     <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">ICP Distribution</p>
     <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">Salary Sheet</p>
-    <p align="center" style="margin-top:-15px; font-size: 12px">Month # <?=$_POST['month']?>, Year # <?=$_POST['year']?> </p>
-
-
+    <p align="center" style="margin-top:-15px; font-size: 12px">For the month of <?=$_POST['month']?>, <?=$_POST['year']?> </p>
 
     <table align="center" id="customers"  style="width:98%; border: solid 1px #999; border-collapse:collapse;font-size:11px">
         <thead>
@@ -474,13 +481,16 @@ des.*,dep.*
 
         <tr  style="border: solid 1px #999;font-weight:bold; font-size:11px; background-color: #f5f5f5">
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">#</th>
-            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Employee ID</th>
+            <!--th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Employee ID</th-->
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Unique ID</th>
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Name</th>
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Designation</th>
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Department</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Joining Date</th>
+            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Type</th>
+
             <th colspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Salary Calculation</th>
-            <th colspan="8" style="border: solid 1px #999; padding:2px;vertical-align:middle">Attendance Calculation</th>
+            <th colspan="9" style="border: solid 1px #999; padding:2px;vertical-align:middle">Attendance Calculation</th>
 
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Total Deduction Days</th>
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Pay Day</th>
@@ -491,23 +501,21 @@ des.*,dep.*
 
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Total Deduction</th>
             <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">Salary Payable</th>
-            <th rowspan="2" style="border: solid 1px #999; padding:2px;vertical-align:middle">DOJ</th>
         </tr>
 
 
         <tr>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Gross Salary</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Basic Salary</th>
-
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">TA/DA</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Extra Allowance</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Month Days</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Working Day</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Holiday</th>
+            <th style="border: solid 1px #999; padding:2px;vertical-align:middle">OSD</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Leave</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Absent</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Late</th>
-
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Advance/Loan</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Product Purchase</th>
             <th style="border: solid 1px #999; padding:2px;vertical-align:middle">Mobile Use</th>
@@ -517,7 +525,13 @@ des.*,dep.*
 
         <?php
         $i = 0;
-
+        $extraAllowance	= 0;
+        $advanceLoan=0;
+        $productPurchased=0;
+        $mobileUsed=0;
+        $TotalAmountDeductionAgainstAttendance = 0;
+        $salaryArrears = 0;
+        $ActualSalary = 0;
         $sql='select  
     
     p.PBI_ID,
@@ -526,16 +540,24 @@ des.*,dep.*
    des.DESG_DESC as designaiton,
    dep.DEPT_DESC as department,
    a.*,
-   s.*
+   s.*,
+   t.*,
+   ei.*
+   
 					
 				from
 				hrm_attendance_info a,
 				personnel_basic_info p,							
 				designation des,
 				department dep,
-				salary_info s
+				salary_info s,
+				essential_info ei,
+				employment_type t
+				
 				
 				 WHERE
+				     t.id=ei.EMPLOYMENT_TYPE and
+				     p.PBI_ID=ei.PBI_ID and
 				p.PBI_ID=s.PBI_ID and     
 				a.PBI_ID=p.PBI_ID and 
 				p.PBI_DESIGNATION=des.DESG_ID and 
@@ -547,36 +569,88 @@ des.*,dep.*
 				order by p.serial';
         $result = mysqli_query($conn, $sql);
         while($data=mysqli_fetch_object($result)){?>
+            <?php
+            if($data->employment_type_name=='Probation'){
+                $AmountDeductionAgainstAttendance = ($data->gross_salary / $data->totalDaysInTheMonth) * $data->deductionDays;
+            } else {
+                $AmountDeductionAgainstAttendance = ($data->basic_salary / $data->totalDaysInTheMonth) * $data->deductionDays;
+            }
+            $from_date = date(''.$_POST["year"].'-'.$_POST["month"].'-01');
+            $to_date = date(''.$_POST["year"].'-'.$_POST["month"].'-31');
+            $totalLatePresentApproved = find_a_field('hrm_late_attendance','COUNT(id)','status in ("RECOMMENDED","APPROVED") and attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$data->PBI_ID);
+            $othersReceivedDeduction = find_all_field('payroll_others_receive_deduction','','month="'.$_POST["month"].'" and year="'.$_POST["year"].'" and PBI_ID='.$data->PBI_ID);
+
+            // Others Deductions
+            $advanceLoan = @$othersReceivedDeduction->advance;
+            $productPurchased = @$othersReceivedDeduction->product_purchase;
+            $mobileUsed = @$othersReceivedDeduction->mobile_use;
+            $advanceLoan = @$othersReceivedDeduction->advance;
+            $extraAllowance = @$othersReceivedDeduction->extra_allowance;
+
+            $totalDeductionAmount=$advanceLoan+$productPurchased+$mobileUsed+$data->income_tax;
+            $totalLatePresent = find_a_field('ZKTeco_attendance','COUNT(id)','date between "'.$from_date.'" and "'.$to_date.'" and clock_in_status="Late" and employee_id='.$data->PBI_ID);
+            $totalLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$data->PBI_ID);
+            $totalLeaveApplication = find_a_field('hrm_leave_info','COUNT(id)','s_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$data->PBI_ID);
+            $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','approved_status="APPROVED" and attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$data->PBI_ID);
+            $totalOSDApplication = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$data->PBI_ID);
+
+            ?>
         <tr style="border: solid 1px #999; font-size:11px; font-weight:normal;" >
             <td align="center" style="border: solid 1px #999; padding:2px"><?=$i=$i+1;?></td>
-            <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID;?></td>
+            <!--td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID;?></td-->
             <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_ID_UNIQUE;?></td>
             <td style="border: solid 1px #999; padding:2px"><?=$data->PBI_NAME;?></td>
             <td style="border: solid 1px #999; padding:2px"><?=$data->designaiton;?></td>
             <td style="border: solid 1px #999; padding:2px"><?=$data->department;?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->ESSENTIAL_JOINING_DATE>0) ? date("d F Y", strtotime($data->ESSENTIAL_JOINING_DATE)) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px"><?=$data->employment_type_name;?></td>
             <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($data->gross_salary)?></td>
             <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($data->basic_salary)?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($data->da>0)? number_format($data->da*$data->present,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($extraAllowance>0)? number_format($extraAllowance,2) : '-'; ?></td>
             <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->totalDaysInTheMonth?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->totalDaysInTheMonth-($data->offDay+$data->holiday)?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->offDay+$data->holiday?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->leave?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->absent?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->latePresent?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->deductionDays?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=$data->payDay?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format(($AmountDeductionAgainstAttendance=$data->basic_salary/$data->totalDaysInTheMonth)*$data->deductionDays)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->present>0)? $data->present : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->offDay+$data->holiday>0)? $data->offDay+$data->holiday : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($totalOSDApplication>0)? $totalOSD.'/'.$totalOSDApplication : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($totalLeaveApplication>0)? $totalLeave.'/'.$totalLeaveApplication : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->absent>0)? $data->absent : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->latePresent>0)? $totalLatePresentApproved.'/'.$data->latePresent : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->deductionDays>0)? $data->deductionDays : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: center"><?=($data->payDay>0)? $data->payDay : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($data->deductionDays>0)? number_format($AmountDeductionAgainstAttendance,2) : '-'; ?></td>
             <td style="border: solid 1px #999; padding:2px; text-align: right">-</td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($actualSalary=($data->gross_salary+$data->da+$data->special_allowance)-$AmountDeductionAgainstAttendance)?></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
-            <td style="border: solid 1px #999; padding:2px; text-align: right"></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=number_format($actualSalary=($data->gross_salary+$data->da+$data->special_allowance+$extraAllowance)-$AmountDeductionAgainstAttendance)?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($advanceLoan>0)? number_format($advanceLoan,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($productPurchased>0)? number_format($productPurchased,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($mobileUsed>0)? number_format($mobileUsed,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($data->income_tax>0)? number_format($data->income_tax,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($totalDeductionAmount>0)? number_format($totalDeductionAmount,2) : '-'; ?></td>
+            <td style="border: solid 1px #999; padding:2px; text-align: right"><?=($actualSalary-$totalDeductionAmount>0)? number_format($SalaryPayable=$actualSalary-$totalDeductionAmount,2) : '-'; ?></td>
         </tr>
-        <?php } ?>
+        <?php
+
+            $TotalAmountDeductionAgainstAttendance = $TotalAmountDeductionAgainstAttendance+$AmountDeductionAgainstAttendance;
+            $TotalSalaryArrears = $TotalSalaryArrears+$salaryArrears;
+            $TotalActualSalary = $TotalActualSalary+$actualSalary;
+            $TotalAdvanceLoan = $TotalAdvanceLoan+$advanceLoan;
+            $TotalProductPurchased = $TotalProductPurchased+$productPurchased;
+            $TotalMobileUsed = $TotalMobileUsed+$mobileUsed;
+            $TotalIncomeTax = $TotalIncomeTax+$data->income_tax;
+            $TotalTotalDeductionAmount = $TotalTotalDeductionAmount+$totalDeductionAmount;
+            $TotalSalaryPayable = $TotalSalaryPayable+$SalaryPayable;
+        } ?>
+        <tr>
+            <th colspan="20" style="border: solid 1px #999; padding:2px; text-align: right">Total Amount = </th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalAmountDeductionAgainstAttendance>0)? number_format($TotalAmountDeductionAgainstAttendance,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalSalaryArrears>0)? number_format($TotalActualSalary,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalActualSalary>0)? number_format($TotalActualSalary,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalAdvanceLoan>0)? number_format($TotalAdvanceLoan,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalProductPurchased>0)? number_format($TotalProductPurchased,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalMobileUsed>0)? number_format($TotalMobileUsed,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalIncomeTax>0)? number_format($TotalIncomeTax,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalTotalDeductionAmount>0)? number_format($TotalTotalDeductionAmount,2) : '-'; ?></th>
+            <th style="border: solid 1px #999; padding:2px; text-align: right"><?=($TotalSalaryPayable>0)? number_format($TotalSalaryPayable,2) : '-'; ?></th>
+        </tr>
         </thead>
     </table>
     <p style="width:98%; text-align:left; margin-left: 15px;font-size:11px; font-weight:normal">Report Generated By: Md. Ismail Hossain, Manager, MIS. </p>

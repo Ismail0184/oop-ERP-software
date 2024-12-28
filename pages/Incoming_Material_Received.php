@@ -67,6 +67,7 @@ if(prevent_multi_submit()){
     {  if($_POST['qty']>0) {        
         $_POST['status']="UNCHECKED";
         $_POST['entry_by'] = $_SESSION['userid'];
+        $_POST['amount'] = $_POST['qty']*$_POST['rate'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
         $crud = new crud($table_details);
         $crud->insert();
@@ -87,7 +88,7 @@ while($row=mysqli_fetch_array($results)){
         $del_item=mysqli_query($conn, $del);
         unset($_POST);}
 	 if(isset($_POST['editdata'.$ids]))
-    {  mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST['item_id']."', po_no='".$_POST['po_no']."',qty='".$_POST['qty']."',mfg='".$_POST['mfg']."',no_of_pack='".$_POST['no_of_pack']."' WHERE id=".$ids));
+    {  mysqli_query($conn, ("UPDATE ".$table_details." SET item_id='".$_POST['item_id']."', po_no='".$_POST['po_no']."',qty='".$_POST['qty']."',rate='".$_POST['rate']."',amount='".$_POST['qty']*$_POST['rate']."',mfg='".$_POST['mfg']."',no_of_pack='".$_POST['no_of_pack']."' WHERE id=".$ids));
         unset($_POST);
     }
 	}
@@ -131,6 +132,7 @@ if (isset($_GET['id'])) {
 $edit_value_item_id = @$edit_value->item_id;
 $edit_value_po_no = @$edit_value->po_no;
 $edit_value_qty = @$edit_value->qty;
+$edit_value_rate = @$edit_value->rate;
 $edit_value_mfg = @$edit_value->mfg;
 $edit_value_no_of_pack = @$edit_value->no_of_pack;
 $edit_value_batch = @$edit_value->batch;
@@ -160,7 +162,7 @@ $results=mysqli_query($conn,"Select m.*,i.* from ".$table_details." m,item_info 
 m.item_id=i.item_id and 
 m.m_id='".$m_id."'");
 
-$sql="Select m.id,m.id,m.po_no,i.item_id,i.item_name,i.unit_name as UOM,m.qty,m.mfg,m.no_of_pack from ".$table_details." m,item_info i where   
+$sql="Select m.id,m.po_no,i.item_id,i.item_name,i.unit_name as UOM,m.qty,m.rate,m.amount,m.mfg,m.no_of_pack from ".$table_details." m,item_info i where   
 m.item_id=i.item_id and 
 m.m_id='".$m_id."'";
 
@@ -193,6 +195,11 @@ function reload(form)
         height: 30px;
         width: 100%;
     }
+    input[type=number]{
+        font-size: 11px;
+        height: 30px;
+        width: 100%;
+    }
     input[type=file]{
         font-size: 11px;
         height: 30px;
@@ -219,7 +226,7 @@ function reload(form)
                         <th style="width: 10%">MAN Rcvd. Date<span class="required text-danger">*</span></th>
                         <th style="width:2%; text-align:center">:</th>
                         <td style="width: 20%">
-                            <input type="date"  style="width:80%; font-size: 11px" required value="<?=$man_received_date;?>" name="man_received_date" class="form-control col-md-7 col-xs-12">
+                            <input type="date"  style="width:80%; font-size: 11px" required value="<?=($man_received_date!='')? $man_received_date : date('Y-m-d') ?>" name="man_received_date" class="form-control col-md-7 col-xs-12">
                             <input type="hidden" id="man_date"  required="required" name="man_date" value="<?=($man_date!='')? $man_date : date('Y-m-d') ?>" style="font-size:11px" max="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12" >
                         </td>
 
@@ -297,9 +304,9 @@ function reload(form)
                 <div class="form-group" style="margin-left:40%">
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <?php if($initiate_man_documents):  ?>
-                            <button type="submit" name="modify" id="modify" class="btn btn-primary" style="font-size: 11px">Update MAN Documents</button>
+                            <button type="submit" name="modify" id="modify" class="btn btn-primary" style="font-size: 11px"><i class="fa fa-edit"></i> Update MAN Documents</button>
                         <?php else: ?>
-                            <button type="submit" name="initiate" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary" style="font-size: 11px">Initiate MAN Documents</button>
+                            <button type="submit" name="initiate" onclick='return window.confirm("Are you confirm?");' class="btn btn-primary" style="font-size: 11px"><i class="fa fa-plus"></i> Initiate MAN Documents</button>
                         <?php endif; ?>
                     </div></div>
             </form>
@@ -311,7 +318,7 @@ function reload(form)
 
 
 <?php if($initiate_man_documents):?>
-    <form action="<?=$page;?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
+    <form style="font-size: 11px" action="<?=$page;?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="section_id" id="section_id" value="<?=$_SESSION['sectionid'];?>">
         <input type="hidden" name="company_id" id="company_id" value="<?=$_SESSION['companyid'];?>">
         <input type="hidden" name="m_id" id="m_id" value="<?=$m_id;?>">
@@ -325,10 +332,11 @@ function reload(form)
         <input type="hidden" name="VAT_challan_Date" id="VAT_challan_Date" value="<?=$VAT_challan_Date;?>">
         <table align="center" style="width:98%; font-size: 11px" class="table table-striped table-bordered">
             <thead>
-            <tr style="background-color: #3caae4; color:white">
+            <tr class="bg-primary">
                 <th style="text-align: center">Material Details</th>
                 <th style="text-align: center; width: 10%">PO No</th>
                 <th style="text-align: center; width: 10%">Qty</th>
+                <th style="text-align: center; width: 10%">Rate</th>
                 <th style="text-align: center; width: 10%">Expiry Date</th>
                 <th style="text-align: center; width: 10%">Batch</th>
                 <th style="text-align: center; width: 10%">No of pack</th>
@@ -350,20 +358,23 @@ function reload(form)
                     </select>
                 </td>
                 <td style="vertical-align:middle; text-align: center">
-                    <input type="number" id="qty" style="width:99%; height:37px; font-weight:bold; text-align:center" tabindex="3" required="required"  name="qty" value="<?=$edit_value_qty?>" class="form-control col-md-7 col-xs-12" autocomplete="off" >
+                    <input type="number" id="qty" style="width:99%; height:37px; text-align:center" tabindex="3" required="required"  name="qty" value="<?=$edit_value_qty?>" class="form-control col-md-7 col-xs-12" autocomplete="off" >
+                </td>
+                <td style="vertical-align:middle; text-align: center">
+                    <input type="number" style="width:99%; height:37px; text-align:center" tabindex="3" required="required"  name="rate" value="<?=$edit_value_rate?>" class="form-control col-md-7 col-xs-12" step="any" autocomplete="off" >
                 </td>
                 <td style="vertical-align:middle;text-align: center">
                     <input type="date" id="mfg" style="width:99%; height:37px; font-size:11px; text-align:center"  min="<?=date('Y-m-d');?>"   name="mfg" placeholder="MFG" value="<?=$edit_value_mfg;?>" class="form-control col-md-7 col-xs-12"  >
                 </td>
                 <td align="center" style="vertical-align:middle; text-align: center">
-                    <input type="text" id="batch" style="height:37px; font-weight:bold; text-align:center"  required="required"  name="batch" class="form-control col-md-7 col-xs-12" value="<?=$edit_value_batch;?>" autocomplete="off" >
+                    <input type="text" id="batch" style="height:37px; text-align:center"  required="required"  name="batch" class="form-control col-md-7 col-xs-12" value="<?=$edit_value_batch;?>" autocomplete="off" >
                 </td>
                 <td align="center" style="vertical-align:middle">
-                    <input type="text" id="no_of_pack" style=" height:37px; font-weight:bold; text-align:center"  name="no_of_pack" class="form-control col-md-7 col-xs-12" value="<?=$edit_value_no_of_pack;?>" autocomplete="off" >
+                    <input type="text" id="no_of_pack" style=" height:37px; text-align:center"  name="no_of_pack" class="form-control col-md-7 col-xs-12" value="<?=$edit_value_no_of_pack;?>" autocomplete="off" >
                 </td>
                 <td align="center" style="vertical-align:middle">
-                    <?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger">Cancel</a>
-                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px">Add</button> <?php endif; ?>
+                    <?php if (isset($_GET['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_GET['id'];?>" id="editdata<?=$_GET['id'];?>" style="font-size: 11px"><i class="fa fa-edit"></i> Update</button><br> <a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger"><i class="fa fa-close"></i> Cancel</a>
+                    <?php else: ?><button type="submit" class="btn btn-primary" name="add" id="add" style="font-size: 11px"><i class="fa fa-plus"></i> Add</button> <?php endif; ?>
                 </td>
             </tr>
             </tbody>

@@ -43,7 +43,7 @@ function reload1(form)
 </style>
 <?php require_once 'body_content_nva_sm.php'; ?>
 
-<form class="form-horizontal form-label-left" method="POST" action="accounts_reportview.php" style="font-size: 11px" target="_blank">
+<form class="form-horizontal form-label-left" method="POST" action="<?=($report_id=='1002001') ? 'acc_transaction_statement.php' : 'accounts_reportview.php';?>" style="font-size: 11px" target="_blank">
     <div class="col-md-5 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_content">

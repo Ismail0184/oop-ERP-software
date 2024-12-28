@@ -28,8 +28,7 @@ if(isset($_POST['extract_MAN'])) {
     $_POST['warehouse_id'] = $man_master->warehouse_id;
     $_POST['po_details'] = $man_master->remarks;
     $_POST['po_date'] = date('Y-m-d');
-    $poidgenerate = automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'","");;
-    $_POST['po_id'] = $poidgenerate;
+    $_POST['po_id'] = automatic_number_generate("purchase_master","po_id","create_date='".date('Y-m-d')."'");
     $_POST['status'] = 'UNCHECKED';
     $_POST['entry_by'] = $_SESSION['userid'];
     $_POST['entry_at'] = date('Y-m-d h:s:i');
@@ -54,10 +53,8 @@ if(isset($_POST['extract_MAN'])) {
         $_POST['po_no'] = $_SESSION['initiate_po_no'];
         $_POST['item_id'] = $data->item_id;
         $_POST['qty'] = $data->qty;
-        $rateSearch = mysqli_query($conn, "select rate from purchase_invoice where item_id='".$data->item_id."' order by item_id desc limit 1");
-        $rateGet = mysqli_fetch_object($rateSearch);
-        $_POST['rate'] = $rateGet->rate;
-        $_POST['amount'] = $data->qty*$rateGet->rate;
+        $_POST['rate'] = $data->rate;
+        $_POST['amount'] = $data->qty*$data->rate;
         $_POST['mfg'] = $data->mfg;
         $_POST['item_id'] = $data->item_id;
         $_POST['item_id'] = $data->item_id;
@@ -314,13 +311,13 @@ if(isset($_POST['cancel_MAN']))
             <td align="left" style="width: 65%; vertical-align: middle">
                 <select class="select2_single form-control" style="width:400px" tabindex="-1" required="required" name="MAN_ID">
                     <option></option>
-                    <?=foreign_relation('MAN_master', 'id', 'CONCAT(id," : ", MAN_ID," : " ,status)', $_SESSION['MAN_ID'], 'status="VERIFIED" and po_create_status="No"', 'order by id'); ?>
+                    <?=foreign_relation('MAN_master', 'id', 'CONCAT(id," : ", MAN_ID)', $_SESSION['MAN_ID'], 'status="VERIFIED" and po_create_status="No" order by id desc'); ?>
                 </select>
             </td>
             <?php if($_SESSION['MAN_ID']>0){?>
-                <td style="vertical-align: middle"><button type="submit" name="cancel_MAN" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' class="btn btn-danger" style="float: left; font-size: 11px">Cancel this MAN</button>
+                <td style="vertical-align: middle"><button type="submit" name="cancel_MAN" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' class="btn btn-danger" style="float: left; font-size: 11px"><i class="fa fa-close"></i> Cancel this MAN</button>
             <?php } else { ?>
-                <td style="vertical-align: middle"><button type="submit" class="btn btn-primary" name="extract_MAN" style="font-size: 11px">Extract this MAN</button></td>
+                <td style="vertical-align: middle"><button type="submit" class="btn btn-primary" name="extract_MAN" style="font-size: 11px"><i class="fa fa-file-export"></i> Extract this MAN</button></td>
             <?php } ?>
             </td>
         </tr>
@@ -339,7 +336,7 @@ if(isset($_POST['cancel_MAN']))
                         <td style="width: 20%">
                             <input type="text" id="po_no" style="width:20%" name="po_no" value="<?=$initiate_po_no;?>" readonly class="form-control col-md-7 col-xs-12" >
                             <input type="text" id="pono" style="width:60%"  name="pono" value="<?php if(!isset($pono)) echo automatic_number_generate($sekeyword,"purchase_master","pono","1",""); else echo $pono;?>"  class="form-control col-md-7 col-xs-12" >
-                            <input type="hidden" id="po_id"   required="required" name="po_id" value="<?=($po_id!='')? $po_id : automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'",""); ?>" class="form-control col-md-7 col-xs-12"  readonly >
+                            <input type="hidden" name="po_id" value="<?=($po_id!='')? $po_id : automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'",""); ?>" class="form-control col-md-7 col-xs-12">
                         </td>
 
                         <th style="width: 10%">Vendor <span class="required text-danger">*</span></th>

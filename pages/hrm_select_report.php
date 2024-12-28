@@ -3,6 +3,17 @@ require_once 'support_file.php';
 $title='Report';
 $page='hrm_select_report.php';
 $report_id = @$_REQUEST['report_id'];
+
+
+
+$sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' (',des.DESG_SHORT_NAME,' - ',d.DEPT_SHORT_NAME,')') FROM 						 
+							personnel_basic_info p,
+							department d,
+							designation des
+							 where p.PBI_JOB_STATUS='In Service' and 							 
+							 p.PBI_DEPARTMENT=d.DEPT_ID and 
+							 p.PBI_DESIGNATION=des.DESG_ID	 
+							  order by p.serial";
 ?>
 
 
@@ -34,7 +45,7 @@ $report_id = @$_REQUEST['report_id'];
 
 <?php require_once 'body_content_nva_sm.php'; ?>
 
-    <form class="form-horizontal form-label-left" method="POST" action="hrm_reportview.php" style="font-size: 11px" target="_blank">
+    <form class="form-horizontal form-label-left" method="POST" action="<?=($report_id=='1000303') ? 'emp_access_pay_slip.php' : 'hrm_reportview.php';?>" style="font-size: 11px" target="_blank">
         <div class="col-md-5 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_content">
@@ -100,9 +111,9 @@ $report_id = @$_REQUEST['report_id'];
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Employee Name</label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <select style="width: 100%;" class="select2_single form-control" name="PBI_ID" id="PBI_ID">
+                                <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
                                     <option></option>
-                                    <?=foreign_relation('personnel_basic_info', 'PBI_ID', 'CONCAT(PBI_ID_UNIQUE," : ", PBI_NAME)','', '1'); ?>
+                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
                                 </select>
                             </div>
                         </div>
@@ -136,9 +147,9 @@ $report_id = @$_REQUEST['report_id'];
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Employee Name</label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <select style="width: 100%;" class="select2_single form-control" name="PBI_ID" id="PBI_ID">
+                                <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
                                     <option></option>
-                                    <?=foreign_relation('personnel_basic_info', 'PBI_ID', 'CONCAT(PBI_ID_UNIQUE," : ", PBI_NAME)','', '1'); ?>
+                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
                                 </select>
                             </div>
                         </div>
@@ -147,7 +158,44 @@ $report_id = @$_REQUEST['report_id'];
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Month <span class="required text-danger">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <select class="select2_single form-control" style="width:98%; font-size: 11px" tabindex="6" required="required"  name="month">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="6" required="required"  name="month">
+                                    <option></option>
+                                    <?php foreign_relation("monthname", "month", "CONCAT(month,' : ', monthfullName)", '', "1"); ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name"> Year <span class="required text-danger">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <?php
+                                $start_year = 2020; // Starting year
+                                $end_year = date('Y'); // Current year or any ending year
+                                ?>
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" name="year">
+                                    <?php
+                                    for ($year = $end_year; $year >= $start_year; $year--) { ?>
+                                        <option value='<?=$year?>'><?=$year?></option>";
+                                    <?php } ?>
+                                </select>                            </div>
+                        </div>
+
+                    <?php elseif ($report_id=='1000303'): ?>
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">Slip for <span class="required text-danger">*</span></label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
+                                    <option></option>
+                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Month <span class="required text-danger">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="6" required="required"  name="month">
                                     <option></option>
                                     <?php foreign_relation("monthname", "month", "CONCAT(month,' : ', monthfullName)", '', "1"); ?>
                                 </select>                            </div>
@@ -160,7 +208,7 @@ $report_id = @$_REQUEST['report_id'];
                                 $start_year = 2020; // Starting year
                                 $end_year = date('Y'); // Current year or any ending year
                                 ?>
-                                <select class="select2_single form-control" style="width:98%; font-size: 11px" name="year">
+                                <select class="select2_single form-control" style="width:100%; font-size: 11px" name="year">
                                     <?php
                                     for ($year = $end_year; $year >= $start_year; $year--) { ?>
                                         <option value='<?=$year?>'><?=$year?></option>";

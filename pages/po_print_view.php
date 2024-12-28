@@ -278,7 +278,7 @@ $disc=$info->disc;
                   <td align="left" valign="top"><b><?=$whouse->warehouse_company?>. Mobile No: <?=$whouse->contact_no?></b></td>
                 </tr>
                 <tr>
-                  <td align="left" valign="top"><li>Delievery  Instruction</li></td>
+                  <td align="left" valign="top"><li>Delivery  Instruction</li></td>
                   <td align="right" valign="top">:</td>
                   <td align="left" valign="top">Delivery Should be Reached at Destination Point within 5PM. </td>
                 </tr>
