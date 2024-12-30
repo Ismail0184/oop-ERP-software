@@ -799,6 +799,21 @@ p.po_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
 order by m.po_no,v.vendor_id"?>
     <?=reportview($sql,'Purchase Report','99',0,'',0); ?>
 
+
+<?php elseif ($_POST['report_id']=='1012013'):?>
+    <?php
+    $sql="SELECT p.id,m.id,m.return_date,v.vendor_name,i.item_id,i.finish_goods_code as 'FG Code (Custom Code)',item_name as 'Mat. Description',i.unit_name as 'UoM',p.qty,FORMAT(p.rate,2) as rate,FORMAT(p.amount,2) as amount 
+from purchase_return_details p,purchase_return_master m,vendor v,item_info i 
+where 
+p.m_id=m.id and 
+m.vendor_id=v.vendor_id  and
+i.item_id=p.item_id and 
+v.vendor_id='".$_POST['pc_code']."' and 
+m.return_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+p.return_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+order by m.id,v.vendor_id"?>
+    <?=reportview($sql,'Purchase Return Report','99',0,'',0); ?>
+
 <?php elseif ($_POST['report_id']=='1012002'):?>
     <?php
     $sql="WITH cash_discount_cte AS (
@@ -932,8 +947,42 @@ where c.ledger_id=d.account_code and
     $result = mysqli_fetch_object(mysqli_query($conn, $totalCollectionS));
     $totalCollection = $result->amount;
     ?>
-
     <?=reportview($sql,'Collection Register','99',$totalCollection,'12',0); ?>
+
+<?php elseif ($_POST['report_id']=='1012014'):
+
+    $sql="SELECT c.id,c.journal_info_no as 'Adjustment Id',c.journal_info_date as 'Adjustment Date',d.dealer_custom_code as 'Coustomer Code',d.account_code as 'Ledger ID',d.dealer_name_e as 'Customer Name',r.BRANCH_NAME as 'Customer Group',t.AREA_NAME as 'Territory',d.address_e as 'address',d.mobile_no as 
+'Phone No',c.narration as 'Particulars',FORMAT(c.cr_amt,2) as 'Amount'
+
+from journal_info c,
+     dealer_info d,
+     branch r,
+     area t
+where c.ledger_id=d.account_code and
+      d.dealer_category='".$_POST['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      c.journal_info_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+      c.journal_info_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' order by c.journal_info_no desc";
+
+    $totalCollectionS = "SELECT SUM(c.cr_amt) as amount
+from journal_info c,
+     dealer_info d,
+     branch r,
+     area t
+where c.ledger_id=d.account_code and
+      d.dealer_category='".$_POST['pc_code']."' and 
+      d.region=r.BRANCH_ID and 
+      d.area_code=t.AREA_CODE and
+      c.journal_info_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+      c.journal_info_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+      ";
+    $result = mysqli_fetch_object(mysqli_query($conn, $totalCollectionS));
+    $totalCollection = $result->amount;
+    ?>
+
+
+    <?=reportview($sql,'Adjustment Register','99',$totalCollection,'11',0); ?>
 
 
 <?php elseif ($_POST['report_id']=='1012003'):

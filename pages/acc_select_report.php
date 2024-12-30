@@ -736,7 +736,7 @@ function reload1(form)
                         </div>
                     </div>
 
-                <?php elseif ($report_id=='1012001'): ?>
+                <?php elseif ($report_id=='1012001' || $report_id=='1012013'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
@@ -932,6 +932,31 @@ function reload1(form)
 
 
                 <?php elseif ($report_id=='1012012'): ?>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required" name="pc_code" >
+                                <?php if($_SESSION['userid']=='10056'){?>
+                                    <option value="3" selected>Believe Pte Ltd</option>
+                                <?php } elseif($_SESSION['userid']=='10057') { ?>
+                                    <option value="4" selected>BOSCH</option>
+                                <?php } else { ?>
+                                    <option></option>
+                                    <option value="3">Believe Pte Ltd</option>
+                                    <option value="4">BOSCH</option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name">Date Interval <span class="required text-danger">*</span></label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="date" style="font-size: 11px; width: 49%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-01');?>" class="form-control col-md-7 col-xs-12" required name="f_date">
+                            <input type="date" style="font-size: 11px; width: 49%; margin-left:2%" max="<?=date('Y-m-d');?>" value="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"  required name="t_date">
+                        </div>
+                    </div>
+
+                <?php elseif ($report_id=='1012014'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">

@@ -350,12 +350,28 @@ where c.ledger_id=d.account_code and
      if ($query->num_rows > 0) {
 
          while ($row = $query->fetch_assoc()) {
-             $lineData = array($row['receipt_no'], $row['receiptdate'], $row['dealer_custom_code'], $row['account_code'], $row['dealer_name_e'],
-                 $row['BRANCH_NAME'], $row['AREA_NAME'],$row['address_e'], $row['mobile_no'],$row['bank'], $row['narration'] ,$row['cr_amt']);
+             // Add a single quote to receipt_no to prevent Excel from formatting it
+             $row['receipt_no'] = "'" . $row['receipt_no'];
+
+             $lineData = array(
+                 $row['receipt_no'],
+                 $row['receiptdate'],
+                 $row['dealer_custom_code'],
+                 $row['account_code'],
+                 $row['dealer_name_e'],
+                 $row['BRANCH_NAME'],
+                 $row['AREA_NAME'],
+                 $row['address_e'],
+                 $row['mobile_no'],
+                 $row['bank'],
+                 $row['narration'],
+                 $row['cr_amt']
+             );
+
              array_walk($lineData, 'filterData');
              $excelData .= implode("\t", array_values($lineData)) . "\n";
-         }
-     }
+         }}
+
      else {
          $excelData .= 'No records found...' . "\n";
      }
