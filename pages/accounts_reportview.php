@@ -799,6 +799,19 @@ p.po_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
 order by m.po_no,v.vendor_id"?>
     <?=reportview($sql,'Purchase Report','99',0,'',0); ?>
 
+<?php elseif ($_POST['report_id']=='1012015'):?>
+    <?php
+    $sql="SELECT p.po_no,m.po_no,m.po_date,v.vendor_name,i.item_id,i.finish_goods_code as 'FG Code (Custom Code)',item_name as 'Mat. Description',i.unit_name as 'UoM',p.qty,FORMAT((p.rate * (1 + 15 / 100)),2) as rate,FORMAT((p.qty*(p.rate * (1 + 15 / 100))),2) as amount 
+from purchase_invoice p,purchase_master m,vendor v,item_info i 
+where 
+p.po_no=m.po_no and m.vendor_id=v.vendor_id  and
+i.item_id=p.item_id and 
+v.vendor_id='".$_POST['pc_code']."' and 
+m.po_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' and 
+p.po_date NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."'
+order by m.po_no,v.vendor_id"?>
+    <?=reportview($sql,'Purchase Report (Including VAT)','99',0,'',0); ?>
+
 
 <?php elseif ($_POST['report_id']=='1012013'):?>
     <?php
@@ -2363,68 +2376,60 @@ order by c.do_no";
 
 
 
-    <?php elseif ($_POST['report_id']=='1010003'): $POST_item_id = @$_POST['item_id']; ?>
-        <h2 align="center"><?=$_SESSION['company_name']?></h2>
-        <h4 align="center" style="margin-top:-10px">Item wise COGS Sales</h4>
-        <?php if($POST_item_id){?>
-            <h5 align="center" style="margin-top:-10px">Item Name:  <?=find_a_field('item_info','item_name','item_id='.$POST_item_id.'');?></h5>
-        <?php } ?>
-        <?php if($_POST['do_type']){?>
-            <h5 align="center" style="margin-top:-10px">Invoice Type:  <?=$_POST['do_type']?></h5>
-        <?php } ?>
-        <h5 align="center" style="margin-top:-10px">Report From <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h5>
-        <table align="center"  style="width:95%; border: solid 1px #999; border-collapse:collapse;">
-            <thead>
-            <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
-                echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
-            <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
-                <th style="border: solid 1px #999; padding:2px">SL</th>
-                <th style="border: solid 1px #999; padding:2px; %">T.ID</th>
-                <th style="border: solid 1px #999; padding:2px; ">Code</th>
-                <th style="border: solid 1px #999; padding:2px; ">Dealer Name</th>
-                <th style="border: solid 1px #999; padding:2px; ">DO</th>
-                <th style="border: solid 1px #999; padding:2px;">DO Date</th>
-                <th style="border: solid 1px #999; padding:2px">DO.Type</th>
-                <!--th style="border: solid 1px #999; padding:2px">Territory</th-->
-                <th style="border: solid 1px #999; padding:2px">FG Code</th>
-                <th style="border: solid 1px #999; padding:2px">FG Description</th>
-                <th style="border: solid 1px #999; padding:2px">UOM</th>
-                <th style="border: solid 1px #999; padding:2px">Pack Size</th>
-                <th style="border: solid 1px #999; padding:2px">Brand</th>
-                <th style="border: solid 1px #999; padding:2px">Batch</th>
-                <th style="border: solid 1px #999; padding:2px">COGS Price</th>
-                <th style="border: solid 1px #999; padding:2px">Qty</th>
-                <th style="border: solid 1px #999; padding:2px">COGS Amount</th>
-                <th style="border: solid 1px #999; padding:2px">Discount Amount</th>
-                <th style="border: solid 1px #999; padding:2px">Invoice Price</th>
-                <th style="border: solid 1px #999; padding:2px">Invoice Amount</th>
-            </tr></thead>
-            <tbody>
-            <?php
-            if(!empty($_POST['do_type'])) 					$do_type=$_POST['do_type'];
-            if(($do_type=='sales' || $do_type=='sample' || $do_type=='gift'|| $do_type=='free'|| $do_type=='display')) {$do_type_conn=' and sd.challan_type="'.$do_type.'"';} else {$do_type_conn='';}
-            $datecon=' and sd.do_date between  "'.$f_date.'" and "'.$t_date.'"';
-            $total_amount = 0;
-            $total_invoice_amount = 0;
-            $i = 0;
-            $result=mysqli_query($conn, 'SELECT 
-    sd.*,
-    sd.unit_price AS invoice_price,
-    d.dealer_custom_code,
-    d.dealer_name_e,
-    d.dealer_type,
-    w.warehouse_name,
-    i.item_id AS itemid,
-    i.finish_goods_code AS FGCODE,
-    i.item_name AS FGdescription,
-    i.pack_unit AS UOM,
-    i.pack_size AS psize,
-    ji.*,
-    ji.gift_type AS gt,
-    SUM(sd.unit_price * ji.item_ex) AS invoice_amount,
-    ib.brand_name,
-    COALESCE(cash_discount.total_amt, 0) AS cash_discount,
-    COALESCE(total_qty.total_unit, 0) AS totalQty
+    <?php elseif ($_POST['report_id']=='1010003'):?>
+        <?php
+        if(!empty($_POST['do_type'])) 					$do_type=$_POST['do_type'];
+        if(($do_type=='sales' || $do_type=='sample' || $do_type=='gift'|| $do_type=='free'|| $do_type=='display')) {$do_type_conn=' and sd.challan_type="'.$do_type.'"';} else {$do_type_conn='';}
+        $datecon=' and sd.do_date between  "'.$f_date.'" and "'.$t_date.'"';
+
+        $query = 'WITH 
+FilteredSaleDoDetails AS (
+    SELECT 
+        do_no, 
+        item_id, 
+        SUM(CASE WHEN item_id = "1096000100010312" THEN total_amt ELSE 0 END) AS total_cash_discount,
+        SUM(total_unit) AS total_units
+    FROM 
+        sale_do_details
+    GROUP BY 
+        do_no, item_id
+),
+ComputedJournalItems AS (
+    SELECT 
+        do_no, 
+        item_id, 
+        batch, 
+        id, 
+        gift_type, 
+        item_ex,
+        item_price,
+        total_amt
+    FROM 
+        journal_item
+    GROUP BY 
+        do_no, item_id, batch, id, gift_type
+)
+SELECT 
+ji.id,
+ji.id,
+d.dealer_custom_code as code,
+d.dealer_name_e as dealer_name,
+sd.do_no,
+sd.do_date,
+sd.challan_type as Invoice_type,
+i.finish_goods_code AS FG_Code,
+i.item_name AS FG_description,
+i.pack_unit AS UOM,
+i.pack_size AS Pack_Size,
+ib.brand_name,
+ji.batch,
+ji.item_price as COGS_Price,
+ji.item_ex as Qty,
+ji.total_amt as COGS_Amount,
+COALESCE(fsd.total_cash_discount, 0) AS "Discount Amount",
+sd.unit_price AS invoice_Price,
+SUM(sd.unit_price*ji.item_ex) as Invoice_Amount
+
 FROM 
     sale_do_chalan sd
 JOIN 
@@ -2436,62 +2441,21 @@ JOIN
 JOIN 
     item_brand ib ON i.brand_id = ib.brand_id
 JOIN 
-    journal_item ji ON sd.do_no = ji.do_no AND sd.item_id = ji.item_id
+    ComputedJournalItems ji ON sd.do_no = ji.do_no AND sd.item_id = ji.item_id
 LEFT JOIN 
-    (SELECT do_no, item_id, SUM(total_amt) AS total_amt
-     FROM sale_do_details
-     WHERE item_id = "1096000100010312"
-     GROUP BY do_no, item_id) AS cash_discount 
-     ON sd.do_no = cash_discount.do_no AND sd.item_id = cash_discount.item_id
-LEFT JOIN 
-    (SELECT do_no, item_id, SUM(total_unit) AS total_unit
-     FROM sale_do_details
-     GROUP BY do_no, item_id) AS total_qty 
-     ON sd.do_no = total_qty.do_no AND sd.item_id = total_qty.item_id
+    FilteredSaleDoDetails fsd ON sd.do_no = fsd.do_no AND sd.item_id = fsd.item_id
 WHERE 
     i.item_id <> "1096000100010312"
     AND sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" AND "'.$lockedEndInterval.'"
     '.$datecon.$do_type_conn.'
 GROUP BY 
-    sd.do_no, ji.batch, ji.item_id, ji.id
+    sd.do_no, ji.batch, ji.item_id, ji.id, d.dealer_custom_code, d.dealer_name_e, d.dealer_type, 
+    w.warehouse_name, i.finish_goods_code, i.item_name, i.pack_unit, i.pack_size, ji.gift_type, 
+    ib.brand_name, fsd.total_cash_discount, fsd.total_units
 ORDER BY 
-    sd.do_no, ji.id ASC;
-');
-            while($data=mysqli_fetch_object($result)){$i=$i+1; ?>
-                <tr style="border: solid 1px #999; font-size:10px; font-weight:normal">
-                    <td style="border: solid 1px #999; text-align:center"><?=$i;?></td>
-                    <td style="border: solid 1px #999; text-align:center"><?=$data->id;?></td>
-                    <td style="border: solid 1px #999; text-align:left"><?=$data->dealer_custom_code; ?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->dealer_name_e; ?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_no;?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->do_date?></td>
-                    <td style="border: solid 1px #999; text-align:left; padding:5px"><?=$data->challan_type; ?></td>
-                    <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->FGCODE;?></td>
-                    <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->FGdescription;?></td>
-                    <td style="border: solid 1px #999; text-align:left;  padding:2px"><?=$data->UOM;?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->psize;?></td>
-                    <td style="border: solid 1px #999; text-align:center;  padding:2px"><?=$data->brand_name;?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->batch;?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($data->item_price,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=$data->item_ex;?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($amount=$data->item_ex*$data->item_price,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format(($data->cash_discount/$data->totalQty)*$data->item_ex,2);?></td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?php if($data->gt=='None') { ?><?=number_format($data->invoice_price,2);?><?php } else {echo '-';} ?> </td>
-                    <td style="border: solid 1px #999; text-align:right;  padding:2px"><?php if($data->gt=='None') { ?><?=number_format($invoice_amounts=$data->invoice_amount+$data->cash_discount,2);?><?php } else {echo '-';} ?></td>
-                </tr>
-                <?php
-                $total_amount=$total_amount+$amount;
-                $total_invoice_amount=$total_invoice_amount+$invoice_amounts;
-            } ?>
-            </tbody>
-            <tr style="border: solid 1px #999; font-size:10px; font-weight:normal; font-weight: bold">
-                <td style="border: solid 1px #999; text-align:right;  padding:2px" colspan="15">Total COGS Sales Amount = </td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_amount,2);?></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"></td>
-                <td style="border: solid 1px #999; text-align:right;  padding:2px"><?=number_format($total_invoice_amount,2);?></td>
-            </tr>
-        </table>
+    sd.do_no, ji.id ASC';?>
+        <?=reportview($query,'Item wise COGS Sales','99',0,'',0); ?>
+
 
 
     <?php elseif ($_POST['report_id']=='1007001'):?>

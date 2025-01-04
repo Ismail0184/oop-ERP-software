@@ -736,7 +736,7 @@ function reload1(form)
                         </div>
                     </div>
 
-                <?php elseif ($report_id=='1012001' || $report_id=='1012013'): ?>
+                <?php elseif ($report_id=='1012001' || $report_id=='1012013' || $report_id=='1012015'): ?>
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Partner <span class="required text-danger">*</span></label>
                         <div class="col-md-6 col-sm-6 col-xs-12">

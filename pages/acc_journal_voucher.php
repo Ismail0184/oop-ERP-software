@@ -130,8 +130,8 @@ if(prevent_multi_submit()) {
                 {
                     $entry_at = date('Y-m-d H:i:s');
                     $sql = "INSERT INTO ".$table_journal_info."
-   (`journal_info_no`,`j_date`,`proj_id`,`narration`,`ledger_id`,`dr_amt`,`cr_amt`,`type`,`cur_bal`,`received_from`,`cheq_no`,`cheq_date`,`bank`,`manual_journal_info_no`,`cc_code`,`sub_ledger_id`,`entry_status`,`ip`,`section_id`,`company_id`,`entry_by`)
-	         VALUES ('".$_SESSION['initiate_journal_note']."','".$date."','".$proj_id."','".$eData[1]."','".$eData[0]."','".$eData[2]."','$eData[3]','".$eData[4]."','0','0','0','0','','','$eData[5]','','MANUAL','".$ip."','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$_SESSION['userid']."')";
+   (`journal_info_no`,`j_date`,`proj_id`,`narration`,`ledger_id`,`dr_amt`,`cr_amt`,`type`,`cur_bal`,`received_from`,`cheq_no`,`cheq_date`,`bank`,`manual_journal_info_no`,`cc_code`,`sub_ledger_id`,`entry_status`,`ip`,`section_id`,`company_id`,`entry_by`,`create_date`)
+	         VALUES ('".$_SESSION['initiate_journal_note']."','".$date."','".$proj_id."','".$eData[1]."','".$eData[0]."','".$eData[2]."','$eData[3]','".$eData[4]."','0','0','0','0','','','$eData[5]','','MANUAL','".$ip."','".$_SESSION['sectionid']."','".$_SESSION['companyid']."','".$_SESSION['userid']."','".date('Y-m-d')."')";
                     $result = mysqli_query( $conn, $sql);
                     if(! $result )
                     {
@@ -297,7 +297,7 @@ journal_info j,
                             <td><input type="date" id="voucher_date" tabindex="1" required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
 
                             <th style="width:15%;">Transaction No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
-                            <td><input type="text" required="required" tabindex="2" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note!='')? $initiate_journal_note : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,'3'.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12"  style="width: 90%; font-size: 11px;"></td>
+                            <td><input type="text" required="required" readonly tabindex="2" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note!='')? $initiate_journal_note : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,'3'.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12"  style="width: 90%; font-size: 11px;"></td>
                         </tr>
                         <tr>
                             <th style="">Person</th><th>:</th>

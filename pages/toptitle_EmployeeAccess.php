@@ -77,10 +77,13 @@ $firstDayOfCurrentMonth = date("Y-m-01");
 $lastDayOfPreviousMonth = date("Y-m-t", strtotime($firstDayOfCurrentMonth . " -1 month"));
 $totalDaysInLastMonth = date("d", strtotime($lastDayOfPreviousMonth));
 
+$date = new DateTime('first day of last month');
+$lastMonth = $date->format('n'); // Full month name, e.g., "December"
+$lastYear = $date->format('Y');
 
-$lastMonthGet = date('m')-1;
-$lastMonthStartDay = date('Y-'.$lastMonthGet.'-01');
-$lastMonthEndDay = date('Y-'.$lastMonthGet.'-'.$totalDaysInLastMonth.'');
+$lastMonthGet = $lastMonth;
+$lastMonthStartDay = date($lastYear.'-'.$lastMonthGet.'-01');
+$lastMonthEndDay = date($lastYear.'-'.$lastMonthGet.'-'.$totalDaysInLastMonth.'');
 
 $currentMonthStartDate = date('Y-m-01');
 $currentMonthEndDate = date('Y-m-d');
@@ -385,11 +388,15 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                     ?>
 
                 </table>
-
                 <table align="center" class="table table-striped table-bordered" style="font-size:10px;">
                     <thead>
                     <tr class="bg-info">
-                        <th colspan="8" style="text-align: center; font-size: 15px; font-weight: bold">Last Month Attendance</th>
+                        <?php
+                        $date = new DateTime('first day of last month');
+                        $lastMonth = $date->format('F'); // Full month name, e.g., "December"
+                        $lastYear = $date->format('Y');
+                        ?>
+                        <th colspan="8" style="text-align: center; font-size: 15px; font-weight: bold">Last Month Attendance <?=$lastMonth;?>, <?=$lastYear?></th>
                     </tr>
                     <tr>
                         <th>Date</th>
@@ -416,7 +423,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
 
                     $res = mysqli_query($conn, "SELECT * FROM ZKTeco_attendance WHERE employee_id=".$_SESSION['PBI_ID']." AND date BETWEEN '".$lastMonthStartDay."' AND '".$lastMonthEndDay."' ORDER BY date DESC");
                     $attendanceData = [];
-                    while ($data = mysqli_fetch_object($res)) {
+                    while($data=mysqli_fetch_object($res)){ $yesterday = date("Y-m-d", strtotime("-1 day"));
                         $attendanceData[$data->date] = $data; // Map attendance by date
                     }
 
@@ -458,8 +465,8 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                 'COUNT(id)',
                                 'approved_status="APPROVED" AND PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
                             );
-                            $getLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
-                            $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between="'.$currentDate.'"');
+                            $getLeave = find_a_field('hrm_leave_info','COUNT(id)','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
+                            $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$currentDate.'"');
 
                             if ($dayName == 'Friday') { ?>
                             <tr>
@@ -470,7 +477,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                             <?php } elseif($getOffDay>0){ ?>
                                 <tr>
                                     <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day between="'.$currentDate.'"');?></span></td>
+                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day="'.$currentDate.'"');?></span></td>
                                 </tr>
 
                             <?php } elseif($getOSD>0){ ?>
@@ -479,10 +486,21 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                     <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px">Outside Duty</span></td>
                                 </tr>
 
-                            <?php } elseif($getLeave>0){ ?>
+                            <?php } elseif($getLeave>0){ $getLeaveStatus = find_a_field('hrm_leave_info','status','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
+                                 ?>
                                 <tr>
                                     <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-success" style="font-size:10px">Leave</span></td>
+                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold">
+                                        <span class="label label-success" style="font-size:10px">
+                                            <?php if ($getLeaveStatus=='PENDING'){ echo 'Applied for Leave';
+                                            } elseif ($getLeaveStatus=='RECOMMENDED'){ echo 'Leave is RECOMMENDED';
+                                            } elseif ($getLeaveStatus=='APPROVED') {
+                                                echo 'Leave is Approved';
+                                            } elseif ($getLeaveStatus=='REJECTED'){ echo 'Leave application is REJECTED'; } else {
+                                                echo 'On Leave';
+                                            }?>
+                                        </span>
+                                    </td>
                                 </tr>
 
 

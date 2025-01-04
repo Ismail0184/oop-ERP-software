@@ -1915,7 +1915,7 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">'.$_SESSION['company_name'].'</p>
         <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">'.$title.'</p>';
-        $str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$tdate.'</p> ';
+        //$str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$tdate.'</p> ';
         if($fdate>0){
             $str.='
 		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
