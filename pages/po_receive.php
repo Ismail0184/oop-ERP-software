@@ -451,7 +451,10 @@ td {
               <input type="hidden" name="item_id_<?=$row->id?>" id="item_id_<?=$row->id?>" value="<?=$row->item_id?>" /></td>
               <td><?=$row->item_name?> # <?=$row->item_details; ?>
               <input type="hidden" name="rate_<?=$row->id?>" id="rate_<?=$row->id?>" value="<?=$row->rate?>" /></td>
-              
+              <input type="hidden" name="mfg_<?=$row->id?>"   value="<?=$row->mfg?>" /></td>
+              <input type="hidden" name="batch_<?=$row->id?>" value="<?=$row->batch?>" /></td>
+              <input type="hidden" name="m_id_<?=$row->id?>"  value="<?=$row->m_id?>" /></td>
+
               <td width="7%" align="center" style="text-align:center"><?=$row->unit_name?>
               <input type="hidden" name="unit_name_<?=$row->id?>" id="unit_name_<?=$row->id?>" value="<?=$row->unit_name?>" /></td>
               <td width="7%" align="center" style="text-align:center"><?=$row->qty?></td>

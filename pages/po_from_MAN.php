@@ -28,7 +28,6 @@ if(isset($_POST['extract_MAN'])) {
     $_POST['warehouse_id'] = $man_master->warehouse_id;
     $_POST['po_details'] = $man_master->remarks;
     $_POST['po_date'] = date('Y-m-d');
-    $_POST['po_id'] = automatic_number_generate("purchase_master","po_id","create_date='".date('Y-m-d')."'");
     $_POST['status'] = 'UNCHECKED';
     $_POST['entry_by'] = $_SESSION['userid'];
     $_POST['entry_at'] = date('Y-m-d h:s:i');
@@ -40,7 +39,7 @@ if(isset($_POST['extract_MAN'])) {
     $crud = new crud($table_master);
     $crud->insert();
 
-    $_SESSION['initiate_po_no'] = find_a_field(''.$table_master.'',''.$unique.'','po_id="'.$poidgenerate.'"');
+    $_SESSION['initiate_po_no'] = find_a_field(''.$table_master.'',''.$unique.'','po_id="'.$_POST['po_id'].'"');
     $$unique = $_SESSION['initiate_po_no'];
     $_SESSION[$unique] = $_POST[$unique];
     $_SESSION['select_vendor_PO']=$_POST['vendor_id'];
@@ -56,6 +55,8 @@ if(isset($_POST['extract_MAN'])) {
         $_POST['rate'] = $data->rate;
         $_POST['amount'] = $data->qty*$data->rate;
         $_POST['mfg'] = $data->mfg;
+        $_POST['batch'] = $data->batch;
+        $_POST['m_id'] = $data->m_id;
         $_POST['item_id'] = $data->item_id;
         $_POST['item_id'] = $data->item_id;
         $_POST['entry_by'] = $_SESSION['userid'];
@@ -222,14 +223,15 @@ $sql_checked_by="SELECT  p.PBI_ID,concat(p.PBI_ID_UNIQUE,' : ',p.PBI_NAME,' : ',
 							 p.PBI_ID=e.PBI_ID and 
 							 e.ESS_JOB_LOCATION=1 group by p.PBI_ID							 
 							  order by p.PBI_NAME";
+
 $initiate_po_no = @$_SESSION['initiate_po_no'];
 $initiate_pono = @$_SESSION['initiate_pono'];
 $initiate_po_id = @$_SESSION['initiate_po_id'];
 if($initiate_po_no>0):
-$condition=$unique."=".$initiate_po_no;
-		$data=db_fetch_object($table_master,$condition);
-		while (list($key, $value)=each($data))
-		{ $$key=$value;}
+    $condition=$unique."=".$initiate_po_no;
+    $data=db_fetch_object($table_master,$condition);
+    while (list($key, $value)=each($data))
+    { $$key=$value;}
 
     if (isset($_GET['id'])) {
         $edit_value = find_all_field('' . $table_details . '', '', 'id=' . $_GET['id'] . '');
@@ -300,7 +302,6 @@ if(isset($_POST['cancel_MAN']))
 
 <form action="<?=$page;?>" method="post" name="cloud" id="cloud" class="form-horizontal form-label-left">
     <input  name="<?=$unique?>" type="hidden" id="<?=$unique?>" value="<?=$initiate_po_no;?>"/>
-    <input  name="po_id" type="hidden" id="po_id" value="<?=$_SESSION['initiate_po_id'];?>"/>
     <input  name="warehouse_id" type="hidden" id="warehouse_id" value="<?=$warehouse_id?>"/>
     <input  name="po_date" type="hidden" value="<?=$po_date?>"/>
     <input  name="vendor_id" type="hidden" id="vendor_id" value="<?=$vendor_id?>"/>
@@ -309,6 +310,8 @@ if(isset($_POST['cancel_MAN']))
         <tr style="background-color: white">
             <th style="text-align: center; vertical-align: middle">Active MAN</th>
             <td align="left" style="width: 65%; vertical-align: middle">
+                <input type="hidden" id="po_id"   required="required" name="po_id" value="<?=($po_id!='')? $po_id : automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'",""); ?>" class="form-control col-md-7 col-xs-12"  readonly >
+
                 <select class="select2_single form-control" style="width:400px" tabindex="-1" required="required" name="MAN_ID">
                     <option></option>
                     <?=foreign_relation('MAN_master', 'id', 'CONCAT(id," : ", MAN_ID)', $_SESSION['MAN_ID'], 'status="VERIFIED" and po_create_status="No" order by id desc'); ?>
@@ -336,7 +339,8 @@ if(isset($_POST['cancel_MAN']))
                         <td style="width: 20%">
                             <input type="text" id="po_no" style="width:20%" name="po_no" value="<?=$initiate_po_no;?>" readonly class="form-control col-md-7 col-xs-12" >
                             <input type="text" id="pono" style="width:60%"  name="pono" value="<?php if(!isset($pono)) echo automatic_number_generate($sekeyword,"purchase_master","pono","1",""); else echo $pono;?>"  class="form-control col-md-7 col-xs-12" >
-                            <input type="hidden" name="po_id" value="<?=($po_id!='')? $po_id : automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'",""); ?>" class="form-control col-md-7 col-xs-12">
+                            <input type="hidden" id="po_id"   required="required" name="po_id" value="<?=($po_id!='')? $po_id : automatic_number_generate("","purchase_master","po_id","create_date='".date('Y-m-d')."'",""); ?>" class="form-control col-md-7 col-xs-12"  readonly >
+
                         </td>
 
                         <th style="width: 10%">Vendor <span class="required text-danger">*</span></th>

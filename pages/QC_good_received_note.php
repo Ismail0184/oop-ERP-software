@@ -492,8 +492,8 @@ vendor v
                                 <td rowspan="5" style="text-align:left; vertical-align: middle"><?=$item_name?></td>
                                 <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="qty_1" value="<?=$GRN_info->qty?>" id="qty_1"></td>
                                 <td style="text-align:center; width: 15%; vertical-align: middle"><input type="number" step="any" name="rate_1" value="<?=$GRN_info->rate?>" id="rate_1"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="text" name="batch_1" id="batch_1" value="<?=$item_details->batch?>"></td>
-                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="date" name="exp_date_1" id="exp_date_1" value="<?=$item_details->mfg?>"></td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="text" name="batch_1" id="batch_1" value="<?=$GRN_info->batch?>"> </td>
+                                <td style="text-align:center; width: 15%; vertical-align: middle"><input type="date" name="exp_date_1" id="exp_date_1" value="<?=$GRN_info->mfg?>"></td>
                             </tr>
                             <tr>
                                 <td style="vertical-align: middle">2</td>

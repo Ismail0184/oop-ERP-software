@@ -360,17 +360,21 @@ des.*,dep.*
                 <?php } else { ?>
 
                         <?php if ($dayName == 'Friday') { ?>
-                            <td style="border: solid 1px #999; text-align: center; vertical-align: middle">H</td>
+                        <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; font-weight: bold">H</td>
                     <?php } elseif (!empty($data['attendance'][$date]['clock_in']) && $status == 'On Time') { ?>
                         <td style="border: solid 1px #999; text-align: center; vertical-align: middle">P</td>
                     <?php } else {
                             $userID = $data['details']['employee_id'];
                             $getOSD = find_a_field('hrm_od_attendance','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$userID.'" and attendance_date="'.$date.'"');
                             $getLeave = find_a_field('hrm_leave_info','COUNT(id)','approved_status="APPROVED" and PBI_ID="'.$userID.'" and s_date between "'.$date.'" and "'.$date.'" and e_date between "'.$date.'" and "'.$date.'"');
-                            if($getOSD>0) { ?>
+                            $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$date.'"');
+
+                        if($getOSD>0) { ?>
                                 <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: #3fc3ee">OD</td>
                            <?php } elseif($getLeave>0) { ?>
                                 <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: green">L</td>
+                        <?php } elseif($getOffDay>0) { ?>
+                            <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; font-weight: bold">H</td>
                             <?php  } else { ?>
                         <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: #DCDCDC; color: red">A</td>
                     <?php }}?>
@@ -384,15 +388,17 @@ des.*,dep.*
             $totalOSD = find_a_field('hrm_od_attendance','COUNT(id)','approved_status="APPROVED" and attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
             $totalOSDApplication = find_a_field('hrm_od_attendance','COUNT(id)','attendance_date between "'.$from_date.'" and "'.$to_date.'" and PBI_ID='.$employee_id);
             $totalFriday = countFridaysInMonth(date('Y', strtotime($from_date)),date('m', strtotime($from_date)));
-            $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
+            $totalOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.$from_date.'" and "'.$to_date.'"');
+            $totalHolidays = $totalFriday+$totalOffDay;
+            $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalHolidays);
             $totalDeductionDays = floor(($totalLatePresent-$totalLatePresentApproved)/3)+$totalAbsent;
-            $totalPayDays = ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalAbsent)-$totalDeductionDays;
+            $totalPayDays = ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalHolidays+$totalAbsent)-$totalDeductionDays;
             ?>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalPresent>0)? $totalPresent : '-'; ?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalOSDApplication>0)? $totalOSD.'/'.$totalOSDApplication : '-'; ?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLeaveApplication>0)? $totalLeave.'/'.$totalLeaveApplication : '-'; ?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=($totalLatePresent>0)? $totalLatePresentApproved.'/'.$totalLatePresent : '-'; ?></td>
-            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalFriday;?></td>
+            <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalHolidays;?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=$totalAbsent;?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=floor($totalDeductionDays);?></td>
             <td rowspan="3" style="border: solid 1px #999; text-align: center; vertical-align: middle"><?=floor($totalPayDays);?></td>

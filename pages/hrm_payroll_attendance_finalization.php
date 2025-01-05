@@ -246,15 +246,15 @@ $countManualData = find_a_field(''.$table.'','COUNT(id)','status ="MANUAL" and m
 
                         $totalOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
                         $totalFriday = countFridaysInMonth(date('Y', strtotime($selectedMonthStartDay)),date('m', strtotime($selectedMonthStartDay)));
-                        $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
+                        //$totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalOffDay);
 
                         $getEarlyLeaveDays = find_a_field('hrm_leave_info','COUNT(id)','half_or_full="Half" and PBI_ID='.$id.' and s_date between "'.$selectedMonthStartDay.'" and "'.$selectedMonthEndDay.'"');
-                        $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday);
+                        $totalAbsent =  $totalDaysInTheMonth- ($totalPresent+$totalLatePresent+$totalLeave+$totalOSD+$totalFriday+$totalOffDay);
                         $totalDeductionDays = floor($deductionForLateDays/3)+$totalAbsent;
                         if($totalDeductionDays>0) {
-                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent) - $totalDeductionDays;
+                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent + $totalOffDay) - $totalDeductionDays;
                         } else {
-                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent);
+                            $totalPayDays = ($totalPresent + $totalLatePresent + $totalLeave + $totalOSD + $totalFriday + $totalAbsent + $totalOffDay);
 
                         }
                         ?>
