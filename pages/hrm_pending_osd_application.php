@@ -85,7 +85,7 @@ if(isset($_POST['viewReport'])){
 	r.place,
 	r.late_reason as purpose,r.status as status
 	from '.$table.' r
-	WHERE r.status="'.$required_status.'" order by r.'.$unique.' DESC';
+	WHERE 1 order by r.'.$unique.' DESC';
 } ?>
 
 <?php require_once 'header_content.php'; ?>

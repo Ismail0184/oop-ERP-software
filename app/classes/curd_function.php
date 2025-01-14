@@ -899,9 +899,9 @@ ORDER BY zm.sl, zs.sl");
                         elseif($b=='CANCELED'):
                             $sp='<span class="label label-danger" style="font-size:10px">RETURNED</span>';
                         elseif($b=='BOUNCED'):
-                        elseif($b=='Inactive' || $b=='INACTIVE' || $b=='Not In Service'):
+                        elseif($b=='Inactive' || $b=='INACTIVE' || $b=='Not In Service' || $b=='inactive'):
                             $sp='<span class="label label-danger" style="font-size:10px">Inactive</span>';
-                        elseif($b=='Active' || $b=='ACTIVE' || $b=='In Service'):
+                        elseif($b=='Active' || $b=='ACTIVE' || $b=='In Service' || $b=='active' ):
                             $sp='<span class="label label-success" style="font-size:10px">Active</span>';
                         elseif($b=='BOUNCED'):
                             $sp='<span class="label label-danger" style="font-size:10px">BOUNCED</span>';
@@ -989,6 +989,10 @@ ORDER BY zm.sl, zs.sl");
                             $sp='<span class="label label-info" style="font-size:10px">APPROVED</span>';
                         elseif($b=='GRANTED'):
                             $sp='<span class="label label-success" style="font-size:10px">GRANTED</span>';
+                        elseif($b=='active'):
+                            $sp='<span class="label label-success" style="font-size:10px">Active</span>';
+                        elseif($b=='inactive'):
+                            $sp='<span class="label label-danger" style="font-size:10px">Inactive</span>';
                         else :
                             $sp=$b;
                         endif;
@@ -1698,7 +1702,7 @@ function recentvoucherview($sql,$link,$v_type,$css,$viewmoreURL){
                     if(is_numeric($b)){
                         $align='text-align:right';
                     } else {$align='text-align:left';}
-                    $str .='<td style="'.$align.'"><a href="voucher_print1.php?v_type='.$v_type.'&vo_no='.$row[2].'"  target="_blank">'.$b."</a></td>";}
+                    $str .='<td style="'.$align.'"><a href="acc_voucher_print.php?v_type='.$v_type.'&vo_no='.$row[2].'"  target="_blank">'.$b."</a></td>";}
                 $str .='</tr>';
             }}else {
             $str .='<tr><td colspan="4" style="text-align: center">No data available in table</td></tr>';
@@ -1913,12 +1917,12 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
     if ($result = mysqli_query($conn , $sql)) {
         $str.='
 		<title>'.$_SESSION['company_name'].' | '.$title.'</title>
-        <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px">'.$_SESSION['company_name'].'</p>
+        <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px;text-transform: uppercase">'.$_SESSION['company_name'].'</p>
         <p align="center" style="margin-top:-18px; font-size: 15px; font-weight: bold">'.$title.'</p>';
         //$str.='<p align="center" style="margin-top:-5px; font-size: 12px; font-weight: bold">'.$tdate.'</p> ';
         if($fdate>0){
             $str.='
-		        <p align="center" style="margin-top:-15px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
+		        <p align="center" style="margin-top:-10px; font-size: 12px">Date Interval: Between '.$fdate.' and '.$tdate.' </p>';
         }
         $str.='<table align="center" id="customers"  style="width:'.$width.'%; border: solid 1px #999; border-collapse:collapse;font-size:11px">';
         $str .='<thead>
@@ -1945,19 +1949,22 @@ function reportview($sql,$title,$width,$tfoot,$colspan,$tfoot2){
                     $b=$row[$i];
 
                     if($row[$i]=='0'){ $str .='<td style="text-align:center;border: solid 1px #999; padding:2px"></td>';}
-                    elseif(is_float($b)) {$str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
+                    elseif(is_int($b)) {$str .='<td style="text-align:center;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
+                    elseif(is_float($b)) {$str .='<td style="text-align:center;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
+                    elseif(is_string($b)) {$str .='<td style="text-align:left;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
+                    elseif(is_numeric($b)) {$str .='<td style="text-align:right;border: solid 1px #999; padding:2px">'.$row[$i].'</td>';}
 
                     else {$str .='<td style="border: solid 1px #999; padding:2px">'.$b."</td>";}}
                 $str .='</tr></thead>';
             }} else {            $str .='<tr style="border: solid 1px #999; font-size:11px;"><td colspan="'.$ism.'" style="border: solid 1px #999; padding:2px; text-align: center; font-size: 11px">No data available in table</td></tr>';
         }
         mysqli_free_result($result);
-        if($tfoot>0 && $tfoot2<0){
-            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th></tr></tfoot>';
+        if($tfoot>0 || $tfoot2<0){
+            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><td style="text-align:right; border: solid 1px #999; font-size:11px;font-weight: bold">'.number_format($tfoot,2).'</td></tr></tfoot>';
         }
 
-        if($tfoot>0 || $tfoot2>0){
-            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot,2).'</th><th style="text-align:right; border: solid 1px #999; font-size:11px;">'.number_format($tfoot2, '.', ',').'</th></tr></tfoot>';
+        if($tfoot>0 && $tfoot2>0){
+            $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right; border: solid 1px #999; font-size:11px;">Total</th><td style="text-align:right; border: solid 1px #999; font-size:11px;font-weight: bold">'.number_format($tfoot,2).'</td><td style="text-align:right; border: solid 1px #999; font-size:11px;font-weight: bold">'.number_format($tfoot2, '.', ',').'</td></tr></tfoot>';
         }
 
         $str .='</table>';

@@ -354,7 +354,7 @@ des.*,dep.*
                     $status = $data['attendance'][$date]['status'];
                     $clock_in = $data['attendance'][$date]['clock_in'];
                     $clock_out = $data['attendance'][$date]['clock_out'];
-                    $attDate= $data['attendance'][$date]['date'];
+                    //$attDate= $data['attendance'][$date]['date'];
                     ?>
                     <td style="border: solid 1px #999; text-align: center; vertical-align: middle; background-color: <?=($status=='Late')? '#DCDCDC; color:blue' : ''; ?>"><?= ($status == 'Late') ? 'LP' : (($status == 'On Time') ? 'P' : 'A'); ?></td>
                 <?php } else { ?>

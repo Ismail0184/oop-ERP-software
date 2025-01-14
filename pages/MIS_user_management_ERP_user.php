@@ -196,13 +196,9 @@ $res='select '.$unique.','.$unique.' as User_id,username as user_name,'.$unique_
                             </div>
                         </div>
                     </div>
-                    <?php if(!isset($_GET[$unique])): ?></div><?php endif;?>
-
-
-
-
-
-
+                    <?php if(!isset($unique_GET)): ?>
+                </div>
+            <?php endif; ?>
 
                 <?php if(!isset($_GET[$unique])){ ?>
                     <?=$crud->report_templates_with_add_new($res,$title,12,$action=$_SESSION["userlevel"],$create=1);?>

@@ -334,7 +334,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                             $getOSD = find_a_field(
                                 'hrm_od_attendance',
                                 'COUNT(id)',
-                                'approved_status="APPROVED" AND PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                                'PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
                             );
                             $getLeave = find_a_field('hrm_leave_info','COUNT(id)','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
                             $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$currentDate.'"');
@@ -351,10 +351,26 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                     <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day="'.$currentDate.'"');?></span></td>
                                 </tr>
 
-                            <?php } elseif($getOSD>0){ ?>
+                            <?php } elseif($getOSD>0){
+
+                                $getOSDStatus = find_a_field(
+                                    'hrm_od_attendance',
+                                    'status',
+                                    'PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                                );
+                                ?>
                                 <tr>
                                     <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px">Outside Duty</span></td>
+                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold">
+                                        <span class="label label-info" style="font-size:10px">
+                                        <?php if ($getOSDStatus=='PENDING'){ echo 'Applied for OSD';
+                                        } elseif ($getOSDStatus=='APPROVED') {
+                                            echo 'OSD is Approved';
+                                        } elseif ($getOSDStatus=='REJECTED'){ echo 'OSD is REJECTED'; } else {
+                                            echo 'On Outside Duty';
+                                        }?>
+                                        </span>
+                                    </td>
                                 </tr>
 
                             <?php } elseif($getLeave>0){ $getLeaveStatus = find_a_field('hrm_leave_info','status','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
@@ -463,7 +479,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                             $getOSD = find_a_field(
                                 'hrm_od_attendance',
                                 'COUNT(id)',
-                                'approved_status="APPROVED" AND PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                                'PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
                             );
                             $getLeave = find_a_field('hrm_leave_info','COUNT(id)','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
                             $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$currentDate.'"');
@@ -480,10 +496,26 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                     <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px"><?=find_a_field('salary_holy_day','reason','holy_day="'.$currentDate.'"');?></span></td>
                                 </tr>
 
-                            <?php } elseif($getOSD>0){ ?>
+                            <?php } elseif($getOSD>0){
+
+                                $getOSDStatus = find_a_field(
+                                    'hrm_od_attendance',
+                                    'status',
+                                    'PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                                );
+                                ?>
                                 <tr>
                                     <td class="text-center"><?=$displayDate?></td>
-                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-primary" style="font-size:10px">Outside Duty</span></td>
+                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold">
+                                        <span class="label label-info" style="font-size:10px">
+                                        <?php if ($getOSDStatus=='PENDING'){ echo 'Applied for OSD';
+                                        } elseif ($getOSDStatus=='APPROVED') {
+                                            echo 'OSD is Approved';
+                                        } elseif ($getOSDStatus=='REJECTED'){ echo 'OSD is REJECTED'; } else {
+                                            echo 'On Outside Duty';
+                                        }?>
+                                        </span>
+                                    </td>
                                 </tr>
 
                             <?php } elseif($getLeave>0){ $getLeaveStatus = find_a_field('hrm_leave_info','status','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');

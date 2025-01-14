@@ -48,6 +48,10 @@ if(isset($_GET['report_id']) && $_GET['report_id']=='1012001') {
 } elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012012'){
     $fileName = "Collection Register.xls";
     $fields = array('Collection Id', 'Collection Date','Customer Code','Ledger ID', 'Customer Name', 'Customer Group','Territory','Address','Phone No','Bank','Particulars','Amount');
+
+} elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012014'){
+    $fileName = "Adjustment Register.xls";
+    $fields = array('Ref No.', 'Entry Date','Customer Code','Ledger ID', 'Customer Name', 'Customer Group','Territory','Address','Phone No','Particulars','Amount');
 }
 
 else {
@@ -190,6 +194,57 @@ where sdd.depot_id=w.warehouse_id and
      else {
          $excelData .= 'No records found...' . "\n";
      }
+
+
+
+ } elseif ($_GET['report_id']=='1012014') {
+     $query = $db->query("SELECT 
+    c.id,
+    c.journal_info_no, 
+    c.j_date,
+    d.dealer_custom_code,
+    c.ledger_id, 
+    d.dealer_name_e,
+    r.BRANCH_NAME,
+    t.AREA_NAME,    
+    d.address_e,
+    d.mobile_no,
+    c.narration,
+    FORMAT(c.cr_amt,2) as Amount
+FROM 
+    journal_info c,
+    dealer_info d,
+    branch r,
+    area t
+    
+WHERE 
+    d.region=r.BRANCH_ID and 
+    d.area_code=t.AREA_CODE and
+    c.ledger_id=d.account_code and
+    c.type = 'Credit' AND 
+    c.cr_amt > 0 AND 
+    c.j_date between '".$_GET['f_date']."' and '".$_GET['t_date']."' and 
+    c.journal_info_no IN (
+        SELECT journal_info_no
+        FROM journal_info
+        WHERE ledger_id = '2002018700000000' AND dr_amt > 0
+    ) order by c.j_date,c.journal_info_no");
+     if ($query->num_rows > 0) {
+         while ($row = $query->fetch_assoc()) {
+             $row['journal_info_no'] = "'" . $row['journal_info_no'];
+             $lineData = array($row['journal_info_no'], $row['j_date'], $row['dealer_custom_code'],
+                 $row['ledger_id'], $row['dealer_name_e'], $row['BRANCH_NAME'],$row['AREA_NAME'],$row['address_e'],
+                 $row['mobile_no'],
+                 $row['narration'],$row['Amount']);
+             array_walk($lineData, 'filterData');
+             $excelData .= implode("\t", array_values($lineData)) . "\n";
+         }
+     }
+     else {
+         $excelData .= 'No records found...' . "\n";
+     }
+
+
 
  } elseif ($_GET['report_id']=='1012003') {
      $query = $db->query("Select i.item_id,i.finish_goods_code as finish_goods_code,i.item_name as item_name,i.unit_name as uom,i.pack_size as pack_size,
