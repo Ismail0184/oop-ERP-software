@@ -23,7 +23,7 @@ if(prevent_multi_submit()){
         $_SESSION['DEPID']=$_POST['depot_id'];
         $_POST['do_section']="regular_invoice";
         $_POST['entry_at']=date('Y-m-d H:s:i');
-        $_POST['entry_by']=$_SESSION['warehouseId'];
+        $_POST['entry_by']=$_SESSION['userid'];
         if($_POST['flag']<1){
             $_POST['do_no'] = find_a_field($table_master,'max(do_no)','1')+1;
             $crud->insert();
@@ -49,7 +49,7 @@ if(prevent_multi_submit()){
             $_POST['total_amt'] = ($_POST['total_unit'] * $_POST['unit_price']);
             $_POST['revenue_amount'] = ((($_POST['total_unit'] * $_POST['unit_price'])/100)*$_POST['revenue_persentage']);
             $_POST['t_price'] = find_a_field('item_info','t_price','item_id ='.$_POST['item_id']);
-            $_POST['entry_by']=$_SESSION['warehouseId'];
+            $_POST['entry_by']=$_SESSION['userid'];
             $_POST['gift_on_orders'] = $crud->insert();
             $sql_gift_on_order=mysqli_query($conn, 'SELECT id from sale_do_details WHERE do_no='.$_SESSION['unique_master_for_regular'].' and item_id='.$_POST['item_id'].' and dealer_code='.$_POST['dealer_code'].' and total_unit='.$_POST['total_unit'].' and total_amt='. $_POST['total_amt'].' and entry_by='.$_POST['entry_by'].' order by id desc limit 1');
             $gor=mysqli_fetch_object($sql_gift_on_order);
@@ -75,6 +75,7 @@ if(prevent_multi_submit()){
                         $_POST['total_amt']  = (((int)($total_unit/$gift->item_qty))*($_POST['unit_price']));
                         $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty)));
                         $_POST['dist_unit'] = $_POST['total_unit'];
+                        $_POST['commission']= '';
                         $_POST['pkt_unit']  = '0.00';
                         $_POST['d_price']  = '0.00';
                         $_POST['pkt_size']  = '1.00';
@@ -100,6 +101,7 @@ if(prevent_multi_submit()){
                             $_POST['pkt_unit'] = 0;
                         }
                         $_POST['t_price'] = '0.00';
+                        $_POST['commission']= '';
                         $inStockCtn = ($in_stock_pcs)/$gift_item->pack_size; $inStockCtn=(int)$inStockCtn;
                         $_POST['inStock_ctn']=$inStockCtn;
                         $_POST['inStock_pcs']=($in_stock_pcs)-($inStockCtn*$gift_item->pack_size);
@@ -187,6 +189,7 @@ $item_all_m_price = @$item_all->m_price;
 $item_all_pack_size = @$item_all->pack_size;
 $item_all_revenue_persentage = @$item_all->revenue_persentage;
 
+$commission = find_a_field('sale_do_details','SUM(commission)','do_no='.$_SESSION['unique_master_for_regular']);
 
 $GET_id = @$_REQUEST['id'];
 if($GET_id>0){
@@ -341,7 +344,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                             <td>
                                 <input type="text" style="width: 90%;" readonly value="<?=$dealer->credit_limit;?>" class="form-control col-md-7 col-xs-12">
                             </td>
-                            <th>Commission </th><th style="text-align: center; width: 2%">:</th>
+                            <th>Commission (%) </th><th style="text-align: center; width: 2%">:</th>
                             <td>
                                 <input style="width: 90%;" name="commission" readonly type="text" value="<?=$dealer->commission;?>" class="form-control col-md-7 col-xs-12">
                             </td>
@@ -361,7 +364,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                                     <?php if(isset($_SESSION['unique_master_for_regular'])>0): ?>
                                         <option value="<?=$depot_id?>" selected><?=find_a_field('warehouse','warehouse_name','warehouse_id='.$depot_id)?></option>
                                     <?php else: ?>
-                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['warehouseId']),$_SESSION['warehouse']);?>
+                                        <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),$_SESSION['warehouse']);?>
                                     <?php endif; ?>
                                 </select>
                             </td>
@@ -405,13 +408,16 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
         <table align="center" style="width:98%; font-size: 11px" class="table table-striped table-bordered">
             <thead>
             <tr class="bg-primary text-white">
-                <th style="text-align: center">Finish Goods Code</th>
-                <th style="text-align: center">In Stock</th>
-                <th style="text-align: center">D Price</th>
-                <th style="text-align: center">Unit Price</th>
-                <th style="text-align: center">Invoice Qty</th>
-                <th style="text-align: center">Unit Amount</th>
-                <th style="text-align: center">Action</th>
+                <th style="text-align: center; vertical-align: middle">Finish Goods Code</th>
+                <th style="text-align: center; vertical-align: middle">In Stock</th>
+                <th style="text-align: center; vertical-align: middle">D Price</th>
+                <th style="text-align: center; vertical-align: middle">Unit Price</th>
+                <th style="text-align: center; vertical-align: middle">Invoice Qty</th>
+                <th style="text-align: center; vertical-align: middle">Unit Amount</th>
+                <?php if($dealer->commission>0){?>
+                <th style="text-align: center; width: 8%; vertical-align: middle">Commission</th>
+                <?php } ?>
+                <th style="text-align: center; vertical-align: middle">Action</th>
             </tr>
             </thead>
             <tbody>
@@ -436,28 +442,45 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                     <input  class="form-control col-md-7 col-xs-12" name="dist_unit" type="number" oninput="enableAddButton()" onkeyup="doAlert(this.form);" min="1" id="dist_unit" style="width:99%; height:37px; text-align:center; font-size:11px" value="<?=$edit_value_dist_unit?>" required="required" class="dist_unit" />
                     <input name="pkt_size" type="hidden" class="input3" id="pkt_size"  style="width:55px;"  value="<?=$item_all_pack_size?>" readonly/></td>
                 <td align="center" style="width:10%; vertical-align: middle">
-                    <input type="number" id="total_amt" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="total_amt" value="<?=$edit_value_total_amt?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="total_amt" ></td>
+                    <input type="number" id="total_amt" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="total_amt" value="<?=$edit_value_total_amt?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="total_amt" >
+                </td>
+                <?php if($dealer->commission>0){?>
+                <td align="center" style="vertical-align: middle">
+                    <input type="number" id="commissionAmount" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="commission" value="<?=$edit_value_commission?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="commissionAmount" >
+                </td>
+                <?php } ?>
+
                 <td align="center" style="width:5%; vertical-align: middle">
                     <?php if (isset($_REQUEST['id'])) : ?><button type="submit" class="btn btn-primary" name="editdata<?=$_REQUEST['id'];?>" id="editdata<?=$_REQUEST['id'];?>" style="font-size: 11px">Update</button><br><a href="<?=$page;?>" style="font-size: 11px"  onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you sure you want to Delete the Voucher?");' class="btn btn-danger"><i class="fa fa-close"></i> Cancel</a>
                     <?php else: ?><button type="submit" class="btn btn-primary" disabled name="add" id="addButton" style="font-size: 11px"><i class="fa fa-plus"></i> Add</button> <?php endif; ?></td>
             </tr>
             </tbody>
             <script>
-                $(function(){
-                    $('#unit_price,#dist_unit').keyup(function(){
+                $(function() {
+                    // Update commissionAmount when inputs are changed
+                    $('#unit_price, #dist_unit').keyup(function() {
                         var unit_price = parseFloat($('#unit_price').val()) || 0;
                         var dist_unit = parseFloat($('#dist_unit').val()) || 0;
-                        $('#total_amt').val((unit_price * dist_unit));
+                        var total_amt = unit_price * dist_unit;
+
+                        $('#total_amt').val(total_amt); // Update total amount
+
+                        // Calculate commission (rate = 3%)
+                        var commissionRate = 3;
+                        var commission = total_amt * (commissionRate / 100);
+                        $('#commissionAmount').val(commission); // Update commission
                     });
+                    $('#unit_price, #dist_unit').keyup();
                 });
-            </script>
-            <SCRIPT language=JavaScript>
+
                 function doAlert(form)
                 {   var val=form.dist_unit.value;
                     var val2=form.inStock_pcs.value;
                     if (Number(val)>Number(val2)){
                         alert('oops!! exceed stock limit!! Thanks');
-                        form.dist_unit.value='';}
+                        form.dist_unit.value='';
+                        addButton.disabled = true;
+                    }
                     form.dist_unit.focus();
                 }</script>
         </table>

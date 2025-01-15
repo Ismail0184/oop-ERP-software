@@ -2170,7 +2170,7 @@ function added_data_delete_edit_invoice($sql,$unique,$unique_GET,$COUNT_details_
         $str .='</tbody>';
         $str .='<tfoot><tr><th colspan="'.$colspan.'" style="text-align:right">Order Value = </th><th style="text-align:right">'.number_format($amount,2).'</th><td></td></tr>';
         if($commission>0):
-            $comissionGET=($amount/100)*$commission;
+            $comissionGET=$commission;
             $str.='<input type="hidden" name="commission_amount" id="commission_amount"  value="'.$comissionGET.'">';
             $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Less: Commission = </th><th style="text-align:right">'.number_format($comissionGET,2).'</th><td></td></tr>';
             $str .='<tr><th colspan="'.$colspan.'" style="text-align:right">Total Receivable Value = </th><th style="text-align:right">'.number_format($amount-$comissionGET,2).'</th><td></td></tr></table>';
