@@ -71,6 +71,7 @@ if(prevent_multi_submit()){
                     $gift_item = find_all_field('item_info','','item_id="'.$gift->gift_id.'"');
                     $_POST['item_id'] = $gift->gift_id;
                     if(($gift->gift_id== 1096000100010312) && ((((int)($total_unit/$gift->item_qty))))>0){
+                        mysqli_query($conn, "UPDATE sale_do_details SET commission='0' where id=".$gor->id."");
                         $_POST['unit_price'] = (-1)*($gift->gift_qty);
                         $_POST['total_amt']  = (((int)($total_unit/$gift->item_qty))*($_POST['unit_price']));
                         $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty)));
@@ -231,7 +232,7 @@ if($GET_id>0){
     $in_stock_pcs= $inventory_stock-$ordered_qty;
 }
 $del_qty = find_a_field('sale_do_chalan','sum(total_unit)','item_id="'.$_GET_item_id.'" and depot_id="'.$depot_id.'" and status in ("UNCHECKED","CHECKED","PROCESSING")');
-$res='select a.id,a.gift_on_order as gift_id,concat(b.item_id," # ",b.finish_goods_code," # ",b.item_name) as item_description,b.unit_name as unit,b.pack_size,round(a.d_price, 2) as d_price,round(a.unit_price, 2) as unit_price,a.total_unit, a.total_amt
+$res='select a.id,a.gift_on_order as gift_id,concat(b.item_id," # ",b.finish_goods_code," # ",b.item_name) as item_description,b.unit_name as unit,b.pack_size,round(a.d_price, 2) as d_price,round(a.unit_price, 2) as unit_price,a.total_unit,a.commission, a.total_amt
 from
 sale_do_details a,item_info b where b.item_id=a.item_id and a.do_no='.$unique_master_for_regular.' order by a.id';
 $query=mysqli_query($conn, $res);
@@ -247,56 +248,56 @@ while($data=@mysqli_fetch_object($query)){
 
 $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_master.'='.$unique_master_for_regular.'');?>
 <?php require_once 'header_content.php'; ?>
-    <script type="text/javascript">
-        function DoNavPOPUP(lk){myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=850,height=500,left = 230,top = -1");}
-        function reload(form){
-            var val=form.item_id.options[form.item_id.options.selectedIndex].value;
-            self.location='<?=$page;?>?<?php if($GET_id>0){?>id=<?=$GET_id?>&<?php } ?>item_id=' + val ;}</script>
-    <style>
-        #customers {}
-        #customers td {}
-        #customers tr:ntd-child(even)
-        {background-color: #f0f0f0;}
-        #customers tr:hover {background-color: #f5f5f5;}
-        td{}
-    </style>
-    <style>
-        input[type=text]{
-            font-size: 11px;
-        }
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js "></script>
-    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script type="text/javascript">
+    function DoNavPOPUP(lk){myWindow = window.open("<?=$page?>?<?=$unique?>="+lk, "myWindow", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no,directories=0,toolbar=0,scrollbars=1,location=0,statusbar=1,menubar=0,resizable=1,width=850,height=500,left = 230,top = -1");}
+    function reload(form){
+        var val=form.item_id.options[form.item_id.options.selectedIndex].value;
+        self.location='<?=$page;?>?<?php if($GET_id>0){?>id=<?=$GET_id?>&<?php } ?>item_id=' + val ;}</script>
+<style>
+    #customers {}
+    #customers td {}
+    #customers tr:ntd-child(even)
+    {background-color: #f0f0f0;}
+    #customers tr:hover {background-color: #f5f5f5;}
+    td{}
+</style>
+<style>
+    input[type=text]{
+        font-size: 11px;
+    }
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js "></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
 <?php require_once 'body_content_nva_sm.php'; ?>
-    <form action="<?=$page?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
-        <table align="center" style="width: 60%;; font-size: 11px">
-            <tr><td>Dealer / Customer / Outlet</td>
-                <td style="width:10px; text-align:center;vertical-align: middle"> -</td>
-                <td style="vertical-align: middle"><select class="select2_single form-control" style="width:300px; font-size: 11px" tabindex="-1" required="required"  name="dealer_code" id="dealer_code">
-                        <option></option>
-                        <?php if(isset($select_dealer_do_regular)>0): ?>
-                            <?php foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', $select_dealer_do_regular, 'dealer_code='.$_SESSION['select_dealer_do_regular']); ?>
-                        <?php else: ?>
-                            <?php foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', $select_dealer_do_regular, 'canceled="YES"'); ?>
-                        <?php endif; ?>
-                    </select>
-                </td>
-                <td style="padding:10px;vertical-align: middle">
-                    <?php if(isset($select_dealer_do_regular)>0){
-                        $status = find_a_field(''.$table_master.'','status','do_no='.$select_dealer_do_regular)
-                        ?>
-                        <button type="submit" style="font-size: 11px; height: 30px" name="dealer_cancel" id="dealer_cancel"  class="btn btn-danger"><i class="fa fa-close"></i> Cancel the dealer</button>
-                        <?php if($status!=='COMPLETED'){ ?>
-                            <a align="center" href="do_challan_view.php?v_no=<?=$select_dealer_do_regular;?>" target="_new"><img src="../../assets/images/print.png" width="25" height="25" /></a>
-                        <?php } else { ?>
-                            <a target="_blank" href="chalan_view.php?v_no=<?=$select_dealer_do_regular;?>"><img src="../../assets/images/print.png" width="25" height="25" /></a>
-                        <?php } ?>
+<form action="<?=$page?>" name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+    <table align="center" style="width: 60%;; font-size: 11px">
+        <tr><td>Dealer / Customer / Outlet</td>
+            <td style="width:10px; text-align:center;vertical-align: middle"> -</td>
+            <td style="vertical-align: middle"><select class="select2_single form-control" style="width:300px; font-size: 11px" tabindex="-1" required="required"  name="dealer_code" id="dealer_code">
+                    <option></option>
+                    <?php if(isset($select_dealer_do_regular)>0): ?>
+                        <?php foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', $select_dealer_do_regular, 'dealer_code='.$_SESSION['select_dealer_do_regular']); ?>
+                    <?php else: ?>
+                        <?php foreign_relation('dealer_info', 'dealer_code', 'CONCAT(dealer_code," : ", dealer_name_e)', $select_dealer_do_regular, 'canceled="YES"'); ?>
+                    <?php endif; ?>
+                </select>
+            </td>
+            <td style="padding:10px;vertical-align: middle">
+                <?php if(isset($select_dealer_do_regular)>0){
+                    $status = find_a_field(''.$table_master.'','status','do_no='.$select_dealer_do_regular)
+                    ?>
+                    <button type="submit" style="font-size: 11px; height: 30px" name="dealer_cancel" id="dealer_cancel"  class="btn btn-danger"><i class="fa fa-close"></i> Cancel the dealer</button>
+                    <?php if($status!=='COMPLETED'){ ?>
+                        <a align="center" href="do_challan_view.php?v_no=<?=$select_dealer_do_regular;?>" target="_new"><img src="../../assets/images/print.png" width="25" height="25" /></a>
                     <?php } else { ?>
-                        <button type="submit" style="font-size: 11px;" name="select_dealer_do"  class="btn btn-primary"><i class="fa fa-plus"></i> Select and Proceed to Next</button>
+                        <a target="_blank" href="chalan_view.php?v_no=<?=$select_dealer_do_regular;?>"><img src="../../assets/images/print.png" width="25" height="25" /></a>
                     <?php } ?>
-                </td>
-            </tr></table>
-    </form>
+                <?php } else { ?>
+                    <button type="submit" style="font-size: 11px;" name="select_dealer_do"  class="btn btn-primary"><i class="fa fa-plus"></i> Select and Proceed to Next</button>
+                <?php } ?>
+            </td>
+        </tr></table>
+</form>
 
 <?php if(isset($select_dealer_do_regular)>0):
     $date = date('Y-m-d');
@@ -378,9 +379,11 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                         <? }else{?>
                             <button type="submit" name="new" class="btn btn-primary" style="font-size: 12px"><i class="fa fa-plus"></i> Initiate Invoice</button>
                             <input name="flag" id="flag" type="hidden" value="0" />
-                        <? } ?></p></form>
-
-            </div></div></div>
+                        <? } ?></p>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <?php if(isset($_SESSION['unique_master_for_regular'])>0):
 
@@ -415,7 +418,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                 <th style="text-align: center; vertical-align: middle">Invoice Qty</th>
                 <th style="text-align: center; vertical-align: middle">Unit Amount</th>
                 <?php if($dealer->commission>0){?>
-                <th style="text-align: center; width: 8%; vertical-align: middle">Commission</th>
+                    <th style="text-align: center; width: 8%; vertical-align: middle">Commission</th>
                 <?php } ?>
                 <th style="text-align: center; vertical-align: middle">Action</th>
             </tr>
@@ -445,9 +448,9 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                     <input type="number" id="total_amt" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="total_amt" value="<?=$edit_value_total_amt?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="total_amt" >
                 </td>
                 <?php if($dealer->commission>0){?>
-                <td align="center" style="vertical-align: middle">
-                    <input type="number" id="commissionAmount" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="commission" value="<?=$edit_value_commission?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="commissionAmount" >
-                </td>
+                    <td align="center" style="vertical-align: middle">
+                        <input type="number" id="commissionAmount" style="width:99%; height:37px; font-size:11px;text-align:center" required="required" min="1" step="any"  name="commission" value="<?=$edit_value_commission?>" class="form-control col-md-7 col-xs-12" readonly autocomplete="off" class="commissionAmount" >
+                    </td>
                 <?php } ?>
 
                 <td align="center" style="width:5%; vertical-align: middle">
@@ -465,8 +468,8 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
 
                         $('#total_amt').val(total_amt); // Update total amount
 
-                        // Calculate commission (rate = 3%)
-                        var commissionRate = 3;
+                        // Calculate commission (rate = <?=$dealer->commission?>%)
+                        var commissionRate = <?=$dealer->commission?>;
                         var commission = total_amt * (commissionRate / 100);
                         $('#commissionAmount').val(commission); // Update commission
                     });
@@ -485,7 +488,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                 }</script>
         </table>
     </form>
-    <?=added_data_delete_edit_invoice($res,$unique,$unique_GET,$COUNT_details_data,$page,8,8,$commission);
+    <?=added_data_delete_edit_invoice($res,$unique,$unique_GET,$COUNT_details_data,$page,9,9,$commission);
 endif;endif;?>
 <?=$html->footer_content();mysqli_close($conn);?>
 

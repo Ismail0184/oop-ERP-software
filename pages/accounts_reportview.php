@@ -2410,7 +2410,8 @@ order by c.do_no";
         if(($do_type=='sales' || $do_type=='sample' || $do_type=='gift'|| $do_type=='free'|| $do_type=='display')) {$do_type_conn=' and sd.challan_type="'.$do_type.'"';} else {$do_type_conn='';}
         $datecon=' and sd.do_date between  "'.$f_date.'" and "'.$t_date.'"';
 
-        $query = 'WITH 
+        $query = '
+WITH 
 FilteredSaleDoDetails AS (
     SELECT 
         do_no, 
@@ -2431,32 +2432,38 @@ ComputedJournalItems AS (
         gift_type, 
         item_ex,
         item_price,
-        total_amt
+        total_amt,
+        Remarks
     FROM 
         journal_item
     GROUP BY 
         do_no, item_id, batch, id, gift_type
 )
 SELECT 
-ji.id,
-ji.id,
-d.dealer_custom_code as code,
-d.dealer_name_e as dealer_name,
-sd.do_no,
-sd.do_date,
-sd.challan_type as Invoice_type,
-i.finish_goods_code AS FG_Code,
-i.item_name AS FG_description,
-i.pack_unit AS UOM,
-i.pack_size AS Pack_Size,
-ib.brand_name,
-ji.batch,
-ji.item_price as COGS_Price,
-ji.item_ex as Qty,
-ji.total_amt as COGS_Amount,
-COALESCE(fsd.total_cash_discount, 0) AS "Discount Amount",
-sd.unit_price AS invoice_Price,
-SUM(sd.unit_price*ji.item_ex) as Invoice_Amount
+    ji.id,
+    d.dealer_custom_code AS code,
+    d.dealer_name_e AS dealer_name,
+    sd.do_no,
+    sd.do_date,
+    sd.challan_type AS Invoice_type,
+    i.finish_goods_code AS FG_Code,
+    i.item_name AS FG_description,
+    i.pack_unit AS UOM,
+    i.pack_size AS Pack_Size,
+    ib.brand_name,
+    ji.batch,
+    ji.item_price AS COGS_Price,
+    ji.item_ex AS Qty,
+    ji.total_amt AS COGS_Amount,
+    COALESCE(fsd.total_cash_discount, 0) AS "Discount Amount",    
+    CASE 
+        WHEN ji.Remarks = "buy" THEN sd.unit_price
+        ELSE "-"
+    END AS invoice_Price,
+    CASE 
+        WHEN ji.Remarks = "buy" THEN sd.total_amt
+        ELSE "-"
+    END AS Invoice_Amount
 
 FROM 
     sale_do_chalan sd
@@ -2482,6 +2489,7 @@ GROUP BY
     ib.brand_name, fsd.total_cash_discount, fsd.total_units
 ORDER BY 
     sd.do_no, ji.id ASC';?>
+
         <?=reportview($query,'Item wise COGS Sales','99',0,'',0); ?>
 
 

@@ -1,1 +1,0 @@
-<?php if ($_GET) {echo 'this is tst';}    ?>
