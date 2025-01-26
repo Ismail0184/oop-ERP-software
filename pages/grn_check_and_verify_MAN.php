@@ -81,8 +81,8 @@ $query = mysqli_query($conn, $results);
 
 
 
-if(isset($_POST[viewreport])) {
-    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+if(isset($_POST['viewreport'])) {
+    $resultss = "Select m.*,m.status as man_status,m.id as mid,w.*,u.*,v.*
 from
 " . $table . " m,
 warehouse w,
@@ -93,10 +93,10 @@ vendor v
   m.entry_by=u.user_id and
  w.warehouse_id=m.warehouse_id and
  v.vendor_id=m.vendor_code and
-  m.man_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' order by m." . $unique . " DESC ";
+  m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by m." . $unique . " DESC ";
     $pquery = mysqli_query($conn, $resultss);
 } else {
-    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+    $resultss = "Select m.*,m.status as man_status,m.id as mid,w.*,u.*,v.*
 from
 " . $table . " m,
 warehouse w,
@@ -151,16 +151,16 @@ $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                         <?php while($MANdetrow=mysqli_fetch_array($resu)){?>
                             <tr style="background-color:#FFF">
                                 <td style="width:2%; text-align:center; vertical-align:middle"><?=$j=$j+1;?></td>
-                                <td style="width:5%; text-align:center; vertical-align:middle"><?=$MANdetrow[finish_goods_code];?></td>
-                                <td style="text-align:left; vertical-align:middle"><?=$MANdetrow[item_name];?></td>
-                                <td style="width:5%; text-align:center; vertical-align:middle"><?=$MANdetrow[unit_name];?></td>
-                                <td style="width:8%; text-align:right; vertical-align:middle"><?=$MANdetrow[qty]; ?></td>
-                                <td style="width:15%; text-align:right; vertical-align:middle"><?=$MANdetrow[mfg]; ?></td>
-                                <td style="width:10%; text-align:right; vertical-align:middle"><?=$MANdetrow[no_of_pack]; ?></td>
-                                <td style="width:10%; text-align:right; vertical-align:middle"><input type="text" required name="po_no<?=$MANdetrow[id];?>" value="<?=$MANdetrow[po_no];?>" style="width: 60px; text-align: center"></td>
-                                <td style="width:10%; text-align:right; vertical-align:middle"><?=find_a_field('purchase_invoice','SUM(qty)','po_no='.$MANdetrow[po_no].' and item_id='.$MANdetrow[item_id].'')-find_a_field('purchase_receive','SUM(qty)','po_no='.$MANdetrow[po_no].' and item_id='.$MANdetrow[item_id].'')?></td>
+                                <td style="width:5%; text-align:center; vertical-align:middle"><?=$MANdetrow['finish_goods_code'];?></td>
+                                <td style="text-align:left; vertical-align:middle"><?=$MANdetrow['item_name'];?></td>
+                                <td style="width:5%; text-align:center; vertical-align:middle"><?=$MANdetrow['unit_name'];?></td>
+                                <td style="width:8%; text-align:right; vertical-align:middle"><?=$MANdetrow['qty']; ?></td>
+                                <td style="width:15%; text-align:right; vertical-align:middle"><?=$MANdetrow['mfg']; ?></td>
+                                <td style="width:10%; text-align:right; vertical-align:middle"><?=$MANdetrow['no_of_pack']; ?></td>
+                                <td style="width:10%; text-align:right; vertical-align:middle"><input type="text" required name="po_no<?=$MANdetrow['id'];?>" value="<?=$MANdetrow['po_no'];?>" style="width: 60px; text-align: center"></td>
+                                <td style="width:10%; text-align:right; vertical-align:middle"><?=find_a_field('purchase_invoice','SUM(qty)','po_no='.$MANdetrow['po_no'].' and item_id='.$MANdetrow['item_id'].'')-find_a_field('purchase_receive','SUM(qty)','po_no='.$MANdetrow['po_no'].' and item_id='.$MANdetrow['item_id'].'')?></td>
                                 <?php if($GET_status=='CHECKED'){  ?>
-<td style="vertical-align:middle"><button type="submit" name="editdata<?=$MANdetrow[id];?>" style="background-color:transparent; border:none" onclick='return window.confirm("Mr. , Are you sure you want to Update?");'><img src="refresh.png" style="width:25px;  height:25px"></button></td><?php } ?>
+<td style="vertical-align:middle"><button type="submit" name="editdata<?=$MANdetrow['id'];?>" style="background-color:transparent; border:none" onclick='return window.confirm("Mr. , Are you sure you want to Update?");'><img src="refresh.png" style="width:25px;  height:25px"></button></td><?php } ?>
  </tr>
                             <?php  } ?></table>
                     <?php if($GET_status=='CHECKED'){  ?>
@@ -178,9 +178,9 @@ $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
     <table align="center" style="width: 50%;">
         <tr><td>
-                <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
+                <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" >
             <td style="width:10px; text-align:center"> -</td>
-            <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+            <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
             <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View MAN</button></td>
         </tr></table>
 
@@ -197,7 +197,7 @@ $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                         <th style="vertical-align: middle">Warehouse</th>
                         <th style="vertical-align: middle">Vendor Name</th>
                         <th style="vertical-align: middle">Remarks</th>
-                        <th style="vertical-align: middle">Delivary<br>Challan</th>
+                        <th style="vertical-align: middle">Delivery<br>Challan</th>
                         <th style="vertical-align: middle">VAT<br>Challan</th>
                         <th style="text-align: center;vertical-align: middle">Entry By</th>
                         <th style="text-align: center;vertical-align: middle">Status</th>
@@ -206,17 +206,17 @@ $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                     <tbody>
                     <?php while ($rows=mysqli_fetch_array($pquery)){ ?>
                         <tr style="font-size:11px; cursor: pointer">
-                            <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[id];?></a></td>
-                            <!--td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[MAN_ID];?></a></td-->
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[man_date]; ?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[warehouse_name];?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[vendor_name];?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[remarks];?></td>
-                            <td><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[delivary_challan];?></strong></u></a></td>
-                            <td style="text-align:left"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[VAT_challan];?></strong></u></a></td>
-                            <td style="text-align:left" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[fname];?><br>at: <?=$rows[entry_at];?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows[man_status];?></a></td>
+                            <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['mid'];?></a></td>
+                            <!--td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['MAN_ID'];?></a></td-->
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['man_date']; ?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['warehouse_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['vendor_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['remarks'];?></td>
+                            <td><a href="dc_documents/<?=$rows['mid'].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['delivary_challan'];?></strong></u></a></td>
+                            <td style="text-align:left"><a href="vc_documents/<?=$rows['mid'].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['VAT_challan'];?></strong></u></a></td>
+                            <td style="text-align:left" onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['fname'];?><br>at: <?=$rows['entry_at'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['man_status'];?></a></td>
                         </tr>
                     <?php } ?></tbody></table>
             </div></div></div>

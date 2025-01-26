@@ -57,170 +57,206 @@ require ("../app/db/base.php");
 if(isset($_SESSION['login_email'])!="")
 {header("Location: dashboard.php");}
 if(isset($_POST['btn-login']))
-	{   $user_email = trim($_POST['user_email']);
-		$user_password = trim($_POST['password']);
-		try
-		{	$stmt = $db_con->prepare("SELECT u.*,c.* FROM users u,company c WHERE u.username=:username and u.company_id=c.company_id and u.section_id=c.section_id ");
-			$stmt->execute(array(":username"=>$user_email));
-			$row = $stmt->fetch(PDO::FETCH_ASSOC);
-			$count = $stmt->rowCount();
-            $stored_hashed_password = $row['passwords']; //
-            if (password_verify($user_password, $stored_hashed_password)) {
-$_SESSION['login_email'] = $row['username'];
-$_SESSION['companyid']= $row['company_id'];
-$_SESSION['sectionid']= $row['section_id'];
-$_SESSION["userid"] = $row['user_id'];
-$_SESSION["PBI_ID"] = $row['PBI_ID'];
-$_SESSION["username"] = $row['fname'];
-$_SESSION["email"] = $row['email'];
-$_SESSION["warehouse"] = $row['warehouse_id'];
-$_SESSION["department"]= $row['department'];
-$_SESSION["dep_power_level"]= $row['dep_power_level'];
-$_SESSION["userlevel"]= $row['level'];
-$_SESSION["language"] = 'English';
-$_SESSION["logo_color"]= $row['logo_color'];
-$_SESSION["designation"]= $row['designation'];
-$_SESSION["status"]= $row['status'];
+{   $user_email = trim($_POST['user_email']);
+    $user_password = trim($_POST['password']);
+    try
+    {	$stmt = $db_con->prepare("SELECT u.*,c.* FROM users u,company c WHERE u.username=:username and u.company_id=c.company_id and u.section_id=c.section_id ");
+        $stmt->execute(array(":username"=>$user_email));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $count = $stmt->rowCount();
+        $stored_hashed_password = $row['passwords']; //
+        if (password_verify($user_password, $stored_hashed_password)) {
+            $_SESSION['login_email'] = $row['username'];
+            $_SESSION['companyid']= $row['company_id'];
+            $_SESSION['sectionid']= $row['section_id'];
+            $_SESSION["userid"] = $row['user_id'];
+            $_SESSION["PBI_ID"] = $row['PBI_ID'];
+            $_SESSION["username"] = $row['fname'];
+            $_SESSION["email"] = $row['email'];
+            $_SESSION["warehouse"] = $row['warehouse_id'];
+            $_SESSION["department"]= $row['department'];
+            $_SESSION["dep_power_level"]= $row['dep_power_level'];
+            $_SESSION["userlevel"]= $row['level'];
+            $_SESSION["language"] = 'English';
+            $_SESSION["logo_color"]= $row['logo_color'];
+            $_SESSION["designation"]= $row['designation'];
+            $_SESSION["status"]= $row['status'];
 //$_SESSION["PASSCODE"]= $row[password];
-$_SESSION['usergroup']=$row['group_for'];
-$_SESSION['gander']=$row['gander'];
-$_SESSION['userpic']=$row['picture_url'];
-$_SESSION['create_date']=date('Y-m-d');
-$res=mysqli_query($conn, "SELECT * FROM company WHERE  section_id='".$_SESSION['sectionid']."' and company_id='".$_SESSION['companyid']."'");
- $userRow=mysqli_fetch_array($res);
-$_SESSION['company_name']=$userRow['company_name'];
-$_SESSION['company_address']=$userRow['address'];
-$_SESSION['com_short_name']=$userRow['com_short_name'];
-$_SESSION['section_name']=$userRow['section_name'];
-$_SESSION['aToken']=$key;
-$login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os,access_token)
+            $_SESSION['usergroup']=$row['group_for'];
+            $_SESSION['gander']=$row['gander'];
+            $_SESSION['userpic']=$row['picture_url'];
+            $_SESSION['create_date']=date('Y-m-d');
+            $res=mysqli_query($conn, "SELECT * FROM company WHERE  section_id='".$_SESSION['sectionid']."' and company_id='".$_SESSION['companyid']."'");
+            $userRow=mysqli_fetch_array($res);
+            $_SESSION['company_name']=$userRow['company_name'];
+            $_SESSION['company_address']=$userRow['address'];
+            $_SESSION['com_short_name']=$userRow['com_short_name'];
+            $_SESSION['section_name']=$userRow['section_name'];
+            $_SESSION['aToken']=$key;
+            $login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os,access_token)
 VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','success','".$operating_system."','".$key."')");
-header("Location: dashboard.php");
-			} else{
-    $login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os)
+            header("Location: dashboard.php");
+        } else{
+            $login_activity_insert = mysqli_query($conn, "INSERT INTO user_activity_log (user_id,ip,access_time,browser,access_status,os)
 VALUES ('".$row['user_id']."','$ip','".$access_time."','".$browser."','decline','".$operating_system."')");
-				echo "email or password does not exist."; // wrong details
-			}}
-		catch(PDOException $e){
-			echo $e->getMessage();
-		}
-	}
+            $message = 'email or password does not exist.';
+        }}
+    catch(PDOException $e){
+        echo $e->getMessage();
+    }
+}
 ?>
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Software Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        <meta charset="utf-8" />
-        <title>Login | ERP Software</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta content="ERP software using php mysql" name="description" />
-        <meta content="Md Ismail Hossain" name="author" />
-        <!-- App favicon -->
-        <link rel="shortcut icon" href="../assets/images/icon/title.png">
-        <!-- Bootstrap Css -->
-        <link href="../assets/login/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
-        <!-- Icons Css -->
-        <link href="../assets/login/css/icons.min.css" rel="stylesheet" type="text/css" />
-        <!-- App Css-->
-        <link href="../assets/login/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: #444;
+        }
 
-    </head>
+        .login-container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+        }
 
-    <body>
-        <div class="home-btn d-none d-sm-block">
-            <a href="index.php" class="text-dark"><i class="fas fa-home h2"></i></a>
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            font-size: 1rem;
+            color: #777;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #555;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #4ca1af;
+            outline: none;
+            box-shadow: 0 0 6px rgba(76, 161, 175, 0.5);
+        }
+
+        .login-button {
+            background-color: #4ca1af;
+            color: white;
+            font-size: 1rem;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .login-button:hover {
+            background-color: #3b8d99;
+            transform: translateY(-2px);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .forgot-password a {
+            text-decoration: none;
+            color: #4ca1af;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .brand-logo {
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            width: 80px;
+            height: 80px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-header">
+        <img src="http://icpd.icpbd-erp.com/4400542.png" alt="ERP Logo" class="brand-logo">
+        <h1>Welcome to ERP</h1>
+        <p>Please log in to access your account.</p>
+        <?php if(isset($message)){ ?>
+            <br>
+            <p style="color: red"><?=$message?></p>
+        <?php } ?>
+    </div>
+    <form class="login-form" action="" method="post">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="user_email" name="user_email" placeholder="Enter your username" required>
         </div>
-        <div class="account-pages my-5 pt-sm-5">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-lg-6 col-xl-5">
-                        <div class="card overflow-hidden">
-                            <div class="bg-soft-primary">
-                                <div class="row">
-                                    <div class="col-7">
-                                        <div class="text-primary p-4">
-                                            <h5 class="text-primary">Welcome Back !</h5>
-                                            <p>Sign in to continue to ERP Software.</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-5 align-self-end">
-                                        <img src="../assets/login/images/profile-img.png" alt="" class="img-fluid">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body pt-0">
-                                <div>
-                                    <a href="index.php">
-                                        <div class="avatar-md profile-user-wid mb-4">
-                                            <span class="avatar-title rounded-circle bg-light">
-                                                <img src="../assets/images/icon/400001.png" alt="" class="rounded-circle" height="34">
-                                            </span>
-                                        </div>
-                                    </a>
-                                </div>
-                                <div class="p-2">
-                                    <form class="form-horizontal" action="" method="POST">
-                                        <div class="form-group">
-                                            <label for="username">Username</label>
-                                            <input type="text" name="user_email" class="form-control" style="font-size:11px" id="user_email" placeholder="Enter username">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="userpassword">Password</label>
-                                            <input type="password" name="password" class="form-control" id="password" style="font-size:11px" placeholder="Enter password">
-                                        </div>
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="customControlInline">
-                                            <label class="custom-control-label" for="customControlInline">Remember me</label>
-                                        </div>
-                                        <div class="mt-3">
-                                            <button class="btn btn-primary btn-block waves-effect waves-light" type="submit" name="btn-login">Log In</button>
-                                        </div>
-                                        <div class="mt-4 text-center">
-                                            <h5 class="font-size-14 mb-3">Sign in with</h5>
-                                            <ul class="list-inline">
-                                                <li class="list-inline-item">
-                                                    <a href="javascript::void()" class="social-list-item bg-primary text-white border-primary">
-                                                        <i class="mdi mdi-facebook"></i>
-                                                    </a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="javascript::void()" class="social-list-item bg-info text-white border-info">
-                                                        <i class="mdi mdi-twitter"></i>
-                                                    </a>
-                                                </li>
-                                                <li class="list-inline-item">
-                                                    <a href="javascript::void()" class="social-list-item bg-danger text-white border-danger">
-                                                        <i class="mdi mdi-google"></i>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="mt-4 text-center">
-                                            <a href="forget-password.php" class="text-muted"><i class="mdi mdi-lock mr-1"></i> Forgot your password?</a>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-5 text-center">
-                            <div>
-                                <p>Don't have an account ? <a href="#" class="font-weight-medium text-primary"> Signup now </a> </p>
-                                <p>© <?=date('Y')?> ICP ERP. Crafted with <i class="mdi mdi-heart text-danger"></i> by Raresoft</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
         </div>
-        <script src="../assets/login/libs/jquery/jquery.min.js"></script>
-        <script src="../assets/login/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="../assets/login/libs/metismenu/metisMenu.min.js"></script>
-        <script src="../assets/login/libs/simplebar/simplebar.min.js"></script>
-        <script src="../assets/login/libs/node-waves/waves.min.js"></script>
-        <script src="../assets/login/js/app.js"></script>
-    </body>
+        <button type="submit" class="login-button" name="btn-login">Login</button>
+    </form>
+    <div class="forgot-password">
+        <a href="#">Forgot your password?</a>
+    </div>
+</div>
+</body>
 </html>
-
-
-
-

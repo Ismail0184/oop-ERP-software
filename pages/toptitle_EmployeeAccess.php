@@ -590,7 +590,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                         <th>Login Time</th>
                         <th>Browser</th>
                         <th>Operating System</th>
-                        <th>LogOut</th>
+                        <th>Platform</th>
                         <th>IP</th>
                     </tr>
                     </thead>
@@ -604,7 +604,7 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                         <td><?=$logData->access_time?></td>
                         <td><?=$logData->browser?></td>
                         <td><?=$logData->os?></td>
-                        <td><?=$logData->access_time_out?></td>
+                        <td><?=$logData->platform?></td>
                         <td><?=$logData->ip?></td>
                     </tr>
                     <?php } ?>
@@ -729,7 +729,7 @@ LIMIT 8;
                     ?>
                     <li style="vertical-align: middle; cursor: pointer" onclick="DoNavPOPUP('<?=$action->ADMIN_ACTION_DID;?>', 'TEST!?', 600, 700)">
                         <p style="vertical-align: middle">
-                            <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><br><font style="font-size: 10px;"><?=$row->ADMIN_ANN_SUBJECT;?></font></span>
+                            <span class="icon" ><i class="fa fa-square blue"></i></span> <span class="name" style="vertical-align: middle"><br><font style="font-size: 10px;"><?=$action->ADMIN_ACTION_SUBJECT;?></font></span>
                         </p>
                     </li>
                 <?php } ?>

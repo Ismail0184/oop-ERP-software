@@ -26,10 +26,6 @@ if(prevent_multi_submit()){
         echo "<script>window.close(); </script>";
     }
 
-
-
-
-//for Delete..................................
     if(isset($_POST['deleted']))
     {
         $crud = new crud($table_deatils);
@@ -85,8 +81,6 @@ if(isset($$unique))
                             </tr>
                         </thead>
                         <tbody>
-
-
                         <?php
                         $results="Select srd.*,i.* from sale_return_details srd, item_info i  where
  srd.item_id=i.item_id and 
@@ -94,26 +88,25 @@ if(isset($$unique))
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row[id];
+                            $ids=$row['id'];
                             ?>
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
-                                <td style="vertical-align:middle"><?=$row[finish_goods_code];?></td>
-                                <td style="vertical-align:middle; width: 25%"><?=$row[item_name];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[unit_name];?></td>
-                                <td align="center" style=" text-align:center"><?=$row[total_unit];?></td>
-                                <td align="center" style=" text-align:center"><?=$row[free_qty];?></td>
-                                <td align="center" style=" text-align:right"><?=$row[discount];?></td>
-                                <td align="center" style=" text-align:right"><?=$row[unit_price]; ?></td>
-                                <td align="center" style=" text-align:center"><?=$row[total_qty]; ?></td>
-                                <td align="center" style="text-align:right"><?=number_format($row[total_amt],2);?></td>
-
+                                <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
+                                <td style="vertical-align:middle; width: 25%"><?=$row['item_name'];?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
+                                <td align="center" style=" text-align:center"><?=$row['total_unit'];?></td>
+                                <td align="center" style=" text-align:center"><?=$row['free_qty'];?></td>
+                                <td align="center" style=" text-align:right"><?=$row['discount'];?></td>
+                                <td align="center" style=" text-align:right"><?=$row['unit_price']; ?></td>
+                                <td align="center" style=" text-align:center"><?=$row['total_qty']; ?></td>
+                                <td align="center" style="text-align:right"><?=number_format($row['total_amt'],2);?></td>
                             </tr>
-                            <?php  $ttotal_unit=$ttotal_unit+$row[total_unit];
-                            $tfree_qty=$tfree_qty+$row[free_qty];
-                            $ttotal_qty=$ttotal_qty+$row[total_qty];
-                            $tdiscount=$tdiscount+$row[discount];
-                            $ttotal_amt=$ttotal_amt+$row[total_amt];  } ?>
+                            <?php  $ttotal_unit=$ttotal_unit+$row['total_unit'];
+                            $tfree_qty=$tfree_qty+$row['free_qty'];
+                            $ttotal_qty=$ttotal_qty+$row['total_qty'];
+                            $tdiscount=$tdiscount+$row['discount'];
+                            $ttotal_amt=$ttotal_amt+$row['total_amt'];  } ?>
                         </tbody>
                         <tr style="font-weight: bold">
                             <td colspan="4" style="font-weight:bold; font-size:11px" align="right">Total Sales Return</td>
@@ -125,11 +118,10 @@ if(isset($$unique))
                             <td align="right" ><?=number_format($ttotal_amt,2);?></td>
                         </tr>
                     </table>
-
                     <?php
                     $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                     if($GET_status=='UNCHECKED' || $GET_status=='MANUAL' || $GET_status=='RETURNED'){ 
-					if($entry_by==$_SESSION[userid]){
+					if($entry_by==$_SESSION['userid']){
 					 ?>
                         <p>
                             <button style="float: left; font-size:12px; margin-left:1%" type="submit" name="reprocess" id="reprocess" class="btn btn-primary" onclick='return window.confirm("Are you confirm?");'>Re-process & Update</button>
@@ -148,13 +140,13 @@ if(isset($$unique))
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
        <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if($_POST[f_date]) echo $_POST[f_date]; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if($_POST['f_date']) echo $_POST['f_date']; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if($_POST[t_date]) echo $_POST[t_date]; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if($_POST['t_date']) echo $_POST['t_date']; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Sales Return</button></td>
             </tr></table>
  <?php 
-if(isset($_POST[viewreport])){
+if(isset($_POST['viewreport'])){
 $res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as nooffg,u.fname as entry_by,p.entry_at,p.status
 
 from 
@@ -166,7 +158,7 @@ dealer_info d
   p.entry_by=u.user_id and 
  w.warehouse_id=p.depot_id and  
  d.dealer_code=p.dealer_code and 
- p.do_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' order by p.".$unique." DESC ";
+ p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by p.".$unique." DESC ";
 } else {
 $res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as nooffg,u.fname as entry_by,p.entry_at,p.status
 from 

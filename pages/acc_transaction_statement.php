@@ -1,5 +1,21 @@
 <?php require_once 'support_file.php';
-$ledger_name=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_POST['ledger_id'])
+$ledger_name=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_POST['ledger_id']);
+$companyid=@$_SESSION['companyid'];
+$sectionid = @$_SESSION['sectionid'];
+if($sectionid=='400000'){
+    $sec_com_connection=' and 1';
+} else {
+    $sec_com_connection=" and j.company_id='".$_SESSION['companyid']."' and j.section_id in ('400000','".$_SESSION['sectionid']."')";
+}
+$date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
+if($date_checking>0) {
+    $lockedStartInterval = @$date_checking->start_date;
+    $lockedEndInterval = @$date_checking->end_date;
+} else
+{
+    $lockedStartInterval = '';
+    $lockedEndInterval = '';
+}
 ?>
 
 <!DOCTYPE html>
@@ -150,8 +166,15 @@ $ledger_name=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_POST['l
         </div>
         <div class="account-info">
             <h2>Transaction Statement</h2>
+            <?php if ($_REQUEST['ledger_id']>0){ ?>
             <p><strong>Account Name:</strong> <?=$ledger_name?></p>
             <p><strong>Account Number:</strong> <?=$_POST['ledger_id']?></p>
+            <?php } else { ?>
+                <p><strong>Account Name:</strong> All Transactions</p>
+            <?php } ?>
+            <?php if ($_REQUEST['cc_code']>0){ ?>
+                <p><strong>Cost Center:</strong> <?=find_a_field('cost_center','center_name','id='.$_REQUEST['cc_code'])?></p>
+            <?php } ?>
             <p><strong>Statement Period:</strong> <?=date("d-M-Y", strtotime($_POST['f_date']));?> to <?=date("d-M-Y", strtotime($_POST['t_date']));?></p>
         </div>
     </header>
@@ -160,9 +183,10 @@ $ledger_name=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_POST['l
             <thead>
             <tr style="font-size: 14px">
                 <th style="text-align: center">#</th>
-                <th style="width: 8%; text-align: center">Date</th>
+                <th style="text-align: center">Date</th>
                 <th style="text-align: center">Ref. No</th>
                 <th style="text-align: center">Description</th>
+                <th style="text-align: center">Cost Center</th>
                 <th style="text-align: center">Source</th>
                 <th style="text-align: center">Debit</th>
                 <th style="text-align: center">Credit</th>
@@ -172,15 +196,26 @@ $ledger_name=find_a_field('accounts_ledger','ledger_name','ledger_id='.$_POST['l
             <tbody>
             <?php
 
-            if($PostTrFrom!=''){
-                $emp_id.=" and a.tr_from='".$tr_from."'";}
-            $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.visible_status=1 and a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and a.ledger_id like '".$_POST['ledger_id']."'";
+            if($_POST['cc_code']!='')
+            {
+                $ccCodeConn = " AND a.cc_code = '".$_POST['cc_code']."'";
+            } else {
+                $ccCodeConn = "";
+            }
+            if($_POST['tr_from']!='')
+            {
+                $trFromConn = " AND a.tr_from = '".$_POST['tr_from']."'";
+            } else {
+                $trFromConn = "";
+            }
+
+            $total_sql = "select sum(a.dr_amt),sum(a.cr_amt) from journal a,accounts_ledger b where a.visible_status=1 and a.ledger_id=b.ledger_id and a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and a.ledger_id like '".$_POST['ledger_id']."'".$ccCodeConn.$trFromConn."";
             $total=mysqli_fetch_array(mysqli_query($conn, $total_sql));
 
             $c="select sum(a.dr_amt)-sum(a.cr_amt) from
             journal a,
             accounts_ledger b
-            where a.visible_status=1 and a.ledger_id=b.ledger_id and a.jvdate<'".$_POST['f_date']."' and a.ledger_id like '".$_POST['ledger_id']."'";
+            where a.visible_status=1 and a.ledger_id=b.ledger_id and a.jvdate<'".$_POST['f_date']."' and a.ledger_id like '".$_POST['ledger_id']."'".$ccCodeConn.$trFromConn."";
             $p="select
 a.jvdate,
 b.ledger_name,
@@ -211,7 +246,7 @@ a.ledger_id=b.ledger_id and
 a.jvdate between '".$_POST['f_date']."' AND '".$_POST['t_date']."' and
 a.jvdate NOT BETWEEN '".$lockedStartInterval."' and '".$lockedEndInterval."' and 
 a.ledger_id like '".$_POST['ledger_id']."' and 
-a.user_id=u.user_id
+a.user_id=u.user_id".$ccCodeConn.$trFromConn."
 order by a.jvdate,a.id";
             if($total[0]>$total[1])
             {
@@ -229,7 +264,7 @@ order by a.jvdate,a.id";
             <tr style="font-size: 11px">
                 <td>0</td>
                 <td style="text-align: center"><?=date("Y M d", strtotime($_POST['f_date']));?></td>
-                <td colspan="5">Opening Balance</td>
+                <td colspan="6">Opening Balance</td>
                 <td style="text-align: right"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),0,'.','');else echo "0.00"; ?></td>
             </tr>
 
@@ -250,6 +285,7 @@ order by a.jvdate,a.id";
                             echo "<a href='$link' target='_blank'>".$data[6]."</a>";}?>
                     </td>
                     <td><?=$data[5];?></td>
+                    <td style="text-align: center"><?=($data[13]>0)? $data[16] : 'N/A'; ?></td>
                     <td style="text-align: center"><?=$data[4];?></td>
                     <td style="text-align: right"><?=($data[2]>0)? number_format($data[2]) : '-';?></td>
                     <td style="text-align: right"><?=($data[3]>0)? number_format($data[3]) : '-';?></td>
@@ -260,7 +296,7 @@ order by a.jvdate,a.id";
             <?php }?>
 
             <tr style="font-size: 11px">
-                <th colspan="5" style="text-align: right">Total</th>
+                <th colspan="6" style="text-align: right">Total</th>
                 <th style="text-align: right"><?=number_format($total[0],2);?></th>
                 <th style="text-align: right"><?=number_format($total[1],2);?></th>
                 <th style="text-align: right">

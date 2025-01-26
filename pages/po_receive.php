@@ -51,9 +51,10 @@ if(prevent_multi_submit()){
 			$_POST['order_no']=$row['id'];
 			$_POST['rcv_Date']=$_POST['rec_date'];
 			$_POST['status']='UNCHECKED';
-			$_POST['mfg']=@$_POST['mfg'.$id];
-			$_POST['m_id']=$m_id;
-			$_POST['lot_number']=$_SESSION['POunique_id'];
+			$_POST['mfg']=@$_POST['mfg_'.$id];
+			$_POST['batch']=@$_POST['batch_'.$id];
+			$_POST['m_id']=@$_POST['m_id_'.$id];
+			$_POST['lot_number']=0;
 			$_POST['total_cost']=$_POST['transport_bill']+$_POST['labor_bill'];
 			$crud      =new crud($table_details);
             $crud->insert();	// GRN received
@@ -208,14 +209,14 @@ if($$unique>0)
     $data=db_fetch_object($table_master,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-
+$delivery_within = @$delivery_within;
 
 if($delivery_within>0)
 {
     $ex = strtotime($po_date) + (($delivery_within)*24*60*60)+(12*60*60);
 }
 
-$sql='select a.id,a.item_id,b.item_name,a.item_details,b.unit_name,a.qty,a.rate from purchase_invoice a,item_info b where b.item_id=a.item_id and a.po_no='.$$unique;
+$sql='select a.id,a.item_id,b.item_name,a.item_details,b.unit_name,a.qty,a.rate,a.mfg,a.batch,a.m_id from purchase_invoice a,item_info b where b.item_id=a.item_id and a.po_no='.$$unique;
 $MAN_master=find_all_field('MAN_details','','status="VERIFIED" and m_id="'.$m_id.'" and po_no='.$$unique);
 $MAN_master_MAN_ID = @$MAN_master->MAN_ID;
 $MAN_master_VAT_challan_Date = @$MAN_master->VAT_challan_Date;
@@ -234,7 +235,7 @@ $MAN_ID = @$_GET['MAN_ID'];
 function reload(form)
 {
 	var val=form.m_id.options[form.m_id.options.selectedIndex].value;
-	self.location='<?=$page;?>?po_no=<?=$_GET['po_no']?>&m_id=' + val ;
+	self.location='<?=$page;?>?po_no=<?=$$unique?>&m_id=' + val ;
 }
 </script>
 
@@ -283,12 +284,12 @@ td {
                         </tr>
                         </thead>
                         <tbody>
-                        <?php
+                        <?php $i = 0;
 						$res=mysqli_query($conn, "SELECT sj.* from secondary_journal sj where jv_no=".$jv_no."");
-						while($data=mysqli_fetch_object($res)){?>                        
+						while($data=mysqli_fetch_object($res)){?>
                         <tr>
                             <td style="text-align: center"><?=$i=$i+1;?></td>
-                            <td><?$sales_return_ledger=$config_group_class->sales_return;?>
+                            <td><?php $sales_return_ledger=$config_group_class->sales_return;?>
                                 <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="ledger_id<?=$data->id;?>"  name="ledger_id<?=$data->id;?>">
                                     <option></option>
                                     <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)', $data->ledger_id, '1'); ?>
@@ -446,20 +447,20 @@ td {
 			  $bg++?>
           <tr>
             <td><?=++$ss;?></td>
-           <input type="hidden" style="width:70px" name="lot_number<?=$row->id?>" id="lot_number<?=$row->id?>" value="<?=$_SESSION['POunique_id']++;?>" readonly />
+           <input type="hidden" style="width:70px" name="lot_number<?=$row->id?>" id="lot_number<?=$row->id?>" value="" readonly />
             <td><?=$row->item_id?>
               <input type="hidden" name="item_id_<?=$row->id?>" id="item_id_<?=$row->id?>" value="<?=$row->item_id?>" /></td>
               <td><?=$row->item_name?> # <?=$row->item_details; ?>
-              <input type="hidden" name="rate_<?=$row->id?>" id="rate_<?=$row->id?>" value="<?=$row->rate?>" /></td>
-              <input type="hidden" name="mfg_<?=$row->id?>"   value="<?=$row->mfg?>" /></td>
-              <input type="hidden" name="batch_<?=$row->id?>" value="<?=$row->batch?>" /></td>
+              <input type="hidden" name="rate_<?=$row->id?>" id="rate_<?=$row->id?>" value="<?=$row->rate?>" />
+              <input type="hidden" name="mfg_<?=$row->id?>"   value="<?=$row->mfg?>" />
+              <input type="hidden" name="batch_<?=$row->id?>" value="<?=$row->batch?>" />
               <input type="hidden" name="m_id_<?=$row->id?>"  value="<?=$row->m_id?>" /></td>
 
               <td width="7%" align="center" style="text-align:center"><?=$row->unit_name?>
               <input type="hidden" name="unit_name_<?=$row->id?>" id="unit_name_<?=$row->id?>" value="<?=$row->unit_name?>" /></td>
               <td width="7%" align="center" style="text-align:center"><?=$row->qty?></td>
-              <td width="6%" align="center" style="text-align:center"><? echo $rec_qty = (find_a_field('purchase_receive','sum(qty)','order_no="'.$row->id.'" and item_id="'.$row->item_id.'"')*(1));?></td>
-              <td width="7%" align="center" style="text-align:center"><? echo $unrec_qty=($row->qty-$rec_qty);?>
+              <td width="6%" align="center" style="text-align:center"><?=$rec_qty = (find_a_field('purchase_receive','sum(qty)','order_no="'.$row->id.'" and item_id="'.$row->item_id.'"')*(1));?></td>
+              <td width="7%" align="center" style="text-align:center"><?=$unrec_qty=($row->qty-$rec_qty);?>
               <input type="hidden" name="unrec_qty_<?=$row->id?>" id="unrec_qty_<?=$row->id?>" value="<?=$unrec_qty?>" /></td>             
             
               <td width="5%" align="center" bgcolor="#6699FF" style="text-align:center">

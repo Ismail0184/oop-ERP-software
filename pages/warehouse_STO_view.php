@@ -41,7 +41,7 @@ if(prevent_multi_submit()){
     }}
 
 // data query..................................
-if(isset($_POST[viewreport])){
+if(isset($_POST['viewreport'])){
     if($_POST['warehouse_from']>0) 			 $warehouse_from=$_POST['warehouse_from'];
     if(isset($warehouse_from))				{$warehouse_from_CON=' and m.warehouse_from='.$warehouse_from;}
     if($_POST['verifi_status']!=='') 		$verifi_status=$_POST['verifi_status'];
@@ -58,7 +58,7 @@ warehouse w2
   m.entry_by=u.user_id and 
  w.warehouse_id=m.warehouse_from and  
  w2.warehouse_id=m.warehouse_to and 
- m.pi_date between '".$_POST[f_date]."' and '".$_POST[t_date]."'".$warehouse_from_CON.$verifi_status_CON." 
+ m.pi_date between '".$_POST['f_date']."' and '".$_POST['t_date']."'".$warehouse_from_CON.$verifi_status_CON." 
   order by m.".$unique." DESC ";
 }
 ?>
@@ -109,36 +109,29 @@ item_info i
 
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?=$js=$js+1;?></td>
-                                <td><?=$uncheckrow[custom_pi_no];?></td>
-                                <td style="text-align:left"><?=$uncheckrow[item_name];?></td>
-                                <td style="text-align:center"><?=$uncheckrow[unit_name];?></td>
-                                <td style="text-align:center"><?=$uncheckrow[pack_size];?></td>
-                                <td style="width:10%; text-align:center"><?=$uncheckrow[batch];?></td>
-                                <td align="right" style="width:15%; text-align:center"><?=$uncheckrow[total_unit];?></td>
+                                <td><?=$uncheckrow['custom_pi_no'];?></td>
+                                <td style="text-align:left"><?=$uncheckrow['item_name'];?></td>
+                                <td style="text-align:center"><?=$uncheckrow['unit_name'];?></td>
+                                <td style="text-align:center"><?=$uncheckrow['pack_size'];?></td>
+                                <td style="width:10%; text-align:center"><?=$uncheckrow['batch'];?></td>
+                                <td align="right" style="width:15%; text-align:center"><?=$uncheckrow['total_unit'];?></td>
                             </tr>
-                            <?php  $amountqty=$amountqty+$uncheckrow[total_unit];  } ?>
+                            <?php  $amountqty=$amountqty+$uncheckrow['total_unit'];  } ?>
                         <tr style="font-weight: bold"><td colspan="6" style="text-align: right">Total = </td>
                             <td style="text-align: center"><?=number_format($amountqty)?></td>
                         </tr>
-                        </tbody></table>
-
-
-
-
+                        </tbody>
+                    </table>
                     <?php
                     $GET_status=find_a_field(''.$table.'','verifi_status',''.$unique.'='.$_GET[$unique]);
                     if($GET_status=='UNCHECKED' || $GET_status=='MANUAL' || $GET_status=='Manual' || $GET_status=='RETURNED'){
-                        if($STO_master->entry_by==$_SESSION[userid]){ ?>
+                        if($STO_master->entry_by==$_SESSION['userid']){ ?>
                     <p>
                         <button style="float: left; font-size: 12px" type="submit" name="reprocess" id="reprocess" class="btn btn-primary" onclick='return window.confirm("Are you confirm?");'>Re-process & Update</button>
                         <button style="float: right;font-size: 12px" type="submit" name="deleted" id="deleted" class="btn btn-danger" onclick='return window.confirm("Are you confirm?");'>Delete the STO</button>
                     </p>
                     <? } else { echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>Oops!! This STO was created by another user. So you are not able to do anything here!!</i></h6>'; } ?>
-
-                        <? } else {echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>This Stock Transfer has been checked by QC !!</i></h6>';}?>
-
-
-
+                    <? } else {echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>This Stock Transfer has been checked by QC !!</i></h6>';}?>
                 </form>
             </div>
         </div>
@@ -149,18 +142,18 @@ item_info i
 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
     <table align="center" style="width: 50%;">
         <tr><td>
-            <input type="date"  style="width:150px; font-size: 11px;"  value="<?=($_POST[f_date]!='')? $_POST[f_date] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+            <input type="date"  style="width:150px; font-size: 11px;"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
             <td style="width:10px; text-align:center"> -</td>
-            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST[t_date]!='')? $_POST[t_date] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
             <td style="width:10px; text-align:center"> -</td>
             <td><select class="form-control" style="width:200px; font-size: 11px;" tabindex="-1" required="required"  name="warehouse_from" id="warehouse_from">
                     <option selected></option>
-                    <?=advance_foreign_relation(check_plant_permission($_SESSION[userid]),($_POST[warehouse_from]>0 ? $_POST[warehouse_from] : $_SESSION[warehouse]));?> 
+                    <?=advance_foreign_relation(check_plant_permission($_SESSION['userid']),($_POST['warehouse_from']>0 ? $_POST['warehouse_from'] : $_SESSION['warehouse']));?>
                 </select></td>
             <td style="padding:10px"><button type="submit" style="font-size: 11px;" name="viewreport"  class="btn btn-primary">View STO</button></td>
-        </tr></table>
+        </tr>
+    </table>
     <?=$crud->report_templates_with_status($sql,$title='STO View');?>
 </form>
-    <?php } ?>
-
+<?php } ?>
 <?=$html->footer_content();?>

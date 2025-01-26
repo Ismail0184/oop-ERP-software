@@ -66,7 +66,7 @@ if(isset($_POST['checked']))
 
 
 if(isset($_POST['viewreport'])) {
-    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+    $resultss = "Select m.*,m.status as man_status,m.id as mid,w.*,u.*,v.*
 from 
 ".$table." m,
 warehouse w,
@@ -78,7 +78,7 @@ w.warehouse_id=m.warehouse_id and
 v.vendor_id=m.vendor_code and 
 m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by m." . $unique . " DESC ";
 } else {
-    $resultss = "Select m.*,m.status as man_status,w.*,u.*,v.*
+    $resultss = "Select m.*,m.status as man_status,m.id as mid,w.*,u.*,v.*
 from 
 " . $table . " m,
 warehouse w,
@@ -135,16 +135,16 @@ d.".$unique_details."='".$$unique."' and d.item_id=i.item_id");
 												$last_row=mysqli_fetch_object($query_for_last_MAN);
 												  ?>
                                                 <tr style="background-color:#FFF">
-                                                    <td style="width:2%; text-align:center"><?=$j=$j+1;?></td>
-                                                    <td style="text-align:left"><?=$MANdetrow['item_id']?></td>
-                                                    <td style="text-align:left"><?=$MANdetrow['finish_goods_code'];?> : <?=$MANdetrow['item_name'];?></td>
-                                                    <td style="width:5%; text-align:center"><?=$MANdetrow['unit_name'];?></td>
-                                                    <td style="width:8%; text-align:right"><?php echo $MANdetrow['qty']; ?></td>
-                                                    <td style="width:10%; text-align:right"><?php echo $MANdetrow['mfg']; ?></td>
-                                                    <td style="width:10%; text-align:right"><?=$MANdetrow['no_of_pack']?></td>
-                                                    <td style="width:10%; text-align:right"><input type="text" name="po_no" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
-                                                    <td style="width:10%; text-align:right"><?=$last_row->man_date; ?></td>
-                                                    <td style="width:10%; text-align:right"><?=$last_row->qty; ?></td>
+                                                    <td style="width:2%; text-align:center; vertical-align: middle"><?=$j=$j+1;?></td>
+                                                    <td style="text-align:left; vertical-align: middle"><?=$MANdetrow['item_id']?></td>
+                                                    <td style="text-align:left; vertical-align: middle"><?=$MANdetrow['finish_goods_code'];?> : <?=$MANdetrow['item_name'];?></td>
+                                                    <td style="width:5%; text-align:center; vertical-align: middle"><?=$MANdetrow['unit_name'];?></td>
+                                                    <td style="width:8%; text-align:right; vertical-align: middle"><?php echo $MANdetrow['qty']; ?></td>
+                                                    <td style="width:10%; text-align:right; vertical-align: middle"><?php echo $MANdetrow['mfg']; ?></td>
+                                                    <td style="width:10%; text-align:right; vertical-align: middle"><?=$MANdetrow['no_of_pack']?></td>
+                                                    <td style="width:10%; text-align:right; vertical-align: middle"><input type="text" name="po_no" value="<?=$MANdetrow['po_no']?>" style="width: 60px"></td>
+                                                    <td style="width:10%; text-align:right; vertical-align: middle"><?=$last_row->man_date; ?></td>
+                                                    <td style="width:10%; text-align:right; vertical-align: middle"><?=$last_row->qty; ?></td>
                                                 </tr>
                                                 <?php
                                                 $tqty=$tqty+$MANdetrow['qty'];
@@ -215,16 +215,16 @@ d.".$unique_details."='".$$unique."' and d.item_id=i.item_id");
                     <tbody>
                     <?php $i=0; while ($rows=mysqli_fetch_array($pquery)){ ?>
                         <tr style="font-size:11px; cursor: pointer">
-                            <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['id'];?></a></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['MAN_ID'];?></a></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['man_date']; ?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['warehouse_name'];?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['vendor_name'];?></td>
-                            <td onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['remarks'];?></td>
-                            <td><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['delivary_challan'];?></strong></u></a></td>
-                            <td style="text-align:left"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['VAT_challan'];?></strong></u></a></td>
-                            <td style="text-align:center" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$rows['fname'];?></td>
+                            <th style="text-align:center" onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['mid'];?></a></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['MAN_ID'];?></a></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['man_date']; ?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['warehouse_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['vendor_name'];?></td>
+                            <td onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['remarks'];?></td>
+                            <td><a href="dc_documents/<?=$rows['mid'].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['delivary_challan'];?></strong></u></a></td>
+                            <td style="text-align:left"><a href="vc_documents/<?=$rows['mid'].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['VAT_challan'];?></strong></u></a></td>
+                            <td style="text-align:center" onclick="DoNavPOPUP('<?=$rows['mid'];?>', 'TEST!?', 600, 700)"><?=$rows['fname'];?></td>
                         </tr>
                     <?php } ?>
                     </tbody>

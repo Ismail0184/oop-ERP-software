@@ -118,8 +118,8 @@ if(isset($_POST['narr']))
         }
         else
         {
-            $sqldate1 = "UPDATE $vtype SET cheq_no='$cheq_no',cheq_date='$cheq_date',ledger_id='$ledger',cc_code='$CC',sub_ledger_id='$sub_ledger_id',narration='$narration',dr_amt='$dr_amt',cr_amt='$cr_amt',$dtype='$vdateji',$olddtype='$date' WHERE id = ".$datas[1];
-            $sqldate2 = "UPDATE journal SET cheq_no='$cheq_no',cheq_date='$cheq_date',ledger_id='$ledger',cc_code='$CC',sub_ledger_id='$sub_ledger_id',narration='$narration',dr_amt='$dr_amt',cr_amt='$cr_amt',jvdate='$vdateji',jv_date='$date' WHERE id = ".$datas[0];
+            $sqldate1 = "UPDATE ".$vtype." SET cheq_no='$cheq_no',cheq_date='$cheq_date',ledger_id='$ledger',cc_code='$CC',sub_ledger_id='$sub_ledger_id',narration='$narration',dr_amt='$dr_amt',cr_amt='$cr_amt',".$dtype."='".$vdateji."',$olddtype='' WHERE id = ".$datas[1];
+            $sqldate2 = "UPDATE journal SET cheq_no='".$cheq_no."',cheq_date='".$cheq_date."',ledger_id='$ledger',cc_code='".$CC."',sub_ledger_id='".$sub_ledger_id."',narration='".$narration."',dr_amt='".$dr_amt."',cr_amt='".$cr_amt."',jvdate='".$vdateji."',jv_date='' WHERE id = ".$datas[0];
             if(isset($sqldate1))@mysqli_query($conn, $sqldate1);@mysqli_query($conn, $sqldate2);
         }
     }
@@ -450,7 +450,7 @@ $sql1."<br>";
                 cr_total = cr_total + cr_amt_new2;}
             if(dr_amt_new2>0){
                 dr_total = dr_total + dr_amt_new2;}
-            <?
+            <? $i=0;
             for($i=1;$i<=$pi;$i++){
                 if($entry[$i]>0){
                     echo "cr_total = cr_total+((document.getElementById('cr_amt_".$entry[$i]."').value)*1);";

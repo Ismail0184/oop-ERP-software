@@ -3,12 +3,12 @@ require_once 'support_file.php';
 $title="Un-Approved WO / PO List";
 $dfrom=date('Y-1-1');
 $dto=date('Y-m-d');
-
+$unique='po_no';
 $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
 $todayss=$dateTime->format("d/m/Y  h:i A");
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $now=time();
-$unique='po_no';
+
 $unique_field='po_details';
 $table="purchase_master";
 $table_details="purchase_invoice";
@@ -56,8 +56,13 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
-	
-$master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");	
+$cash_discount = @$cash_discount;
+$tax_ait = @$tax_ait;
+$asf = @$asf;
+$tax = @$tax;
+$transport_bill = @$transport_bill;
+$labor_bill = @$labor_bill;
+$master=find_all_field("".$table."","","".$unique."=".$$unique."");
 
 
 if(isset($_POST['Approved'])){
@@ -174,7 +179,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                      </tr>
                      </thead>
                       <tbody>
-                 <?php
+                 <?php $i=0;
 				 if(isset($_POST['viewreport'])){
 				 $res=mysqli_query($conn, 'select v.*,r.'.$unique.',r.'.$unique.',r.'.$unique_field.',r.po_date,r.entry_by,r.status as current_status,r.checkby,r.checkby_date,r.entry_at,r.recommended,r.recommended_date,r.authorise,r.authorized_date,
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM  
@@ -257,7 +262,7 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                      </tr>
                      </thead>
                       <tbody>
-                      <?php 	$res=mysqli_query($conn,'Select td.*,i.* from '.$table_details.' td,
+                      <?php $i=0;$total=0;$subtotal=0;	$res=mysqli_query($conn,'Select td.*,i.* from '.$table_details.' td,
 				 item_info i
 				  where td.item_id=i.item_id and 				  
 				  td.'.$unique.'='.$_GET[$unique].'');
@@ -292,14 +297,14 @@ echo "<script>self.opener.location = '$page'; self.blur(); </script>";
                       <? if($tax_ait>0){?>
                           <tr style="font-weight: bold">
                               <td colspan="6" align="right">AIT/Tax (<?=$tax_ait?>%): </td>
-                              <td align="right"><strong> <? echo number_format((($total*$tax_ait)/100),2);?> </strong></td>
+                              <td align="right"><strong> <?=number_format((($total*$tax_ait)/100),2);?> </strong></td>
                           </tr>
                       <? } $totaltaxait=($total*$tax_ait)/100; ?>
 
                           <tr style="font-weight: bold">
                               <td colspan="6" align="right">SUB TOTAL:</td>
                               <td align="right"><strong>
-                                      <?  echo number_format(($subtotal=$total+$asf+$totaltaxait),2) ?>
+                                      <?=number_format(($subtotal=$total+$asf+$totaltaxait),2) ?>
                                   </strong></td>
                           </tr>
 
