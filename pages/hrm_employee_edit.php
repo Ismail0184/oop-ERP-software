@@ -7,9 +7,11 @@ $unique_field='PBI_ID_UNIQUE';
 $table="personnel_basic_info";
 
 $page="hrm_employee_report.php";
+
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
 $$uniqueFI = @$_GET['fiID'];
+$pageFI="hrm_employee_report.php?PBI_ID=".$$unique."";
 
 $_SESSION['tab'] = 'tab_content1';
 
@@ -36,7 +38,7 @@ if(isset($_POST['delete']))
 }
 }
 
-    if(isset($_POST['addContactInfo']))
+    if(isset($_POST['addContactInfo'])) // contact information add
     {
         $_POST['entry_at']=time();
         $_POST['entry_by']=$_SESSION['userid'];
@@ -50,15 +52,68 @@ if(isset($_POST['delete']))
         $_SESSION['tab'] = 'tab_content2';
     }
 
-    if(isset($_POST['updateContactInfo']))
+    if(isset($_POST['updateContactInfo'])) // contact information update
     {
-        $_POST['update_by']=time();
+        $_POST['update_at']=time();
         $_POST['update_by']=$_SESSION['userid'];$table = 'hrm_emp_contact_info';
         $crud      =new crud($table);
         $crud->update($unique);
         unset($_POST);
         unset($_SESSION['tab']);
         $_SESSION['tab'] = 'tab_content2';
+    }
+
+    if(isset($_POST['addJobInfo'])) // Job information add
+    {
+        $_POST['entry_at']=time();
+        $_POST['entry_by']=$_SESSION['userid'];
+        $_POST['section_id'] = $_SESSION['sectionid'];
+        $_POST['company_id'] = $_SESSION['companyid'];
+        $table = 'essential_info';
+        $crud      =new crud($table);
+        $crud->insert();
+        unset($_POST);
+        unset($_SESSION['tab']);
+        $_SESSION['tab'] = 'tab_content3';
+    }
+
+    if(isset($_POST['updateJobInfo'])) // job information update
+    {
+        $_POST['update_at']=time();
+        $_POST['update_by']=$_SESSION['userid'];
+        $table = 'essential_info';
+        $crud      =new crud($table);
+        $crud->update($unique);
+        unset($_POST);
+        unset($_SESSION['tab']);
+        $_SESSION['tab'] = 'tab_content3';
+    }
+
+    if(isset($_POST['addFamilyMember'])) // Add Family Information
+    {
+        $_POST['entry_at']=time();
+        $_POST['entry_by']=$_SESSION['userid'];
+        $_POST['section_id'] = $_SESSION['sectionid'];
+        $_POST['company_id'] = $_SESSION['companyid'];
+        $_POST['fi_emergency_contact'] = isset($_POST['fi_emergency_contact']) ? 'Yes' : 'No';
+        $table = 'hrm_emp_family_info';
+        $crud      =new crud($table);
+        $crud->insert();
+        unset($_POST);
+        unset($_SESSION['tab']);
+        $_SESSION['tab'] = 'tab_content4';
+    }
+
+    if(isset($_POST['updateFamilyMember'])) // update Family Information
+    {
+        $_POST['update_at']=time();
+        $_POST['update_by']=$_SESSION['userid'];
+        $table = 'essential_info';
+        $crud      =new crud($table);
+        $crud->update($unique);
+        unset($_POST);
+        unset($_SESSION['tab']);
+        $_SESSION['tab'] = 'tab_content4';
     }
 
 }
@@ -106,9 +161,13 @@ if(isset($$unique))
     if (isset($$uniqueFI))
     {
         $hrm_emp_family_info = find_all_field('hrm_emp_family_info','','PBI_ID='.$$unique); // get contact information
+        $fi_name = @$hrm_emp_family_info->fi_name;
+        $fi_gender = @$hrm_emp_family_info->fi_gender;
+        $fi_email = @$hrm_emp_family_info->fi_email;
+        $fi_contact_number = @$hrm_emp_family_info->fi_contact_number;
+        $fi_NID = @$hrm_emp_family_info->fi_NID;
+        $profession = @$hrm_emp_family_info->profession;
     }
-
-
 
 }
 
@@ -117,7 +176,7 @@ if(isset($$unique))
 $res='select p.'.$unique.',p.'.$unique.' as Code,p.'.$unique_field.' as Employee_ID,p.PBI_NAME as Name, (select DESG_SHORT_NAME from designation where DESG_ID=p.PBI_DESIGNATION) as designation,
                                  (select DEPT_DESC from department where DEPT_ID=p.PBI_DEPARTMENT) as Department,DATE_FORMAT(p.PBI_DOJ, "%M %d, %Y") as DOJ,p.PBI_EMAIL,p.PBI_MOBILE as mobile,p.PBI_JOB_STATUS as status
                                  from '.$table.' p where p.PBI_JOB_STATUS in ("In Service","Not In Service") order by p.'.$unique;	
-$family_member_view='SELECT f.id,f.fi_name as name,r.RELATION_NAME,f.fi_contact_number from hrm_emp_family_info f,relation r where f.fi_relationship=r.RELATION_CODE';                                 
+$family_member_view='SELECT f.id,f.fi_name as name,r.RELATION_NAME as relation,f.fi_contact_number as contact,f.fi_emergency_contact as emergency from hrm_emp_family_info f,relation r where f.fi_relationship=r.RELATION_CODE and f.PBI_ID='.$$unique;
 
 $education_view='SELECT e.id,en.EXAM_NAME as Education,e.ei_passing_year as passed_year,e.ei_grade as Grade,i.institute_name as Institute  from 
 edu_exam_title en,hrm_emp_education_info e,institute i where e.ei_education_degree=en.EXAM_CODE and e.ei_institute=i.institute_id'; 
@@ -641,32 +700,29 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                  <hr>
                                                  <?php if ($jobInformation):  ?>
                                                      <button type="submit" name="cancel" id="cancel" style="font-size:12px; float:left" class="btn btn-danger"> <i class="fa fa-close"></i> Cancel</button>
-                                                     <button type="submit" name="updateContactInfo" style="font-size:12px; float:right" class="btn btn-primary"> <i class="fa fa-edit"></i> Update Contact Info.</button>
+                                                     <button type="submit" name="updateJobInfo" style="font-size:12px; float:right" class="btn btn-primary"> <i class="fa fa-edit"></i> Update Contact Info.</button>
                                                  <?php else: ?>
-                                                     <button type="submit" name="addContactInfo" class="btn btn-primary" style="font-size:12px;margin-left: 45%">Add Contact Info</button>
+                                                     <button type="submit" name="addJobInfo" class="btn btn-primary" style="font-size:12px;margin-left: 45%">Add Contact Info</button>
                                                  <?php endif; ?>
                                              </form>
                                          </div>
                                          <div role="tabpanel" class="tab-pane fade <?=($_SESSION['tab'] == 'tab_content4') ? 'active in' : ''; ?>" id="tab_content4" aria-labelledby="profile-tab">
-                                             <h5>Family Information</h5>
+                                             <h5>Family Member Information</h5>
                                              <form class="form-horizontal form-label-left" method="post" style="font-size: 11px">
                                                  <input type="hidden" name="<?=$unique?>" value="<?=$$unique?>" style="width: 100%; font-size:11px" class="form-control col-md-7 col-xs-12">
                                                  <table class="table" style="width: 100%;border: none">
                                                      <tr>
-                                                         <td>
+                                                         <td style="width: 45%;">
                                                              <div class="form-group" style="width: 100%">
                                                                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Name  <span class="required text-danger">*</span></label>
                                                                  <div class="col-md-6 col-sm-6 col-xs-12">
-                                                                     <input type="text" id="fi_name" name="fi_name" value="<?=$fi_name;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                                     <input type="text" id="fi_name" required name="fi_name" value="<?=$fi_name;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                                  </div>
                                                              </div>
-
-
-
                                                              <div class="form-group" style="width: 100%">
                                                                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Relationship <span class="required text-danger">*</span></label>
                                                                  <div class="col-md-6 col-sm-6 col-xs-12">
-                                                                     <select class="select2_single form-control" style="width:100%" name="fi_relationship" id="fi_relationship">
+                                                                     <select class="select2_single form-control" required style="width:100%" name="fi_relationship" id="fi_relationship">
                                                                          <option></option>
                                                                          <?=foreign_relation('relation','RELATION_CODE','RELATION_NAME',$fi_relationship,'1');?>
                                                                      </select>
@@ -690,9 +746,9 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                              </div>
 
                                                              <div class="form-group" style="width: 100%">
-                                                                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Phone No. <span class="required text-danger">*</span></label>
+                                                                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Mobile No. <span class="required text-danger">*</span></label>
                                                                  <div class="col-md-6 col-sm-6 col-xs-12">
-                                                                     <input type="text" id="fi_contact_number" name="fi_contact_number" value="<?=$fi_contact_number;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                                     <input type="text" id="fi_contact_number" required name="fi_contact_number" value="<?=$fi_contact_number;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                                  </div>
                                                              </div>
 
@@ -703,64 +759,76 @@ $hrm_emp_social_media_info ='SELECT hsm.id,sm.name,hsm.sm_profile_name as profil
                                                                      <input type="text" id="fi_email" name="fi_email" value="<?=$fi_email;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
                                                                  </div>
                                                              </div>
+
                                                              <div class="form-group" style="width: 100%">
                                                                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Profession</label>
                                                                  <div class="col-md-6 col-sm-6 col-xs-12">
-                                                                     <input type="text" id="profession" name="profession" value="<?=$profession;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                                     <select class="select2_single form-control" style="width:100%" name="profession">
+                                                                         <option></option>
+                                                                         <?=foreign_relation('profession','id','profession_name',$profession,'1');?>
+                                                                     </select>
                                                                  </div>
                                                              </div>
+
                                                              <div class="form-group" style="width: 100%">
                                                                  <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%"></label>
-                                                                 <div class="col-md-6 col-sm-6 col-xs-12"><input type="checkbox" id="fi__emergecy_contact" name="fi__emergecy_contact" value="No">
-                                                                     <label for="fi__emergecy_contact">Set As Emergency Contact</label>
+                                                                 <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                     <input type="checkbox" name="fi_emergency_contact">
+                                                                     <label for="fi_emergency_contact">Set As Emergency Contact</label>
                                                                  </div>
                                                              </div>
+
+                                                             <button type="submit" name="addFamilyMember" class="btn btn-primary" style="font-size:12px; float:right; margin-right:110px">Add Member</button>
                                                          </td>
-                                                         <td style="vertical-align: top">
-                                                             <?=recentdataview_model($family_member_view,'','','240px','Family Member List','hrm_requisition_leave_report.php','90');?>
+                                                         <td style="vertical-align: top; width: 55%;">
+                                                             <?=recentdataview_model($family_member_view,'','','100%','Family Member List',''.$pageFI.'','90');?>
                                                          </td>
                                                      </tr>
                                                  </table>
-                                                     <button type="submit" name="addFamilyMember" class="btn btn-primary" style="font-size:12px; float:right; margin-right:110px">Add</button>
                                              </form>
                                          </div>
 
+                                         <div role="tabpanel" class="tab-pane fade <?=($_SESSION['tab'] == 'tab_content5') ? 'active in' : ''; ?>" id="tab_content5" aria-labelledby="profile-tab">
+                                             <table style="width: 100%;">
+                                                 <tr>
+                                                     <td>
+                                                         <div class="form-group" style="width: 100%">
+                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Education <span class="required text-danger">*</span></label>
+                                                             <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                 <select class="select2_single form-control" style="width:100%" name="ei_education_degree" id="ei_education_degree">
+                                                                     <option></option>
+                                                                     <?=foreign_relation('edu_exam_title','EXAM_CODE','EXAM_NAME',$ei_education_degree,'1');?>
+                                                                 </select>
+                                                             </div>
+                                                         </div>
 
-                          <div role="tabpanel" class="tab-pane fade" id="tab_content5" aria-labelledby="profile-tab">
-                          <table style="width: 100%;">
-                          <tr><td>
-                            <div class="form-group" style="width: 100%">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Education <span class="required text-danger">*</span></label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                            <select class="select2_single form-control" style="width:100%" name="ei_education_degree" id="ei_education_degree">
-                            <option></option>
-                            <?=foreign_relation('edu_exam_title','EXAM_CODE','EXAM_NAME',$ei_education_degree,'1');?>
-                            </select>
-                            </div></div>
+                                                         <div class="form-group" style="width: 100%">
+                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Grade</label>
+                                                             <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                 <input type="text" id="ei_grade" name="ei_grade" value="<?=$ei_grade;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                             </div>
+                                                         </div>
 
-                            <div class="form-group" style="width: 100%">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Grade</label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="ei_grade" name="ei_grade" value="<?=$ei_grade;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-                            </div></div>
+                                                         <div class="form-group" style="width: 100%">
+                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Passing Year</label>
+                                                             <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                 <input type="text" id="ei_passing_year" name="ei_passing_year" value="<?=$ei_passing_year;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                             </div>
+                                                         </div>
 
-                            <div class="form-group" style="width: 100%">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Passing Year</label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="ei_passing_year" name="ei_passing_year" value="<?=$ei_passing_year;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-                            </div></div>
+                                                         <div class="form-group" style="width: 100%">
+                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">CGPA</label>
+                                                             <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                 <input type="text" id="ei_CGPA" name="ei_CGPA" value="<?=$ei_CGPA;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                             </div>
+                                                         </div>
 
-                            <div class="form-group" style="width: 100%">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">CGPA</label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="ei_CGPA" name="ei_CGPA" value="<?=$ei_CGPA;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-                            </div></div>
-
-                            <div class="form-group" style="width: 100%">
-                            <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Scale</label>
-                            <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="ei_scale" name="ei_scale" value="<?=$ei_scale;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
-                            </div></div>
+                                                         <div class="form-group" style="width: 100%">
+                                                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Scale</label>
+                                                             <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                 <input type="text" id="ei_scale" name="ei_scale" value="<?=$ei_scale;?>" class="form-control col-md-7 col-xs-12" style="width: 100%; font-size:11px" >
+                                                             </div>
+                                                         </div>
 
                             <div class="form-group" style="width: 100%">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">Institute <span class="required text-danger">*</span></label>

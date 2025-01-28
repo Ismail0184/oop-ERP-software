@@ -23,7 +23,7 @@ if(isset($_GET['report_id']) && $_GET['report_id']=='1012001') {
     $fileName = "Purchase Data.xls";
     $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty','Rate','Amount');
 } elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012002'){
-    $fileName = "Sales Datas.xls";
+    $fileName = "Sales_Data.xls";
     $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date', 'Do Type','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount','Cash Discount','Commission','Sales For');
 } elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012011'){
     $fileName = "Sales Return Data.xls";
