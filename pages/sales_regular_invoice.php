@@ -190,7 +190,7 @@ $item_all_m_price = @$item_all->m_price;
 $item_all_pack_size = @$item_all->pack_size;
 $item_all_revenue_persentage = @$item_all->revenue_persentage;
 
-$commission = find_a_field('sale_do_details','SUM(commission)','do_no='.$_SESSION['unique_master_for_regular']);
+$commission = find_a_field('sale_do_details','SUM(commission)','do_no='.$unique_master_for_regular);
 
 $GET_id = @$_REQUEST['id'];
 if($GET_id>0){

@@ -225,10 +225,8 @@ if (isset($fr_date) && !empty($fr_date)) {
         list($year1, $month, $day) = $dateParts;
     } else {
         $year1 = $month = $day = null; // Default values or error handling
-        error_log("Invalid date format for \$to_date: $fr_date");
     }} else {
     $year1 = $month = $day = null; // Default values
-    error_log("Empty or undefined \$to_date");
 }
 
 
@@ -238,10 +236,8 @@ if (isset($to_date) && !empty($to_date)) {
         list($year2, $month2, $day2) = $dateParts;
     } else {
         $year2 = $month2 = $day2 = null; // Default values or error handling
-        error_log("Invalid date format for \$to_date: $to_date");
     }} else {
     $year2 = $month2 = $day2 = null; // Default values
-    error_log("Empty or undefined \$to_date");
 }
 
 $str 	.= '<h3>Date Interval : '.$day.'-'.$month.'-'.$year1.' To '.$day2.'-'.$month2.'-'.$year2.'</h3>';

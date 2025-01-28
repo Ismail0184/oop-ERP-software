@@ -14,18 +14,17 @@ $$key=$value;
 $ssql = 'select a.*,b.do_date from dealer_info a, sale_do_master b where a.dealer_code=b.dealer_code and b.do_no='.$do_no;
 $dealer = find_all_field_sql($ssql);
 $entry_time=$dealer->do_date;
-$dept = 'select warehouse_name from warehouse where warehouse_id='.$dept;
-$deptt = find_all_field_sql($dept);
+
+
 $to_ctn = find_a_field('sale_do_chalan','sum(pkt_unit)','chalan_no='.$chalan_no);
 $to_pcs = find_a_field('sale_do_chalan','sum(dist_unit)','chalan_no='.$chalan_no);
 $ordered_total_ctn = find_a_field('sale_do_details','sum(pkt_unit)','dist_unit = 0 and do_no='.$do_no);
-$ordered_total_pcs = find_a_field('sale_do_details','sum(dist_unit)','do_no='.$do_no);
-?>
+$ordered_total_pcs = find_a_field('sale_do_details','sum(dist_unit)','do_no='.$do_no); ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title><?=$dealer->dealer_name_e?>- DO - <?=$_GET['do_no']?></title>
+<title><?=$dealer->dealer_name_e?>- DO - <?=$do_no?></title>
 <link href="../css/invoice.css" type="text/css" rel="stylesheet"/>
 <script type="text/javascript">
 function hide()
@@ -64,7 +63,7 @@ function hide()
                         <img src="../../assets/images/icon/<?=$_SESSION['sectionid']?>.png" width="98%" />
                         <td width="58%"><table  width="80%" border="0" align="center" cellpadding="3" cellspacing="0">
                             <tr>
-                              <td style="text-align:center; color:#000; font-size:14px; font-weight:bold;"><? if($_SESSION['warehouse']>0) echo $deptt->warehouse_name;?>
+                              <td style="text-align:center; color:#000; font-size:14px; font-weight:bold;">
                                 <br />
                               <strong>Delivery Challan</strong></td>
                             </tr>
@@ -217,7 +216,13 @@ else{?>
                   <th  align="center">Expiry Date</th-->
               </tr>
 
-              <? $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(total_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
+              <?
+              $kk=0;
+              $g_tot_ctn_order=0;
+              $g_tot_ctn_undel=0;
+              $g_tot_ctn_delv=0;
+
+              $sqlc = 'select c.*,SUM(c.dist_unit) as deliverd_qty,(select SUM(total_unit) from sale_do_details where do_no=c.do_no and item_id=c.item_id ) as order_qty, i.item_name, i.finish_goods_code, i.pack_size,i.unit_name from sale_do_chalan c, item_info i where 
         i.item_id=c.item_id and i.finish_goods_code != 2001 and c.chalan_no='.$chalan_no.' group by c.item_id order by c.id asc';
               $queryc=mysqli_query($conn, $sqlc);
               while($datac = mysqli_fetch_object($queryc)){?>
@@ -228,39 +233,19 @@ else{?>
                       <td align="center" valign="top" style="vertical-align: middle"><?=$datac->order_qty;?></td>
                       <td align="center" valign="top" style="vertical-align: middle"><?=$datac->order_qty-$datac->deliverd_qty;?></td>
                       <td align="center" valign="top" style="vertical-align: middle"><?=$datac->deliverd_qty;?></td>
-
-                      <!--td align="center" valign="top" style="vertical-align: middle"><table border="1" style="border-collapse: collapse; width: 100%" >
-                              <?php $res=mysqli_query($conn, "SELECT SUM(j.item_ex) as item_ex from journal_item j where j.item_ex>0 and j.item_id=".$datac->item_id." and  j.sr_no=".$chalan_no." group by j.batch,j.expiry_date");
-                              While($data_inventory=mysqli_fetch_object($res)){ ?>
-                                  <tr><td style="border: 1px solid #ccc; text-align: center"><?=number_format($data_inventory->item_ex);?> </td></tr>
-                              <?php } ?></table></td>
-                      <td align="center" valign="top" style="vertical-align: middle"><table border="1" style="border-collapse: collapse; width: 100%" >
-                              <?php $res=mysqli_query($conn, "SELECT b.batch_no as batch from journal_item j,lc_lc_received_batch_split b where b.batch=j.batch and j.item_ex>0 and j.item_id=".$datac->item_id." and  j.sr_no=".$chalan_no." group by j.batch,j.expiry_date");
-                              While($data_inventory=mysqli_fetch_object($res)){ ?>
-                                  <tr><td style="border: 1px solid #ccc; text-align: center"><?=$data_inventory->batch;?> </td></tr>
-                              <?php } ?></table></td>
-
-
-                      <td align="center" valign="top" style="vertical-align: middle"><table border="1" style="border-collapse: collapse; width: 100%" >
-                              <?php $res=mysqli_query($conn, "SELECT expiry_date from journal_item where item_ex>0 and item_id=".$datac->item_id." and  sr_no=".$chalan_no." group by batch,expiry_date");
-                              While($data_inventory=mysqli_fetch_object($res)){ ?>
-                                  <tr><td style="border: 1px solid #ccc; text-align: center"><?=$data_inventory->expiry_date;?> </td></tr>
-                              <?php } ?></table></td-->
                   </tr>
 
-              <?
+              <?php
                   $g_tot_ctn_order = $g_tot_ctn_order+$datac->order_qty;
                   $g_tot_ctn_undel = $g_tot_ctn_undel+($datac->order_qty-$datac->deliverd_qty);
                   $g_tot_ctn_delv = $g_tot_ctn_delv+$datac->deliverd_qty;
               } ?>
               <tr>
                   <td colspan="3" align="right" valign="middle">Total</td>
-
                   <th align="center" valign="middle"><?=$g_tot_ctn_order?></th>
                   <th align="center" valign="middle" ><?=$g_tot_ctn_undel?></th>
                   <th align="center" valign="middle"><?=$g_tot_ctn_delv?></th>
               </tr>
-
           </table>
       <div style="border:1px solid #CCC; width:40%; margin-top:20px">
       <p style="font-size:12px"><u><strong>For Delivary Please Contact</strong></u></p>
@@ -305,7 +290,7 @@ else{?>
             <?=$_SESSION['company_address']?>
             <br />
             Tel: +88029860176 | 9860178, VAT Reg. No. <?php
-			$widdd = $_SESSION['userdepot'];
+			$widdd = $_SESSION['warehouse'];
 			 if($widdd=='5'){ echo '000702484'; } 
 	  if($widdd=='12'){ echo '000851876'; }
 	   ?></p>

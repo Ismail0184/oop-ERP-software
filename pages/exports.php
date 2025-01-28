@@ -17,14 +17,11 @@ function filterData(&$str){
 }
 // Excel file name for download
 
- $fields = array();
-
 if(isset($_GET['report_id']) && $_GET['report_id']=='1012001') {
     $fileName = "Purchase Data.xls";
     $fields = array('Po No', 'Po Date', 'Vendor Name', 'Item Id', 'FG Code (Custom Code)', 'Mat. Description', 'UoM', 'Qty','Rate','Amount');
 } elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012002'){
-    $fileName = "Sales Datas.xls";
-    $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date', 'Do Type','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount','Cash Discount','Commission','Sales For');
+    $fileName = "Sales Data.xls";
 } elseif (isset($_GET['report_id']) && $_GET['report_id']=='1012011'){
     $fileName = "Sales Return Data.xls";
     $fields = array('T.ID', 'Depot', 'DB Code', 'Dealer Name', 'Dealer Type', 'Do No', 'Do Date','Territory','Region','FG Code','FG Description','UoM','Pack Size','Unit Price','Qty','Amount');
@@ -436,20 +433,11 @@ where c.ledger_id=d.account_code and
  }
 
 
- // Save the file if it doesn't exist
- if (!file_exists($fileName)) {
-     file_put_contents($fileName, $excelData);
- }
 
- // Verify the file exists before reading it
- if (file_exists($fileName)) {
-     header("Content-Type: application/vnd.ms-excel");
-     header("Content-Disposition: attachment; filename=\"$fileName\"");
-     readfile($fileName);
- } else {
-     echo "Error: File '$fileName' not found.";
-     error_log("Error: File '$fileName' not found.");
- }
-
-//echo $excelData;
+ // Download the generated CSV file
+ header('Content-Type: text/csv');
+ header('Content-Disposition: attachment; filename=' . $fileName);
+ readfile($fileName);
+// Render excel data
+echo $excelData;
 exit;

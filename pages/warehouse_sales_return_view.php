@@ -1,6 +1,6 @@
 <?php
 require_once 'support_file.php';
-$title='Production Report';
+$title='View Sales Return';
 $now=time();
 $unique='do_no';
 $unique_field='name';
@@ -11,8 +11,10 @@ $journal_accounts="journal";
 $page='warehouse_sales_return_view.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$$unique = @$_GET[$unique];
+
+$fDate = @$_POST['f_date'];
+$tDate = @$_POST['t_date'];
 
 if(prevent_multi_submit()){
 
@@ -82,16 +84,19 @@ if(isset($$unique))
                         </thead>
                         <tbody>
                         <?php
-                        $results="Select srd.*,i.* from sale_return_details srd, item_info i  where
- srd.item_id=i.item_id and 
- srd.".$unique."=".$$unique." order by srd.id";
+                        $ttotal_unit = 0;
+                        $tfree_qty = 0;
+                        $ttotal_qty = 0;
+                        $tdiscount = 0;
+                        $ttotal_amt = 0;
+                        $i = 0;
+                        $results="Select srd.*,i.* from sale_return_details srd, item_info i  where srd.item_id=i.item_id and srd.".$unique."=".$$unique." order by srd.id";
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row['id'];
-                            ?>
+                            $ids=$row['id']; ?>
                             <tr>
-                                <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
+                                <td style="width:3%; vertical-align:middle"><?=$i;?></td>
                                 <td style="vertical-align:middle"><?=$row['finish_goods_code'];?></td>
                                 <td style="vertical-align:middle; width: 25%"><?=$row['item_name'];?></td>
                                 <td style="vertical-align:middle; text-align:center"><?=$row['unit_name'];?></td>
@@ -119,10 +124,9 @@ if(isset($$unique))
                         </tr>
                     </table>
                     <?php
-                    $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
+                    $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$$unique);
                     if($GET_status=='UNCHECKED' || $GET_status=='MANUAL' || $GET_status=='RETURNED'){ 
-					if($entry_by==$_SESSION['userid']){
-					 ?>
+					if($entry_by==$_SESSION['userid']){?>
                         <p>
                             <button style="float: left; font-size:12px; margin-left:1%" type="submit" name="reprocess" id="reprocess" class="btn btn-primary" onclick='return window.confirm("Are you confirm?");'>Re-process & Update</button>
                             <button style="float: right; font-size:12px; margin-right:1%" type="submit" name="deleted" id="deleted" class="btn btn-danger" onclick='return window.confirm("Are you confirm?");'>Deleted</button>
@@ -136,31 +140,35 @@ if(isset($$unique))
 
 <?php } ?>
 
-<?php if(!isset($_GET[$unique])){ ?>
-    <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
-       <table align="center" style="width: 50%;">
-            <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if($_POST['f_date']) echo $_POST['f_date']; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
-                <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if($_POST['t_date']) echo $_POST['t_date']; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Sales Return</button></td>
-            </tr></table>
- <?php 
-if(isset($_POST['viewreport'])){
-$res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as nooffg,u.fname as entry_by,p.entry_at,p.status
-
-from 
-".$table." p,
-warehouse w,
+<?php if(!isset($$unique)){ ?>
+    <div class="col-md-12 col-xs-12">
+        <div class="<?php if(isset($_POST['viewReport'])){ ?> row <?php } else { echo 'row collapse';} ?>" id="experience2">
+            <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
+                <table align="center" style="width: 50%;">
+                    <tr>
+                        <td>
+                            <input type="date"  style="width:150px; font-size: 11px; height: 25px"  value="<?=($fDate!='')? $fDate : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                        <td style="width:10px; text-align:center"> -</td>
+                        <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($tDate!='')? $tDate : date('Y-m-d') ?>" required   name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                        <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary"><i class="fa fa-eye"></i> View Sales Return</button></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+ 
+        <?php 
+        if(isset($_POST['viewReport'])){
+            $res="Select p.do_no,concat(p.do_no,' : ',p.sr_no) as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,u.fname as entry_by,p.entry_at,p.status from ".$table." p, warehouse w,
 users u,
 dealer_info d
  where
   p.entry_by=u.user_id and 
  w.warehouse_id=p.depot_id and  
  d.dealer_code=p.dealer_code and 
- p.do_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' order by p.".$unique." DESC ";
+ p.do_date between '".$fDate."' and '".$tDate."' order by p.".$unique." DESC ";
 } else {
-$res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as nooffg,u.fname as entry_by,p.entry_at,p.status
+$res="Select p.do_no,concat(p.do_no,' : ',p.sr_no) as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,u.fname as entry_by,p.entry_at,p.status
 from 
 ".$table." p,
 warehouse w,
@@ -173,7 +181,6 @@ dealer_info d
  d.dealer_code=p.dealer_code and 
  p.status in ('UNCHECKED') order by p.".$unique." DESC ";	
 }
-echo $crud->report_templates_with_data($res,$title);?>
-</form>
-<?php } ?>           
+echo $crud->report_templates_with_status_filter($res,'',$title);?>
+<?php } ?>
 <?=$html->footer_content();?>

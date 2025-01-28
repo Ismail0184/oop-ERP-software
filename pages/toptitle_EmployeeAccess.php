@@ -44,13 +44,6 @@ $cday=date('d');
 $dfrom=date('Y-1-1');
 $dto=date('Y-m-d');
 
- // if session is not set this will redirect to login page
- if( !isset($_SESSION['login_email']) ) {
-  header("Location: index.php");
-  exit;
- }
-
-
 $PostMonth = @$_POST['mon'];
 if($PostMonth!=''){
     $mon=$PostMonth;}
@@ -90,6 +83,7 @@ $currentMonthEndDate = date('Y-m-d');
 
 $lastMonthLeaveCount = find_a_field('hrm_leave_info','SUM(total_days)','status="GRANTED" and s_date between "'.$lastMonthStartDay.'" and "'.$lastMonthEndDay.'" and PBI_ID='.$_SESSION['PBI_ID']);
 $lastMonthODCount = find_a_field('hrm_od_attendance','COUNT(id)','PBI_ID='.$_SESSION['PBI_ID']);
+
 $currentMonthOffDayCount = find_a_field('salary_holy_day','COUNT(id)','holy_day between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
 $currentMonthPresentCount = find_a_field('ZKTeco_attendance','COUNT(id)','employee_id='.$_SESSION['PBI_ID'].' and date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
 $currentMonthLateCount = find_a_field('ZKTeco_attendance','COUNT(id)','clock_in_status="Late" and employee_id='.$_SESSION['PBI_ID'].' and date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
@@ -120,7 +114,7 @@ $currentMonthLeaveCount = find_a_field('hrm_leave_info','COUNT(id)','clock_in_st
 $currentMonthOSDCount = find_a_field('hrm_od_attendance','COUNT(id)','PBI_ID='.$_SESSION['PBI_ID'].' and attendance_date between "'.date('Y-m-01').'" and "'.date('Y-m-t').'"');
 $currentMonthAbsentCount = 0;
 
-$lastMonthTotalAbsent = $totalDaysInLastMonth-($lastMonthLeaveCount);
+$lastMonthTotalAbsent = $totalDaysInLastMonth-($lastMonthLeaveCount+$lastMonthODCount);
 
 $dashboardpermission=find_a_field('user_permissions_dashboard','COUNT(module_id)','user_id='.$_SESSION['userid'].' and module_id='.$_SESSION['module_id'].'');
 $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
@@ -184,14 +178,22 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                     </thead>
                     <tbody>
                     <?php
-                    $lastMonthAttendance = find_all_field('hrm_attendance_info','','PBI_ID='.$_SESSION['PBI_ID']);
+                    $lastMonthAttendance = find_all_field('hrm_attendance_info', '', 'PBI_ID=' . $_SESSION['PBI_ID']);
+                    if ($lastMonthAttendance && is_object($lastMonthAttendance)) {
+                        $lastMonthAttendanceOffDay= @$lastMonthAttendance->offDay;
+                        $lastMonthAttendanceHoliday= @$lastMonthAttendance->holiday;
+                        $lastMonthAttendancePresent= @$lastMonthAttendance->present;
+                        $lastMonthAttendanceLatePresent= @$lastMonthAttendance->latePresent;
+                    } else {
+                        echo "No attendance data available.";
+                    }
                     ?>
                     <tr>
                         <td style="text-align: center"><?=$totalDaysInLastMonth;?></td>
-                        <td style="text-align: center"><?=$lastMonthAttendance->offDay;?></td>
-                        <td style="text-align: center"><?=$lastMonthAttendance->holiday;?></td>
-                        <td style="text-align: center"><?=$lastMonthAttendance->present;?></td>
-                        <td style="text-align: center"><?=$lastMonthAttendance->latePresent;?></td>
+                        <td style="text-align: center"><?=$lastMonthAttendanceOffDay;?></td>
+                        <td style="text-align: center"><?=$lastMonthAttendanceHoliday;?></td>
+                        <td style="text-align: center"><?=$lastMonthAttendancePresent;?></td>
+                        <td style="text-align: center"><?=$lastMonthAttendanceLatePresent;?></td>
                         <td style="text-align: center"><?=number_format($lastMonthLeaveCount,0)?></td>
                         <td style="text-align: center"></td>
                         <td style="text-align: center"><?=$lastMonthTotalAbsent;?></td>

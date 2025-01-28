@@ -5,7 +5,7 @@ $now=time();
 $unique='do_no';
 $unique_field='sr_no';
 $table="sale_return_master";
-$table_deatils="sale_return_details";
+$table_details="sale_return_details";
 
 $page="sales_return_all.php";
 $crud      =new crud($table);
@@ -22,8 +22,8 @@ if(prevent_multi_submit()){
         $_POST['entry_at'] = date('Y-m-d H:s:i');
         $_SESSION['initiate_sr_documents']=@$_POST['sr_no'];
         $_SESSION['sales_return_id'] =@$_POST[$unique];
-        $_POST['warehouse_to']=@$_POST['warehouse_from'];
-        $_SESSION['production_warehouse'] =@$_POST['warehouse_to'];
+
+
         $_POST['create_date']=$create_date;
         $crud->insert();
         $type=1;
@@ -53,7 +53,7 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
         $_POST['status']="UNCHECKED";
         $_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
-        $crud = new crud($table_deatils);
+        $crud = new crud($table_details);
         $crud->insert();
     }   unset($_POST);
     }
@@ -61,7 +61,7 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
 
 
 //for single FG Delete..................................
-    $results="Select srd.*,i.* from ".$table_deatils." srd, item_info i  where
+    $results="Select srd.*,i.* from ".$table_details." srd, item_info i  where
  srd.item_id=i.item_id and
  srd.do_no='".$sales_return_id."' order by srd.id";
     $query=mysqli_query($conn, $results);
@@ -69,14 +69,14 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
         $ids=$row['id'];
         if(isset($_POST['deletedata'.$ids]))
         {
-            $del="DELETE FROM ".$table_deatils." WHERE id='$ids' and ".$unique."=".$sales_return_id."";
+            $del="DELETE FROM ".$table_details." WHERE id='$ids' and ".$unique."=".$sales_return_id."";
             $del_item=mysqli_query($conn, $del);
             unset($_POST);
         }}
 
 //for Delete..................................
     if(isset($_POST['cancel']))
-    {   $crud = new crud($table_deatils);
+    {   $crud = new crud($table_details);
         $condition =$unique."=".$sales_return_id;
         $crud->delete_all($condition);
         $crud = new crud($table);
@@ -87,19 +87,18 @@ $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
         unset($_POST);
     }
 
-
     if(isset($_POST['confirmsave']))
     {
         $up_master="UPDATE ".$table." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
         $update_table_master=mysqli_query($conn, $up_master);
-        $up_details="UPDATE ".$production_table_issue_master." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
+        $up_details="UPDATE ".$table_details." SET status='UNCHECKED' where ".$unique."='".$sales_return_id."'";
         $update_table_details=mysqli_query($conn, $up_details);
         unset($_SESSION['sales_return_id']);
         unset($_SESSION['initiate_sr_documents']);
         unset($_POST);
     } // if insert posting
-}
-$COUNT_details_data=find_a_field(''.$table_deatils.'','Count(id)',''.$unique.'='.$sales_return_id.'');
+} $sales_return_id = @$_SESSION['sales_return_id'];
+$COUNT_details_data=find_a_field(''.$table_details.'','Count(id)',''.$unique.'='.$sales_return_id.'');
 $sales_return_id = @$_SESSION['sales_return_id'];
 $initiate_sr_documents = @$_SESSION['initiate_sr_documents'];
 $results="Select srd.*,i.* from sale_return_details srd, item_info i  where
@@ -261,7 +260,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
                        </select>
                 </td>
                 <td style="width:8%" align="center">
-                        <input align="center" type="date" id="expiry_date" style="width:100%; height:37px;   text-align:center;font-size:11px" value="<?=($GETBatch>0)? $batch_get->mfg : $expiry_date ?>" readonly  required   name="expiry_date"  class="form-control col-md-7 col-xs-12" >
+                        <input align="center" type="date" id="expiry_date" style="width:100%; height:37px;   text-align:center;font-size:11px" value="<?=($GETBatch>0)? $batch_get->mfg : '' ?>" readonly  required   name="expiry_date"  class="form-control col-md-7 col-xs-12" >
                         <input type="hidden"  value="<?=($GETBatch>0)? $batch_get->rate : 0; ?>" readonly  required   name="cogs_rate"  class="form-control col-md-7 col-xs-12" >
                 </td>
                 <td style="width:11%" align="center">
@@ -291,8 +290,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
     <input type="hidden" name="<?=$unique;?>" id="<?=$unique;?>" value="<?=$$unique;?>" >
     <input type="hidden" name="custom_pr_no" id="custom_pr_no" value="<?=$custom_pr_no;?>" >
     <input type="hidden" name="pr_date" id="pr_date" value="<?=$pr_date;?>">
-    <input type="hidden" name="warehouse_from" id="warehouse_from" value="<?=$warehouse_from;?>">
-    <input type="hidden" name="warehouse_to" id="warehouse_to" value="<?=$warehouse_to;?>">
+    <input type="hidden" name="depot_id" id="depot_id" value="<?=$depot_id?>">
     <input type="hidden" name="lot" id="lot" value="<?=$lot;?>">
     <?php if($COUNT_details_data>0) { ?>
     <table align="center" class="table table-striped table-bordered" style="width:98%">
@@ -315,7 +313,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
         </tr>
         </thead>
         <tbody>
-        <?php
+        <?php $i = 0; $ttotal_unit =0;$tfree_qty=0;$ttotal_qty=0;$tdiscount=0;$ttotal_amt=0;
         $query=mysqli_query($conn, $results); $i = 0;
         while($row=mysqli_fetch_array($query)){
             $ids=$row['id'];

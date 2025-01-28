@@ -268,7 +268,7 @@ class crud{
             for($i=1;$i<$cols;$i++)
             { $str .='<td></td>'; }
             $str .='</tr></tfoot-->';
-            $c=0;
+            $sl=0;
             if (mysqli_num_rows($result)>0){
                 while($row = mysqli_fetch_array($result)) {
                     $str .='<tr style="cursor:pointer"  onclick="DoNavPOPUP('.$row[0].')"><td>'.($sl=$sl+1).'</td>';
