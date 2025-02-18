@@ -425,7 +425,7 @@ if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work 
                         <th style="text-align:center">:</th>
                         <td>
                             <select class="select2_single form-control" style="width: 80%;" tabindex="-1" required="required" name="checkby" id="checkby">
-                                <option></option>
+                                <option value="9789"><?=find_a_field('users','fname','user_id="9789"')?></option>
                                 <?=advance_foreign_relation($sql_checked_by,$checkby);?>
                             </select>
                         </td>

@@ -8,7 +8,7 @@ $table="production_issue_master";
 $table_details="production_issue_detail";
 $page='warehouse_STO_view.php';
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $STO_master=find_all_field(''.$table.'','',''.$unique.'='.$$unique.'');
 if(prevent_multi_submit()){
     if (isset($_POST['reprocess'])) {
@@ -40,12 +40,14 @@ if(prevent_multi_submit()){
         echo "<script>window.close(); </script>";
     }}
 
-// data query..................................
+$verifyStatus = @$_POST['verifi_status'];
 if(isset($_POST['viewreport'])){
     if($_POST['warehouse_from']>0) 			 $warehouse_from=$_POST['warehouse_from'];
     if(isset($warehouse_from))				{$warehouse_from_CON=' and m.warehouse_from='.$warehouse_from;}
-    if($_POST['verifi_status']!=='') 		$verifi_status=$_POST['verifi_status'];
-    if(isset($verifi_status))				{$verifi_status_CON=' and m.verifi_status in ("'.$verifi_status.'")';}
+    if($verifyStatus!=='') 		             $verifyStatus=@$_POST['verifi_status'];
+    if(isset($verifyStatus))				{$verifi_status_CON=' and m.verifi_status in ("'.$verifyStatus.'")';} else {
+        $verifi_status_CON = '';
+    }
 
     $sql="Select m.pi_no,m.pi_no as STO_ID,m.custom_pi_no as STO_no,m.pi_date as STO_date,w.warehouse_name as 'Warehouse / CMU From',w2.warehouse_name as transfer_to,m.remarks,u.fname as entry_by,m.returned_remarks,m.verifi_status as status
 from 

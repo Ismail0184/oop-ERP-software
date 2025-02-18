@@ -263,7 +263,7 @@ order by a.jvdate,a.id";
             ?>
             <tr style="font-size: 11px">
                 <td>0</td>
-                <td style="text-align: center"><?=date("Y M d", strtotime($_POST['f_date']));?></td>
+                <td style="text-align: center"><?=$_POST['f_date'];?></td>
                 <td colspan="6">Opening Balance</td>
                 <td style="text-align: right"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),0,'.','');else echo "0.00"; ?></td>
             </tr>
@@ -274,7 +274,7 @@ order by a.jvdate,a.id";
             while($data=mysqli_fetch_row($sql)){?>
                 <tr style="font-size: 11px">
                     <td><?=$i=$i+1;?></td>
-                    <td><?=date("Y M d", strtotime($data[0]));?></td>
+                    <td><?=$data[0]?></td>
                     <td><?php
                         if($data[4]=='Receipt'||$data[4]=='Payment'||$data[4]=='Journal_info'||$data[4]=='Contra')
                         {

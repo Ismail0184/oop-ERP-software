@@ -7,7 +7,6 @@ $table="hrm_leave_info";
 $crud      =new crud($table);
 $LeaveMasterData = find_all_field('hrm_leave_info','','id='.$$unique);
 
-
 if(isset($_POST['delete']))
 {   $condition=$unique."=".$$unique;
     $crud->delete($condition);
@@ -21,7 +20,8 @@ if(isset($_POST['confirm']))
     $_POST['status']="PENDING";
     $_POST['sent_at']=date("Y-m-d h:i:sa");
     $crud->update($unique);
-
+    $to = 'ismail@icpbd.com';
+    $message = 'this is test';
     echo sendEmail($to, 'Leave Application', $message);
 
     echo "<script>self.opener.location = 'emp_acess_apply_for_leave.php'; self.blur(); </script>";

@@ -15,13 +15,14 @@ $unique='id';
 $unique_field='PBI_ID';
 $table="hrm_late_attendance";
 
-$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+
 $required_status="PENDING";
 $authorused_status="Approve";
 $page="hrm_unauthorised_late_attendance.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$$unique = @$_GET[$unique];
+$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+
 
 $lateRequestData=find_all_field(''.$table.'','',''.$unique.'='.$_GET[$unique]);
 
@@ -75,8 +76,8 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
 							 CONCAT((select COUNT(id) from '.$table.' where id not in ("'.$$unique.'") and status not in ("PENDING") and attendance_date between "'.$dfrom.'" and "'.$dto.'" and  PBI_ID=r.PBI_ID)," Days") as "total_late(Current Year)"
 				  from '.$table.' r
 				  WHERE 
-				    r.authorised_by="'.$_SESSION[PBI_ID].'" and 
-				    r.attendance_date between "'.$_POST[f_date].'" and "'.$_POST[t_date].'"
+				    r.authorised_by="'.$_SESSION['PBI_ID'].'" and 
+				    r.attendance_date between "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"
 				   order by r.'.$unique.' DESC';
 } else {
 	$res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date, "%d %M, %Y") as Late_Date,r.late_entry_at as late_at,
@@ -93,7 +94,7 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
 							 CONCAT((select COUNT(id) from '.$table.' where id not in ("'.$$unique.'") and status not in ("PENDING") and attendance_date between "'.$dfrom.'" and "'.$dto.'" and  PBI_ID=r.PBI_ID)," Days") as "total_late(Current Year)"
 				  from '.$table.' r
 				  WHERE 
-				    r.authorised_by="'.$_SESSION[PBI_ID].'" and 
+				    r.authorised_by="'.$_SESSION['PBI_ID'].'" and 
 				    r.status="'.$required_status.'" 
 				   order by r.'.$unique.' DESC';
 	}
@@ -115,20 +116,16 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
 <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >    
      <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST['f_date'])) echo $_POST['f_date']; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST['t_date'])) { echo $_POST['t_date']; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
                 <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Authorized Late Attendance</button></td>
-            </tr></table>
-            
-            
+            </tr>
+     </table>
 <?=$crud->report_templates_with_data($res,$link)?>            
-            
-    </form>   
-    
-    
-    <!-------------------End of  List View --------------------->
+</form>
 <?php } ?>
+
 <?php if(isset($_GET[$unique])){ ?>
 
 
@@ -136,36 +133,30 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
 
 <form  name="addem" id="addem" class="form-horizontal form-label-left" style="font-size:11px" method="post">
     <? require_once 'support_html.php';?>
-
-                      <table align="center" class="table table-striped table-bordered" style="width:90%;font-size:11px;">
-                     <thead>
-                     <tr style="background-color: bisque">
-                         <th colspan="7" style="text-align: center; font-size: 15px; font-weight: bold;">Late Attendance Request</th>
-                     </tr>
-
-                     </thead>
-                     <thead>
-                     <tr>
-
-                         
-                         <th style="text-align: center">Date</th>
-                         <th style="text-align: center">Late At</th>
-                         <th style="text-align: center">Late Days<br>(Current Year)</th>
-                         <th style="text-align: center">Late Days<br>(Current Month)</th>
-                         <th style="text-align: center">Late <br>Reason</th>
-                     </tr>
-                     </thead>
-                     <tbody>
-                     <tr>
-                         
-                         <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->attendance_date;?></td>
-                         <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->late_entry_at;?>, <?=$lateRequestData->am_pm;?></td>
-                         <td style="text-align: center;vertical-align:middle"><?php $leave_taken=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfrom' and '$dto' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
-                         <td style="text-align: center; vertical-align:middle"><?php $leave_takenM=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfromM' and '$dtoM' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_takenM>0){ echo $leave_takenM,', Days';} else echo ''; ?></td>
-                         <td style="text-align: center; vertical-align: middle"><?=$lateRequestData->late_reason;?></td>
-                     </tr>
-
-                     </tbody>
+    <table align="center" class="table table-striped table-bordered" style="width:90%;font-size:11px;">
+        <thead>
+        <tr style="background-color: bisque">
+            <th colspan="7" style="text-align: center; font-size: 15px; font-weight: bold;">Late Attendance Request</th>
+        </tr>
+        </thead>
+        <thead>
+        <tr>
+            <th style="text-align: center">Date</th>
+            <th style="text-align: center">Late At</th>
+            <th style="text-align: center">Late Days<br>(Current Year)</th>
+            <th style="text-align: center">Late Days<br>(Current Month)</th>
+            <th style="text-align: center">Late <br>Reason</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->attendance_date;?></td>
+            <td style="text-align: center;vertical-align:middle"><?=$lateRequestData->late_entry_at;?>, <?=$lateRequestData->am_pm;?></td>
+            <td style="text-align: center;vertical-align:middle"><?php $leave_taken=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfrom' and '$dto' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_taken>0){ echo $leave_taken,', Days';} else echo ''; ?></td>
+            <td style="text-align: center; vertical-align:middle"><?php $leave_takenM=find_a_field("".$table."","COUNT(id)","status not in ('PENDING') and attendance_date between '$dfromM' and '$dtoM' and  PBI_ID='".$lateRequestData->PBI_ID."'"); if($leave_takenM>0){ echo $leave_takenM,', Days';} else echo ''; ?></td>
+            <td style="text-align: center; vertical-align: middle"><?=$lateRequestData->late_reason;?></td>
+        </tr>
+        </tbody>
     </table>
 
 
@@ -176,36 +167,36 @@ $res='select r.'.$unique.',r.'.$unique.' as Req_No,DATE_FORMAT(r.attendance_date
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <textarea type="text"  name="reasons_for_rejection" id="reasons_for_rejection" style="height: 40px; font-size:11px" placeholder="Reasons for rejection" ></textarea>
-                        </div></div></td>
-
+                        </div>
+                    </div>
+                </td>
                 <td style="float:right">
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                          <textarea type="text"  name="reasons_for_rejection" id="reasons_for_rejection" style="height: 40px; font-size:11px" placeholder="Notes to HR" ></textarea>
-                        </div></div></td>
+                        </div>
+                    </div>
+                </td>
             </tr>
-            
-            
+
             <tr>
                 <td>
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="submit" style="font-size:12px" onclick='return window.confirm("Are you confirm to reject?");' name="reject" id="reject" class="btn btn-danger">Reject the Application</button>
-                        </div></div></td>
+                        </div>
+                    </div>
+                </td>
                 <td style="float:right">
                     <div class="form-group">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="submit" style="font-size:12px" onclick='return window.confirm("Are you confirm to approve?");' name="confirm" id="confirm" class="btn btn-primary">Approve & Forward to HR</button>
-                        </div></div>
+                        </div>
+                    </div>
                 </td>
-            </tr>           
-            
+            </tr>
             </table>
     <?php } ?>
 <?php } ?>
 </form>
-
-
-
-
 <?=$html->footer_content();?>

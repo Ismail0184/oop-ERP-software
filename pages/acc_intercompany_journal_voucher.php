@@ -118,10 +118,10 @@ if(prevent_multi_submit()) {
             if ((($_POST['dr_amt1'] && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], $_POST['dr_amt1'],
                     0, 'Debit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['crLedger_id_2']);
+                    , $thisday, $thismonth, $thisyear, $_POST['crLedger_id_2']);
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['crLedger_id_2'], 0,
-                        $_POST['cr_amt2'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
+                    $_POST['cr_amt2'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
             }
 
             if ((($cr_amt1 && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
@@ -137,11 +137,11 @@ if(prevent_multi_submit()) {
 
             if (($_POST['ex_amount']> 0) && (($_POST['Ex_debit_ledger'] && $_POST['Ex_credit_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_debit_ledger'], $_POST['ex_amount'],
-                        0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['Ex_credit_ledger']);
+                    0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    , $thisday, $thismonth, $thisyear, $_POST['Ex_credit_ledger']);
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_credit_ledger'], 0,
-                        $_POST['ex_amount'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
-                        , $thisday, $thismonth, $thisyear, $_POST['Ex_debit_ledger']);
+                    $_POST['ex_amount'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    , $thisday, $thismonth, $thisyear, $_POST['Ex_debit_ledger']);
             }
         } // add
     } // end post unique

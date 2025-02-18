@@ -12,12 +12,12 @@ $unique='po_no';
 $unique_field='po_no';
 $table="purchase_master";
 $table_details="purchase_invoice";
-$current_status=find_a_field("".$table."","status","".$unique."=".$_GET[$unique]."");
+
 $required_status="UNCHECKED";
 $page="emp_acess_asset_purchased_check.php";
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$$unique = @$_GET[$unique];
+$current_status=find_a_field("".$table."","status","".$unique."=".$$unique."");
 
 if(prevent_multi_submit()){
   
@@ -55,7 +55,9 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}	
-$master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
+$master=find_all_field("".$table."","","".$unique."=".$$unique."");
+$fDate = @$_POST['f_date'];
+$tDate = @$_POST['t_date'];
 ?>
 
 
@@ -74,10 +76,10 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
      <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
      <table align="center" style="width: 50%;">
             <tr><td>
-                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($_POST[f_date])) echo $_POST[f_date]; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
+                    <input type="date" style="width:150px; font-size: 11px; height: 25px"  value="<?php if(isset($fDate)) echo $fDate; else echo date('Y-m-01');?>" max="<?=date('Y-m-d');?>" required   name="f_date" ></td>
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($_POST[t_date])) { echo $_POST[t_date]; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Checked Work Purchase</button></td>
+                <td><input type="date" style="width:150px;font-size: 11px; height: 25px"  value="<?php if(isset($tDate)) { echo $tDate; } else { echo date('Y-m-d'); }?>" max="<?=date('Y-m-d')?>" required   name="t_date"></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Checked Work Purchase</button></td>
             </tr></table>
      <div class="col-md-12 col-sm-12 col-xs-12">
          <div class="x_panel">
@@ -98,7 +100,7 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
                         </thead>
                         <tbody>
                         <?
-						 if(isset($_POST[viewreport])){
+						 if(isset($_POST['viewReport'])){
 						 $res='select r.'.$unique.',r.'.$unique.' as PO_NO,r.po_date as Purchased_Date,r.entry_at,v.vendor_name,
 				 (SELECT concat(p2.PBI_NAME," # ","(",de.DESG_SHORT_NAME,")") FROM 
 							 
@@ -116,7 +118,7 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
 				  WHERE 
 				  r.vendor_id=v.vendor_id and 
 				  r.checkby='.$_SESSION['PBI_ID'].' and
-				  r.po_date between "'.$_POST[f_date].'" and "'.$_POST[t_date].'"	and
+				  r.po_date between "'.$fDate.'" and "'.$tDate.'"	and
 				  r.po_type in ("Asset")			   	  
 				   order by r.'.$unique.' DESC';
 						 } else {
@@ -186,6 +188,12 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
 
 
                         <?php
+                        $i=0;
+                        $ttotal_unit = 0;
+                        $tfree_qty = 0;
+                        $ttotal_qty = 0;
+                        $tdiscount = 0;
+                        $total = 0;
                         $results="Select srd.*,i.*,ar.*,d.DEPT_SHORT_NAME as department 
 						from 
 						".$table_details." srd, item_info i, asset_register ar, department d  where
@@ -194,26 +202,26 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
                         $query=mysqli_query($conn, $results);
                         while($row=mysqli_fetch_array($query)){
                             $i=$i+1;
-                            $ids=$row[id];
+                            $ids=$row['id'];
                             ?>
                             <tr>
                                 <td style="width:3%; vertical-align:middle"><?php echo $i; ?></td>
-                                <td style="vertical-align:middle"><?=$row[asset_code];?></td>
-                                <td style="vertical-align:middle; width: 25%"><?=$row[item_name];?> : <?=$row[specification];?></td>
-                                <td style="vertical-align:middle; text-align:center"><?=$row[department];?></td>            
-                                <td align="center" style=" text-align:left;vertical-align:middle;"><?=$row[where_kept]; ?></td>
-                                <td align="center" style=" text-align:center;vertical-align:middle;"><?=$row[qty]; ?></td>
-                                <td align="center" style=" text-align:right;vertical-align:middle;"><?=$row[rate]; ?></td>
-                                <td align="center" style=" text-align:right;vertical-align:middle;"><?=$row[discount]; ?></td>
-                                <td align="center" style="text-align:right;vertical-align:middle;"><?=number_format($row[amount],2);?></td>
+                                <td style="vertical-align:middle"><?=$row['asset_code'];?></td>
+                                <td style="vertical-align:middle; width: 25%"><?=$row['item_name'];?> : <?=$row['specification'];?></td>
+                                <td style="vertical-align:middle; text-align:center"><?=$row['department'];?></td>
+                                <td align="center" style=" text-align:left;vertical-align:middle;"><?=$row['where_kept']; ?></td>
+                                <td align="center" style=" text-align:center;vertical-align:middle;"><?=$row['qty']; ?></td>
+                                <td align="center" style=" text-align:right;vertical-align:middle;"><?=$row['rate']; ?></td>
+                                <td align="center" style=" text-align:right;vertical-align:middle;"><?=$row['discount']; ?></td>
+                                <td align="center" style="text-align:right;vertical-align:middle;"><?=number_format($row['amount'],2);?></td>
 
                             </tr>
                             <?php  
-							$ttotal_unit=$ttotal_unit+$row[total_unit];
-                            $tfree_qty=$tfree_qty+$row[free_qty];
-                            $ttotal_qty=$ttotal_qty+$row[total_qty];
-                            $tdiscount=$tdiscount+$row[discount];
-                            $total=$total+$row[amount];  } ?>
+							$ttotal_unit=$ttotal_unit+$row['total_unit'];
+                            $tfree_qty=$tfree_qty+$row['free_qty'];
+                            $ttotal_qty=$ttotal_qty+$row['total_qty'];
+                            $tdiscount=$tdiscount+$row['discount'];
+                            $total=$total+$row['amount'];  } ?>
 
 
  <tr style="font-weight: bold">
@@ -291,8 +299,8 @@ $master=find_all_field("".$table."","","".$unique."=".$_GET[$unique]."");
 
                                 
 <?php
-if(isset($_POST[checked])){
-mysqli_query($conn, "Update ".$table." SET status='CHECKED',checked_at='$todayss' where ".$unique."=".$_GET[$unique]."");
+if(isset($_POST['checked'])){
+mysqli_query($conn, "Update ".$table." SET status='CHECKED',checked_at='$todayss' where ".$unique."=".$$unique."");
 $maild=find_a_field('essential_info','ESS_CORPORATE_EMAIL','PBI_ID='.$master->recommended);
 
 ///////////////////////// to authorise	
@@ -300,7 +308,7 @@ $maild=find_a_field('essential_info','ESS_CORPORATE_EMAIL','PBI_ID='.$master->re
                 $to = $maild;
 				$subject = "An asset has been purchased";
 				$txt = "<p>Dear Sir/Madam,</p>
-				<p>A new asset has been purchased. Purchased ID No is: <b>".$_GET[$unique]."</b></p>
+				<p>A new asset has been purchased. Purchased ID No is: <b>".$$unique."</b></p>
 				<p>Your approval is required. Please enter the <b>Employee Access module</b> to approval the Purchase Order.</p>
 				<p>Prepared By- <strong>".find_a_field('personnel_basic_info','PBI_NAME','ERP_ID='.$master->entry_by)."</strong></p>
 				<p><i>This EMAIL is automatically generated by ERP Software.</i></p>";

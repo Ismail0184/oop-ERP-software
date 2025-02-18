@@ -365,15 +365,27 @@ global $conn;
  }
 }
 
-function advance_foreign_relation($sql,$value=''){
-	global $conn;
- $res=mysqli_query($conn, $sql);
- while($data=mysqli_fetch_row($res))
- {
-  if($value==$data[0])
-   echo '<option value="'.$data[0].'" selected>'.$data[1].'</option>';
-  else
-   echo '<option value="'.$data[0].'">'.$data[1].'</option>';
+function advance_foreign_relation($sql, $value = '') {
+ global $conn;
+
+ // Check if the SQL query is empty
+ if (empty($sql)) {
+  return;
+ }
+
+ // Execute the query
+ $res = mysqli_query($conn, $sql);
+ if (!$res) {
+  return;
+ }
+
+ // Process the results
+ while ($data = mysqli_fetch_row($res)) {
+  if ($value == $data[0]) {
+   echo '<option value="' . $data[0] . '" selected>' . $data[1] . '</option>';
+  } else {
+   echo '<option value="' . $data[0] . '">' . $data[1] . '</option>';
+  }
  }
 }
 

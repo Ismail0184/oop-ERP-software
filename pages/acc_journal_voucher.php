@@ -306,7 +306,6 @@ journal_info j,
                             <th>Of Bank</th><th>:</th>
                             <td><input type="text" name="Cheque_of_bank" tabindex="4" id="Cheque_of_bank" value="<?=$Cheque_of_bank;?>" class="form-control col-md-7 col-xs-12" style="width: 90%; margin-top: 5px; font-size: 11px;"></td>
                         </tr>
-
                         <tr>
                             <th style="">Cheque No</th><th>:</th>
                             <td><input type="text" id="Cheque_No" tabindex="5" value="<?=$Cheque_No;?>" name="Cheque_No"  class="form-control col-md-7 col-xs-12" style="width: 90%; margin-top: 5px; font-size: 11px;" ></td>

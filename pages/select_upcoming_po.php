@@ -7,13 +7,15 @@ $unique_field='name';
 $table='';
 $page="po_receive.php";
 
-if($_POST['f_date']){
-$f_date =$_POST['f_date'];
+if(@$_POST['f_date']){
+$f_date =@$_POST['f_date'];
 $fdate=date('Y-m-d' , strtotime($f_date));}
 
-if($_POST['t_date']){
-$t_date =$_POST['t_date'];
+if(@$_POST['t_date']){
+$t_date =@$_POST['t_date'];
 $tdate=date('Y-m-d' , strtotime($t_date));}
+
+$vendorId = @$_POST['vendor_id'];
 $print_page="po_print_view.php";
 
 ?>
@@ -81,7 +83,7 @@ $vendorcon='and a.vendor_id="'.$_POST['vendor_id'].'"' ;
             <td style="width:30%">
                 <select class="select2_single form-control" name="vendor_id" id="vendor_id" style="width:100%;font-size:11px; max-height:10px">
                     <option></option>
-                    <?=foreign_relation('vendor','vendor_id','vendor_name',$_POST['vendor_id']);?>
+                    <?=foreign_relation('vendor','vendor_id','vendor_name',$vendorId);?>
                 </select>
             </td>
             <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="submitit"  class="btn btn-primary">View Available PO</button></td>

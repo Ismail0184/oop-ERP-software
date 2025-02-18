@@ -11,10 +11,12 @@ $table_details = 'warehouse_other_issue_detail';
 $details_unique = 'id';
 $page="emp_access_requisition_stationary.php";
 $crud      =new crud($table);
-$taken=getSVALUE("".$table_details."", "SUM(qty)", " where oi_date between '$dfrom' and '$dto' and  issued_to='".$_SESSION[PBI_ID]."' and item_id=".$_GET[item_code_GET]."");
-$unit=getSVALUE("item_info", "unit_name", " where item_id=".$_GET[item_code_GET]."");
-$department=getSVALUE("personnel_basic_info", "PBI_DEPARTMENT", " where PBI_ID=".$_SESSION[PBI_ID]."");
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$getItemCode = @$_GET['item_code_GET'];
+$PBI_ID = @$_SESSION['PBI_ID'];
+$taken=getSVALUE("".$table_details."", "SUM(qty)", " where oi_date between '$dfrom' and '$dto' and  issued_to='".$PBI_ID."' and item_id=".$getItemCode."");
+$unit=getSVALUE("item_info", "unit_name", " where item_id=".$getItemCode."");
+$department=getSVALUE("personnel_basic_info", "PBI_DEPARTMENT", " where PBI_ID=".$PBI_ID."");
+
 
 if(prevent_multi_submit()){
    
@@ -23,13 +25,13 @@ if(prevent_multi_submit()){
 		$_POST['company_id'] = $_SESSION['companyid'];
 		$_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
-		$sd=$_POST[oi_date]; 
-		$_POST[oi_date]=date('Y-m-d' , strtotime($sd));		
+		$sd=$_POST['oi_date'];
+		$_POST['oi_date']=date('Y-m-d' , strtotime($sd));
 	    $_POST['issue_type'] = 'Office Issue';	
 	    $_POST['status'] = 'MANUAL';
 		$_POST['requisition_from'] = $department;
 	    $_POST['warehouse_id'] = '11';
-		$_POST['issued_to'] = $_SESSION[PBI_ID];
+		$_POST['issued_to'] = $PBI_ID;
 		$_SESSION['initiate_hrm_stationary_requisition']=$_POST[$unique];		
         $crud->insert();
         $type=1;
@@ -43,21 +45,20 @@ if(prevent_multi_submit()){
     {
 		$_POST['entry_by'] = $_SESSION['userid'];
         $_POST['entry_at'] = date('Y-m-d H:s:i');
-		$sd=$_POST[oi_date]; 
-		$_POST[oi_date]=date('Y-m-d' , strtotime($sd));		
+		$sd=$_POST['oi_date'];
+		$_POST['oi_date']=date('Y-m-d' , strtotime($sd));
 	    $_POST['issue_type'] = 'Office Issue';	
 	    $_POST['status'] = 'MANUAL';
 		$_POST['requisition_from'] = $_SESSION["department"];
 	    $_POST['warehouse_id'] = '11';
 		$_POST['recommend_qty'] = $_POST['qty'];
 		$_POST['request_qty'] = $_POST['qty'];
-		$_POST['issued_to'] = $_SESSION[PBI_ID];
-		$_POST[oi_no]=$_SESSION['initiate_hrm_stationary_requisition'];	
+		$_POST['issued_to'] = $PBI_ID;
+		$_POST['oi_no']=$_SESSION['initiate_hrm_stationary_requisition'];
         $crud      =new crud($table_details);
         $crud->insert();
         $type=1;
-        $msg='New Entry Successfully Inserted.';		
-
+        $msg='New Entry Successfully Inserted.';
         unset($_POST);
         unset($$unique);
     }
@@ -66,16 +67,14 @@ if(prevent_multi_submit()){
 //for modify..................................
 if(isset($_POST['modify']))
 {
-	$sd=$_POST[oi_date]; 
-    $_POST[oi_date]=date('Y-m-d' , strtotime($sd));
+	$sd=$_POST['oi_date'];
+    $_POST['oi_date']=date('Y-m-d' , strtotime($sd));
     $_POST['edit_at']=time();
     $_POST['edit_by']=$_SESSION['userid'];
-	$sd=$_POST[oi_date]; 
-    $_POST[oi_date]=date('Y-m-d' , strtotime($sd));
+	$sd=$_POST['oi_date'];
+    $_POST['oi_date']=date('Y-m-d' , strtotime($sd));
     $crud->update($unique);
     $type=1;
-    //echo $targeturl;
-    
 }}
 
  //for Delete..................................
@@ -94,7 +93,7 @@ if(isset($_POST['modify']))
 
  //for Delete..................................
  if(isset($_POST['confirm']))
- {   $name=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$_SESSION[PBI_ID]);
+ {   $name=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID='.$PBI_ID);
      $emailId=find_a_field('essential_info','ESS_CORPORATE_EMAIL','PBI_ID='.$recommended_by);
      $emailIds=find_a_field('essential_info','ESS_CORPORATE_EMAIL','PBI_ID='.$authorised_person);
      $to = $emailId;

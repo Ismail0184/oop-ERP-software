@@ -1,5 +1,5 @@
 <?php
-require_once 'support_file.php';
+require_once 'N.php';
 $title='Request for Credit Limit';
 $unique='id';
 $unique_field='fname';
@@ -33,6 +33,49 @@ if(prevent_multi_submit()){
         $_POST['requested_date'] = date('Y-m-d');
         $crud->insert();
     }
+
+
+
+}
+
+if (isset($_POST["Import"])) {
+    $filename = $_FILES["file"]["tmp_name"];
+    if ($_FILES["file"]["size"] > 0) {
+        $file = fopen($filename, "r");
+        while (($eData = fgetcsv($file, 10000, ",")) !== FALSE) {
+            $entry_at = date('Y-m-d H:i:s');
+            $requested_date = date('Y-m-d');
+            $getDealerInfo = find_all_field('dealer_info', '', 'account_code=' . $eData[1]);
+            $getDealerCode = @$getDealerInfo->dealer_code;
+            $getDealerCurrentCreditLimit = @$getDealerInfo->credit_limit;
+            $currentBalance = find_a_field('journal', 'SUM(cr_amt-dr_amt)', 'ledger_id=' . $eData[1]);
+            $entryBy = $_SESSION['userid'];
+            $entryByName = find_a_field('users', 'fname', 'user_id=' . $entryBy);
+
+            // Debugging
+            if (empty($getDealerCode)) {
+                die("Dealer code not found for account code: " . $eData[1]);
+            }
+
+            $sql = "INSERT INTO $table 
+                (`requested_date`, `dealer_code`, `current_balance`, `current_credit_limit`, `requested_limit`, 
+                `limit_duration`, `entry_by`, `entry_at`, `remarks`, `status`, `entry_from`, `section_id`, `company_id`) 
+                VALUES ('$requested_date', '$getDealerCode', '$currentBalance', '$getDealerCurrentCreditLimit', 
+                '$eData[7]', 'Longtime', '$entryBy', '$entry_at', 
+                'MANUAL Credit Limit Uploaded by $entryByName', 'PENDINGS', 'UPLOAD', 
+                '" . $_SESSION['sectionid'] . "', '" . $_SESSION['companyid'] . "')";
+
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                die("SQL Error: " . mysqli_error($conn));
+            }
+        }
+        fclose($file);
+        echo "<script>alert('CSV File has been successfully imported.'); window.location = '$page';</script>";
+    } else {
+        die("File size is zero or file upload error!");
+    }
+    header("Location: $page");
 }
 
 if(isset($_POST['deleteRequest'])){
@@ -179,6 +222,28 @@ self.location='<?=$page;?>?<?php if($$unique>0){?>id=<?=$$unique?>&<?php } ?>dea
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
+            <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
+                <table align="center" class="table table-striped table-bordered" style="width:100%; font-size: 11px">
+                    <thead>
+                    <tr class="bg-primary text-white">
+                        <th style="text-align: center">Select your file</th>
+                        <th style="text-align:center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td align="center">
+                            <input style="font-size:11px" type="file" id="file" name="file" required class="form-control col-md-7 col-xs-12" >
+                        </td>
+                        <td align="center" style="width:5%; vertical-align:middle">
+                            <button type="submit" name="Import" onclick='return window.confirm("Are you confirm to Upload?");' class="btn btn-primary" style="font-size: 11px"><i class="fa fa-upload"></i> Upload the File</button>
+                        </td>
+                    </tr>
+                    <tr><th colspan="6" style="text-align: center">or</th></tr>
+                    </tbody>
+                </table>
+            </form>
+
             <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" style="font-size: 11px" >
                 <table  class="table table-striped table-bordered" style="width:100%">
                     <tr style="background-color: #3caae4; color:white">

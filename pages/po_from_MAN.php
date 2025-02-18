@@ -267,7 +267,7 @@ $recommended = @$recommended;
 $authorise = @$authorise;
 $po_id = @$po_id;
 $return_comments = @$return_comments;
-
+$MAN_ID = @$_SESSION['MAN_ID'];
 $vendor=find_all_field('vendor','','vendor_id='.$vendor_id.'');
 $vendor_commission = @$vendor->commission;
 if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work Order';
@@ -314,10 +314,10 @@ if(isset($_POST['cancel_MAN']))
 
                 <select class="select2_single form-control" style="width:400px" tabindex="-1" required="required" name="MAN_ID">
                     <option></option>
-                    <?=foreign_relation('MAN_master', 'id', 'CONCAT(id," : ", MAN_ID)', $_SESSION['MAN_ID'], 'status="VERIFIED" and po_create_status="No" order by id desc'); ?>
+                    <?=foreign_relation('MAN_master', 'id', 'CONCAT(id," : ", MAN_ID)', $MAN_ID, 'status="VERIFIED" and po_create_status="No" order by id desc'); ?>
                 </select>
             </td>
-            <?php if($_SESSION['MAN_ID']>0){?>
+            <?php if($MAN_ID>0){?>
                 <td style="vertical-align: middle"><button type="submit" name="cancel_MAN" onclick='return window.confirm("Mr. <?php echo $_SESSION["username"]; ?>, Are you confirm to cancel?");' class="btn btn-danger" style="float: left; font-size: 11px"><i class="fa fa-close"></i> Cancel this MAN</button>
             <?php } else { ?>
                 <td style="vertical-align: middle"><button type="submit" class="btn btn-primary" name="extract_MAN" style="font-size: 11px"><i class="fa fa-file-export"></i> Extract this MAN</button></td>

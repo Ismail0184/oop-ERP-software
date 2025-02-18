@@ -114,6 +114,17 @@ $s_date = @$s_date;
 $e_date = @$e_date;
 $total_days = @$total_days;
 $GetType = @$_GET['type'];
+
+if (!isset($recommended_by)) {
+    $recommended_by = 0;
+} else {
+    $recommended_by = @$recommended_by;
+}
+if (!isset($approved_by)) {
+    $approved_by = 0;
+} else {
+    $approved_by = @$approved_by;
+}
 $year=date('Y');
 $s_date_s="".$year."-01-01";
 $s_date_e="".$year."-12-31";
