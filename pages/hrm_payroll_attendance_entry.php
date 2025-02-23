@@ -62,7 +62,12 @@ if(prevent_multi_submit()){
                 window.location = '".$page."';
             </script>";
         }
-        header("Location: ".$page."");
+        if (!headers_sent()) {
+            header("Location: " . $page);
+            exit;
+        } else {
+            die("Headers already sent. Cannot redirect.");
+        }
     }
 
 }

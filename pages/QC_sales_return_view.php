@@ -12,9 +12,10 @@ $lc_lc_received_batch_split = "lc_lc_received_batch_split";
 $page='QC_sales_return_view.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
+$$unique = @$_GET[$unique];
 $condition="create_date='".date('Y-m-d')."'";
-
+$fDate = $_POST['f_date'];
+$tDate = $_POST['t_date'];
 
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
@@ -110,9 +111,9 @@ if(isset($$unique))
     while (list($key, $value)=each($data))
     { $$key=$value;}}
 
-$cashdiscount=find_a_field('sale_return_master','cashdiscount','do_no='.$_GET['do_no'].'');
+$cashdiscount=find_a_field('sale_return_master','cashdiscount','do_no='.$$unique.'');
 
-if(isset($_POST['viewreport'])){
+if(isset($_POST['viewReport'])){
 $resultss="Select p.do_no,p.sr_no,p.do_date as 'Date',w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as 'Dealer Name',p.remarks,concat(u.fname, '<br> at: ' ,p.entry_at) as entry_by,(SELECT COUNT(item_id) from ".$table_deatils." where ".$unique."=p.".$unique.") as No_of_Items,p.status as status
 from
 ".$table." p,
@@ -252,14 +253,14 @@ srd.".$unique."=".$$unique." order by srd.id";
 <form action="" enctype="multipart/form-data" method="post" name="addem" id="addem" >
     <table align="center" style="width: 50%;">
         <tr>
-            <td><input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($_POST['f_date']!='')? $_POST['f_date'] : date('Y-m-01') ?>" required   name="f_date" class="form-control col-md-7 col-xs-12" /></td>
+            <td><input type="date"  style="width:150px; font-size: 11px;" max="<?=date('Y-m-d');?>"  value="<?=($fDate!='')? $fDate : date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" /></td>
             <td style="width:10px; text-align:center"></td>
-            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($_POST['t_date']!='')? $_POST['t_date'] : date('Y-m-d') ?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+            <td><input type="date"  style="width:150px;font-size: 11px;"  value="<?=($tDate!='')? $tDate : date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
             <td style="width:10px; text-align:center"></td>
-            <td style="padding:10px"><button type="submit" style="font-size: 12px;" name="viewreport"  class="btn btn-primary">View Report</button></td>
+            <td style="padding:10px"><button type="submit" style="font-size: 12px;" name="viewReport"  class="btn btn-primary">View Report</button></td>
         </tr>
     </table>
-    <?=$crud->report_templates_with_status($resultss);?>
+    <?=$crud->report_templates_with_status($resultss,'');?>
 </form>     
 <?php endif; ?>
 <?=$html->footer_content();?>

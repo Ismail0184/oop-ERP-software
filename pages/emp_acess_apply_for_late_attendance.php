@@ -29,7 +29,7 @@ if(isset($_POST[$unique_field]))
         $crud->insert();
         $type=1;
         $rid = @$_GET['rid'];
-        if ($_GET['rid']>0){
+        if ($rid>0){
             mysqli_query($conn, "UPDATE ZKTeco_attendance SET apply_status='APPLIED' where id=".$rid);
             header("Location: dashboard.php");
         }

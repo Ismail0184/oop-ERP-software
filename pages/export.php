@@ -440,7 +440,8 @@ where c.ledger_id=d.account_code and
 // Download the generated CSV file
 header('Content-Type: text/csv');
 header('Content-Disposition: attachment; filename=' . $fileName);
-readfile($fileName);
-// Render excel data
+
+    readfile($fileName);
+
 echo $excelData;
 exit;

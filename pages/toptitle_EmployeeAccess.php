@@ -185,6 +185,10 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                         $lastMonthAttendancePresent= @$lastMonthAttendance->present;
                         $lastMonthAttendanceLatePresent= @$lastMonthAttendance->latePresent;
                     } else {
+                        $lastMonthAttendanceOffDay = 0;
+                        $lastMonthAttendanceHoliday = 0;
+                        $lastMonthAttendancePresent = 0;
+                        $lastMonthAttendanceLatePresent = 0;
                         echo "No attendance data available.";
                     }
                     ?>

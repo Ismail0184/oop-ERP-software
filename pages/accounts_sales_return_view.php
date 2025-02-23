@@ -11,8 +11,10 @@ $journal_accounts="journal";
 $page='accounts_sales_return_view.php';
 $ji_date=date('Y-m-d');
 $crud      =new crud($table);
-$$unique = $_GET[$unique];
-$targeturl="<meta http-equiv='refresh' content='0;$page'>";
+$$unique = @$_GET[$unique];
+
+$fDate = $_POST['f_date'];
+$tDate = $_POST['t_date'];
 
 if(prevent_multi_submit()){
     if (isset($_POST['returned'])) {
@@ -128,9 +130,10 @@ if(isset($$unique))
     $data=db_fetch_object($table,$condition);
     while (list($key, $value)=each($data))
     { $$key=$value;}}
+$dealer_code = @$dealer_code;
 $dealer_info=find_all_field("dealer_info","","dealer_code=".$dealer_code."");
 $config_group_class=find_all_field("config_group_class","","1");
-$srm=find_all_field('sale_return_master','','do_no='.$_GET['do_no'].'');
+$srm=find_all_field('sale_return_master','','do_no='.$$unique.'');
 
 $date_checking = find_all_field('dev_software_data_locked','','status="LOCKED" and section_id="'.$_SESSION['sectionid'].'" and company_id="'.$_SESSION['companyid'].'"');
 if($date_checking>0) {
@@ -238,9 +241,6 @@ if($date_checking>0) {
                             <td align="right" colspan="7"><?=number_format($ttotal_amt+$srm->cashdiscount,2);?></td>
                         </tr>
                     </table>
-
-
-
                     <table align="center" class="table table-striped table-bordered" style="width:98%;font-size:11px">
                         <thead>
                         <tr style="background-color: bisque">
@@ -326,9 +326,6 @@ if($date_checking>0) {
                         <?php endif; ?>
                         </tbody>
                     </table>
-
-
-
                     <?php
                     $GET_status=find_a_field(''.$table.'','status',''.$unique.'='.$_GET[$unique]);
                     if($GET_status=='CHECKED'){  ?>
@@ -354,14 +351,14 @@ if($date_checking>0) {
     <form  name="addem" id="addem" class="form-horizontal form-label-left" method="post" >
         <table align="center" style="width: 50%;">
             <tr><td>
-                <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?php if($_POST['f_date']) echo $_POST['f_date']; else echo date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
+                <input type="date"  style="width:150px; font-size: 11px; height: 25px" max="<?=date('Y-m-d');?>"  value="<?=($fDate!='')? $fDate : date('Y-m-01');?>" required   name="f_date" class="form-control col-md-7 col-xs-12" >
                 <td style="width:10px; text-align:center"> -</td>
-                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?php if($_POST['t_date']) echo $_POST['t_date']; else echo date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
-                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewreport"  class="btn btn-primary">View Sales Return</button></td>
+                <td><input type="date"  style="width:150px;font-size: 11px; height: 25px"  value="<?=($tDate!='')? $tDate : date('Y-m-d');?>" required  max="<?=date('Y-m-d');?>" name="t_date" class="form-control col-md-7 col-xs-12" ></td>
+                <td style="padding:10px"><button type="submit" style="font-size: 11px; height: 30px" name="viewReport"  class="btn btn-primary">View Sales Return</button></td>
             </tr></table>
             </form>
 <?php
-if(isset($_POST['viewreport'])){
+if(isset($_POST['viewReport'])){
 $res="Select p.do_no,p.sr_no as SR_NO,DATE_FORMAT(p.do_date, '%d %M, %Y') as SR_date,w.warehouse_name as 'Warehouse / CMU',d.dealer_name_e as dealer_name,p.remarks,concat(u.fname,' - ',p.entry_at) as entry_by,p.status
 
 from

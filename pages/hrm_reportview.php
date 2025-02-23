@@ -11,7 +11,7 @@ if(isset($PBI_ID)) 				{$PBI_ID_con=' and p.PBI_ID='.$PBI_ID;} else { $PBI_ID_co
 if($_POST['department']>0) 					$department=$_POST['department'];
 if(isset($department))				{$department_CON=' and p.PBI_DEPARTMENT='.$department;} else { $department_CON=''; }
 
-if($_POST['designation']>0) 					$department=@$_POST['designation'];
+if($_POST['designation']>0) 					$designation=@$_POST['designation'];
 if(isset($designation))				{$PBI_DESIGNATION_CON=' and p.PBI_DESIGNATION='.$designation;} else { $PBI_DESIGNATION_CON=''; }
 
 ?>
@@ -76,19 +76,18 @@ $query="SELECT  p.PBI_ID as ID,p.PBI_ID as ID,
         p.PBI_RELIGION as religion,
         ei.ESS_CORPORATE_PHONE as mobile,
         ei.ESS_CORPORATE_EMAIL as email
-        
-FROM 
-                          personnel_basic_info p,
-                          department d,
-                          designation des,
-                          essential_info ei
-                      WHERE
-                          p.PBI_ID=ei.PBI_ID and
-                          p.PBI_DEPARTMENT=d.DEPT_ID	and 
-                          p.PBI_DESIGNATION=des.DESG_ID	 and 
-                          p.PBI_JOB_STATUS='".$_POST['PBI_JOB_STATUS']."'
-                          ".$department_CON.$PBI_DESIGNATION_CON." group by p.PBI_ID
-                          order by p.serial";
+        FROM 
+        personnel_basic_info p,
+        department d,
+        designation des,
+        essential_info ei
+        WHERE
+        p.PBI_ID=ei.PBI_ID and
+        p.PBI_DEPARTMENT=d.DEPT_ID	and 
+        p.PBI_DESIGNATION=des.DESG_ID	 and 
+        p.PBI_JOB_STATUS='".$_POST['PBI_JOB_STATUS']."'
+        ".$department_CON.$PBI_DESIGNATION_CON." group by p.PBI_ID order by p.serial";
+
 echo reportview($query, 'Employee Report', '98', '', '', '');?>
 
 

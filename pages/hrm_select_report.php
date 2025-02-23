@@ -65,7 +65,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                         <div class="form-group">
                             <label class="control-label col-md-3 col-sm-3 col-xs-12">Designation</label>
                             <div class="col-md-6 col-sm-6 col-xs-12">
-                                <select class="select2_single form-control" style="width:100%" tabindex="-1"   name="PBI_DESIGNATION" >
+                                <select class="select2_single form-control" style="width:100%" tabindex="-1"   name="designation" >
                                     <option></option>
                                     <?=foreign_relation('designation', 'DESG_ID', 'CONCAT(DESG_ID," : ", DESG_DESC)','', '1'); ?>
                                 </select>
@@ -113,7 +113,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" name="PBI_ID" id="PBI_ID">
                                     <option></option>
-                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
+                                    <?=advance_foreign_relation($sql_user_id,'');?>
                                 </select>
                             </div>
                         </div>
@@ -149,7 +149,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
                                     <option></option>
-                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
+                                    <?=advance_foreign_relation($sql_user_id,'');?>
                                 </select>
                             </div>
                         </div>
@@ -186,7 +186,7 @@ $sql_user_id="SELECT  p.PBI_ID,concat(p.PBI_ID,' : ',p.PBI_ID_UNIQUE,' : ',p.PBI
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <select class="select2_single form-control" style="width: 100%; flot:left" tabindex="-1" required="required" name="PBI_ID" id="PBI_ID">
                                     <option></option>
-                                    <?=advance_foreign_relation($sql_user_id,$_SESSION['HRM_payroll_employee']);?>
+                                    <?=advance_foreign_relation($sql_user_id,'');?>
                                 </select>
                             </div>
                         </div>

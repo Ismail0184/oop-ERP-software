@@ -208,10 +208,21 @@ cost_center c
         $up_master=mysqli_query($conn, "UPDATE ".$table_journal_master." SET entry_status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_journal_note_inter_company']."");
         $up_query=mysqli_query($conn, $up_master);
         $external_dr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=1 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_dr_voucher_data_2_ledger_id = @$external_dr_voucher_data_2->ledger_id;
+        $external_dr_voucher_data_dr_amt = @$external_dr_voucher_data->dr_amt;
+        $external_dr_voucher_data_j_date = @$external_dr_voucher_data->j_date;
+        $external_dr_voucher_data_narration = @$external_dr_voucher_data->narration;
+        $external_dr_voucher_data_ledger_id = @$external_dr_voucher_data->ledger_id;
+
         $external_dr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=3 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_dr_voucher_data_2_dr_amt = @$external_dr_voucher_data_2->dr_amt;
         $external_cr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=2 and journal_info_no='.$initiate_journal_note_inter_company);
+        $external_cr_voucher_data_2_ledger_id = @$external_cr_voucher_data_2->ledger_id;
+        $external_cr_voucher_data_ledger_id = @$external_cr_voucher_data->ledger_id;
+        $external_cr_voucher_data_cr_amt = @$external_cr_voucher_data->cr_amt;
         $external_cr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=4 and journal_info_no='.$initiate_journal_note_inter_company);
-        $targeturl=$find_API_journal_voucher_API_endpoint.'?jv_ref='.$initiate_journal_note_inter_company.'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2->ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2->ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2->dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2->cr_amt.'&dr_amt='.$external_dr_voucher_data->dr_amt.'&cr_amt='.$external_cr_voucher_data->cr_amt.'&j_date='.$external_dr_voucher_data->j_date.'&narration='.$external_dr_voucher_data->narration.'&ledger_id_dr='.$external_dr_voucher_data->ledger_id.'&ledger_id_cr='.$external_cr_voucher_data->ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
+        $external_cr_voucher_data_2_cr_amt = @$external_cr_voucher_data_2->cr_amt;
+        $targeturl=$find_API_journal_voucher_API_endpoint.'?jv_ref='.$initiate_journal_note_inter_company.'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2_ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2_ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2_dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2_cr_amt.'&dr_amt='.$external_dr_voucher_data_dr_amt.'&cr_amt='.$external_cr_voucher_data_cr_amt.'&j_date='.$external_dr_voucher_data_j_date.'&narration='.$external_dr_voucher_data_narration.'&ledger_id_dr='.$external_dr_voucher_data_ledger_id.'&ledger_id_cr='.$external_cr_voucher_data_ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
@@ -332,7 +343,7 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                         <th style="width:15%;">Transaction Date <span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
                         <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
                         <th style="width:15%;">Transaction No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
-                        <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note!='')? $initiate_journal_note : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,'3'.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
+                        <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note_inter_company!='')? $initiate_journal_note_inter_company : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,'3'.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
                     </tr>
                     <tr>
                         <th style="">Person From</th><th>:</th>
