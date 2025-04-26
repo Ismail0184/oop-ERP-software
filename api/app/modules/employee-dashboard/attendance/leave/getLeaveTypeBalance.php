@@ -2,43 +2,73 @@
 header("Content-Type: application/json");
 require("../../../../../../app/db/base.php");
 
-// Get the leave category from the AJAX request
+$response = [
+    "status" => "error",
+    "message" => "Invalid request",
+];
+
 if (isset($_GET['type']) && isset($_GET['user_id'])) {
-    $leaveType = @$_GET['type'];
-    $userId = @$_GET['user_id'];
-    $userPersonalIdQuery = mysqli_query($conn, "SELECT PBI_ID FROM users WHERE user_id = " . $userId);
-    $userPersonalId = mysqli_fetch_object($userPersonalIdQuery);
-    $leaveTypeQuery = mysqli_query($conn, "SELECT yearly_leave_days, status FROM hrm_leave_type WHERE id = " . $leaveType);
-    $leaveTypePolicy = mysqli_fetch_object($leaveTypeQuery);
+    $leaveType = intval($_GET['type']);
+    $userId = intval($_GET['user_id']);
 
-    $year = date('Y');
-    $s_date_s = "$year-01-01";
-    $s_date_e = "$year-12-31";
+    // Step 1: Get PBI_ID from user_id
+    $userQuery = mysqli_query($conn, "SELECT PBI_ID FROM users WHERE PBI_ID = $userId");
 
-    // Prepare the SQL query to get the balance for the selected leave type
-    $sql = "SELECT SUM(total_days) as total_days FROM hrm_leave_info WHERE type = " . $leaveType . " AND half_or_full='Full' AND PBI_ID = " . $userPersonalId->PBI_ID . " AND e_date BETWEEN '$s_date_s' AND '$s_date_e' AND s_date BETWEEN '$s_date_s' AND '$s_date_e'";
-    $result = mysqli_query($conn, $sql);
-
-    if ($result && mysqli_num_rows($result) > 0) {
-        // Fetch the balance
-        $row = mysqli_fetch_assoc($result);
-        // Send the response as JSON
-        echo json_encode([
-            'totalLeaveTaken' => $row['total_days'],
-            'leavePolicy' => $leaveTypePolicy->yearly_leave_days,
-            'applicableFor' => $leaveTypePolicy->status,
-            'leaveBalance' => $leaveTypePolicy->yearly_leave_days - $row['total_days']
-        ]);
-    } else {
-        echo json_encode([
-            'totalLeaveTaken' => '0',
-            'leavePolicy' => '0',
-            'applicableFor' => null,
-        ]);
+    if (!$userQuery || mysqli_num_rows($userQuery) === 0) {
+        $response['message'] = "User not found";
+        echo json_encode($response);
+        exit;
     }
 
-    mysqli_free_result($result); // Free result memory
+    $user = mysqli_fetch_assoc($userQuery);
+    $pbiId = $user['PBI_ID'];
+
+    // Step 2: Get leave policy
+    $policyQuery = mysqli_query($conn, "SELECT yearly_leave_days, status FROM hrm_leave_type WHERE id = $leaveType");
+
+    if (!$policyQuery || mysqli_num_rows($policyQuery) === 0) {
+        $response['message'] = "Leave type not found";
+        echo json_encode($response);
+        exit;
+    }
+
+    $policy = mysqli_fetch_assoc($policyQuery);
+    $yearlyLeaveDays = (int)$policy['yearly_leave_days'];
+    $applicableFor = $policy['status'];
+
+    // Step 3: Calculate leave taken
+    $year = date('Y');
+    $startOfYear = "$year-01-01";
+    $endOfYear = "$year-12-31";
+
+    $leaveQuery = mysqli_query($conn, "
+        SELECT SUM(total_days) AS total_days 
+        FROM hrm_leave_info 
+        WHERE type = $leaveType 
+        AND half_or_full = 'Full' 
+        AND PBI_ID = '$pbiId' 
+        AND s_date BETWEEN '$startOfYear' AND '$endOfYear' 
+        AND e_date BETWEEN '$startOfYear' AND '$endOfYear'
+    ");
+
+    $totalLeaveTaken = 0;
+
+    if ($leaveQuery && mysqli_num_rows($leaveQuery) > 0) {
+        $leaveResult = mysqli_fetch_assoc($leaveQuery);
+        $totalLeaveTaken = (int) $leaveResult['total_days'];
+    }
+
+    $leaveBalance = $yearlyLeaveDays - $totalLeaveTaken;
+
+    $response = [
+        "status" => "success",
+        "totalLeaveTaken" => $totalLeaveTaken,
+        "leavePolicy" => $yearlyLeaveDays,
+        "applicableFor" => $applicableFor,
+        "leaveBalance" => $leaveBalance
+    ];
 }
 
+echo json_encode($response);
 $conn->close();
 ?>

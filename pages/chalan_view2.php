@@ -244,19 +244,25 @@ function hide()
         </tr>
 
 <? }?>
-<tr>
-  <td colspan="6" align="center" valign="top"><div align="right"><strong>Total Amount: </strong></div></td>
-        <td align="right" valign="top"><span class="style1">
-          <?=number_format($t_amount,2);?>
-        </span></td></tr>
-         <?
-   if ($labor_bill >0){?>
-   <tr>
-    <td colspan="6" align="right" valign="top"><strong>labour Bill</strong></td>
-    <td align="right" valign="top"><strong>
-      <?=$labor_bill?>
-    </strong></td></tr>
+
+    <tr>
+        <td colspan="6" align="center" valign="top"><div align="right"><strong>Total Amount: </strong></div></td>\
+        <td align="right" valign="top">
+            <span class="style1">
+                <?=number_format($t_amount,2);?>
+            </span>
+        </td>
     </tr>
+
+    <? if ($labor_bill >0){?>
+   <tr>
+       <td colspan="6" align="right" valign="top"><strong>Labour Bill</strong></td>
+       <td align="right" valign="top">
+           <strong>
+               <?=$labor_bill?>
+           </strong>
+       </td>
+   </tr>
     <?php } ?>
     
     

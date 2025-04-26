@@ -212,12 +212,14 @@ else
                 $cr_amt=$cr_amt+$info->cr_amt;
                 $dr_amt=$dr_amt+$info->dr_amt;
                 $bankGET = @$info->bank;
-                if($bankGET==''&&$info->cheq_no!='')
-                    $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date;
-                elseif($info->cheq_no=='')
-                    $narration=$info->narration;
-                else
-                    $narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date.'; Bank # '.$info->bank;?>
+                //if($bankGET==''&&$info->cheq_no!='')
+                    //$narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date;
+                //elseif($info->cheq_no=='')
+                    //$narration=$info->narration;
+                //else
+                    //$narration=$info->narration.':: Cheq # '.$info->cheq_no.'; C.Date= '.$info->cheq_date.'; Bank # '.$info->bank;
+                $narration = $info->narration;
+                ?>
                 <tr style="font-size: 12px">
                     <td><?=$i=$i+1;?></td>
                     <td><?=$info->ledger_name?> : <?=$info->ledger_id?></td>

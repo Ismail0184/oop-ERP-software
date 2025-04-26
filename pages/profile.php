@@ -8,61 +8,68 @@ $crud = new crud($table);
 
 // Check if form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Directory to store uploaded images
-    $uploadDir = "../assets/images/staff/staff/";
+    // Check if an image is selected
+    if (!empty($_FILES['image']['name'])) {
+        // Directory to store uploaded images
+        $uploadDir = "../assets/images/staff/staff/";
 
-    // Ensure the uploads directory exists
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-
-    // Get file information
-    $fileName = basename($_FILES['image']['name']);
-    $targetFile = $uploadDir . $fileName;
-    $uploadOk = 1;
-
-    // Check if file is an image
-    $check = getimagesize($_FILES['image']['tmp_name']);
-    if ($check !== false) {
-        echo "File is an image - " . $check['mime'] . ".<br>";
-    } else {
-        echo "File is not an image.<br>";
-        $uploadOk = 0;
-    }
-
-    // Check file size (limit: 2MB)
-    if ($_FILES['image']['size'] > 2000000) {
-        echo "Sorry, your file is too large.<br>";
-        $uploadOk = 0;
-    }
-
-    // Allow specific file formats
-    $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-    if (!in_array($imageFileType, $allowedTypes)) {
-        echo "Sorry, only JPG, JPEG, PNG, and GIF files are allowed.<br>";
-        $uploadOk = 0;
-    }
-
-    // Check if $uploadOk is set to 0 by an error
-    if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.<br>";
-    } else {
-        // Try to upload the file
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-            echo "The file " . htmlspecialchars($fileName) . " has been uploaded.<br>";
-
-            // Save the uploaded file path to the database
-            $crud->update($unique, $_SESSION['userid'], ['picture_url' => $targetFile]);
-        } else {
-            echo "Sorry, there was an error uploading your file.<br>";
+        // Ensure the uploads directory exists
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
         }
+
+        // Get file information
+        $fileName = basename($_FILES['image']['name']);
+        $targetFile = $uploadDir . $fileName;
+        $uploadOk = 1;
+
+        // Check if file is an image
+        $check = getimagesize($_FILES['image']['tmp_name']);
+        if ($check !== false) {
+            echo "File is an image - " . $check['mime'] . ".<br>";
+        } else {
+            echo "File is not an image.<br>";
+            $uploadOk = 0;
+        }
+
+        // Check file size (limit: 2MB)
+        if ($_FILES['image']['size'] > 2000000) {
+            echo "Sorry, your file is too large.<br>";
+            $uploadOk = 0;
+        }
+
+        // Allow specific file formats
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array($imageFileType, $allowedTypes)) {
+            echo "Sorry, only JPG, JPEG, PNG, and GIF files are allowed.<br>";
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            echo "Sorry, your file was not uploaded.<br>";
+        } else {
+            // Try to upload the file
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
+                echo "The file " . htmlspecialchars($fileName) . " has been uploaded.<br>";
+
+                // Save the uploaded file path to the database
+                $crud->update($unique, $_SESSION['userid'], ['picture_url' => $targetFile]);
+            } else {
+                echo "Sorry, there was an error uploading your file.<br>";
+            }
+        }
+
+        // Update picture_url in POST for further processing
+        $fileUrl = $targetFile;
+        $_POST['picture_url'] = $fileUrl;
     }
-    $fileUrl = $targetFile;
-    $updateData = ['picture_url' => $fileUrl];
-    $_POST['picture_url'] = $fileUrl;
+
+    // Continue with general update
     $crud->update($unique);
 }
+
 
 // Fetch user details
 $users = find_all_field('users', '', 'user_id=' . $_SESSION['userid']);
@@ -127,7 +134,7 @@ $usersPP = @$users->picture_url;
                     <div class="item form-group">
                         <label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name">Designation</label>
                         <div class="col-md-6 col-sm-6 ">
-                            <input type="text" id="first-name" readonly value="<?=$usersDesignation?>" required="required" class="form-control ">
+                            <input type="text" id="first-name" name="designation" value="<?=$usersDesignation?>" required="required" class="form-control ">
                         </div>
                     </div>
                     <div class="item form-group">

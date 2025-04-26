@@ -28,8 +28,12 @@ if(isset($_POST['extract_MAN'])) {
     $_POST['warehouse_id'] = $man_master->warehouse_id;
     $_POST['po_details'] = $man_master->remarks;
     $_POST['po_date'] = date('Y-m-d');
+    $_POST['delivery_within'] = date('Y-m-d', strtotime('+45 days'));
     $_POST['status'] = 'UNCHECKED';
     $_POST['entry_by'] = $_SESSION['userid'];
+    $_POST['checkby'] = '9789';
+    $_POST['recommended'] = '18';
+    $_POST['authorise'] = '2';
     $_POST['entry_at'] = date('Y-m-d h:s:i');
     $_POST['edit_by'] = $_SESSION['userid'];
     $_POST['edit_at'] = date('Y-m-d h:s:i');
@@ -267,7 +271,12 @@ $recommended = @$recommended;
 $authorise = @$authorise;
 $po_id = @$po_id;
 $return_comments = @$return_comments;
-$MAN_ID = @$_SESSION['MAN_ID'];
+if(isset($_POST['MAN_ID'])) {
+    $_SESSION['MAN_ID'] = @$_POST['MAN_ID'];
+    $MAN_ID = @$_SESSION['MAN_ID'];
+} else {
+    $MAN_ID = 0;
+}
 $vendor=find_all_field('vendor','','vendor_id='.$vendor_id.'');
 $vendor_commission = @$vendor->commission;
 if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work Order';
@@ -427,7 +436,7 @@ if(isset($_POST['cancel_MAN']))
                         <th style="text-align:center">:</th>
                         <td>
                             <select class="select2_single form-control" style="width: 80%;" tabindex="-1" required="required" name="checkby" id="checkby">
-                                <option value="88" selected><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID="88"');?></option>
+                                <option value="88" selected><?=find_a_field('personnel_basic_info','PBI_NAME','PBI_ID="9789"');?></option>
                                 <?=advance_foreign_relation($sql_checked_by,$checkby);?>
                             </select>
                         </td>

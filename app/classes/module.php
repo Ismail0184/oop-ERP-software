@@ -127,13 +127,13 @@ function next_journal_bank_voucher_id()
     return $jvbank;
 }
 
-
-
 function getSVALUE($table_name, $fld_name, $con){
     global $conn;
-    $result=mysqli_query($conn, "select ".$fld_name." from ".$table_name.' '.$con);
-    $row=mysqli_fetch_array($result);
-    $getVALUEs=$row[0]; //mysql_result($result,0,0);
-    return $getVALUEs;
+    $query = "SELECT ".$fld_name." FROM ".$table_name.' '.$con;
+    $result = mysqli_query($conn, $query);
+    if (!$result) {
+        die("SQL Error: " . mysqli_error($conn)); // Debugging
+    }
+    $row = mysqli_fetch_array($result);
+    return $row ? $row[0] : null; // Return null if no result
 }?>
-

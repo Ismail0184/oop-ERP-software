@@ -28,6 +28,7 @@ $unApprovedLeave = find_a_field('hrm_leave_info','count(id)','recommended_status
 $unAuthorisedLeave = find_a_field('hrm_leave_info','count(id)','approved_status="PENDING" and status="RECOMMENDED" and half_or_full in ("Full") and approved_by='.$_SESSION['PBI_ID']);
 $unAuthorisedearlyLeave = find_a_field('hrm_leave_info','count(id)','dept_head_status="Pending" and half_or_full in ("Half") and PBI_DEPT_HEAD='.$_SESSION['PBI_ID']);
 $unAuthorisedLate = find_a_field('hrm_late_attendance','count(id)','status="Pending" and authorised_by='.$_SESSION['PBI_ID']);
+$unAuthorisedWorkFromHome = find_a_field('emp_access_work_from_home_application','count(id)','status="PENDING" and approved_by='.$_SESSION['PBI_ID']);
 $unAuthorisedOD = find_a_field('hrm_od_attendance','count(id)','status="PENDING" and authorised_by='.$_SESSION['PBI_ID']);
 $unApprovedReq = find_a_field('warehouse_other_issue','count(oi_no)','status="PENDING" and req_category not in ("1500010000") and recommended_by='.$_SESSION['PBI_ID']);
 $unApprovedReqFood = find_a_field('warehouse_other_issue','count(oi_no)','status="PENDING" and req_category in ("1500010000") and recommended_by='.$_SESSION['PBI_ID']);
@@ -54,7 +55,7 @@ $unCHECKEDHandover = find_a_field('handover_application_details','count(id)','ta
 
 $totChecked = $workordercheck+$stationary_purchased_checked+$unCHECKEDHandover+$APcheck;
 $totApproval = $unApprovedLeave+$unApprovedReq+$unApprovedTravel+$unApprovedTravelExp+$unApprovedVehicle+$unApprovedManpower+$workorderrecommended+$sample_gift_recommended+$unApprovedReqFood+$fg_purchased_recommended+$unApprovedIOU+$APrecommended;
-$totUnauthorised = $unAuthorisedLeave+$unAuthorisedReq+$unAuthorisedTravel+$unAuthorisedTravelExp+$unAuthorisedVehicle+$unAuthorisedManpower+$unAuthorisedLate+$workorderathu+$sample_gift_authorise+$unAuthorisedReqFood+$unAuthorisedearlyLeave+$fg_purchased_authorise+$unAuthorisedOD+$unAuthorisedIOU+$APathu;
+$totUnauthorised = $unAuthorisedLeave+$unAuthorisedReq+$unAuthorisedTravel+$unAuthorisedTravelExp+$unAuthorisedVehicle+$unAuthorisedManpower+$unAuthorisedLate+$workorderathu+$sample_gift_authorise+$unAuthorisedReqFood+$unAuthorisedearlyLeave+$fg_purchased_authorise+$unAuthorisedOD+$unAuthorisedIOU+$APathu+$unAuthorisedWorkFromHome;
 $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised;
 
 ?>
@@ -103,6 +104,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
                 <li><a href="hrm_unauthorised_early_leave.php">Early Leave <?php if($unAuthorisedearlyLeave>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedearlyLeave.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="emp_access_unauthorised_osd.php">Outdoor Duty <?php if($unAuthorisedOD>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedOD.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_late_attendance.php">Late Attendance <?php if($unAuthorisedLate>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedLate.' </span>]'?><?php } else {echo'';} ?></a></li>
+                <li><a href="emp_access_work_from_home_application_unauthorised.php">Work from Home <?php if($unAuthorisedWorkFromHome>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedWorkFromHome.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_requisition_stationary.php">Stationary Requisition <?php if($unAuthorisedReq>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedReq.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="hrm_unauthorised_requisition_food_beverage.php">Food & Beverage <?php if($unAuthorisedReqFood>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedReqFood.' </span>]'?><?php } else {echo'';} ?></a></li>
                 <li><a href="#">IOU Request<?php if($unAuthorisedIOU>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$unAuthorisedIOU.' </span>]'?><?php } else {echo'';} ?></a></li>
@@ -122,6 +124,7 @@ $_SESSION['totCheckedemployee_access']=$totChecked+$totApproval+$totUnauthorised
                 <li><a href="emp_acess_apply_for_early_leave.php">Apply for Early Leave</a></li>
                 <li><a href="emp_acess_apply_for_late_attendance.php">Apply for Late Attendance</a></li>
                 <li><a href="emp_acess_apply_for_outdoor_duty.php">Apply for Outdoor Duty</a></li>
+                <li><a href="emp_access_work_from_home_application.php">Apply for Work from Home</a></li>
             </ul>
         </li>
 

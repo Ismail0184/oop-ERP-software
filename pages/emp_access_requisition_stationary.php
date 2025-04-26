@@ -13,9 +13,9 @@ $page="emp_access_requisition_stationary.php";
 $crud      =new crud($table);
 $getItemCode = @$_GET['item_code_GET'];
 $PBI_ID = @$_SESSION['PBI_ID'];
-$taken=getSVALUE("".$table_details."", "SUM(qty)", " where oi_date between '$dfrom' and '$dto' and  issued_to='".$PBI_ID."' and item_id=".$getItemCode."");
-$unit=getSVALUE("item_info", "unit_name", " where item_id=".$getItemCode."");
-$department=getSVALUE("personnel_basic_info", "PBI_DEPARTMENT", " where PBI_ID=".$PBI_ID."");
+$taken=find_a_field("".$table_details."", "SUM(qty)", " oi_date between '$dfrom' and '$dto' and  issued_to='".$PBI_ID."' and item_id=".$getItemCode."");
+$unit=find_a_field("item_info", "unit_name", " item_id=".$getItemCode."");
+$department=find_a_field("personnel_basic_info", "PBI_DEPARTMENT", " PBI_ID=".$PBI_ID."");
 
 
 if(prevent_multi_submit()){

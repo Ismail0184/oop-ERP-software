@@ -37,86 +37,99 @@ if(prevent_multi_submit()){
             $msg='Successfully Updated.';
         } }
 
-    if(isset($_POST['add'])&&($_POST[$unique_master]>0)){
-        if($_POST['dist_unit']>$_POST['inStock_pcs']){
-            echo "<script>alert ('oops!! exceed stock limit!! Thanks')</script>";
+    if (isset($_POST['add']) && ($_POST[$unique_master] > 0)) {
+        if ($_POST['dist_unit'] > $_POST['inStock_pcs']) {
+            echo "<script>alert('Oops!! Exceed stock limit!! Thanks')</script>";
             unset($_POST);
         } else {
-            $table		=$table_detail;
-            $crud      	=new crud($table);
-            $_POST['do_section']="regular_invoice";
+            $table = $table_detail;
+            $crud = new crud($table);
+            $_POST['do_section'] = "regular_invoice";
             $_POST['total_unit'] = ($_POST['pkt_unit'] * $_POST['pkt_size']) + $_POST['dist_unit'];
             $_POST['total_amt'] = ($_POST['total_unit'] * $_POST['unit_price']);
-            $_POST['revenue_amount'] = ((($_POST['total_unit'] * $_POST['unit_price'])/100)*$_POST['revenue_persentage']);
-            $_POST['t_price'] = find_a_field('item_info','t_price','item_id ='.$_POST['item_id']);
-            $_POST['entry_by']=$_SESSION['userid'];
+            $_POST['revenue_amount'] = (($_POST['total_unit'] * $_POST['unit_price']) / 100) * $_POST['revenue_persentage'];
+            $_POST['t_price'] = find_a_field('item_info', 't_price', 'item_id =' . $_POST['item_id']);
+            $_POST['entry_by'] = $_SESSION['userid'];
             $_POST['gift_on_orders'] = $crud->insert();
-            $sql_gift_on_order=mysqli_query($conn, 'SELECT id from sale_do_details WHERE do_no='.$_SESSION['unique_master_for_regular'].' and item_id='.$_POST['item_id'].' and dealer_code='.$_POST['dealer_code'].' and total_unit='.$_POST['total_unit'].' and total_amt='. $_POST['total_amt'].' and entry_by='.$_POST['entry_by'].' order by id desc limit 1');
-            $gor=mysqli_fetch_object($sql_gift_on_order);
+
+            $sql_gift_on_order = mysqli_query($conn, "SELECT id FROM sale_do_details WHERE do_no = " . $_SESSION['unique_master_for_regular'] . " AND item_id = " . $_POST['item_id'] . " AND dealer_code = " . $_POST['dealer_code'] . " AND total_unit = " . $_POST['total_unit'] . " AND total_amt = " . $_POST['total_amt'] . " AND entry_by = " . $_POST['entry_by'] . " ORDER BY id DESC LIMIT 1");
+            $gor = mysqli_fetch_object($sql_gift_on_order);
 
             $_POST['gift_on_order'] = $gor->id;
             $do_date = date('Y-m-d');
             $_POST['gift_on_item'] = $_POST['item_id'];
-            $dealer = find_all_field('dealer_info','','dealer_code='.$_POST['dealer_code']);
-            $group_for_post = @$_POST['group_for']; if($group_for_post!='M'){
-                $sss = "select * from sale_gift_offer where item_id='".$_POST['item_id']."' and start_date<='".$do_date."' and end_date>='".$do_date."' and dealer_type='".$dealer->dealer_type."'";
-            }else
-                $sss = "select * from sale_gift_offer where item_id='".$_POST['item_id']."' and start_date<='".$do_date."' and end_date>='".$do_date."' and (group_for like '%A%' or group_for like '%B%' or group_for like '%C%' or group_for like '%D%') and dealer_type='".$dealer->dealer_type."'";
+
+            $dealer = find_all_field('dealer_info', '', 'dealer_code=' . $_POST['dealer_code']);
+            $group_for_post = @$_POST['group_for'];
+            if ($group_for_post != 'M') {
+                $sss = "SELECT * FROM sale_gift_offer WHERE item_id='" . $_POST['item_id'] . "' AND start_date<='" . $do_date . "' AND end_date>='" . $do_date . "' AND dealer_type='" . $dealer->dealer_type . "'";
+            } else {
+                $sss = "SELECT * FROM sale_gift_offer WHERE item_id='" . $_POST['item_id'] . "' AND start_date<='" . $do_date . "' AND end_date>='" . $do_date . "' AND (group_for LIKE '%A%' OR group_for LIKE '%B%' OR group_for LIKE '%C%' OR group_for LIKE '%D%') AND dealer_type='" . $dealer->dealer_type . "'";
+            }
+
             $qqq = mysqli_query($conn, $sss);
             $total_unit = $_POST['total_unit'];
 
-            while($gift=mysqli_fetch_object($qqq)){
-                if($gift->item_qty>0){
+            while ($gift = mysqli_fetch_object($qqq)) {
+                if ($gift->item_qty > 0) {
+                    $post_backup = $_POST; // Backup original $_POST values
+
                     $_POST['gift_id'] = $gift->id;
-                    $gift_item = find_all_field('item_info','','item_id="'.$gift->gift_id.'"');
+                    $gift_item = find_all_field('item_info', '', 'item_id="' . $gift->gift_id . '"');
                     $_POST['item_id'] = $gift->gift_id;
-                    if(($gift->gift_id== 1096000100010312) && ((((int)($total_unit/$gift->item_qty))))>0){
-                        mysqli_query($conn, "UPDATE sale_do_details SET commission='0' where id=".$gor->id."");
-                        $_POST['unit_price'] = (-1)*($gift->gift_qty);
-                        $_POST['total_amt']  = (((int)($total_unit/$gift->item_qty))*($_POST['unit_price']));
-                        $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty)));
+
+                    $gift_qty_multiplier = (int) ($total_unit / $gift->item_qty);
+
+                    if (($gift->gift_id == 1096000100010312) && $gift_qty_multiplier > 0) {
+                        mysqli_query($conn, "UPDATE sale_do_details SET commission='0' WHERE id=" . $gor->id);
+                        $_POST['unit_price'] = (-1) * ($gift->gift_qty);
+                        $_POST['total_amt'] = $gift_qty_multiplier * $_POST['unit_price'];
+                        $_POST['total_unit'] = $gift_qty_multiplier;
                         $_POST['dist_unit'] = $_POST['total_unit'];
-                        $_POST['commission']= '';
-                        $_POST['pkt_unit']  = '0.00';
-                        $_POST['d_price']  = '0.00';
-                        $_POST['pkt_size']  = '1.00';
-                        $_POST['t_price']   = '-1.00';
-                        $_POST['gift_type']=$gift->gift_type;
+                        $_POST['commission'] = '';
+                        $_POST['pkt_unit'] = '0.00';
+                        $_POST['d_price'] = '0.00';
+                        $_POST['pkt_size'] = '1.00';
+                        $_POST['t_price'] = '-1.00';
+                        $_POST['gift_type'] = $gift->gift_type;
                         $crud->insert();
-                        unset($_POST);
                     } else {
-                        $in_stock_pcs = find_a_field('journal_item','sum(item_in)-sum(item_ex)','item_id="'.$gift_item->item_id.'" and warehouse_id="'.$_POST['depot_id'].'" ');
+                        $in_stock_pcs = find_a_field('journal_item', 'SUM(item_in)-SUM(item_ex)', 'item_id="' . $gift_item->item_id . '" AND warehouse_id="' . $_POST['depot_id'] . '"');
                         $_POST['pkt_size'] = $gift_item->pack_size;
                         $_POST['unit_price'] = '0.00';
                         $_POST['total_amt'] = '0.00';
-                        $_POST['gift_type']=$gift->gift_type;
-                        $_POST['total_unit'] = (((int)($total_unit/$gift->item_qty))*($gift->gift_qty));
-                        if($gift_item->pack_size!=1){
-                            $_POST['dist_unit'] = ($_POST['total_unit']%$gift_item->pack_size);
-                        }else{
+                        $_POST['gift_type'] = $gift->gift_type;
+                        $_POST['total_unit'] = $gift_qty_multiplier * $gift->gift_qty;
+
+                        if ($gift_item->pack_size != 1) {
+                            $_POST['dist_unit'] = $_POST['total_unit'] % $gift_item->pack_size;
+                            $_POST['pkt_unit'] = (int) ($_POST['total_unit'] / $gift_item->pack_size);
+                        } else {
                             $_POST['dist_unit'] = $_POST['total_unit'];
-                        }
-                        if($gift_item->pack_size!=1){
-                            $_POST['pkt_unit'] = (int)($_POST['total_unit']/$gift_item->pack_size);
-                        }else{
                             $_POST['pkt_unit'] = 0;
                         }
-                        $_POST['t_price'] = '0.00';
-                        $_POST['commission']= '';
-                        $inStockCtn = ($in_stock_pcs)/$gift_item->pack_size; $inStockCtn=(int)$inStockCtn;
-                        $_POST['inStock_ctn']=$inStockCtn;
-                        $_POST['inStock_pcs']=($in_stock_pcs)-($inStockCtn*$gift_item->pack_size);
-                        $_POST['inStock_Totalpcs']=$in_stock_pcs;
-                        if($_POST['unit_price']==0&&$_POST['total_unit']==0){
-                            echo '';
-                        }else
-                            $crud->insert();
-                        unset($_POST);
-                    } // gift id
 
+                        $_POST['t_price'] = '0.00';
+                        $_POST['commission'] = '';
+
+                        $inStockCtn = (int) ($in_stock_pcs / $gift_item->pack_size);
+                        $_POST['inStock_ctn'] = $inStockCtn;
+                        $_POST['inStock_pcs'] = $in_stock_pcs - ($inStockCtn * $gift_item->pack_size);
+                        $_POST['inStock_Totalpcs'] = $in_stock_pcs;
+
+                        if ($_POST['unit_price'] == 0 && $_POST['total_unit'] == 0) {
+                            echo '';
+                        } else {
+                            $crud->insert();
+                        }
+                    }
+
+                    $_POST = $post_backup; // Restore original values for the next gift
                 }
             }
-        } }
+        }
+    }
+
 
 }
 

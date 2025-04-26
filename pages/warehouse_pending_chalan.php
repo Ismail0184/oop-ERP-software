@@ -79,6 +79,7 @@ item_info i
             $_POST['region'] = $row->region;
             $_POST['chalan_type'] = "Delivery";
             $_POST['challan_type'] = $row->do_type;
+            $_POST['do_section'] = $row->do_section;
             $_POST['tr_no'] = $_GET[$unique];
             $_POST['sr_no'] = $row->id;
             $_POST['gift_type'] = $row->gift_type;
@@ -279,6 +280,7 @@ if (isset($_POST['viewreport'])) {
         <input type="hidden" name="cc_code" value="<?=$config_group_class->marketing_cost_center?>">
         <input type="hidden" name="sales_cost_center" value="<?=$config_group_class->sales_cost_center?>">
         <input type="hidden" name="do_type" value="<?=$do_master->do_type?>">
+        <input type="hidden" name="do_section" value="<?=$do_master->do_section?>">
         <input type="hidden" name="challan_date" value="<?=date('Y-m-d H:s:i');?>">
         <input type="hidden" name="chalan_date" value="<?=date('Y-m-d');?>">
         <input type="hidden" name="do_date" value="<?=$do_master->do_date;?>">
@@ -363,6 +365,7 @@ if (isset($_POST['viewreport'])) {
                 $free_own_product=find_a_field('journal_item','SUM(total_amt)','Remarks in ("get") and do_no='.$_GET['do_no'].' and gift_type in ("free_own_products")');
                 $free_other_SKU=find_a_field('journal_item','SUM(total_amt)','Remarks in ("get") and do_no='.$_GET['do_no'].' and gift_type in ("free_other_SKU")');;
                 $free_other_product=find_a_field('journal_item','SUM(total_amt)','Remarks in ("get") and do_no='.$_GET['do_no'].' and gift_type in ("free_other_products")');;
+                $free_other_product_for_special_invoice=find_a_field('journal_item','SUM(total_amt)','Remarks in ("get") and do_no='.$_GET['do_no'].' and gift_type in ("None")');;
                 $revenue_amount=find_a_field('sale_do_details','SUM(revenue_amount)','do_no='.$_GET['do_no'].' and revenue_persentage>0');
             }
             //$total_sales_amount=$total_sales_amounts+find_a_field('sale_do_details','SUM(total_amt)','do_no='.$_SESSION['wpc_DO'].' and gift_type in ("Cash")');
@@ -460,12 +463,25 @@ if (isset($_POST['viewreport'])) {
             <?php endif; ?>
             <?php if($free_other_SKU>0):?>
                 <tr>
-                    <th style="text-align: center; vertical-align: middle">Free Other Product</th>
+                    <th style="text-align: center; vertical-align: middle">Free Other SKU</th>
                     <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_8" id="ledger_8">
                             <option  value="<?=$config_group_class->free_other_SKU?>"><?=$config_group_class->free_other_SKU?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$config_group_class->free_other_SKU); ?></option>
                         </select></td>
                     <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_8" value="<?='Free Other SKU, '.$narration.''?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
                     <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_8" readonly value="<?=$free_other_SKU?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_8" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
+                </tr>
+            <?php endif; ?>
+            <?php if($free_other_product_for_special_invoice>0):?>
+                <tr>
+                    <th>0</th>
+                    <th>Free Journal</th>
+                    <th style="text-align: center; vertical-align: middle">Free Other Product for Special Invoice</th>
+                    <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_8" id="ledger_8">
+                            <option  value="<?=$config_group_class->free_other_SKU?>"><?=$config_group_class->free_other_SKU?> : <?=find_a_field('accounts_ledger','ledger_name','ledger_id='.$config_group_class->free_other_SKU); ?></option>
+                        </select></td>
+                    <td style="text-align: center; vertical-align: middle"><input type="text" name="narration_8" value="<?='Free Other SKU, '.$narration.''?><?php if(!empty($do_master->remarks)) { echo ' , Remarks # '.$do_master->remarks.''; }?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center"></td>
+                    <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_8" readonly value="<?=$free_other_product_for_special_invoice?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                     <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_8" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
             <?php endif; ?>
@@ -479,7 +495,7 @@ if (isset($_POST['viewreport'])) {
                     <td style="text-align: right; vertical-align: middle"><input type="text" name="dr_amount_9" readonly value="<?=$free_other_product?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                     <td style="text-align: right; vertical-align: middle"><input type="text" name="cr_amount_9" readonly value="" class="form-control col-md-7 col-xs-12" style="width:100%; height:35px; font-size: 11px; text-align:center" ></td>
                 </tr>
-            <?php endif; $total_free_amt_last=$free_own_product+$free_other_SKU+$free_other_product; if($total_free_amt_last>0): ?>
+            <?php endif; $total_free_amt_last=$free_own_product+$free_other_SKU+$free_other_product+$free_other_product_for_special_invoice; if($total_free_amt_last>0): ?>
                 <tr>
                     <th style="text-align: center; vertical-align: middle">Warehouse / Inventory Ledger</th>
                     <td style="vertical-align: middle"><select class="select2_single form-control" style="width:100%" tabindex="-1" required="required"  name="ledger_10" id="ledger_10">

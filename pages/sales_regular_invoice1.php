@@ -1,5 +1,5 @@
 <?php require_once 'support_file.php';
-$page = 'sales_regular_invoice1.php';
+$page = 'sales_regular_invoice.php';
 $table_master='sale_do_master';
 $unique_master='do_no';
 $table_detail='sale_do_details';
@@ -190,7 +190,7 @@ $item_all_m_price = @$item_all->m_price;
 $item_all_pack_size = @$item_all->pack_size;
 $item_all_revenue_persentage = @$item_all->revenue_persentage;
 
-$commission = find_a_field('sale_do_details','SUM(commission)','do_no='.$_SESSION['unique_master_for_regular']);
+$commission = find_a_field('sale_do_details','SUM(commission)','do_no='.$unique_master_for_regular);
 
 $GET_id = @$_REQUEST['id'];
 if($GET_id>0){
@@ -468,7 +468,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
 
                         $('#total_amt').val(total_amt); // Update total amount
 
-                        // Calculate commission (rate = <?=$dealer->commission?>%)
+                        // Calculate commission (rate = 3%)
                         var commissionRate = <?=$dealer->commission?>;
                         var commission = total_amt * (commissionRate / 100);
                         $('#commissionAmount').val(commission); // Update commission

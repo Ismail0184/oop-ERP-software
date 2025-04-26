@@ -206,7 +206,10 @@ $accountbalance_final=$accountbalance+$dealer_master->credit_limit;
                             <button style="float: right;font-size: 12px;margin-left: 1%;" type="submit" name="checked" id="checked" class="btn btn-success" onclick='return window.confirm("Are you confirm to Completed?");'>Checked & Forword to <?=find_a_field('warehouse','warehouse_name','warehouse_id='.$master->depot_id);?> </button>
                            <?php } ?>
                         </p>
-                        <?php } else { echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>The amount has not yet been found. Talk to the Accounts Department for credit limits !!</i></h6>';}  ?>
+                        <?php } else { echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>The amount has not yet been found. Talk to the Accounts Department for credit limits !!</i></h6>';?>
+                                    <button style="float: left; margin-left: 1%; font-size: 12px" type="submit" name="reprocess" id="reprocess" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Deleted?");'>Re-Processing</button>
+
+                                    <?php }  ?>
                     <? } else {echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>This invoice has been '.$GET_status.'!!</i></h6>';}} else { ?>                             
                         <?php if($GET_status=='PROCESSING' || $GET_status=='MANUAL' || $GET_status=='RETURNED'){?>
                         <button style="float: left; margin-left: 1%; font-size: 12px" type="submit" name="reprocess" id="reprocess" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Deleted?");'>Re-Processing</button>

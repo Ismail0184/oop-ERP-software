@@ -3,10 +3,17 @@ require_once 'support_file.php';
 $vdate		= @$_REQUEST['vdate'];
 $jvdate=date('Y-m-d' , strtotime($vdate));
 $jv_no =  $_REQUEST['v_no'];
-$v_type 		= find_a_field('journal','distinct tr_from','jv_no='.$_REQUEST['v_no']);
-$v_type = strtolower($v_type);
+$v_type 		= find_a_field('journal','distinct tr_from','jv_no='.$_GET['v_no']);
+
+if($v_type=='Contra') {
+    $v_type = 'Contra';
+} else {
+    $v_type = strtolower($v_type);
+}
+
 $no 		= $v_type."_no";
-$v_no = getSVALUE('journal','tr_no','where jv_no='.$_REQUEST['v_no']);
+
+$v_no = find_a_field('journal','tr_no','jv_no='.$_REQUEST['v_no']);
 echo '<title>'.$v_no.'</title>';
 $sub_ledger_id= @$_POST["sub_ledger_id"];
 $cost_center= @$_POST["cost_center"];
@@ -151,10 +158,16 @@ $update_journal_master=mysqli_query($conn, "Update journal_voucher_master set pu
 
 if(isset($_REQUEST['v_no']))
 {
-$sql1="select narration,cheq_no,cheq_date,' ',jv_date,cc_code,sub_ledger_id,jvdate from journal where jv_no='$jv_no' and tr_from ='$tr_from' limit 1";
-$data1=mysqli_fetch_row(mysqli_query($conn, $sql1));
+$sql1="select * from journal where jv_no='".$jv_no."' and tr_from ='$tr_from' limit 1";
+$result = mysqli_query($conn, $sql1);
+$data=mysqli_fetch_object($result);
 $sql1."<br>";
+
+    $dataJVDate = @$data->jvdate;
+    $dataCheqNo = @$data->cheq_no;
+    $dataCheqDate = @$data->cheq_date;
 ?>
+
     <?php require_once 'header_content.php'; ?>
     <?php require_once 'body_content_without_menu.php'; ?>
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -163,120 +176,116 @@ $sql1."<br>";
     <form  name="form2" id="form2" class="form-horizontal form-label-left" method="post" onsubmit="return validate_total()" style="font-size: 11px">
     <? require_once 'support_html.php';?>
     <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
-    <tr>
-                        <td align="right"><strong>Date:</strong></td>
-                        <td align="left"><input style="width: 150px" name="vdate" type="date" value="<?=$data1[7];?>" max="<?=date('Y-m-d');?>"> </td>
-                        <td height="20" align="right"><strong>Cq No:</strong> </td>
-                        <td height="20" align="left"><input name="cheq_no" id="cheq_no" type="text" value="<?php echo $data1[1];?>" style="width:100px" /></td>
-                        <td width="20%" align="right" valign="middle"><strong>Cq Date: </strong></td>
-                        <td width="" align="left" valign="middle" width="25%"><input name="cheq_date" id="cheq_date" type="date" value="<?=$data1[2];?>" style="" /></td>
-                    </tr>
-                </table>
-
+        <tr>
+            <td align="right"><strong>Date:</strong></td>
+            <td align="left"><input style="width: 150px" name="vdate" type="date" value="<?=$dataJVDate;?>" max="<?=date('Y-m-d');?>"> </td>
+            <td height="20" align="right"><strong>Cq No:</strong> </td>
+            <td height="20" align="left"><input name="cheq_no" id="cheq_no" type="text" value="<?=$dataCheqNo;?>" style="width:100px" /></td>
+            <td width="20%" align="right" valign="middle"><strong>Cq Date: </strong></td>
+            <td width="" align="left" valign="middle" width="25%"><input name="cheq_date" id="cheq_date" type="date" value="<?=$dataCheqDate;?>" style="" /></td>
+        </tr>
+    </table>
 
     <table align="center" class="table table-striped table-bordered" style="width:98%; font-size: 11px">
     <tr style="background-color: bisque">
-                    <th style="width: 2%">S/L</th>
-                    <th>A/C Ledger</th>
-                    <th style="width: 25%">Narration</th>
-                    <th style="width: 20%">Cost Center</th>
-                    <th style="width: 12%">Debit</th>
-                    <th style="width: 12%">Credit</th>
-                </tr>
-
-                <?php
-                $pi=0;
-                $d_total=0;
-                $c_total=0;
-                $sql2="select a.dr_amt,a.cr_amt,b.ledger_name,b.ledger_id,a.narration,a.id,a.cc_code from accounts_ledger b, journal a where a.ledger_id=b.ledger_id  and a.jv_no='$jv_no' and a.ledger_id>0";
-                $data2=mysqli_query($conn, $sql2);
-                while($info=mysqli_fetch_row($data2)){ $pi++;
-                    $entry[$pi] = $info[5];
-                    if($info[0]==0) $type='Credit';
-                    else $type='Debit';
-                    $d_total=$d_total+$info[0];
-                    $c_total=$c_total+$info[1];
-                    ?>
-
-                    <tr>
-                        <td style="text-align: center; vertical-align: middle"><?=$pi;?></td>
-                        <td style="text-align: left; vertical-align: middle">
-                            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required"  name="ledger_<?=$info[5]?>" id="ledger_<?=$info[5]?>">
-                                <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',$info[3], 'status=1'); ?>
-                            </select>
-                        <td style="text-align: left; vertical-align: middle">
-                        <textarea  name="narration_<?=$info[5];?>" id="narration_<?=$info[5];?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center"><?=$info[4];?></textarea>
-                            <input type="hidden" name="l_<?=$pi;?>" id="l_<?=$pi;?>" value="<?=$info[3];?>" />		  </td>
-                        <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1" name="cc_<?=$info[5];?>" id="cc_<?=$info[5];?>">
-                            <?php foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
-                            </select></td>
-                        <td style="text-align: center; vertical-align: middle"><input name="dr_amt_<?=$info[5];?>" type="text" id="dr_amt_<?=$info[5];?>" value="<?=$info[0]?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                        <td style="text-align: center; vertical-align: middle"><input name="cr_amt_<?=$info[5];?>" type="text" id="cr_amt_<?=$info[5];?>" value="<?=$info[1]?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                    </tr><?php } ?>
-
-                <tr>
-                    <td style="text-align: center; vertical-align: middle"><?=++$pi;?></td>
-                    <td style="text-align: left; vertical-align: middle">
-                        <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_new1" id="ledger_new1">
-                            <option></option>
-                            <?php foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',1, 'status=1'); ?>
-                        </select>
-                    </td>
-                    <td style="text-align: center; vertical-align: middle"><textarea name="narration_new1" id="narration_new1" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center" value=""></textarea></td>
-                    <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1"  name="cc_new1" id="cc_new1">
-                            <?php foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
-                        </select></td>
-                    <td style="text-align: right; vertical-align: middle"><input name="dr_amt_new1" type="text" id="dr_amt_new1" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                    <td style="text-align: right; vertical-align: middle"><input name="cr_amt_new1" type="text" id="cr_amt_new1" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                </tr>
-
-                <tr>
-                    <td style="text-align: center; vertical-align: middle"><?=++$pi;?></td>
-                    <td style="text-align: left; vertical-align: middle">
-                        <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_new2" id="ledger_new2">
-                            <option></option>
-                            <?=foreign_relation('accounts_ledger','ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',1, 'status=1'); ?>
-                        </select></td>
-                    <td style="text-align: center; vertical-align: middle"><textarea name="narration_new2" id="narration_new2" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center" value="" ></textarea></td>
-                    <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1"  name="cc_new2" id="cc_new2">
-                            <?php foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
-                        </select></td>
-                    <td style="text-align: right; vertical-align: middle"><input name="dr_amt_new2" type="text" id="dr_amt_new2" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                    <td style="text-align: right; vertical-align: middle"><input name="cr_amt_new2" type="text" id="cr_amt_new2"  class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
-                </tr>
-                <tr align="center">
-                    <td colspan="4" style="vertical-align:middle; font-weight: bold" align="right">Total Amount :</td>
-                    <td style="vertical-align:middle; font-weight: bold"><input name="dr_amt" type="text" id="dr_amt" value="<?=$d_total?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" readonly="readonly"/></td>
-                    <td style="vertical-align:middle; font-weight: bold"><input name="cr_amt" type="text" id="cr_amt" value="<?=$c_total?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" readonly="readonly" /></td>
-                </tr>
+        <th style="width: 2%">S/L</th>
+        <th>A/C Ledger</th>
+        <th style="width: 25%">Narration</th>
+        <th style="width: 20%">Cost Center</th>
+        <th style="width: 12%">Debit</th>
+        <th style="width: 12%">Credit</th>
+    </tr>
 
     <?php
-    if($vtype=='receipt'||$vtype=='Receipt') $page="credit_note.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-    if($vtype=='payment'||$vtype=='Payment') $page="debit_note.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-    if($vtype=='coutra'||$vtype=='Coutra') $page="coutra_note_new.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-    if($vtype=='journal_info'||$vtype=='Journal_info') $page="journal_note_new.php?v_no=$v_no&v_type=$vtype&v_d=$vdate&action=edit";
-    ?>
+    $pi=0;
+    $d_total=0;
+    $c_total=0;
+    $sql2="select a.dr_amt,a.cr_amt,b.ledger_name,b.ledger_id,a.narration,a.id,a.cc_code from accounts_ledger b, journal a where a.ledger_id=b.ledger_id  and a.jv_no='$jv_no' and a.ledger_id>0";
+    $data2=mysqli_query($conn, $sql2);
+    while($info=mysqli_fetch_row($data2)){ $pi++;
+        $entry[$pi] = $info[5];
+        if($info[0]==0) $type='Credit';
+        else $type='Debit';
+        $d_total=$d_total+$info[0];
+        $c_total=$c_total+$info[1];
+        ?>
+
+        <tr>
+        <td style="text-align: center; vertical-align: middle"><?=$pi;?></td>
+        <td style="text-align: left; vertical-align: middle">
+            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1" required="required"  name="ledger_<?=$info[5]?>" id="ledger_<?=$info[5]?>">
+                <?=foreign_relation('accounts_ledger', 'ledger_id', 'ledger_name',$info[3], 'status=1'); ?>
+            </select>
+        <td style="text-align: left; vertical-align: middle">
+            <textarea  name="narration_<?=$info[5];?>" id="narration_<?=$info[5];?>" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center"><?=$info[4];?></textarea>
+            <input type="hidden" name="l_<?=$pi;?>" id="l_<?=$pi;?>" value="<?=$info[3];?>" />		  </td>
+        <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1" name="cc_<?=$info[5];?>" id="cc_<?=$info[5];?>">
+                <?=foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
+            </select>
+        </td>
+        <td style="text-align: center; vertical-align: middle"><input name="dr_amt_<?=$info[5];?>" type="text" id="dr_amt_<?=$info[5];?>" value="<?=$info[0]?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+        <td style="text-align: center; vertical-align: middle"><input name="cr_amt_<?=$info[5];?>" type="text" id="cr_amt_<?=$info[5];?>" value="<?=$info[1]?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+        </tr>
+    <?php } ?>
+    <tr>
+        <td style="text-align: center; vertical-align: middle"><?=++$pi;?></td>
+        <td style="text-align: left; vertical-align: middle">
+            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_new1" id="ledger_new1">
+                <option></option>
+                <?=foreign_relation('accounts_ledger', 'ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',1, 'status=1'); ?>
+            </select>
+        </td>
+        <td style="text-align: center; vertical-align: middle"><textarea name="narration_new1" id="narration_new1" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center" value=""></textarea></td>
+        <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1"  name="cc_new1" id="cc_new1">
+                <?=foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
+            </select></td>
+        <td style="text-align: right; vertical-align: middle"><input name="dr_amt_new1" type="text" id="dr_amt_new1" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+        <td style="text-align: right; vertical-align: middle"><input name="cr_amt_new1" type="text" id="cr_amt_new1" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+    </tr>
+
+    <tr>
+        <td style="text-align: center; vertical-align: middle"><?=++$pi;?></td>
+        <td style="text-align: left; vertical-align: middle">
+            <select class="select2_single form-control" style="width:100%; font-size: 11px" tabindex="-1"   name="ledger_new2" id="ledger_new2">
+                <option></option>
+                <?=foreign_relation('accounts_ledger','ledger_id', 'CONCAT(ledger_id," : ", ledger_name)',1, 'status=1'); ?>
+            </select></td>
+        <td style="text-align: center; vertical-align: middle"><textarea name="narration_new2" id="narration_new2" class="form-control col-md-7 col-xs-12" style="width:100%; height:37px; font-size: 11px; text-align:center" value="" ></textarea></td>
+        <td style="text-align: left; vertical-align: middle"><select class="select2_single form-control" style="width:99%" tabindex="-1"  name="cc_new2" id="cc_new2">
+                <?=foreign_relation('cost_center', 'id', 'CONCAT(id,":", center_name)', $info[6], 'status=1'); ?>
+            </select></td>
+        <td style="text-align: right; vertical-align: middle"><input name="dr_amt_new2" type="text" id="dr_amt_new2" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+        <td style="text-align: right; vertical-align: middle"><input name="cr_amt_new2" type="text" id="cr_amt_new2"  class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" onchange="add_sum()" /></td>
+    </tr>
+    <tr align="center">
+        <td colspan="4" style="vertical-align:middle; font-weight: bold" align="right">Total Amount :</td>
+        <td style="vertical-align:middle; font-weight: bold"><input name="dr_amt" type="text" id="dr_amt" value="<?=$d_total?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" readonly="readonly"/></td>
+        <td style="vertical-align:middle; font-weight: bold"><input name="cr_amt" type="text" id="cr_amt" value="<?=$c_total?>" class="form-control col-md-7 col-xs-12" style="width:98%; height:37px; font-size: 11px; text-align:right" readonly="readonly" /></td>
+    </tr>
 
 
-
-        <?php
-        $GET_status=find_a_field('journal','distinct status','jv_no='.$_GET['v_no']);
-        if($GET_status=='MANUAL' || $GET_status=='UNCHECKED'){
-            $access_days=30;
-            $datetime1 = date_create($data1[7]);
-            $datetime2 = date_create(date('Y-m-d'));
-            $interval = date_diff($datetime1, $datetime2);
-            $v_d=$interval->format('%a');
-            if($_SESSION['userlevel']=='2'){
-                if($v_d>$access_days){ echo '<h6 style="text-align: center; color:red">Access Restricted.</h6>';} else {?>
-                    <tr><td colspan="6"><textarea style="float: left; margin-left:1%; font-size: 11px; width: 250px" name="note" id="note" placeholder="Type the reason for the update or deletion" ></textarea></td></tr>
-                    <tr><td colspan="2"><button style="float: left; margin-left:1%; font-size: 11px" type="submit" name="delete" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Completed?");'>Delete Voucher</button></td>
-                    <td colspan="2"><button style="float: left; margin-left:30%; font-size: 11px" type="submit" name="update" id="update" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Completed?");'>Update Voucher</button></td>
-                    <td colspan="2"><button style="float: right; margin-right:1%; font-size: 11px" type="submit" name="check" id="check" class="btn btn-success" onclick='return window.confirm("Are you confirm to Completed?");'>Check & Proceed to next</button></td>
-                <? }}} else {echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>This voucher has been '.$GET_status.' !!</i></h6>'; } ?>
-    <?php } if($_SESSION['userlevel']=='1'){ ?>
-    <tr><td colspan="6"><textarea style="float: left; margin-left:1%; font-size: 11px; width: 250px" name="note" id="note" placeholder="Type the reason for the update or deletion" ></textarea></td></tr>
-<tr><td colspan="2"><button style="float: left; margin-left:1%; font-size: 11px" type="submit" name="delete" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Completed?");'>Delete Voucher</button></td>
+    <?php
+    $GET_status=find_a_field('journal','distinct status','jv_no='.$_GET['v_no']);
+    if($GET_status=='MANUAL' || $GET_status=='UNCHECKED'){
+        $access_days=30;
+        $datetime1 = date_create($dataJVDate);
+        $datetime2 = date_create(date('Y-m-d'));
+        $interval = date_diff($datetime1, $datetime2);
+        $v_d=$interval->format('%a');
+        if($_SESSION['userlevel']=='2'){
+            if($v_d>$access_days){ echo '<h6 style="text-align: center; color:red">Access Restricted.</h6>';} else {?>
+                <tr><td colspan="6"><textarea style="float: left; margin-left:1%; font-size: 11px; width: 250px" name="note" id="note" placeholder="Type the reason for the update or deletion" ></textarea></td></tr>
+                <tr><td colspan="2"><button style="float: left; margin-left:1%; font-size: 11px" type="submit" name="delete" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Completed?");'>Delete Voucher</button></td>
+                <td colspan="2"><button style="float: left; margin-left:30%; font-size: 11px" type="submit" name="update" id="update" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Completed?");'>Update Voucher</button></td>
+                <td colspan="2"><button style="float: right; margin-right:1%; font-size: 11px" type="submit" name="check" id="check" class="btn btn-success" onclick='return window.confirm("Are you confirm to Completed?");'>Check & Proceed to next</button></td>
+            <? }}} else {echo '<h6 style="text-align: center;color: red;  font-weight: bold"><i>This voucher has been '.$GET_status.' !!</i></h6>'; } ?>
+<?php } if($_SESSION['userlevel']=='1'){ ?>
+    <tr>
+        <td colspan="6"><textarea style="float: left; margin-left:1%; font-size: 11px; width: 250px" name="note" id="note" placeholder="Type the reason for the update or deletion" ></textarea>
+        </td>
+    </tr>
+    <tr>
+    <td colspan="2"><button style="float: left; margin-left:1%; font-size: 11px" type="submit" name="delete" id="delete" class="btn btn-danger" onclick='return window.confirm("Are you confirm to Completed?");'>Delete Voucher</button></td>
     <td colspan="2"><button style="float: left; margin-left:30%; font-size: 11px" type="submit" name="update" id="update" class="btn btn-primary" onclick='return window.confirm("Are you confirm to Completed?");'>Update Voucher</button></td>
     <td colspan="2"><button style="float: right; margin-right:1%; font-size: 11px" type="submit" name="check" id="check" class="btn btn-success" onclick='return window.confirm("Are you confirm to Completed?");'>Check & Proceed to next</button></td>
     <?php } ?>

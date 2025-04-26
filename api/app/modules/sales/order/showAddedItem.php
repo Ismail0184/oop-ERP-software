@@ -20,7 +20,22 @@ if (!isset($_GET['orderNo'])) {
 $orderNo = $_GET['orderNo'];
 
 // Fetch items from the database
-$sql = "SELECT * FROM sales_get_order_from_app where orderNo='".$orderNo."' ORDER BY id DESC";
+$sql = "
+SELECT 
+    s.*, 
+    i.item_name AS itemName 
+FROM 
+    sales_get_order_from_app s
+JOIN 
+    item_info i 
+ON 
+    s.item = i.item_id
+WHERE 
+    s.orderNo = '".$orderNo."'
+ORDER BY 
+    s.id DESC
+";
+
 $result = $conn->query($sql);
 
 // Check if any items are found
@@ -38,6 +53,7 @@ if ($result->num_rows > 0) {
             'amount' => $row['amount'],
             'entryBy' => $row['entry_by'],
             'entryAt' => $row['entry_at'],
+            'itemName' => $row['itemName'],
         ];
     }
 

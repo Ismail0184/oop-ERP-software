@@ -117,30 +117,30 @@ if(prevent_multi_submit()) {
             $cr_amt1 = @$_POST['cr_amt1'];
             if ((($_POST['dr_amt1'] && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], $_POST['dr_amt1'],
-                    0, 'Debit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    0, 'Debit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['crLedger_id_2']);
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['crLedger_id_2'], 0,
-                    $_POST['cr_amt2'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    $_POST['cr_amt2'], 'Credit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
             }
 
             if ((($cr_amt1 && $_POST['party_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
 
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'],0, $proj_id, $_POST['internal_narration'], $_POST['party_ledger'], 0,
-                    $_POST['cr_amt1'], 'Debit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    $_POST['cr_amt1'], 'Debit','', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['drLedger_id_2']);
 
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], '', $proj_id, $_POST['internal_narration'], $_POST['drLedger_id_2'], $_POST['dr_amt2'],
-                    0, 'Credit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    0, 'Credit', '', $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['party_ledger']);
             }
 
             if (($_POST['ex_amount']> 0) && (($_POST['Ex_debit_ledger'] && $_POST['Ex_credit_ledger']) > 0) && ($_SESSION['initiate_journal_note_inter_company']>0)) {
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_debit_ledger'], $_POST['ex_amount'],
-                    0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    0, 'Debit', 1, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['Ex_credit_ledger']);
                 add_to_journal_info($_SESSION['initiate_journal_note_inter_company'], 1845854380, $proj_id, $_POST['internal_narration'].', '.$_POST['ex_narration'], $_POST['Ex_credit_ledger'], 0,
-                    $_POST['ex_amount'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, 0, 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
+                    $_POST['ex_amount'], 'Credit', 2, $_POST['paid_to'], $_POST['Cheque_No'], $c_date, $_POST['Cheque_of_bank'], $manual_payment_no, 0, $_POST['sub_ledger_id'], 'MANUAL', $ip, $_POST['journal_info_date'], $_SESSION['sectionid'], $_SESSION['companyid'], $_SESSION['userid'], $create_date, $now, $day
                     , $thisday, $thismonth, $thisyear, $_POST['Ex_debit_ledger']);
             }
         } // add
@@ -207,27 +207,11 @@ cost_center c
         $up_master=mysqli_query($conn, "UPDATE journal SET status='UNCHECKED' where jv_no=".$jv);
         $up_master=mysqli_query($conn, "UPDATE ".$table_journal_master." SET entry_status='UNCHECKED' where ".$unique."=".$_SESSION['initiate_journal_note_inter_company']."");
         $up_query=mysqli_query($conn, $up_master);
-        $external_dr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=1 and journal_info_no='.$initiate_journal_note_inter_company);
-        $external_dr_voucher_data_2_ledger_id = @$external_dr_voucher_data_2->ledger_id;
-        $external_dr_voucher_data_dr_amt = @$external_dr_voucher_data->dr_amt;
-        $external_dr_voucher_data_j_date = @$external_dr_voucher_data->j_date;
-        $external_dr_voucher_data_narration = @$external_dr_voucher_data->narration;
-        $external_dr_voucher_data_ledger_id = @$external_dr_voucher_data->ledger_id;
 
-        $external_dr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=3 and journal_info_no='.$initiate_journal_note_inter_company);
-        $external_dr_voucher_data_2_dr_amt = @$external_dr_voucher_data_2->dr_amt;
-        $external_cr_voucher_data=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=2 and journal_info_no='.$initiate_journal_note_inter_company);
-        $external_cr_voucher_data_2_ledger_id = @$external_cr_voucher_data_2->ledger_id;
-        $external_cr_voucher_data_ledger_id = @$external_cr_voucher_data->ledger_id;
-        $external_cr_voucher_data_cr_amt = @$external_cr_voucher_data->cr_amt;
-        $external_cr_voucher_data_2=find_all_field(''.$table_journal_info.'','','journal_info_date in ("1845854380") and cur_bal=4 and journal_info_no='.$initiate_journal_note_inter_company);
-        $external_cr_voucher_data_2_cr_amt = @$external_cr_voucher_data_2->cr_amt;
-        $targeturl=$find_API_journal_voucher_API_endpoint.'?jv_ref='.$initiate_journal_note_inter_company.'&create_order=1&ledger_id_dr_2='.$external_dr_voucher_data_2_ledger_id.'&ledger_id_cr_2='.$external_cr_voucher_data_2_ledger_id.'&dr_amt_2='.$external_dr_voucher_data_2_dr_amt.'&cr_amt_2='.$external_cr_voucher_data_2_cr_amt.'&dr_amt='.$external_dr_voucher_data_dr_amt.'&cr_amt='.$external_cr_voucher_data_cr_amt.'&j_date='.$external_dr_voucher_data_j_date.'&narration='.$external_dr_voucher_data_narration.'&ledger_id_dr='.$external_dr_voucher_data_ledger_id.'&ledger_id_cr='.$external_cr_voucher_data_ledger_id.'&entry_by='.$_SESSION['userid'].'&sectionid='.$_SESSION['sectionid'].'&companyid='.$_SESSION['companyid'].'&return_back_URL='.$url.'';
         unset($_SESSION['initiate_journal_note_inter_company']);
         unset($_POST);
         unset($$unique);
         unset($_SESSION['API_client_id']);
-        header("Location: ".$targeturl."");
     }
 
 
@@ -343,7 +327,7 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
                         <th style="width:15%;">Transaction Date <span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
                         <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
                         <th style="width:15%;">Transaction No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
-                        <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note_inter_company!='')? $initiate_journal_note_inter_company : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,'3'.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
+                        <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_journal_note_inter_company!='')? $initiate_journal_note_inter_company : automatic_voucher_number_generate($table_journal_info,$journal_info_unique,1,''.$sectionid_substr); ?>" class="form-control col-md-7 col-xs-12" readonly style="width: 99%; font-size: 11px;"></td>
                     </tr>
                     <tr>
                         <th style="">Person From</th><th>:</th>
@@ -407,12 +391,13 @@ $find_API_customer_list=find_all_field('dev_API_received','','API_name="API_cust
 
 <?=recentvoucherview($sql2,'voucher_view_popup_ismail.php','Journal_info','213px','');?>
 <?php if($initiate_journal_note_inter_company):  ?>
-    <form action="<?=$page;?>" enctype="multipart/form-data" name="addem" id="addem" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
+    <form action="<?=$page;?>" enctype="multipart/form-data" style="font-size: 11px" class="form-horizontal form-label-left" method="post">
         <input type="hidden" name="journal_info_no" id="journal_info_no" value="<?=$initiate_journal_note_inter_company;?>">
         <input type="hidden" name="<?=$unique?>" id="<?=$unique?>"  value="<?=$initiate_journal_note_inter_company;?>">
         <input type="hidden" name="journal_info_date" id="journal_info_date" value="<?=$voucher_date;?>">
         <input type="hidden"  <?php if($drAmt>0){ ?>name="dr_amt1"<?php } elseif($crAmt>0) { ?> name="cr_amt1" <?php } ?> value="<?=$amount;?>">
         <input type="hidden"  name="party_ledger" value="<?=$party_ledger;?>">
+        <input type="hidden"  name="sub_ledger_id" value="<?=$party_ledger;?>">
         <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">
         <input type="hidden" name="paid_to" id="paid_to" value="<?=$paid_to;?>">
         <input type="hidden" name="Cheque_No" id="Cheque_No" value="<?=$Cheque_No;?>">

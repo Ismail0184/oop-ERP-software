@@ -265,7 +265,7 @@ order by a.jvdate,a.id";
                 <td>0</td>
                 <td style="text-align: center"><?=$_POST['f_date'];?></td>
                 <td colspan="6">Opening Balance</td>
-                <td style="text-align: right"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),0,'.','');else echo "0.00"; ?></td>
+                <td style="text-align: right"><?php if($blance>0) echo '(Dr)'.number_format($blance,2); elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),2);else echo "0.00"; ?></td>
             </tr>
 
             <?php
@@ -287,8 +287,8 @@ order by a.jvdate,a.id";
                     <td><?=$data[5];?></td>
                     <td style="text-align: center"><?=($data[13]>0)? $data[16] : 'N/A'; ?></td>
                     <td style="text-align: center"><?=$data[4];?></td>
-                    <td style="text-align: right"><?=($data[2]>0)? number_format($data[2]) : '-';?></td>
-                    <td style="text-align: right"><?=($data[3]>0)? number_format($data[3]) : '-';?></td>
+                    <td style="text-align: right"><?=($data[2]>0)? number_format($data[2],2) : '';?></td>
+                    <td style="text-align: right"><?=($data[3]>0)? number_format($data[3],2) : '';?></td>
                     <td style="text-align: right"><?php $blance = $blance+($data[2]-$data[3]);
                         if($blance>0) echo '(Dr) '.number_format($blance,2,'.',',');
                         elseif($blance<0) echo '(Cr) '.number_format(((-1)*$blance),2,'.',',');else echo "0.00"; ?></td>

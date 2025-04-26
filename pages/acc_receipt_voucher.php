@@ -357,12 +357,12 @@ cost_center c
                         <?=foreign_relation("accounts_ledger", "ledger_id", "CONCAT(ledger_id,' : ', ledger_name)", $edit_value_ledger_id, "ledger_group_id in ('1002','4007') and show_in_transaction=1 and status=1".$sec_com_connection_wa."","order by ledger_id"); ?>
                     </select>
                 </td>
-                <!--td align="center" style="width: 10%;vertical-align: middle">
+                <td align="center" style="width: 10%;vertical-align: middle; display: none">
                     <select class="select2_single form-control" style="width:100%" tabindex="-1"   name="pc_code">
                         <option></option>
                         <?php foreign_relation('profit_center', 'id', 'CONCAT(id," : ", center_name)', $edit_value_pc_code, '1'); ?>
                     </select>
-                </td-->
+                </td>
                 <td style="width:15%;vertical-align: middle" align="center">
                     <textarea  id="narration" style="width:100%; height:37px; font-size: 11px; text-align:center"  name="narration"  class="form-control col-md-7 col-xs-12" autocomplete="off" tabindex="11"><?=($edit_value_narration!='')? $edit_value_narration : $credit_note_last_narration;?></textarea></td>
                 <td style="width:10%;vertical-align: middle" align="center">

@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $password = $data->password;
 
         // Prepare the SQL query
-        $stmt = $conn->prepare("SELECT user_id,PBI_ID,mobile,email,fname,picture_url,passwords as password FROM users WHERE mobile = ?");
+        $stmt = $conn->prepare("SELECT user_id,PBI_ID,mobile,email,fname,picture_url,passwords as password,designation FROM users WHERE mobile = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     "mobile" => $user['mobile'],
                     "email" => $user['email'],
                     "name" => $user['fname'],
+                    "designation" => $user['designation'],
                     "profilePicture" => $currentUrl.substr($user['picture_url'], 2)
                 ]);
                 mysqli_query($conn, "INSERT INTO user_activity_log (user_id,access_time,access_status,platform,os) 

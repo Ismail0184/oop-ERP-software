@@ -11,7 +11,8 @@ $attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','status not 
                  $attendance_early_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','leave_status="Waiting" and half_or_full in ("Half")');
                  $attendance_late_attendance_pending=find_a_field('hrm_late_attendance','COUNT(id)','status not in ("APPROVED","REJECTED")');
                  $attendance_OD_attendance_pending=find_a_field('hrm_od_attendance','COUNT(id)','status in ("APPROVED")');
-				 $total_attendance=$attendance_leave_pending+$attendance_early_leave_pending+$attendance_late_attendance_pending+$attendance_OD_attendance_pending;
+                 $attendance_work_from_home_pending=find_a_field('emp_access_work_from_home_application','COUNT(id)','status in ("APPROVED")');
+                 $total_attendance=$attendance_leave_pending+$attendance_early_leave_pending+$attendance_late_attendance_pending+$attendance_OD_attendance_pending+$attendance_work_from_home_pending;
 
 				 $hrm_pending_stationary_requisition=find_a_field('warehouse_other_issue','COUNT(oi_no)','hrm_viewed="NO" and req_category not in ("1500010000")');
                  $hrm_pending_foodandbeverage_requisition=find_a_field('warehouse_other_issue','COUNT(oi_no)','hrm_viewed="NO" and req_category in ("1500010000")');
@@ -120,6 +121,7 @@ $attendance_leave_pending=find_a_field('hrm_leave_info','COUNT(id)','status not 
                          <?php if($subnrow->sub_menu_id=="20096") if($attendance_early_leave_pending>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$attendance_early_leave_pending.' </span>]'?><?php } else {echo'';} ?>
                          <?php if($subnrow->sub_menu_id=="20097") if($attendance_late_attendance_pending>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$attendance_late_attendance_pending.' </span>]'?><?php } else {echo'';} ?>
                          <?php if($subnrow->sub_menu_id=="20098") if($attendance_OD_attendance_pending>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$attendance_OD_attendance_pending.' </span>]'?><?php } else {echo'';} ?>
+                         <?php if($subnrow->sub_menu_id=="20259") if($attendance_work_from_home_pending>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$attendance_work_from_home_pending.' </span>]'?><?php } else {echo'';} ?>
                          <?php if($subnrow->sub_menu_id=="20103") if($hrm_pending_stationary_requisition>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$hrm_pending_stationary_requisition.' </span>]'?><?php } else {echo'';} ?>
                          <?php if($subnrow->sub_menu_id=="20104") if($hrm_pending_foodandbeverage_requisition>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$hrm_pending_foodandbeverage_requisition.' </span>]'?><?php } else {echo'';} ?>
                          <?php if($subnrow->sub_menu_id=="20105") if($hrm_pending_travel_exp_claim>0) { ?><?='[<span style="color:red;font-weight:bold; font-size:15px"> '.$hrm_pending_travel_exp_claim.' </span>]'?><?php } else {echo'';} ?>

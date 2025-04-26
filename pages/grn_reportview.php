@@ -1,7 +1,7 @@
 <?php
 require_once 'support_file.php';
 $title='Goods Received Status';
-if($_POST['warehouse_id']>0) $warehouse_id=$_POST['warehouse_id'];
+if($_POST['warehouse_id']>0) $warehouse_id=@$_POST['warehouse_id'];
 if($_POST['vendor_id']>0) $vendor_id=$_POST['vendor_id'];
 if(!empty($_POST['order_by'])) $order_by_GET=$_POST['order_by'];
 if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET;}
@@ -47,7 +47,7 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
 
 
 <?php if ($_POST['report_id']=='4003003'):
-    $vendor_name=getSVALUE('vendor','vendor_name','where vendor_id='.$_REQUEST['vendor_id']);
+    $vendor_name=find_a_field('vendor','vendor_name','vendor_id='.$_REQUEST['vendor_id']);
     ?>
     <style>
         #customers {}
@@ -64,10 +64,10 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
 <title><?=$vendor_name;?> | MAN vs GRN</title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
         <p align="center" style="margin-top:-18px; font-size: 15px">MAN vs GRN</p>
-        <?php if($_POST[vendor_id]){ ?>
+        <?php if($_POST['vendor_id']){ ?>
         <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Vendor Name:</strong> <?=$vendor_name;?>)</p>
         <?php } ?>
-        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST[f_date]?> <strong>to</strong> <?=$_POST[t_date]?></p>
+        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> <strong>to</strong> <?=$_POST['t_date']?></p>
         <table align="center" id="customers"  style="width:95%; border: solid 1px #999; border-collapse:collapse; ">
             <thead>
             <p style="width:95%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -87,16 +87,14 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
             </tr></thead>
             <tbody>
         <?php
-		$datecon=' and m.man_date between  "'.$_POST[f_date].'" and "'.$_POST[t_date].'"';
+		$datecon=' and m.man_date between  "'.$_POST['f_date'].'" and "'.$_POST['t_date'].'"';
         if($_POST['vendor_id']>0) 			 $vendor_id=$_POST['vendor_id'];
         if(isset($vendor_id))				{$vendor_id_CON=' and m.vendor_code='.$vendor_id;}
-
 		if($_POST['vendor_id']>0) 			 $vendor_id=$_POST['vendor_id'];
         if(isset($vendor_id))				{$vendor_id_CON=' and m.vendor_code='.$vendor_id;}
-
 		if($_POST['MAN_RCV_STATUS']!=='All') 		 $MAN_RCV_STATUS=$_POST['MAN_RCV_STATUS'];
         if(isset($MAN_RCV_STATUS))				{$MAN_RCV_STATUS_CON=' and m.MAN_RCV_STATUS in ("'.$MAN_RCV_STATUS.'")';}
-
+        $i=0;
         $query=mysqli_query($conn, "SELECT m.*, i.*,u.*,v.vendor_name as vendor from MAN_details m,item_info i, users u, vendor v where
 		m.item_id=i.item_id and
 		m.entry_by=u.user_id and
@@ -117,7 +115,6 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
             <td align="center"  style="border: solid 1px #999; padding:2px"><? if($data->MAN_RCV_STATUS=='Done') echo $data->MAN_RCV_STATUS; else echo 'Pending';?></td>
         </tr>
         <?php } ?>
-
     </tbody>
     </table>
 
@@ -141,9 +138,9 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
 
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h5 align="center" style="margin-top:-15px">PO vs GRN</h5>
-    <?php if($_POST[vendor_id]>0){ ?>
-    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST[vendor_id]);?> </h6><?php } ?>
-    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <?php if($_POST['vendor_id']>0){ ?>
+    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST['vendor_id']);?> </h6><?php } ?>
+    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center" id="customers" style="width:99%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -220,14 +217,14 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
   personnel_basic_info pbi,
   personnel_basic_info pbi2,
   personnel_basic_info pbi3
-  where pm.po_no=po.po_no and pm.checkby=pbi.PBI_ID and pm.recommended=pbi2.PBI_ID and pm.authorise=pbi3.PBI_ID and pm.entry_by=u.user_id and w.warehouse_id=po.warehouse_id and po.item_id=i.item_id and  pm.po_date BETWEEN '".$_POST[f_date]."' and '".$_POST[t_date]."'".$vendor_id_CON." order by pm.po_no,i.item_name";
+  where pm.po_no=po.po_no and pm.checkby=pbi.PBI_ID and pm.recommended=pbi2.PBI_ID and pm.authorise=pbi3.PBI_ID and pm.entry_by=u.user_id and w.warehouse_id=po.warehouse_id and po.item_id=i.item_id and  pm.po_date BETWEEN '".$_POST['f_date']."' and '".$_POST['t_date']."'".$vendor_id_CON." order by pm.po_no,i.item_name";
   $sql=mysqli_query($conn, $query);?>
 
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h5 align="center" style="margin-top:-15px">PO vs MAN vs GRN</h5>
-    <?php if($_POST[vendor_id]>0){ ?>
-    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST[vendor_id]);?> </h6><?php } ?>
-    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <?php if($_POST['vendor_id']>0){ ?>
+    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST['vendor_id']);?> </h6><?php } ?>
+    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center" id="customers" style="width:99%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka'));
@@ -311,9 +308,9 @@ if(isset($order_by_GET))				{$order_by=' order by '.$order_by_GET.' '.$_POST['so
 
     <h2 align="center"><?=$_SESSION['company_name'];?></h2>
     <h5 align="center" style="margin-top:-15px">PO vs MAN</h5>
-    <?php if($_POST[vendor_id]>0){ ?>
-    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST[vendor_id]);?> </h6><?php } ?>
-    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST[f_date]?> to <?=$_POST[t_date]?></h6>
+    <?php if($_POST['vendor_id']>0){ ?>
+    <h6 align="center" style="margin-top:-15px">Vendor: <?=find_a_field('vendor','vendor_name','vendor_id='.$_POST['vendor_id']);?> </h6><?php } ?>
+    <h6 align="center" style="margin-top:-15px">Date Interval from <?=$_POST['f_date']?> to <?=$_POST['t_date']?></h6>
     <table align="center" id="customers" style="width:99%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
         <thead>
         <p style="width:90%; text-align:right; font-size:11px; font-weight:normal">Reporting Time: <?php $dateTime = new DateTime('now', new DateTimeZone('Asia/Dhaka')); echo $now=$dateTime->format("d/m/Y  h:i:s A");?></p>
@@ -459,11 +456,11 @@ $title='Material Recived Status';?>
     $vendor_name=getSVALUE('vendor','vendor_name','where vendor_id='.$_REQUEST['vendor_id']);
 	$title="MAN View";
 
-    if($_POST['vendor_code']>0) 			 $vendor_code=$_POST['vendor_code'];
-    if(isset($vendor_code))				{$vendor_code_CON=' and m.vendor_code='.$vendor_code;}
+    if($_POST['vendor_code']>0) 			 $vendor_code=@$_POST['vendor_code'];
+    if(isset($vendor_code))				{$vendor_code_CON=' and m.vendor_code='.$vendor_code;} else {$vendor_code_CON='';}
 
-    if($_POST['warehouse_id']>0) 			 $warehouse_id=$_POST['warehouse_id'];
-    if(isset($warehouse_id))				{$warehouse_id_CON=' and m.warehouse_id='.$warehouse_id;}
+    if($_POST['warehouse_id']>0) 			 $warehouse_id=@$_POST['warehouse_id'];
+    if(isset($warehouse_id))				{$warehouse_id_CON=' and m.warehouse_id='.$warehouse_id; } else { $warehouse_id_CON=''; }
     ?>
     <script type="text/javascript">
         function DoNavPOPUP(lk)
@@ -472,10 +469,10 @@ $title='Material Recived Status';?>
 <title><?=$vendor_name;?> | <?=$title;?></title>
         <p align="center" style="margin-top:-5px; font-weight: bold; font-size: 22px"><?=$_SESSION['company_name'];?></p>
         <p align="center" style="margin-top:-18px; font-size: 15px"><?=$title;?></p>
-      <?php if($_POST[vendor_id]){ ?>
+      <?php if($_POST['vendor_id']){ ?>
         <p align="center" style="margin-top:-10px; font-size: 12px"><strong>Vendor Name:</strong> <?=$vendor_name;?>)</p>
         <?php } ?>
-        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST[f_date]?> <strong>to</strong> <?=$_POST[t_date]?></p>
+        <p align="center" style="margin-top:-10px; font-size: 11px"><strong>Period From :</strong> <?=$_POST['f_date']?> <strong>to</strong> <?=$_POST['t_date']?></p>
         <table align="center" id="customers"  style="width:90%; border: solid 1px #999; border-collapse:collapse; font-size:11px">
                         <thead>
                         <tr style="border: solid 1px #999;font-weight:bold; font-size:11px">
@@ -486,7 +483,7 @@ $title='Material Recived Status';?>
                             <th style="border: solid 1px #999; padding:2px">Warehouse</th>
                             <th style="border: solid 1px #999; padding:2px">Vendor Name</th>
                             <th style="border: solid 1px #999; padding:2px">Remarks</th>
-                            <th style="border: solid 1px #999; padding:2px">Delivary<br>Challan</th>
+                            <th style="border: solid 1px #999; padding:2px">Delivery<br>Challan</th>
                             <th style="border: solid 1px #999; padding:2px">VAT<br>Challan</th>
                             <th style="border: solid 1px #999; padding:2px">Status</th>
                         </tr>
@@ -505,42 +502,22 @@ vendor v
   m.entry_by=u.user_id and
  w.warehouse_id=m.warehouse_id and
  v.vendor_id=m.vendor_code and
- m.man_date between '".$_POST[f_date]."' and '".$_POST[t_date]."' ".$vendor_code_CON.$warehouse_id_CON." order by m.id DESC ";
+ m.man_date between '".$_POST['f_date']."' and '".$_POST['t_date']."' ".$vendor_code_CON.$warehouse_id_CON." order by m.id DESC ";
     $pquery=mysqli_query($conn, $resultss);
 						while ($rows=mysqli_fetch_array($pquery)){ ?>
                             <tr style="font-size:11px; cursor: pointer">
                                 <th style="border: solid 1px #999; padding:2px" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?=$i=$i+1;;?></th>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[id];?></a></td>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[MAN_ID];?></a></td>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[man_date]; ?></td>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[warehouse_name];?></td>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[vendor_name];?></td>
-                                <td onclick="DoNavPOPUP('<?=$rows[id];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows[remarks];?></td>
-                                <td style="border: solid 1px #999; padding:2px"><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[delivary_challan];?></strong></u></a></td>
-                                <td style="border: solid 1px #999; padding:2px"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows[VAT_challan];?></strong></u></a></td>
-                                <td style="border: solid 1px #999; padding:2px" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?php if ($rows[man_status]=='RETURNED') { echo $rows[man_status].'<br>'. '('.$rows[return_resone].')'; } else { echo $rows[man_status];}?></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['id'];?></a></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['MAN_ID'];?></a></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['man_date']; ?></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['warehouse_name'];?></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['vendor_name'];?></td>
+                                <td onclick="DoNavPOPUP('<?=$rows['id'];?>', 'TEST!?', 600, 700)" style="border: solid 1px #999; padding:2px"><?=$rows['remarks'];?></td>
+                                <td style="border: solid 1px #999; padding:2px"><a href="dc_documents/<?=$rows[$unique].'_'.'dc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['delivary_challan'];?></strong></u></a></td>
+                                <td style="border: solid 1px #999; padding:2px"><a href="vc_documents/<?=$rows[$unique].'_'.'vc'.'.pdf';?>" target="_blank" style="color:#06F"><u><strong><?=$rows['VAT_challan'];?></strong></u></a></td>
+                                <td style="border: solid 1px #999; padding:2px" onclick="DoNavPOPUP('<?=$rows[$unique];?>', 'TEST!?', 600, 700)"><?php if ($rows['man_status']=='RETURNED') { echo $rows['man_status'].'<br>'. '('.$rows['return_resone'].')'; } else { echo $rows['man_status'];}?></td>
                             </tr>
-                        <?php } ?></tbody></table>
+                        <?php } ?>
+                        </tbody>
+        </table>
 <?php endif;?>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

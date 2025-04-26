@@ -222,7 +222,6 @@ endif;
                             </select>
                             <input type="hidden" id="<?=$unique?>" style="width:100%" name="<?=$unique?>" value="<?=($$unique!='')? $$unique : '';?>" class="form-control col-md-7 col-xs-12" >
                         </td>
-
                         <th style="width: 15%">Policy & Taken</th>
                         <th style="width:2%">:</th>
                         <td style="width: 33%">
@@ -281,7 +280,6 @@ endif;
                     </tr>
                 </table>
                 <hr/>
-
                 <div class="form-group" style="margin-left:40%">
                     <div class="col-md-6 col-sm-6 col-xs-12">
                         <button type="submit" name="record" id="initiateButton" style="font-size:12px" onclick='return window.confirm("Are you confirm?");'  class="btn btn-primary">Submit the Application <i class="fa fa-forward"></i></button>
@@ -297,7 +295,7 @@ endif;
     </div>
 </div>
 <?php if(!isset($_GET[$unique])):?>
-    <?=recentdataviewAttendance($sql2,'voucher_view_popup_ismail.php','hrm_leave_info','282px','Recent Leave Applications','hrm_requisition_leave_report.php','4');?>
+    <?=recentdataviewAttendance($sql2,'','hrm_leave_info','282px','Recent Leave Applications','hrm_requisition_leave_report.php','4');?>
 <?php endif; ?>
 <?=$html->footer_content();?>
 
@@ -311,13 +309,11 @@ endif;
         var appliedField = document.getElementById("applied");
         var applied = parseInt(appliedField.value); // Number of applied leave days
         var leaveBalance = parseInt(document.getElementById("leaveBalance").value); // User's leave balance
-
         // Check if s_date or e_date is empty and show an alert
         if (startDate.value.trim() === "" || endDate.value.trim() === "") {
             submitButton.disabled = true;
             return; // Exit the function if dates are empty
         }
-
         // Check if applied leave days are greater than the leave balance and show an alert
         if (applied > leaveBalance) {
             alert("Applied leave days cannot be more than the leave balance.");
@@ -350,8 +346,6 @@ endif;
     document.getElementById("e_date").addEventListener("change", enableInitiateButton);  // Use 'change' for date inputs
     document.getElementById("applied").addEventListener("input", enableInitiateButton);
     document.getElementById("leaveBalance").addEventListener("input", enableInitiateButton);
-
-
 
     function getTypeBalance() {
         const selectedCategory = document.getElementById("type").value;

@@ -1182,7 +1182,7 @@ WITH journal_data AS (
     SELECT 
         ledger_id, 
         SUM(CASE WHEN jvdate < '$f_date' THEN cr_amt - dr_amt ELSE 0 END) AS opening_balance,
-        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from = 'receipt' THEN cr_amt ELSE 0 END) AS collection,
+        SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from = 'receipt' THEN cr_amt-dr_amt ELSE 0 END) AS collection,
         SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from = 'SalesReturn' THEN cr_amt ELSE 0 END) AS salesReturn,
         SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from IN ('Journal_info', 'Sales') THEN cr_amt ELSE 0 END) AS OtherReceived,
         SUM(CASE WHEN jvdate BETWEEN '".$_POST['f_date']."' AND '".$_POST['t_date']."' AND tr_from IN ('Journal_info', 'Payment') THEN dr_amt ELSE 0 END) AS OtherIssue
@@ -2201,7 +2201,7 @@ FilteredSaleDoDetails AS (
     FROM 
         sale_do_details
     GROUP BY 
-        do_no, item_id
+        id
 ),
 ComputedJournalItems AS (
     SELECT 
@@ -2217,7 +2217,7 @@ ComputedJournalItems AS (
     FROM 
         journal_item
     GROUP BY 
-        do_no, item_id, batch, id, gift_type
+        id
 )
 SELECT 
     ji.id,
@@ -2225,7 +2225,9 @@ SELECT
     d.dealer_name_e AS dealer_name,
     sd.do_no,
     sd.do_date,
-    sd.challan_type AS Invoice_type,
+    sd.challan_type AS do_type,
+    ji.gift_type AS gift_type,
+    sd.do_section AS invoice_type,
     i.finish_goods_code AS FG_Code,
     i.item_name AS FG_description,
     i.pack_unit AS UOM,
@@ -2241,7 +2243,7 @@ SELECT
         ELSE "-"
     END AS invoice_Price,
     CASE 
-        WHEN ji.Remarks = "buy" THEN sd.total_amt
+        WHEN ji.Remarks = "buy" THEN FORMAT(ji.item_ex*sd.unit_price,2)
         ELSE "-"
     END AS Invoice_Amount
 
@@ -2264,9 +2266,7 @@ WHERE
     AND sd.do_date NOT BETWEEN "'.$lockedStartInterval.'" AND "'.$lockedEndInterval.'"
     '.$datecon.$do_type_conn.'
 GROUP BY 
-    sd.do_no, ji.batch, ji.item_id, ji.id, d.dealer_custom_code, d.dealer_name_e, d.dealer_type, 
-    w.warehouse_name, i.finish_goods_code, i.item_name, i.pack_unit, i.pack_size, ji.gift_type, 
-    ib.brand_name, fsd.total_cash_discount, fsd.total_units
+     ji.id
 ORDER BY 
     sd.do_no, ji.id ASC';?>
 

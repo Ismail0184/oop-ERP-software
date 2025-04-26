@@ -213,7 +213,7 @@ if(isset($$unique))
                                                 <select style="width: 250px; height: 25px" class="select2_single form-control" name="employee_id" id="employee_id">
                                                     <option></option>
                                                     <?php
-                                                    $result=mysql_query("SELECT  p.*,d.* FROM 
+                                                    $result=mysqli_query($conn, "SELECT  p.*,d.* FROM 
 							 
 							personnel_basic_info p,
 							department d
@@ -221,8 +221,8 @@ if(isset($$unique))
 							 p.PBI_JOB_STATUS in ('In Service') and 							 
 							 p.PBI_DEPARTMENT=d.DEPT_ID					 
 							  order by p.PBI_NAME");
-                                                    while($row=mysql_fetch_array($result)){  ?>
-                                                        <option  value="<?=$row[PBI_ID]; ?>" <?php if($employee_id==$row[PBI_ID]) echo 'selected' ?>><?=$row[PBI_ID_UNIQUE]; ?>#><?=$row[PBI_NAME];?>#> (<?=$row[DEPT_SHORT_NAME];?>)</option>
+                                                    while($row=mysqli_fetch_array($result)){  ?>
+                                                        <option  value="<?=$row['PBI_ID']; ?>" <?php if($employee_id==$row['PBI_ID']) echo 'selected' ?>><?=$row['PBI_ID_UNIQUE']; ?>#><?=$row['PBI_NAME'];?>#> (<?=$row['DEPT_SHORT_NAME'];?>)</option>
                                                     <?php } ?></select></td>
 
                                             <td><strong>Duration:</strong></td>
@@ -290,6 +290,6 @@ if(isset($$unique))
                     <!---page content----->
 
 
-                
-        
-<?php require_once 'footer_content.php' ?>
+
+
+ <?=$html->footer_content();mysqli_close($conn);?>

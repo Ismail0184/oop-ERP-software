@@ -487,6 +487,11 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                 'COUNT(id)',
                                 'PBI_ID="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
                             );
+                            $getWFH = find_a_field(
+                                'emp_access_work_from_home_application',
+                                'COUNT(id)',
+                                'user_id="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                            );
                             $getLeave = find_a_field('hrm_leave_info','COUNT(id)','PBI_ID="'.$_SESSION['PBI_ID'].'" and s_date between "'.$currentDate.'" and "'.$currentDate.'"');
                             $getOffDay = find_a_field('salary_holy_day','COUNT(id)','holy_day="'.$currentDate.'"');
 
@@ -495,6 +500,27 @@ $lateAttendanceApplicationURL = 'emp_acess_apply_for_late_attendance.php';
                                 <td class="text-center"><?=$displayDate?></td>
                                 <td colspan="7" style="text-align: center; color: red; font-weight: bold"><span class="label label-warning" style="font-size:10px">Friday</span></td>
                             </tr>
+
+                            <?php } elseif($getWFH>0){
+                                $getWFHStatus = find_a_field(
+                                    'emp_access_work_from_home_application',
+                                    'status',
+                                    'user_id="'.$_SESSION['PBI_ID'].'" AND attendance_date="'.$currentDate.'"'
+                                );
+                                ?>
+                                <tr>
+                                    <td class="text-center"><?=$displayDate?></td>
+                                    <td colspan="7" style="text-align: center; color: red; font-weight: bold">
+                                        <span class="label label-default" style="font-size:10px">
+                                        <?php if ($getWFHStatus=='PENDING'){ echo 'Applied for WFH';
+                                        } elseif ($getWFHStatus=='APPROVED') {
+                                            echo 'Work from Home is Approved';
+                                        } elseif ($getWFHStatus=='REJECTED'){ echo 'WFH is REJECTED'; } else {
+                                            echo 'Worked from Home';
+                                        }?>
+                                        </span>
+                                    </td>
+                                </tr>
 
                             <?php } elseif($getOffDay>0){ ?>
                                 <tr>
