@@ -7,10 +7,10 @@ $table="company";
 $page="developer_create_company.php";
 $crud      =new crud($table);
 $$unique = @$_GET[$unique];
-$title='Create Company';
+$title='Create Branch';
+
 
 if(prevent_multi_submit()){
-
     if(isset($_POST['record']))
     {
         $target_dir = "uploads/";
@@ -82,14 +82,33 @@ if(isset($$unique))
     { $$key=$value;}}
 
 
-$res="SELECT id,section_name,company_name,com_short_name,address,contact_person,contact_number,website,VAT_regno,logo,logo_color,TIN,BIN,Trade_license_no,telephone,IF(status=1, 'Active','Inactive') as status from ".$table." order by id";
-$result=mysqli_query($conn, $res);
-while($data=mysqli_fetch_object($result)){
-    $id=$data->ZONE_CODE;
-
-    if(isset($_POST['deletedata'.$id]))
-    { $del=mysqli_query($conn, "Delete from ".$table." where ".$unique."=".$id."");}
-}?>
+$res="SELECT 
+    c.id,
+    c.company_name as branch_name,
+    c.com_short_name short_name,
+    b.section_name as business_name,
+    t.name as partner_name,
+    c.address,
+    c.contact_person,
+    c.contact_number,
+    c.VAT_regno,
+    c.logo,
+    c.logo_color,
+    c.TIN,
+    c.BIN,
+    c.Trade_license_no,
+    c.telephone,
+    IF(c.status=1, 'Active','Inactive') as status 
+FROM 
+    ".$table." c,
+    company_section b,
+    company_section_type t
+    
+WHERE
+     c.section_id=b.section_id and
+     b.section_type=t.id
+    ORDER BY c.id";
+?>
 
 
 

@@ -268,7 +268,7 @@ where
                             <table align="center" style="width:100%">
                         <tr>
                             <th style="width:15%;">Transaction Date<span class="required">*</span></th><th style="width: 2%;">:</th>
-                            <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
+                            <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" ></td>
 
                             <th style="width:15%;">Transaction No<span class="required">*</span></th><th style="width: 2%">:</th>
                             <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?=($initiate_debit_note!='')? $initiate_debit_note : automatic_voucher_number_generate($table_payment,$payment_unique,1,2);?>" class="form-control col-md-7 col-xs-12" readonly style="width: 90%; font-size: 11px;"></td>

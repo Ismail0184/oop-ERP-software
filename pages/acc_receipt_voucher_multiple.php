@@ -270,7 +270,7 @@ $credit_note_last_narration = @$_SESSION['credit_note_last_narration'];
                 <table align="center" style="width:100%">
                     <tr>
                         <th style="width:15%;">Transaction Date <span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
-                        <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.$acess_date. 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" tabindex="1" /></td>
+                        <td><input type="date" id="voucher_date"  required="required" name="voucher_date" value="<?=($voucher_date!='')? $voucher_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>" class="form-control col-md-7 col-xs-12" style="width: 90%; font-size: 11px;vertical-align:middle" tabindex="1" /></td>
 
                         <th style="width:15%;">Transaction No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
                         <td><input type="text" required="required" name="<?=$unique?>" id="<?=$unique?>"  value="<?php if($initiate_credit_note>0){ echo $initiate_credit_note;} else { echo

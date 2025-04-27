@@ -5,9 +5,11 @@
                 <ul class="nav side-menu">
                     <li><a href="dashboard.php"><i class="fa fa-home"></i>Home</a></li>
 
-                    <li><a href="#"><i class="fa fa-industry"></i>Company <span class="fa fa-chevron-down"></span></a>
+                    <li><a href="#"><i class="fa fa-industry"></i>Business Setup <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="developer_create_company.php">Create Company</a></li>
+                            <li><a href="developer_create_businessType.php">Business Type</a></li>
+                            <li><a href="developer_create_section.php">Create Business Name</a></li>
+                            <li><a href="developer_create_company.php">Create Branch</a></li>
                             <li><a href="developer_create_warehouse.php">Create Warehouse</a></li>
                         </ul>
                     </li>

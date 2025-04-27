@@ -242,7 +242,7 @@ $stock_balance=$stock_balance_GET-$Manual_item;?>
                             <div class="form-group">
                                 <label class="control-label col-md-3 col-sm-3 col-xs-12" for="last-name" style="width: 30%">STO Date <span class="required text-danger">*</span></label>
                                 <div class="col-md-6 col-sm-6 col-xs-12">
-                                    <input type="date" id="pi_date" style="width:100%" max="<?=date('Y-m-d')?>"  required="required" name="pi_date" value="<?=($pi_date!='')? $pi_date : date('Y-m-d') ?>" class="form-control col-md-7 col-xs-12" >
+                                    <input type="date" id="pi_date" style="width:100%" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>" max="<?=date('Y-m-d')?>"  required="required" name="pi_date" value="<?=($pi_date!='')? $pi_date : date('Y-m-d') ?>" class="form-control col-md-7 col-xs-12" >
                                 </div>
                             </div>
                         </td>

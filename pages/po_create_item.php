@@ -349,7 +349,7 @@ if($initiate_po_no>0) $btn_name='Update WO Info'; else $btn_name='Initiate Work 
                         <th>WO Date <span class="required text-danger">*</span></th>
                         <th style="text-align:center">:</th>
                         <td>
-                            <input type="date"  name="po_date" MAX="<?=date('Y-m-d');?>" value="<?=($po_date!='')? $po_date : date('Y-m-d') ?>" style="width: 80%; font-size:11px" class="form-control col-md-7 col-xs-12" >
+                            <input type="date"  name="po_date" MAX="<?=date('Y-m-d');?>" value="<?=($po_date!='')? $po_date : date('Y-m-d') ?>" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>" style="width: 80%; font-size:11px" class="form-control col-md-7 col-xs-12" >
                         </td>
                         <th>Quotation Date</th>
                         <th style="text-align:center">:</th>

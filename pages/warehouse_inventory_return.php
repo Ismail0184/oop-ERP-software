@@ -155,8 +155,9 @@ $batch_data_get=find_all_field('lc_lc_received_batch_split','','status="PROCESSI
                                     <table style="width: 100%; font-size:11px">
                                       <tr>
                                           <th style="width:15%;">ID & Date<span class="required text-danger">*</span></th><th style="width: 2%;">:</th>
-                                          <td style="width:28%"><input type="text" id="<?=$unique?>" style="width:40%;font-size:11px"  required   name="<?=$unique?>" value="<? if($$unique>0) echo $$unique; else echo (find_a_field($table,'max('.$unique.')','1')+1);?>" readonly class="form-control col-md-7 col-xs-12" >
-                                                            <input type="date" name="return_date" id="return_date"  value="<?=($return_date!='')? $return_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12" required style="width: 49%; margin-left: 1%;font-size:11px">
+                                          <td style="width:28%">
+                                              <input type="text" id="<?=$unique?>" style="width:40%;font-size:11px"  required   name="<?=$unique?>" value="<? if($$unique>0) echo $$unique; else echo (find_a_field($table,'max('.$unique.')','1')+1);?>" readonly class="form-control col-md-7 col-xs-12" >
+                                              <input type="date" name="return_date" id="return_date" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>"  value="<?=($return_date!='')? $return_date : date('Y-m-d') ?>" max="<?=date('Y-m-d');?>" class="form-control col-md-7 col-xs-12" required style="width: 49%; margin-left: 1%;font-size:11px">
                                           </td>
                                           <th style="width:15%;">Ref. No <span class="required text-danger">*</span></th><th style="width: 2%">:</th>
                                           <td style="width:28%"><input type="text" id="<?=$unique_field?>" style="width:90%;font-size:11px"  required   name="<?=$unique_field?>" value="<?=$$unique_field?>"  class="form-control col-md-7 col-xs-12" ></td>

@@ -171,7 +171,7 @@ self.location='<?=$page;?>?item_id=<?=$GetItemId?>&batch=' + val ;}
                  <th style="width:10%">SR Date </th>
                         <th style="width:1%; text-align:center">:</th>
                         <td style="width:20%; text-align:center">
-                        <input type="date" required="required" style="width:90%;font-size:11px" MAX="<?=date('Y-m-d')?>" name="do_date" value="<?=($do_date>0)?  $do_date : date('Y-m-d') ;?>" class="form-control col-md-7 col-xs-12" ></td>
+                        <input type="date" required="required" style="width:90%;font-size:11px" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>" MAX="<?=date('Y-m-d')?>" name="do_date" value="<?=($do_date>0)?  $do_date : date('Y-m-d') ;?>" class="form-control col-md-7 col-xs-12" ></td>
                        <th style="width:5%">Type</th>
                         <th style="width:1%; text-align:center">:</th>
                         <td style="width:20%;">

@@ -50,7 +50,7 @@ if(isset($$unique))
     { $$key=$value;}}
 
 
-$res="SELECT id,section_name,company_name,com_short_name,address,contact_person,contact_number,website,VAT_regno,logo,logo_color,TIN,BIN,Trade_license_no,telephone,IF(status=1, 'Active','Inactive') as status from ".$table."";
+$res="SELECT id,telephone,IF(status=1, 'Active','Inactive') as status from ".$table."";
 $result=mysqli_query($conn, $res);
 while($data=mysqli_fetch_object($result)){
     $id=$data->ZONE_CODE;

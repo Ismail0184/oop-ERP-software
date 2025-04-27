@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate and sanitize input data
     $customer_name = isset($data['customer_name']) ? trim($data['customer_name']) : null;
+    $proprietor_name = isset($data['proprietor_name']) ? trim($data['proprietor_name']) : null;
     $address = isset($data['address']) ? trim($data['address']) : null;
     $mobile_no = isset($data['mobile_no']) ? trim($data['mobile_no']) : null;
     $contact_person_name = isset($data['contact_person_name']) ? trim($data['contact_person_name']) : null;
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Prepare SQL statement
-    $stmt = $conn->prepare("INSERT INTO app_get_customer_data (customer_name, address, mobile_no, contact_person_name, contact_person_designation, tin, bin,nid,customer_type,territory, entry_by, entry_at,photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO app_get_customer_data (customer_name, proprietor_name, address, mobile_no, contact_person_name, contact_person_designation, tin, bin,nid,customer_type,territory, entry_by, entry_at,photo) VALUES (?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if ($stmt === false) {
         echo json_encode([
             "status" => "error",
@@ -54,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Bind parameters
-    $stmt->bind_param("sssssssssssss", $customer_name, $address, $mobile_no, $contact_person_name, $contact_person_designation, $tin, $bin,$nid,$customer_type,$territory, $entryBy, $entryAt, $photo);
+    $stmt->bind_param("ssssssssssssss", $customer_name,$proprietor_name, $address, $mobile_no, $contact_person_name, $contact_person_designation, $tin, $bin,$nid,$customer_type,$territory, $entryBy, $entryAt, $photo);
 
     // Execute the statement
     if ($stmt->execute()) {

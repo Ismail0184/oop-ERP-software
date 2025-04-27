@@ -316,7 +316,7 @@ $COUNT_details_data=find_a_field(''.$table_detail.'','Count(id)',''.$unique_mast
                             <td style="width: 21.5%"><input type="text" style="width: 90%;" name="do_no" readonly value="<? if($unique_master_for_SP>0) echo $unique_master_for_SP; else echo (find_a_field($table_master,'max('.$unique_master.')','1')+1);?>" class="form-control col-md-7 col-xs-12"></td>
 
                             <th style="width: 10%">DO Date</th><th style="text-align: center; width: 2%">:</th>
-                            <td style="width: 21.5%"><input type="date" style="width: 90%; font-size: 11px" name="do_date" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config','back_date_limit','1'). 'day'));?>"  max="<?=date('Y-m-d');?>" value="<?=($do_date!='')? $do_date : date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"></td>
+                            <td style="width: 21.5%"><input type="date" style="width: 90%; font-size: 11px" name="do_date" min="<?=date('Y-m-d', strtotime($date .' -'.find_a_field('acc_voucher_config_log','back_date_limit','status="Active"'). 'day'));?>"  max="<?=date('Y-m-d');?>" value="<?=($do_date!='')? $do_date : date('Y-m-d');?>" class="form-control col-md-7 col-xs-12"></td>
 
                             <th style="width: 10%">Do Type</th><th style="text-align: center; width: 2%">:</th>
                             <td style="width: 21%">
